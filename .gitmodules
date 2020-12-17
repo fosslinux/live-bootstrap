@@ -1,9 +1,9 @@
 [submodule "mescc-tools-seed"]
-	path = mescc-tools-seed
+	path = sysa/mescc-tools-seed
 	url = https://github.com/oriansj/mescc-tools-seed/
 [submodule "bootstrap-seeds"]
 	path = bootstrap-seeds
 	url = https://github.com/oriansj/bootstrap-seeds
 [submodule "blynn-compiler-oriansj"]
-	path = blynn-compiler-oriansj
+	path = sysa/blynn-compiler-oriansj
 	url = https://github.com/oriansj/blynn-compiler
