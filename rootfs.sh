@@ -29,7 +29,13 @@ find tmp -name .git -exec rm -rf \;
 # initramfs
 cd tmp 
 find . | cpio -H newc -o | gzip > initramfs.igz
-qemu-system-x86_64 -enable-kvm -kernel ../kernel -initrd initramfs.igz -append console=ttyS0 -nographic -m 16G
+
+# Run
+qemu-system-x86_64 -enable-kvm \
+    -m 16G \
+    -nographic \
+    -no-reboot \
+    -kernel ../kernel -initrd initramfs.igz -append console=ttyS0,kernel.panic=2
 
 # Cleanup
 sudo umount tmp
