@@ -1,0 +1,34 @@
+#!/bin/sh
+# Copyright © 2020 fosslinux
+#
+# This file is part of live-bootstrap. 
+#
+# live-bootstrap is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# live-bootstrap is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with live-bootstrap.  If not, see <http://www.gnu.org/licenses/>.
+
+cd after
+
+# Prepare the directory
+../catm bin/hex2 ../bin/hex2
+../catm bin/M1 ../bin/M1
+../catm bin/M2-Planet ../bin/M2-Planet
+../catm bin/blood-elf ../bin/blood-elf
+../catm bin/get_machine ../bin/get_machine
+../catm bin/mes-m2 ../bin/mes-m2
+../catm bin/kaem ../bin/kaem
+../catm bin/catm ../catm
+
+/busybox.static sh
+
+# Finally, reinvoke kaem in this directory
+bin/kaem kaem.run
