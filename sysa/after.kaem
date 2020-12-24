@@ -28,7 +28,5 @@ cd after
 ../catm bin/kaem ../bin/kaem
 ../catm bin/catm ../catm
 
-/busybox.static sh
-
 # Finally, reinvoke kaem in this directory
-bin/kaem kaem.run
+../bin/kaem --file kaem.run

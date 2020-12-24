@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with live-bootstrap.  If not, see <http://www.gnu.org/licenses/>.
 
-PATH=/after/bin
+PATH=/bin
 
 # Part 2: blynn-compiler
 
 cd blynn-compiler
-kaem go.kaem
+kaem --file go.kaem
 cd ..
