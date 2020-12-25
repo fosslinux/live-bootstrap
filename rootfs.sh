@@ -29,6 +29,7 @@ mkdir tmp/bin
 mkdir tmp/after/bin -p
 mkdir tmp/after/{lib,include}
 mkdir tmp/after/include/{mes,gnu,linux,sys,mach}
+mkdir tmp/after/include/linux/x86
 # put all the kaems for after in
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
