@@ -1,0 +1,190 @@
+                                                              -*- org -*-
+#+TITLE: Hacking GNU Mes
+
+* SETUP
+    guix environment -l guix.scm     #64 bit + 32bit
+
+    CC=i686-unkown-linux-gnu-gcc ./configure
+or
+    ./configure
+
+The 64bit bootstrap is not supported; MesCC needs work to be able to
+compile a functional tinycc.
+
+* BUILD
+
+GNU Guile can be used as a replacement for Mes.  It's faster and has
+much better error handling.
+
+   #+BEGIN_SRC bash
+   make MES=guile
+   make check MES=guile
+   #+END_SRC
+
+Configure to compile with Tiny CC
+
+   #+BEGIN_SRC bash
+   ./configure CC=tcc --host=i686-unknown-linux-gnu --with-courage
+   #+END_SRC
+
+* DEBUG
+  MES_DEBUG=<level> mes
+** Levels
+  1) Informational:
+     - MODULEDIR
+     - included SCM modules and sources
+     - result of program
+     - gc stats at exit
+  2) opened files
+  3) runtime gc stats
+  4) detailed info
+     - parsed, expanded program
+     - list of builtins
+     - list of symbol
+     - opened input strings
+     - gc details
+  5) lots of data
+     - usage of opened input strings
+     - bytes read
+  6) globals
+
+* Bugs
+** mes: performance, Mes is now 2-10x slower than Guile.
+** mes/mescc lack support for fork/exec on the Hurd.
+** mes: gcc-x86_64 compiled mes segfaults with small arena, or gc_up_arena.
+** mes: gcc-x86 compiled, tests/srfi-13.test number->string INT-MIN fails:
+test: number->string INT-MIN: fail
+expected: -2147483648
+actual: -./,),(-*,(
+** tcc: tcc-built lib/libc+tcc.c segfaults with mes, with tcc.
+** mes: remove pmatch-car/pmatch-cdr hack.
+** mescc: softcode stack frame size, now hardcoded and very large
+** mes+mescc: parse tcc.c->tcc.E works, compile tcc.E -> tcc.M1 segfaults.
+  time GUILE_LOAD_PATH=/home/janneke/src/nyacc/module:$GUILE_LOAD_PATH ../mes/scripts/mescc -E -o tcc.E -I . -I ../mes/lib -I ../mes/include -D 'CONFIG_TCCDIR="usr/lib/tcc"' -D 'CONFIG_TCC_CRTPREFIX="usr/lib:{B}/lib:."' -D 'CONFIG_TCC_ELFINTERP="/gnu/store/70jxsnpffkl7fdb7qv398n8yi1a3w5nx-glibc-2.26.105-g0890d5379c/lib/ld-linux.so.2"' -D 'CONFIG_TCC_LIBPATHS="/home/janneke/src/tinycc/usr/lib:{B}/lib:."' -D 'CONFIG_TCC_SYSINCLUDEPATHS="../mes/include:usr/include:{B}/include"' -D CONFIG_USE_LIBGCC=1 -D 'TCC_LIBGCC="/home/janneke/src/tinycc/usr/lib/libc+tcc-gcc.mlibc-o"' -D CONFIG_TCC_STATIC=1 -D ONE_SOURCE=yes -D TCC_TARGET_I386=1 -D BOOTSTRAP=1 tcc.c
+  time GUILE_LOAD_PATH=/home/janneke/src/nyacc/module:$GUILE_LOAD_PATH MES_ARENA=200000000 ../mes/scripts/mescc -c -o tcc.M1 tcc.E
+** mescc: 64 bit compiled mes loses top 4 bytes
+*** 64 bit mescc-compiled mes:
+  #x100000000 => 0
+  (modulo 1 #x100000000) => divide-by-zero
+*** 64 bit gcc-compiled mes:
+  #x100000000 => 0
+  (modulo 1 #x100000000) => 1
+** mescc: 7n-struct-struct-array.c:  struct file f = {"first.h"};
+** test/match.test ("nyacc-simple"): hygiene problem in match
+* OLD: Booting from LISP-1.5 into Mes
+
+Mes started out experimenting with booting from a hex-coded minimal
+LISP-1.5 (prototype in mes.c), into an almost-RRS Scheme.
+
+When EOF is read, the LISP-1.5 machine calls loop2 from loop2.mes,
+which reads the rest of stdin and takes over control.  The functions
+readenv, eval and apply-env in mes.mes introduced define, define-macro
+quasiquote and macro expansion.
+
+While this works, it's amazingly slow.  We implemented a full reader
+in mes.c, which makes running mes:apply-env mes:eval somewhat
+bearable, still over 1000x slower than running mes.c.
+
+Bootstrapping has been removed and mes.c implements enough of RRS to
+run a macro-based define-syntax and syntax-rules.
+
+loop.mes and mes.mes are unused and lagging behind.  Probably it's not
+worth considering this route without a VM.  GNU Epsilon is taking the
+more usual VM-route to provide multiple personas.  While that sounds
+neat, Lisp/Scheme, bootstrapping and trusted binaries are probably not
+in scope as there is no mention of such things; only ML is mentioned
+while Guile is used for bootstrapping.
+
+* Assorted ideas and info
+** Using GDB on assembly/a.out
+info registers
+p/x $eax
+p/x $edx
+set disassemble-next-line on
+gdb-display-disassembly-buffer
+b *0x804a79d
+** Create memory dump with 32 bit Gcc compiled Mes
+make out/i686-unknown-linux-gnu-mes
+out/i686-unknown-linux-gnu-mes --dump < module/mes/read-0.mes > module/mes/read-0-32.mo
+
+x/s *((char **)($rsp+8))
+
+** C parser/compiler
+*** [[https://savannah.gnu.org/projects/nyacc][nyacc]]
+*** PEG: [[http://piumarta.com/software/peg/][parse C using PEG]]
+*** [[https://en.wikipedia.org/wiki/Tiny_C_Compiler][Tiny C Compiler]]
+*** [[http://www.t3x.org/subc/index.html][Sub C]]
+*** [[https://groups.google.com/forum/#!topic/comp.lang.lisp/VPuX0VsjTTE][C intepreter in LISP/Scheme/Python]]
+
+** C assembler/linker
+*** [[http://www.tldp.org/HOWTO/Assembly-HOWTO/linux.html][Assembly HOWTO]]
+*** ELF
+7f 45 4c 46
+*** [[http://www.muppetlabs.com/~breadbox/software/tiny/][Small ELF programs]]
+*** [[http://www.cirosantilli.com/elf-hello-world/][Elf hello world]]
+** SC - c as s-expressions
+sc: http://sph.mn/content/3d3
+** RNRS
+*** [[http://www.scheme-reports.org/][Scheme Reports]]
+*** [[ftp://publications.ai.mit.edu/ai-publications/pdf/AIM-349.pdf][Scheme - Report on Scheme]]
+*** [[ftp://publications.ai.mit.edu/ai-publications/pdf/AIM-452.pdf][RRS - Revised Report on Scheme]]
+
+** tiny schemes
+http://forum.osdev.org/viewtopic.php?f=15&t=19937
+
+http://www.stripedgazelle.org/joey/dreamos.html
+http://armpit.sourceforge.net/
+http://common-lisp.net/project/movitz/movitz.html
+
+<civodul> janneke: https://github.com/namin/inc looks interesting  [15:18]
+** Orians Jeremiah
+<OriansJ> janneke: also, if you look at
+          https://github.com/oriansj/stage0/tree/master/stage2/High_level_prototypes
+          [the garbage collected lisp I implemented], if there are any pieces
+          I could add to finish off your mes lisp bootstrap just let me know
+          because I would be more than happy to do that :D
+<janneke> OriansJ: that's what I'm hoping for, that our efforts can be
+          complementary and we can work together
+*** lfam (~lfam@2601:47:4180:2ffb:7c05:17de:cf5f:23ef) has quit: Ping timeout:
+    246 seconds  [00:22]
+<janneke> exciting times!  [00:23]
+<janneke> OriansJ: i looked a few times and saw 'LISP empty', so thanks for
+          the pointer!  [00:24]
+<civodul> OriansJ, janneke: from that page, there's also:
+          https://web.archive.org/web/20160604035203fw_/http://homepage.ntlworld.com/edmund.grimley-evans/bcompiler.html
+
+** C4/C500
+https://web.archive.org/web/20160604041431/http://homepage.ntlworld.com/edmund.grimley-evans/cc500/cc500.c
+https://github.com/rswier/c4/blob/master/c4.c
+** Compilers for free
+http://codon.com/compilers-for-free
+** Small lisps
+*** [[https://www.mirrorservice.org/sites/www.bitsavers.org/bits/TI/Explorer/zeta-c/][ZETA-C]]
+** Small C compilers
+*** tinycc
+*** [[https://github.com/rui314/8cc][8cc]] -- a C11 compiler, but simple
+8cc is a compiler for the C programming language. It's intended to
+support all C11 language features while keeping the code as small and
+simple as possible.
+*** pcc
+*** early GCC?
+https://miyuki.github.io/2017/10/04/gcc-archaeology-1.html
+*** [[http://tack.sourceforge.net/][ack]]
+<rain1> it may be possible to compile like this:  mes |> ack |> pcc |> tcc |>
+        gcc 4.7.4 |> gcc later version... up to modern
+*** [[https://web.archive.org/web/20160402225843/http://homepage.ntlworld.com/edmund.grimley-evans/cc500/][cc500]]
+** rain1's Bootstrapping Wiki: https://bootstrapping.miraheze.org/wiki/Main_Page
+** rain1's hex86
+https://notabug.org/rain1/hex86/src/master/tests/hex0b3.hex86
+** <pdewacht> janneke, have you ever tried testing mescc with csmith?  [10:55]
+** <pdewacht> e.g. as described here
+           https://jamey.thesharps.us/2016/07/15/testing-strategies-for-corrode/
+           ("Randomized testing with Csmith and C-Reduce")  [10:58]
+** linux syscalls: https://fedora.juszkiewicz.com.pl/syscalls.html
+* legalese
+
+Copyright © 2016,2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.

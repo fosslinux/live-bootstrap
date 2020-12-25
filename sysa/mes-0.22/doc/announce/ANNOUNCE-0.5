@@ -1,0 +1,79 @@
+Subject: Mes 0.5 released
+
+I am pleased to announce the release of Mes 0.5, representing 250
+commits over 4 months.  Mes is now self-hosting, or rather it features
+a mutual self-hosting Scheme interpreter and C compiler: mes.c and
+mescc; a Nyacc-based C compiler backend that also works separately
+with Guile.
+
+* About
+
+    Mes aims to create full source bootstrapping for GuixSD: an
+    entirely source-based bootstrap path.  The target is to [have
+    GuixSD] boostrap from a minimal, easily inspectable binary --that
+    should be readable as source-- into something close to R6RS
+    Scheme.
+
+    It currently consists of a mutual self-hosting [close to Guile-]
+    Scheme interpreter prototype in C and a Nyacc-based C compiler in
+    [Guile] Scheme.
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[1], Pre-R6RS portable syntax-case[2] with R7RS ellipsis, Matt
+    Wette's Nyacc[3] Guile's PEG[4] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    (mescc.mes) that can produce the second initial ELF binary from
+    binary from mes.c, in only about 2h30'.
+
+    Mes was inspired by The Maxwell Equations of Software: LISP-1.5[5]
+    -- John McCarthy page 13, GNU Guix's[6] source/binary packaging
+    transparency and Jeremiah Orians's stage0[7] bootstrap project.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.5 -O mes-0.5.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.5 since 0.4
+ ** Core
+ *** Support compilation with Mescc.
+ *** Support compilation with -nostdinc, -nostdlib using mlibc.
+ *** Support call-with-current-continuation.
+ *** Support exception handling, catch/throw.
+ *** Give sensible error message when a macro is missing.
+ ** Language
+ *** Map now supports 4 lists.
+ *** The reader supports negative hex numbers.
+ *** 24 new functions
+ access?, assoc-set! c????r, compose, list->char-set,
+ open-input-string, read-string, string-delete, with-throw-handler.
+ ** Mescc
+ *** Mescc can be used separately as a Nyacc-based C compiler backend for Guile.
+ *** Switch to Nyacc frontend, update Nyacc to 0.76.5.
+ *** Mescc now has a test suite, scaffold/t.c.
+ *** Mescc now includes a minimal C library: libc/mlib.c libc/mstart.c.
+ *** Mescc can now compile mes.c.
+ ** Noteworthy bug fixes
+ *** The build system (configure, make) has been refactored.
+ *** Support map-4.
+ *** Evaluate arguments of OR only once.
+ *** Fix assq-set!
+ *** Fix ,expand in the REPL.
+
+Greetings,
+janneke
+
+[1] https://github.com/schemeway/lalr-scm
+[2] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[3] https://www.nongnu.org/nyacc/
+[4] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[5] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[6] https://www.gnu.org/software/guix/
+[7] https://github.com/oriansj/stage0

@@ -1,0 +1,107 @@
+#! /bin/sh
+# -*-scheme-*-
+exec ${MES-bin/mes} --no-auto-compile -L ${0%/*} -L module -C module -e '(tests optargs)' -s "$0" "$@"
+!#
+
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (tests optargs)
+  #:use-module (mes optargs)
+  #:use-module (mes mes-0)
+  #:use-module (mes test))
+
+(cond-expand
+ (mes
+  (mes-use-module (mes optargs))
+  (mes-use-module (mes test)))
+ (else))
+
+(pass-if-equal "cond =>" 10
+  (cond
+   (5 => (lambda (p) (* p 2)))))
+(pass-if-equal "cond => 2" 10
+  (cond
+   (#f (display "hallo") (newline))
+   (5 => (lambda (p) (* p 2)))
+   (#t (display "wereld" (newline)))))
+(pass-if-equal "cond => last" 10
+  (cond
+   (#f (display "hallo") (newline))
+   (5 => (lambda (p) (* p 2)))))
+
+(pass-if "keyword?" (keyword? #:foo))
+(pass-if "keywords" (eq? #:foo #:foo))
+(pass-if-equal "keyword->symbol" 'foo (keyword->symbol #:foo))
+(pass-if-equal "symbol->keyword" #:foo (symbol->keyword 'foo))
+(pass-if-not "keywords" (eq? #:foo ':foo))
+
+(pass-if "optargs #:optional" ((lambda* (#:optional (x #f)) x) #t))
+(pass-if-equal "optargs #:optional default" #f ((lambda* (#:optional (x #f)) x)))
+(pass-if "optargs key" ((lambda* (#:key (foo #f)) foo) #:foo #t))
+(pass-if-equal "optargs key default" #f ((lambda* (#:key (foo #f)) foo)))
+
+(define <info> '<info>)
+(define <functions> '<functions>)
+(define <globals> '<globals>)
+(define <locals> '<locals>)
+(define <text> '<text>)
+
+(define* (make o #:key (functions '()) (globals '()) (locals '()) (text '()))
+  (list <info>
+        (cons <functions> functions)
+        (cons <globals> globals)
+        (cons <locals> locals)
+        (cons <text> text)))
+
+(define (.functions o)
+  (assq-ref (cdr o) <functions>))
+
+(define (.globals o)
+  (assq-ref (cdr o) <globals>))
+
+(define (.locals o)
+  (assq-ref (cdr o) <locals>))
+
+(define (.text o)
+  (assq-ref (cdr o) <text>))
+
+(define (info? o)
+  (and (pair? o) (eq? (car o) <info>)))
+
+(define (clone o . rest)
+  (cond ((info? o)
+         (let ((functions (.functions o))
+               (globals (.globals o))
+               (locals (.locals o))
+               (text (.text o)))
+           (let-keywords rest
+                         #f
+                         ((functions functions)
+                          (globals globals)
+                          (locals locals)
+                          (text text))
+                         (make <info> #:functions functions #:globals globals #:locals locals #:text text))))))
+
+(pass-if-equal "clone <info>"
+    (make <info> #:functions '(0))
+  (clone (make <info>) #:functions '(0)))
+
+(result 'report)

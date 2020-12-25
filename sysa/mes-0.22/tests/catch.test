@@ -1,0 +1,70 @@
+#! /bin/sh
+# -*-scheme-*-
+exec ${MES-bin/mes} --no-auto-compile -L ${0%/*} -L module -C module -e '(tests catch)' -s "$0" "$@"
+!#
+
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (tests base)
+  #:use-module (mes mes-0)
+  #:use-module (mes test))
+
+(mes-use-module (mes catch))
+(mes-use-module (mes test))
+
+(pass-if "first dummy" #t)
+(pass-if-not "second dummy" #f)
+
+(pass-if-equal "catch"
+    789
+  (catch #t
+    (lambda ()
+      (throw 'test-exception "foo!")
+      #f)
+    (lambda (key . args)
+      789)))
+
+(define (throw-22)
+  (throw 'twenty-two "hahah"))
+
+(pass-if-equal "catch 22"
+    789
+  (catch #t
+    (lambda ()
+      (throw-22)
+      #f)
+    (lambda (key . args)
+      789)))
+
+(pass-if-equal "catch feel"
+               1
+               (catch 'twenty-two
+                 (lambda _
+                   (catch 'boo
+                     (lambda ()
+                       (throw-22)
+                       11)
+                     (lambda (key . args)
+                       (exit 1))))
+                 (lambda (key . args)
+                   1)))
+
+(result 'report)

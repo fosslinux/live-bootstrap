@@ -1,0 +1,87 @@
+Subject: wip-bootstrap updated
+
+I've updated the wip-bootstrap branch[0] for Mes[1] 0.13.  It has new
+mes-boot and tcc-boot packages.  mes-boot is a bootstrap version of
+Mes; it only depends on mescc-tools and a previously compiled mes.M1
+seed.  Likewise, tcc-boot depends on a precompiled tcc-seed.  Also,
+tcc-boot uses a heavily patched version of the tcc sources.
+
+Mes 0.13 is the first release that can bootstrap a fairly functional
+tcc-boot.  This bootstrapped tcc passes 67/68 C tests that were created
+for MesCC.  It can compile a version if itself where float, long long
+and bitfield are patched out...but linking fails.  This amazing
+compiler can now be played with by doing something like
+
+--8<---------------cut here---------------start------------->8---
+git checkout wip-bootstrap
+make
+./pre-inst-env guix build tcc-boot # may take ~2h
+./pre-inst-env guix environment --ad-hoc tcc-boot
+mes-tcc --help  #duck and run
+--8<---------------cut here---------------end--------------->8---
+
+The next big effort will be to make this mes-tcc fully functional and
+integrate this with GuixSD.  To give you a taste of that,
+here's latest bug I'm currently looking at (pretty printed comments
+are only added when Guile runs MesCC, the problem is in LEA)
+
+--8<---------------cut here---------------start------------->8---
+$ diff -u ../mes-seed/mes.M1 src/mes.M1
+--- ../mes-seed/mes.M1	2018-05-01 18:49:37.312162270 +0200
++++ src/mes.M1	2018-05-01 19:49:40.774770406 +0200
+@@ -35805,12 +33091,11 @@
+ 	call32 %strcpy
+ 	add____$i8,%esp !0x8
+ 	test___%eax,%eax
+-					# strcpy(buf + strlen(buf), "/mes/"); 
+-	push___$i32 &_string_reader_read_list_266
++	push___$i32 &_string_reader_read_list_265
+ 	mov____%ebp,%eax
+-	add____$i32,%eax %0x-200
++	add____$i32,%eax %0x-800
+ 	push___%eax
+-	lea____0x32(%ebp),%eax %0x-200
++	lea____0x32(%ebp),%eax %0x-800
+ 	push___%eax
+ 	call32 %strlen
+ 	add____$i8,%esp !0x4
+--8<---------------cut here---------------end--------------->8---
+
+We also need to remove some shortcuts that we took, most notably:
+mes-seed[3].  This seed consists of 1MB of M1 code.  mes.M1 is
+produced by compiling mes.c using MesCC, the C compiler written in
+(Guile) Scheme that comes with Mes.  Although that's really terrible,
+it's probably a big step forward: currently GuixSD uses ~250MB of
+binary seed: the bootstrap binaries.
+
+The plan is to replace the mes.M1 seed with mes.M2 and compile this
+new mes.M2 seed using the brand new M2-Planet[2].  M2 is basically
+simple C with structs, without preprocessor.  This will reduce the
+seed size by a factor of 10 while making it much more readable.
+
+An excerpt of the TODO I keep in Mes' BOOTSTRAP document
+
+--8<---------------cut here---------------start------------->8---
+* TODO
+** have tcc-boot's mes-tcc compile a fully functional tcc
+*** mescc: fix unknown bug.
+*** mescc: support function-static.
+*** mescc: support/grok global static.
+*** mescc: support unsigned comparison, arithmetic.
+*** mescc: support long long (do we need long long to get long long in tcc)?
+*** mescc: support bitfield (do we need bitfield to get bitfield in tcc)?
+*** mescc: support float (do we need float to get float in tcc)?
+** have bootstrapped tcc compile gcc-4.7
+** remove or upstream patches from tcc-boot
+** prepare src/mes.c for M2-Planet[2] transpiler
+** integrate with GuixSD
+** x86_64, arm, the Hurd
+--8<---------------cut here---------------end--------------->8---
+
+Greetings,
+janneke
+
+[0] http://git.savannah.gnu.org/cgit/guix.git/log/?h=wip-bootstrap
+[1] https://gitlab.com/janneke/mes
+[2] https://github.com/oriansj/m2-planet
+[3] https://gitlab.com/janneke/mes-seed

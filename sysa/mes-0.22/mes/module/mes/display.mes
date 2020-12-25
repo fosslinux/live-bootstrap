@@ -1,0 +1,201 @@
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;; Code:
+
+(mes-use-module (mes scm))
+
+(define (srfi-1:member x lst eq)
+  (if (null? lst) #f
+      (if (eq x (car lst)) lst
+          (srfi-1:member x (cdr lst) eq))))
+
+(define (next-xassq x a)
+  (and=> (srfi-1:member x a (lambda (x e) (eq? x (cdr e))))
+         (lambda (a) (xassq x (cdr a)))))
+
+(define (next-xassq2 x a)
+  (and=> (srfi-1:member x a (lambda (x e) (eq? x (cdr e))))
+         (lambda (a)
+           (and=> (srfi-1:member x (cdr a) (lambda (x e) (eq? x (cdr e))))
+                  (lambda (a) (xassq x (cdr a)))))))
+
+(define-macro (display-cut f slot n1)
+  `(lambda (slot) (,f slot ,n1)))
+
+(define-macro (display-cut2 f slot n1 n2)
+  `(lambda (slot) (,f slot ,n1 ,n2)))
+
+(define (display x . rest)
+  (let* ((port (if (null? rest) (current-output-port) (car rest)))
+         (write? (and (pair? rest) (pair? (cdr rest)) (cadr rest))))
+
+    (define (display-char x port write?)
+      (if write?
+          (cond ((or (eq? x #\") (eq? x #\\))
+                 (write-char #\\ port)
+                 (write-char x port))
+                ((eq? x #\nul)
+                 (write-char #\\ port)
+                 (write-char #\0 port))
+                ((eq? x #\alarm)
+                 (write-char #\\ port)
+                 (write-char #\a port))
+                ((eq? x #\backspace)
+                 (write-char #\\ port)
+                 (write-char #\b port))
+                ((eq? x #\tab)
+                 (write-char #\\ port)
+                 (write-char #\t port))
+                ((eq? x #\newline)
+                 (write-char #\\ port)
+                 (write-char #\n port))
+                ((eq? x #\vtab)
+                 (write-char #\\ port)
+                 (write-char #\v port))
+                ((eq? x #\page)
+                 (write-char #\\ port)
+                 (write-char #\f port))
+                (#t (write-char x port)))
+          (write-char x port)))
+
+    (define (d x cont? sep)
+      (for-each (display-cut write-char <> port) (string->list sep))
+      (cond
+       ((eof-object? x)
+        (display "#<eof>" port))
+       ((char? x)
+        (if (not write?) (write-char x port)
+            (let ((name (and=> (assq x '((#\nul . nul)
+                                         (#\alarm . alarm)
+                                         (#\backspace . backspace)
+                                         (#\tab . tab)
+                                         (#\newline . newline)
+                                         (#\vtab . vtab)
+                                         (#\page . page)
+                                         (#\return . return)
+                                         (#\space . space)))
+                               cdr)))
+              (write-char #\# port)
+              (when (or name
+                        (and (>= (char->integer 32))
+                             (<= (char->integer 127))))
+                (write-char #\\ port))
+              (if name (display name port)
+                  (write-char x port)))))
+       ((closure? x)
+        (display "#<procedure " port)
+        (let ((name (and=> (next-xassq2 x (current-module)) car)))
+          (display name port))
+        (display " " port)
+        (display (cadr (core:cdr x)) port)
+        (display ">" port))
+       ((continuation? x)
+        (display "#<continuation " port)
+        (display (core:car x) port)
+        (display ">" port))
+       ((macro? x)
+        (display "#<macro " port)
+        (display (core:cdr x) port)
+        (display ">" port))
+       ((port? x)
+        (display "#<port " port)
+        (display (core:cdr x) port)
+        (display " ")
+        (display (core:car x) port)
+        (display ">" port))
+       ((variable? x)
+        (display "#<variable " port)
+        (write (list->string (car (core:car x))) port)
+        (display ">" port))
+       ((number? x)
+        (display (number->string x) port))
+       ((pair? x)
+        (if (not cont?) (write-char #\( port))
+        (cond ((eq? (car x) '*circular*)
+               (display "*circ* . #-1#)" port))
+              ((eq? (car x) '*closure*)
+               (display "*closure* . #-1#)" port))
+              (#t
+               (display (car x) port write?)
+               (if (pair? (cdr x)) (d (cdr x) #t " ")
+                   (if (and (cdr x) (not (null? (cdr x))))
+                       (begin
+                         (display " . " port)
+                         (display (cdr x) port write?))))))
+        (if (not cont?) (write-char #\) port)))
+       ((or (keyword? x) (special? x) (string? x) (symbol? x))
+        (if (and (string? x) write?) (write-char #\" port))
+        (if (keyword? x) (display "#:" port))
+        (for-each (display-cut2 display-char <> port write?) (string->list x))
+        (if (and (string? x) write?) (write-char #\" port)))
+       ((builtin? x)
+        (display "#<procedure " port)
+        (display (builtin-name x) port)
+        (display " " port)
+        (display
+         (case (builtin-arity x)
+           ((-1) "_")
+           ((0) "()")
+           ((1) "(_)")
+           ((2) "(_ _)")
+           ((3) "(_ _ _)"))
+         port)
+        (display ">" port))
+       ((struct? x)
+        (let* ((printer (struct-ref x 1)))
+          (if (or (builtin? printer) (closure? printer))
+              (printer x)
+              (begin
+                (display "#<" port)
+                (for-each (lambda (i)
+                            (let ((x (struct-ref x i)))
+                              (d x #f (if (= i 0) "" " "))))
+                          (iota (struct-length x)))
+                (display ")" port)))))
+       ((vector? x)
+        (display "#(" port)
+        (for-each (lambda (i)
+                    (let ((x (vector-ref x i)))
+                      (if (vector? x)
+                          (begin
+                            (display (if (= i 0) "" " ") port)
+                            (display "#(...)" port))
+                          (d x #f (if (= i 0) "" " ")))))
+                  (iota (vector-length x)))
+        (display ")" port))
+       ((broken-heart? x)
+        (display "<3" port))
+       (#t
+        (display "TODO type=") (display (cell:type-name x)) (newline)))
+      *unspecified*)
+    (d x #f "")))
+
+(define (write-char x . rest)
+  (apply write-byte (cons (char->integer x) rest)))
+
+(define (write x . rest)
+  (let ((port (if (null? rest) (current-output-port) (car rest))))
+    (display x port #t)))
+
+(define (newline . rest)
+  (apply display (cons "\n" rest)))

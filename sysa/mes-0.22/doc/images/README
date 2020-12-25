@@ -1,0 +1,13 @@
+                                                              -*- org -*-
+#+TITLE: GNU Mes images
+
+Copyright © 2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+gcc-mesboot-graph.dot
+This graph is generated from Guix wip-bootstrap, doing:
+~/src/guix/core-updates/pre-inst-env guix graph --type=bag -e '(@@ (gnu packages commencement) gcc-mesboot)' > doc/images/gcc-mesboot-graph.dot
+dot -T png doc/images/gcc-mesboot-graph.dot > doc/images/gcc-mesboot-graph.png

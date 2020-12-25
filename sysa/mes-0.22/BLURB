@@ -1,0 +1,23 @@
+
+GNU Mes is a Scheme interpreter and C compiler for bootstrapping the GNU
+system.
+
+GNU Mes was created to address the security concerns that arise from
+bootstrapping an operating system using binary blobs, which is common
+practice for all software distributions.  Mes is a Scheme interpreter
+written in a simple subset of C and a C compiler written in Scheme and
+comes with a small, bootstrappable C library.  The Mes bootstrap has
+halved the size of opaque, uninspectable binaries that were needed to
+bootstrap GNU Guix, a functional GNU/Linux distribution that focusses on
+user freedom, reproducibility and security.  That reduction was achieved
+by replacing GNU Binutils, GNU GCC and the GNU C Library with Mes.  The
+final goal is to help create a full source bootstrap for UNIX-like
+operating systems.  After three years of volunteer work funding will
+enable us to make another big step forward and reach an important new
+milestone.
+
+GNU Mes - https://gnu.org/software/mes
+GNU Guix - https://gnu.org/software/guix
+Bootstrappable Builds - https://bootstrappable.org
+Reproducible Builds - https://reproducible-builds.org
+Reduced Binary Seed bootstrap - https://guix.gnu.org/blog/2019/guix-reduces-bootstrap-seed-by-50/

@@ -18,15 +18,5 @@
 
 cd after
 
-# Prepare the directory
-../catm bin/hex2 ../bin/hex2
-../catm bin/M1 ../bin/M1
-../catm bin/M2-Planet ../bin/M2-Planet
-../catm bin/blood-elf ../bin/blood-elf
-../catm bin/get_machine ../bin/get_machine
-../catm bin/mes-m2 ../bin/mes-m2
-../catm bin/kaem ../bin/kaem
-../catm bin/catm ../catm
-
 # Finally, reinvoke kaem in this directory
 ../bin/kaem --file kaem.run

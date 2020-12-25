@@ -1,0 +1,98 @@
+#! /bin/sh
+# -*-scheme-*-
+if [ "$MES" != guile ]; then
+    MES_BOOT=boot-03.scm exec ${MES-mes} < $0
+fi
+exec ${MES-mes} --no-auto-compile -L ${0%/*} -L module -C module -e '(tests boot)' -s "$0" "$@"
+!#
+
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (tests quasiquote)
+  #:use-module (mes mes-0)
+  #:use-module (mes test))
+
+(cond-expand
+ (mes
+  (primitive-load "module/mes/test.scm"))
+ (guile-2)
+ (guile
+  (use-modules (ice-9 syncase))))
+
+(pass-if "first dummy" #t)
+(pass-if-not "second dummy" #f)
+
+(pass-if "quasiquote" `#t)
+(pass-if-not "quasiquote 2" `#f)
+(pass-if "quasiquote 3" (seq? `1 1))
+(pass-if "quasiquote 4" (sequal? '`0 '(quasiquote 0)))
+(pass-if "unquote" (let ((x 0)) (sequal? `,x 0)))
+(pass-if "unquote 1" (let ((b 1)) (sequal? `(a ,b c) '(a 1 c))))
+(pass-if "unquote 2" (sequal? `,(list 1 2 3 4) '(1 2 3 4)))
+(pass-if "unquote 3" (sequal? `(1 2 '(,(+ 1 2))) '(1 2 '(3))))
+
+(pass-if "unquote-splicing" (let ((b 1) (c '(2 3))) (sequal? `(a ,b ,@c) '(a 1 2 3))))
+(pass-if "unquote-splicing 2" (sequal? `('boo ,@'(bah baz) 1 2) '((quote boo) bah baz 1 2)))
+(pass-if "unquote-splicing 3" (sequal? `(1 ,@(list 2 3) 4) '(1 2 3 4)))
+(pass-if "unquote-splicing 4" (sequal? (let ((s-r '(2 3))) `(1 ,@s-r 4)) '(1 2 3 4)))
+
+;; From R6RS spec
+(pass-if-equal "qq 0" '(list 3 4)
+  `(list ,(+ 1 2) 4))
+(pass-if-equal "qq 1" '(list a (quote a))
+  (let ((name 'a))
+    `(list ,name ',name)) )
+(define (>= . rest)
+  (or (apply > rest)
+      (apply = rest)))
+(define (abs x)
+  (if (>= x 0) x (- x)))
+(pass-if-equal "qq 2" '(a 3 4 5 6 b)
+  `(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b))
+(pass-if-equal "qq 3" '((foo 7) . cons)
+  `((foo ,(- 10 3)) ,@(cdr '(c)) . ,(car '(cons))))
+(define (remainder x y)
+  (- x (* (quotient x y) y)))
+(define (even? x)
+  (= 0 (remainder x 2)))
+(pass-if-equal "qq 4" '#(10 5 #t #t #f #f #f 8)
+  `#(10 5 ,(even? 4) ,@(map even? '(2 3 5 7)) 8))
+;; (pass-if-equal "qq 5" '(foo foo foo)
+;;   (let ((name 'foo))
+;;     `((unquote name name name))))
+;; (pass-if-equal "qq 6" '(foo foo foo)
+;;   (let ((name '(foo)))
+;;     `((unquote-splicing name name name))))
+;; (pass-if-equal "qq 7" '`(foo (unquote (append x y) (even? 9)))
+;;   (let ((q '((append x y) (even? 9))))
+;;     ``(foo ,,@q)))
+;; (pass-if-equal "qq 8" '(foo (2 3 4 5) #f)
+;;   (let ((x '(2 3))
+;;         (y '(4 5)))
+;;     `(foo (unquote (append x y) (even? 9)))))
+;; (pass-if-equal "qq 9" '(a `(b ,(+ 1 2) ,(foo 4 d) e) f)
+;;   `(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f))
+;; (pass-if-equal "qq 10" '(a `(b ,x ,'y d) e)
+;;   (let ((name1 'x)
+;;         (name2 'y))
+;;     `(a `(b ,,name1 ,',name2 d) e)))
+
+(result 'report)

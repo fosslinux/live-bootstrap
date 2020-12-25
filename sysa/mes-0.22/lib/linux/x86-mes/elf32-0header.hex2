@@ -1,0 +1,85 @@
+### Copyright (C) 2016 Jeremiah Orians
+### Copyright (C) 2017,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+###
+### This file is part of GNU Mes.
+###
+### GNU Mes is free software; you can redistribute it and/or modify it
+### under the terms of the GNU General Public License as published by
+### the Free Software Foundation; either version 3 of the License, or (at
+### your option) any later version.
+###
+### GNU Mes is distributed in the hope that it will be useful, but
+### WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+### GNU General Public License for more details.
+###
+### You should have received a copy of the GNU General Public License
+### along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+### Commentary:
+
+# elf32-0header.hex2: Simplest 32 bit elf header in hex2.  Only a text
+# segment, no data segment, no symbol tables.
+
+# stage0's hex2 format for x86
+#    !<label>          1 byte relative
+#    $<label>          2 byte address
+#    @<label>          2 byte relative
+#    &<label>          4 byte address
+#    %<label>          4 byte relative
+#    local_<label>     function-local
+#    string_<index>    string #<index>
+
+### Code:
+
+:ELF_base
+7F 45 4C 46                    # e_ident[EI_MAG0-3] ELF's magic number
+
+01                             # e_ident[EI_CLASS] Indicating 32 bit
+01                             # e_ident[EI_DATA] Indicating little endianness
+01                             # e_ident[EI_VERSION] Indicating original elf
+
+00                             # e_ident[EI_OSABI] Set at 0 because none cares
+00                             # e_ident[EI_ABIVERSION] See above
+
+00 00 00 00 00 00 00           # e_ident[EI_PAD]
+
+02 00                          # e_type Indicating Executable
+03 00                          # e_machine Indicating 32bit x86
+01 00 00 00                    # e_version Indicating original elf
+
+&ELF_text                      # e_entry Address of the entry point
+%ELF_program_headers>ELF_base  # e_phoff Address of program header table
+00 00 00 00                    # e_shoff Address of section header table
+
+00 00 00 00                    # e_flags
+
+34 00                          # e_ehsize Indicating our 52 Byte header
+
+20 00                          # e_phentsize size of a program header table
+01 00                          # e_phnum number of entries in program table
+
+00 00                          # e_shentsize size of a section header table
+00 00                          # e_shnum number of entries in section table
+
+00 00                          # e_shstrndx index of the section names
+
+# @34
+00 00 00 00
+00 00 00 00
+00 00 00 00
+
+# @40
+:ELF_program_headers
+:ELF_program_header__text
+01 00 00 00                    # ph_type: PT-LOAD = 1
+00 00 00 00                    # ph_offset
+&ELF_base                      # ph_vaddr
+&ELF_base                      # ph_physaddr
+%ELF_end>ELF_base              # ph_filesz
+%ELF_end>ELF_base              # ph_memsz
+07 00 00 00                    # ph_flags: PF-X|PF-W|PF-R = 7
+01 00 00 00                    # ph_align
+
+# @60
+:ELF_text

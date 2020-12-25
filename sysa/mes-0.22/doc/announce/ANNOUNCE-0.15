@@ -1,0 +1,106 @@
+Subject: Mes 0.15 released
+
+I am pleased to announce the release of Mes 0.15, representing 45
+commits over 3 weeks.  The GNU toolchain is getting bootstrapped!
+
+As of 0.14, Mes+MesCC compiles a self-hosting TinyCC.  Using the 0.15
+Mes C library, this TinyCC can build the GNU tools triplet:
+binutils-2.14, gcc-2.95.3, glibc-2.2.5.
+
+This means that we can build a GNU toolchain that depends only on a
+critical 1MB ASCII M1 seed.  GuixSD currently uses a ~250MB binary
+seed to build gcc.
+
+Next targets are: upstream the Mes bootstrap to GuixSD, build a
+Gcc-4.7 and Glibc-2.23, bootstrap utilities like bison, flex, grep,
+sed..., replace GuixSD's bootstrap for x86 and reduce the 1MB ASCII M1
+seed to ~5000 LOC/~100KB of M2 source, which is a restricted subset of
+C.
+
+Packages are available from Guix's wip-bootstrap branch.
+
+* About
+
+    Mes[0] aims to help create full source bootstrapping for GuixSD[1]
+    as part of the bootstrappable builds[2] project.
+
+    It currently consists of a mutual self-hosting Scheme interpreter
+    prototype in C and a Nyacc-based C compiler in Scheme.  This C
+    prototype is being simplified to be transpiled by M2-Planet[3].
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[4], pre-R6RS portable syntax-case[5] with R7RS ellipsis, Matt
+    Wette's Nyacc[6], Guile's PEG[7] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    MesCC.
+
+    Mes+MesCC can compile an only slightly patched TinyCC[8] that is
+    self-hosting.  Using the Mes C library, this tcc can now build the
+    GNU tools triplet: binutils-2.14, gcc-2.95.3, glibc-2.2.5.
+
+    Mes is inspired by The Maxwell Equations of Software: LISP-1.5[9]
+    -- John McCarthy page 13, GNU Guix's source/binary packaging
+    transparency and Jeremiah Orians's stage0[10] ~300 byte self-hosting
+    hex assembler.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/-/archive/v0.15/mes-0.15.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.15 since 0.14
+ ** Core
+ *** Support fork, exec, waitpid.
+ *** Boot-0 loading has been refactored.
+ *** MesCC now has out of the box Geiser support.
+ ** Language
+ *** 2 new functions
+ drop, drop-right.
+ ** MesCC
+ *** MesCC and Mes Lib C can now build binutils-2.30, gcc-2.95.3 and glibc-2.2.5.
+ *** MesCC now provides dummy crti.o, crtn.o so that tcc needs not be patched for those.
+ *** Mes Lib C now supports compiling glibc-2.2.25.
+ *** Mes Lib C now supports compiling gcc-2.95.3
+ *** Mes Lib C now supports compiling binutils-2.30.
+ *** Mes Lib C now supports compiling m4-1.4.
+ *** Mes Lib C has been split into archs: gcc, x86-mes-gcc and x86-mes.
+ *** MesCC now has a posixy command line interface.
+ **** 70 new functions
+ abs, access, alarm, alloca, atexit, atol, bcmp, bcopy, brk, bzero,
+ chmod, clearerr, close, dup, dup2, execve, fabs, fcntl, fdgets, feof,
+ fgets, fileno, fork, freopen, fscanf, fstat, fsync, getcwd, getgid,
+ getpid, getrusage, getuid, index, ioctl, isalnum, isalpha, isascii,
+ iscntrl, isprint, ispunct, kill, link, lseek, lstat, mkdir, mktemp,
+ nanosleep, open, perror, pipe, raise, read, rename, rindex, rmdir,
+ sbrk, sbrk, setitimer, signal, sleep, stat, strcspn, strdup, strerror,
+ strncat, strpbrk, strspn, unlink, unsetenv, waitpid.
+ **** 23 new stubs
+ abort, atof, bsearch, bsearch, chown, ctime, fpurge, freadahead,
+ frexp, getpwnam, gmtime, mbstowcs, pclose, popen, rewind, setbuf,
+ sigsetmask, strftime, sys_siglist, system, times, umask, utime.
+ **** 10 new C tests
+ 51-strcmp.c, 70-printf.c, 87-sscanf.c, 90-strpbrk.c, 91-fseek.c,
+ 92-stat.c, 93-fread-fwrite.c, 94-unsetenv.c, 95-signal.c, 96-strto.c.
+
+
+Greetings,
+janneke
+
+[0] https://gitlab.com/janneke/mes
+[1] https://www.gnu.org/software/guix
+[2] http://bootstrappable.org
+[3] https://github.com/oriansj/m2-planet
+[4] https://github.com/schemeway/lalr-scm
+[5] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[6] https://www.nongnu.org/nyacc/
+[7] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[8] https://gitlab.com/janneke/tinycc
+[9] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[10] https://github.com/oriansj/stage0

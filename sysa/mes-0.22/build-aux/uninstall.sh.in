@@ -1,0 +1,96 @@
+#! /bin/sh
+
+# GNU Mes --- Maxwell Equations of Software
+# Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+#
+# This file is part of GNU Mes.
+#
+# GNU Mes is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# GNU Mes is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+#set -e
+
+. ./config.sh
+
+v=
+_v=
+if test "$V" = 2; then
+    set -x
+fi
+if test "$V" -gt 0; then
+    v=v
+    _v=-v
+fi
+
+set -u
+
+rm ${DESTDIR}${bindir}/mes
+rm ${DESTDIR}${bindir}/ar
+rm ${DESTDIR}${bindir}/mescc
+rm ${DESTDIR}${bindir}/mescc.scm
+rm ${DESTDIR}${bindir}/diff.scm
+rmdir ${DESTDIR}${bindir} || :
+
+rm -r ${DESTDIR}${libdir}/$mes_cpu-mes
+rm ${DESTDIR}${libdir}/libc-mini.a
+rm ${DESTDIR}${libdir}/libmes.a
+if cmp gcc-lib/libc.a ${DESTDIR}${libdir}/libc.a; then
+    rm ${DESTDIR}${libdir}/libc.a
+fi
+if cmp gcc-lib/libtcc1.a ${DESTDIR}${libdir}/libtcc1.a; then
+    rm ${DESTDIR}${libdir}/libtcc1.a
+fi
+rm ${DESTDIR}${libdir}/libc+tcc.a
+rm ${DESTDIR}${libdir}/libc+gnu.a
+
+rm -r ${DESTDIR}${includedir}/mes
+rm $(grep -lr _MES_ ${DESTDIR}${includedir})
+rmdir ${DESTDIR}${includedir}/linux/x86
+rmdir ${DESTDIR}${includedir}/linux/x86_64
+rmdir ${DESTDIR}${includedir}/linux
+rmdir -p ${DESTDIR}${includedir}/sys
+
+for i in\
+    AUTHORS\
+    BOOTSTRAP\
+    COPYING\
+    ChangeLog\
+    HACKING\
+    INSTALL\
+    NEWS\
+    README\
+    ;do
+    rm ${DESTDIR}${docdir}/$i || :;
+done
+
+rm -r ${DESTDIR}${pkgdatadir}
+rm -r ${DESTDIR}${guile_site_ccache_dir}/mes
+rm -r ${DESTDIR}${guile_site_ccache_dir}/mescc
+
+rm -r ${DESTDIR}${guile_site_dir}/mes
+rm ${DESTDIR}${guile_site_dir}/mescc.scm
+rm -r ${DESTDIR}${guile_site_dir}/mescc
+
+rm ${DESTDIR}${infodir}/dir
+rm ${DESTDIR}${infodir}/mes.info*
+rm ${DESTDIR}${infodir}/images/gcc-mesboot*
+rm ${DESTDIR}${infodir}/images/README
+rm ${DESTDIR}${mandir}/man1/mes.1
+rm ${DESTDIR}${mandir}/man1/mescc.1
+
+rmdir -p ${DESTDIR}${docdir}
+rmdir -p ${DESTDIR}${infodir}/images
+rmdir -p ${DESTDIR}${guile_site_dir}
+rmdir -p ${DESTDIR}${guile_site_ccache_dir}
+rmdir -p ${DESTDIR}${mandir}/man1
+true

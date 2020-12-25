@@ -1,0 +1,162 @@
+
+Subject: GNU Mes 0.22 released
+
+<#secure method=pgpmime mode=sign>
+
+We are pleased to announce the release of GNU Mes 0.22, representing
+57 commits over 8 weeks.
+
+Mes can now be built reproducibly by mes+mescc or guile+mescc accross
+distributions such as GNU Guix, Debian GNU/Linux and NixOS.  Also, many
+build issues were fixed.  A big thank you to reproducible-builds.org,
+Vagrant Cascadian, Jelle van der Waa, Hannes Mehnert and David Terry!
+
+Mes now runs on the Hurd--mescc does not run yet, many system calls are
+missing, especially fork/exec--and initial scaffolding support for
+creating FreeBSD binaries was added.
+
+This release better supports bringing the Scheme-only bootstrap to Guix:
+it no longer requires an update to the Guix bootstrap seed.
+
+The Scheme-only bootstrap means that Mes can now be built with Gash and
+the experimental Gash Core Utils instead of using GNU Awk, GNU Bash, the
+GNU Core Utilities, GNU Grep, GNU Gzip, GNU Make, GNU Sed, and GNU Tar.
+Also, the Mes C Library now supports bootstrapping those.
+
+We are excited that the Nlnet Foundation[12] is now sponsoring this
+work!
+
+Next targets:
+
+ - Introduce the Reduced Binaries Seed bootstrap to NixOS (Debian,
+   Arch, Gentoo, ...?)
+ - Merge the Scheme-only bootstrap, the wip-bootstrap branch (using
+   Guile, Gash and Gash Core Utils to remove awk, bash, core utilities,
+   grep, gzip, make, sed, tar, etc. from the Guix bootstrap binaries)
+   into Guix core-updates.
+ - ARM support
+ - Full Source Bootstrap: compile Mes.c using M2-Planet
+ - Add full Guile module support
+ - Reduced Binary Seed bootstrap for ARM
+ - Support mescc on the Hurd (fork/exec, ...)
+
+Packages are available in Guix master; the cross-distro reproducible
+is built using
+
+    guix build --system=i686-linux mes-rb5
+
+* About
+
+  GNU Mes[0] is a Scheme interpreter and C compiler for bootstrapping the GNU
+  System.  Since version 0.22 it has again helped to halve the size of
+  opaque, uninspectable binary seeds that are currently being used in the
+  Reduced Binary Seed bootstrap[1] of GNU Guix[2].  The final goal is to help
+  create a full source bootstrap as part of the bootstrappable builds[3]
+  effort for UNIX-like operating systems.
+
+  The Scheme interpreter is written in ~5,000 LOC of simple C, and the C
+  compiler written in Scheme and these are mutual self-hosting.  This
+  mes.c is being simplified[4] to be transpiled by M2-Planet[5].
+
+  Mes has a Garbage Collector, a library of loadable Scheme modules--
+  notably Dominique Boucher's LALR[6], Pre-R6RS [portable syntax-case[7]
+  with R7RS ellipsis, Matt Wette's Nyacc[8] --and test suite just enough
+  to support a REPL and a C99 compiler: MesCC.
+
+  Mes+MesCC can compile an only lightly patched TinyCC[9] that is
+  self-hosting.  Using this tcc and the Mes C library we now have a
+  Reduced Binary Seed bootstrap for the gnutools triplet: glibc-2.2.5,
+  binutils-2.20.1, gcc-2.95.3.  This is enough to bootstrap Guix for
+  i686-linux and x86_64-linux.
+
+  Mes is inspired by The Maxwell Equations of Software: LISP-1.5[10] -- John
+  McCarthy page 13, GNU Guix's source/binary packaging transparency and
+  Jeremiah Orians's stage0[11] ~500 byte self-hosting hex assembler.
+
+* Download
+
+  git clone git://git.savannah.gnu.org/mes.git
+
+  Here are the compressed sources and a GPG detached signature[*]:
+    https://ftp.gnu.org/gnu/mes/mes-0.22.tar.gz
+    https://ftp.gnu.org/gnu/mes/mes-0.22.tar.gz.sig
+
+  Use a mirror for higher download bandwidth:
+    https://ftpmirror.gnu.org/mes/mes-0.22.tar.gz
+    https://ftpmirror.gnu.org/mes/mes-0.22.tar.gz.sig
+
+  Here are the MD5 and SHA1 checksums:
+
+  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  mes-0.22.tar.gz
+  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  mes-0.22.tar.gz
+
+  [*] Use a .sig file to verify that the corresponding file (without the
+  .sig suffix) is intact.  First, be sure to download both the .sig file
+  and the corresponding tarball.  Then, run a command like this:
+
+    gpg --verify mes-0.22.tar.gz.sig
+
+  If that command fails because you don't have the required public key,
+  then run this command to import it:
+
+    gpg --keyserver keys.gnupg.net --recv-keys 1A858392E331EAFDB8C27FFBF3C1A0D9C1D65273
+
+  and rerun the 'gpg --verify' command.
+
+* Get informed, get involved
+
+  See https://bootstrappable.org
+  Join #bootstrappable on irc.freenode.net.
+
+* Changes in 0.22 since 0.21
+ ** Core
+ *** Mes now builds reproducibly with MesCC, cross distribution
+ Using --with-bootstrap on x86, a bin/mes-mescc is compiled with
+ mes+mescc, that shall have sha256sum
+
+     9e0bcb1633c58e7bc415f6ea27cee7951d6b0658e13cdc147e992b31a14625fb  bin/mes-mescc
+
+ This has been verified on GNU Guix, Debian GNU/Linux and NixOS.
+ *** Mes now builds reproducibly with Guile+MesCC vs Mes+MesCC.
+ *** Mes now builds reproducibly with Tiny CC-built MesCC.
+ *** configure now respects the user's CFLAGS, CPPFLAGS and LDFLAGS.
+ *** Mes now supports mescc-tools 0.5.2 next to 0.6.1.
+ This allows introducing the Scheme-only bootstrap without updating or
+ adding new bootstrap binary seeds into GNU Guix.
+ *** Mes now runs when configured --with-courage on the Hurd:
+     GNU debian 0.9 GNU-Mach 1.8+git20170609-486/Hurd-0.9 i686-AT386 GNU
+ Note that mescc does not run; fork and exec are not yet implemented.
+ *** Mes now configures --with-courage on x86-FreeBSD 12.1
+ The initial ELF scaffold tests: exit-42.S, 0exit-42.hex2,
+ body-exit-42.hex2, hello-mes.S, 0hello-mes.hex2, body-hello-mes.hex2
+ pass.
+ *** configure now has a --with-bootstrap option.
+ This adds the reproducible bootstrap build of bin/mes-mescc, using
+ mes+mescc.
+ *** configure prefers $CC over gcc; tcc over gcc, gcc over cc.
+ *** Mes now prints an error when attempting to read a file that does not exist.
+ *** Mes no longer depends on GIT.
+ ** Noteworthy bug fixes
+ *** Several annoying build problems were fixed, for non-Guix systems.
+ *** A bug with buffered-read was fixed.
+ This means that bash-2.05 can now build glibc-2.2.5; notably it now
+ successfully executes make-syscall.sh.
+ *** A bug with execlp, execvp for file names containing a slash was fixed.
+ This should allow make-3.80 running scripts that have "#! ./move-if-change".
+
+Greetings,
+janneke and Danny.
+
+[0] https://www.gnu.org/software/mes
+[1] https://guix.gnu.org/blog/2019/guix-reduces-bootstrap-seed-by-50/
+[2] https://www.gnu.org/software/guix
+[3] https://bootstrappable.org
+[4] https://github.com/oriansj/mes-m2
+[5] https://github.com/oriansj/m2-planet
+[6] https://github.com/schemeway/lalr-scm
+[7] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[8] https://www.nongnu.org/nyacc
+[9] https://gitlab.com/janneke/tinycc
+[10] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[11] https://savannah.nongnu.org/projects/stage0
+[12] https://nlnet.nl/project/GNUMes

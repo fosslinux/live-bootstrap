@@ -1,0 +1,63 @@
+#! /bin/sh
+# -*-scheme-*-
+exec ${MES-bin/mes} --no-auto-compile -L ${0%/*} -L module -C module -e '(tests let-syntax)' -s "$0" "$@"
+!#
+
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (tests let-syntax)
+  #:use-module (mes mes-0)
+  #:use-module (mes test))
+
+(mes-use-module (mes syntax))
+(mes-use-module (mes test))
+
+(pass-if "first dummy" #t)
+(pass-if-not "second dummy" #f)
+
+(pass-if "let-syntax"
+  (seq?
+   (let-syntax ((xwhen (syntax-rules ()
+                        ((xwhen condition exp ...)
+                         (if (not condition)
+                             (begin exp ...))))))
+     (xwhen #f 3))
+   3))
+
+(pass-if "let-syntax no-leak"
+  (seq?
+   (when #f 3)
+   *unspecified*))
+
+(pass-if "let-syntax"
+  (sequal?
+   (let-syntax ((when (syntax-rules ()
+                        ((when condition exp ...)
+                         (if (not condition)
+                             (begin exp ...)))))
+                (unless (syntax-rules ()
+                        ((when condition exp ...)
+                         (if condition
+                             (begin exp ...))))))
+     (list (when #f 0) (unless #t 1)))
+   '(0 1)))
+
+(result 'report)

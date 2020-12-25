@@ -1,0 +1,82 @@
+Subject: Mes 0.6 released
+
+I am pleased to announce the release of Mes 0.6, representing 32
+commits over 24 days.  Mescc now works with vanilla Nyacc 0.78.3
+(thanks Matt!), Nyacc has been unbundled and Mescc compiles 33/55
+of tinycc test2 tests.
+
+* About
+
+    Mes aims to create full source bootstrapping for GuixSD: an
+    entirely source-based bootstrap path.  The target is to [have
+    GuixSD] boostrap from a minimal, easily inspectable binary --that
+    should be readable as source-- into something close to R6RS
+    Scheme.
+
+    It currently consists of a mutual self-hosting [close to Guile-]
+    Scheme interpreter prototype in C and a Nyacc-based C compiler in
+    [Guile] Scheme.
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[1], Pre-R6RS portable syntax-case[2] with R7RS ellipsis, Matt
+    Wette's Nyacc[3] Guile's PEG[4] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    (mescc.mes) that can produce the second initial ELF binary from
+    binary from mes.c, in only about 2h30'.
+
+    Mes was inspired by The Maxwell Equations of Software: LISP-1.5[5]
+    -- John McCarthy page 13, GNU Guix's[6] source/binary packaging
+    transparency and Jeremiah Orians's stage0[7] bootstrap project.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.6 -O mes-0.6.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.6 since 0.5
+ ** Core
+ *** configure, build now supports x86 and development for arm with-courage.
+ ** Language
+ *** Nyacc has been unbundled and is now a dependency.
+ *** Mes now supports case-lambda.
+ *** Mes reader now supports abbreviated form for return character #\cr.
+ *** 1 new function
+ string-index.
+ ** Mescc
+ *** Mescc can be used on regular C sources, like tinycc's tests/test2 suite.
+ *** make check passes 33/55 of tinycc's test suite etest/test2 tests.
+ *** Mescc now recognizes `short' as a type.
+ *** Mescc now supports sizeof (<identifier>), sizeof(<expression>).
+ *** Mescc now respects enum field initializers and supports enum variables.
+ *** Mescc now supports binary constants .
+ *** Mescc now supports assignments from ==, != boolean expressions .
+ *** Mescc now supports &, ^.
+ *** Mescc now supports struct pointers.
+ *** Mescc now supports struct definition with immediatete variable declaration.
+ *** Mescc now supports calling (returning correctly from) void functions.
+ *** Mescc now handles case statements breaks without compound correctly.
+ *** Mescc now has better [int/pointer] array support.
+ *** Mescc now has better support for simple (non-array-)structs.
+ *** Mescc now supports multiple declarations in one statement like: int a,b;
+ **** 2 new mlibc functions
+ printf, strcpy.
+ ** Noteworthy bug fixes
+ *** Installed mes and mes.repl now also run outside of source tree again.
+
+Greetings,
+janneke
+
+[1] https://github.com/schemeway/lalr-scm
+[2] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[3] https://www.nongnu.org/nyacc/
+[4] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[5] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[6] https://www.gnu.org/software/guix/
+[7] https://github.com/oriansj/stage0

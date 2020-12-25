@@ -1,0 +1,148 @@
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2017,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;; srfi-1.mes is the minimal srfi-1 needed to run mescc.
+
+;;; Code:
+
+(define (find pred lst)
+  (let loop ((lst lst))
+    (if (null? lst) #f
+        (if (pred (car lst)) (car lst)
+            (loop (cdr lst))))))
+
+(define (filter pred lst)
+  (let loop ((lst lst))
+    (if (null? lst) '()
+        (if (pred (car lst))
+            (cons (car lst) (loop (cdr lst)))
+            (loop (cdr lst))))))
+
+(define (append-map f lst . rest)
+  (apply append (apply map f (cons lst rest))))
+
+(define (filter-map f h . t)
+  (if (null? h) '()
+      (if (null? t)
+          (let ((r (f (car h))))
+            (if r (cons r (filter-map f (cdr h)))
+                (filter-map f (cdr h))))
+          (if (null? (cdr t))
+              (let ((r (f (car h) (caar t))))
+                (if r (cons r (filter-map f (cdr h) (cdar t)))
+                    (filter-map f (cdr h) (cdar t))))
+              (error 'unsupported (cons* "filter-map 3:" f h t))))))
+
+(define (fold proc init lst1 . rest)
+  (if (null? rest)
+      (let loop ((lst1 lst1) (result init))
+        (if (null? lst1) result
+            (loop (cdr lst1) (proc (car lst1) result))))
+      (if (null? (cdr rest))
+          (let loop ((lst1 lst1) (lst2 (car rest)) (result init))
+            (if (or (null? lst1)
+                    (null? lst2)) result
+                    (loop (cdr lst1) (cdr lst2) (proc (car lst1) (car lst2) result))))
+          (let loop ((lst1 lst1) (lst2 (car rest)) (lst3 (cadr rest)) (result init))
+            (if (or (null? lst1)
+                    (null? lst2)
+                    (null? lst3)) result
+                    (loop (cdr lst1) (cdr lst2) (cdr lst3) (proc (car lst1) (car lst2) (car lst3) result))))
+          (error "FOLD-4-NOT-SUPPORTED"))))
+
+(define (fold-right proc init lst1 . rest)
+  (if (null? rest)
+      (let loop ((lst lst1))
+        (if (null? lst) init
+            (proc (car lst) (loop (cdr lst)))))
+      (if (null? (cdr rest))
+          (let loop ((lst1 lst1) (lst2 (car rest)))
+            (if (or (null? lst1)
+                    (null? lst2)) init
+                    (proc (car lst1) (car lst2) (loop (cdr lst1) (cdr lst2)))))
+          (let loop ((lst1 lst1) (lst2 (car rest)) (lst3 (cadr rest)))
+            (if (or (null? lst1)
+                    (null? lst2)
+                    (null? lst3)) init
+                    (proc (car lst1) (car lst2) (car lst3) (loop (cdr lst1) (cdr lst2) (cdr lst3)))))
+          (error "FOLD-RIGHT-4-NOT-SUPPORTED"))))
+
+(define (unfold p f g seed . rest)
+  (let ((tail-gen (if (null? rest) (const '())
+                      (car rest))))
+    (define (reverse+tail lst seed)
+            (let loop ((lst lst)
+                       (result (tail-gen seed)))
+              (if (null? lst) result
+                  (loop (cdr lst)
+                        (cons (car lst) result)))))
+    (let loop ((seed seed) (result '()))
+      (if (p seed) (reverse+tail result seed)
+          (loop (g seed)
+                (cons (f seed) result))))))
+
+(define (remove pred lst) (filter (lambda (x) (not (pred x))) lst))
+
+(define (reverse! lst . term)
+  (if (null? term) (core:reverse! lst term)
+      (core:reverse! lst (car term))))
+
+(define (srfi-1:member x lst eq)
+  (if (null? lst) #f
+      (if (eq x (car lst)) lst
+          (srfi-1:member x (cdr lst) eq))))
+
+(define mes:member member)
+
+(define (member x lst . rest)
+  (if (null? rest) (mes:member x lst)
+      (srfi-1:member x lst (car rest))))
+
+(define mes:iota iota)
+
+(define (srfi-1:iota n start step)
+  (if (<= n 0) '()
+      (cons start (srfi-1:iota (- n 1) (+ start step) step))))
+
+(define (iota n . rest)
+  (if (null? rest) (mes:iota n)
+      (let ((start (car rest))
+            (step (if (null? (cdr rest)) 1
+                      (cadr rest))))
+        (srfi-1:iota n start step))))
+
+(define last (compose car last-pair))
+
+(define (delete-duplicates lst . equal)
+  (let ((equal (and (pair? equal) (car equal))))
+    (let loop ((lst lst))
+      (if (null? lst) '()
+          (if (if equal (member (car lst) (cdr lst) equal)
+                  (member (car lst) (cdr lst)))
+              (loop (cdr lst))
+                (cons (car lst) (loop (cdr lst))))))))
+
+(include-from-path "srfi/srfi-1.scm")
+
+(define (take-while pred lst)
+  (if (or (null? lst) (not (pred (car lst)))) '()
+          (cons (car lst) (take-while pred (cdr lst)))))

@@ -1,0 +1,159 @@
+#! /bin/sh
+# -*-scheme-*-
+if [ "$MES" != guile ]; then
+    MES_BOOT=boot-03.scm exec ${MES-mes} < $0
+fi
+exec ${MES-mes} --no-auto-compile -L ${0%/*} -L module -C module -e '(tests boot)' -s "$0" "$@"
+!#
+
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (tests scm)
+  #:use-module (mes mes-0)
+  #:use-module (mes test))
+
+(cond-expand
+ (mes
+  (primitive-load "module/mes/test.scm"))
+ (guile-2)
+ (guile
+  (use-modules (ice-9 syncase))))
+
+(pass-if "first dummy" #t)
+(pass-if-not "second dummy" #f)
+
+(pass-if "when" (seq? (when #t 'true) 'true))
+(pass-if "when 2" (seq? (when #f 'true) *unspecified*))
+
+(pass-if "map" (sequal? (map identity '(1 2 3 4)) '(1 2 3 4)))
+(pass-if "map 2 " (sequal? (map (lambda (i a) (cons i a)) '(1 2 3 4) '(a b c d))
+                           '((1 . a) (2 . b) (3 . c) (4 . d))))
+
+(pass-if "for-each" (sequal? (let ((acc '())) (for-each (lambda (x) (set! acc (cons x acc))) '(1 2 3 4)) acc) '(4 3 2 1)))
+
+(define xxxa 0)
+(pass-if "set! " (seq? (begin (set! xxxa 1) xxxa) 1))
+(pass-if "set! 2" (seq? (let ((a 0)) (set! a 1) a) 1))
+
+
+(pass-if "list-ref" (seq? (list-ref '(0 1 2) 1) 1))
+
+(pass-if "do" (sequal? (let ((acc '())) (do ((i 0 (+ i 1))) ((>= i 3)) (set! acc (cons i acc))) acc) '(2 1 0)))
+
+(pass-if ">=" (>= 3 2 1))
+
+(pass-if-equal "string-length"
+    0
+    (string-length ""))
+(pass-if-equal "string-length 2"
+    3
+  (string-length (string-append "a" "b" "c")))
+(pass-if-equal "string->list"
+    '()
+    (string->list ""))
+(pass-if-equal "string->list 2"
+    '(#\a #\b #\c #\newline)
+  (string->list "abc\n"))
+
+(pass-if "string-append" (sequal? (string-append "a" "b" "c") "abc"))
+(pass-if "substring" (sequal? (substring "hello world" 6) "world"))
+(pass-if "substring 2" (sequal? (substring "hello world" 4 7) "o w"))
+(pass-if "string-ref" (seq? (string-ref "hello world" 4) #\o))
+(pass-if "eq?" (not (eq? (string-append "a" "b" "c") "abc")))
+(pass-if "char" (seq? (char->integer #\A) 65))
+(pass-if "char 2" (seq? (char->integer #\101) (char->integer #\A)))
+(pass-if "char 3" (seq? (integer->char 10) #\newline))
+(pass-if "char 4" (seq? (integer->char 32) #\space))
+(pass-if "string " (sequal? (string #\a #\space #\s #\t #\r #\i #\n #\g) "a string"))
+(pass-if "length" (seq? (length '()) 0))
+(pass-if "length 2" (seq? (length '(a b c)) 3))
+(pass-if "make-list" (seq? (make-list 0) '()))
+(pass-if "make-list 1" (sequal? (make-list 1 0) '(0)))
+(pass-if "memq" (sequal? (memq 'a '(a b c)) '(a b c)))
+(pass-if "memq" (sequal? (memq 'b '(a b c)) '(b c)))
+(pass-if "memq" (seq? (memq 'd '(a b c)) #f))
+(pass-if "member" (sequal? (member '(a) '((a) b c)) '((a) b c)))
+(pass-if "assq-ref" (seq? (assq-ref '((b . 1) (c . 2)) 'c) 2))
+(pass-if "assq-ref 2" (seq? (assq-ref '((b . 1) (c . 2)) 'a) #f))
+(pass-if "assq-set!" (sequal? (assq-set! '((b . 1)) 'a 0) '((a . 0) (b . 1))))
+(pass-if "assq-set! 2" (sequal? (assq-set! '((a . 0)) 'a 1) '((a . 1))))
+(pass-if "assoc" (sequal? (assoc '(a . 0) '((a . 0) (b . 1) ((a . 0) aa))) '((a . 0) aa)))
+(pass-if-equal "assoc-set!" '((a . 0) (b . 2)) (assoc-set! '((a . 0) (b . 1)) 'b 2))
+(pass-if-equal "assoc-set! new" '((b . 2) (a . 0)) (assoc-set! '((a . 0)) 'b 2))
+
+(pass-if "builtin? car" (builtin? car))
+(pass-if "builtin? cdr" (builtin? cdr))
+(pass-if "builtin? cons" (builtin? cons))
+(pass-if "builtin? eq?" (builtin? eq?))
+(pass-if "builtin? if" (builtin? eq?))
+(when (not guile?)
+  (pass-if "builtin? eval" (not (builtin? not))))
+(pass-if "procedure?" (procedure? builtin?))
+(pass-if "procedure?" (procedure? procedure?))
+(pass-if "gensym"
+  (symbol? (gensym)))
+(pass-if "gensym 1"
+  (not (eq? (gensym) (gensym))))
+(pass-if "gensym 2"
+  (not (eq? (gensym) (gensym))))
+
+(pass-if "last-pair " (sequal? (last-pair '(1 2 3 4)) '(4)))
+(pass-if "last-pair 2" (seq? (last-pair '()) '()))
+;; (pass-if "circular-list? "
+;;   (seq?
+;;    (let ((x (list 1 2 3 4)))
+;;      (set-cdr! (last-pair x) (cddr x))
+;;      (circular-list? x))
+;;    #t))
+
+(pass-if-equal "iota"
+    '(0 1 2) (iota 3))
+
+(pass-if-equal "iota 0"
+    '() (iota 0))
+
+(pass-if-equal "iota -1"
+               '() (iota -1))
+
+(pass-if "cond-expand" (sequal? (cond-expand (foobar #f) (mes (display ": pass: *YAY*") 'mes) (guile (display ": pass: *GUILE*") 'mes)) 'mes))
+
+(pass-if "apply identity" (seq? (apply identity '(0)) 0))
+(pass-if "apply identity 2" (sequal? (apply identity '((0 1))) '(0 1)))
+(pass-if "apply append" (sequal? (apply append '((1 2) (3 4))) '(1 2 3 4)))
+
+(pass-if "char-alphabetic?" (seq? (char-alphabetic? #\a) #t))
+(pass-if "char-alphabetic? 2" (seq? (char-alphabetic? #\[) #f))
+
+(pass-if-equal "compose" 1 ((compose car cdr car) '((0 1 2))))
+
+(if (not guile?)
+    (pass-if "make-vector" (sequal? (make-vector 3) #(*unspecified* *unspecified* *unspecified*))))
+
+(pass-if "make-vector 2" (sequal? (make-vector 3 1) #(1 1 1)))
+
+(pass-if-equal "binary" 5 #b101)
+(pass-if-equal "octal" 65 #o101)
+(pass-if-equal "hex" 257 #x101)
+
+(pass-if-equal "negate" #t ((negate eq?) 0 1))
+(pass-if-equal "const" 42 ((const 42) 1 2 3 4))
+
+(result 'report)

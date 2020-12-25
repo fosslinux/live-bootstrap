@@ -1,0 +1,127 @@
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2017,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;; Implement core functionality that depends on implementation
+;;; specifics of Mes cell types.
+
+;;; Code:
+
+(define cell:type-alist
+  (list (cons <cell:bytes> (quote <cell:bytes>))
+        (cons <cell:char> (quote <cell:char>))
+        (cons <cell:closure> (quote <cell:closure>))
+        (cons <cell:continuation> (quote <cell:continuation>))
+        (cons <cell:keyword> (quote <cell:keyword>))
+        (cons <cell:macro> (quote <cell:macro>))
+        (cons <cell:number> (quote <cell:number>))
+        (cons <cell:pair> (quote <cell:pair>))
+        (cons <cell:ref> (quote <cell:ref>))
+        (cons <cell:special> (quote <cell:special>))
+        (cons <cell:string> (quote <cell:string>))
+        (cons <cell:struct> (quote <cell:struct>))
+        (cons <cell:symbol> (quote <cell:symbol>))
+        (cons <cell:values> (quote <cell:values>))
+        (cons <cell:variable> (quote <cell:variable>))
+        (cons <cell:vector> (quote <cell:vector>))
+        (cons <cell:broken-heart> (quote <cell:broken-heart>))))
+
+(define (cell:type-name x)
+  (cond ((assq (core:type x) cell:type-alist) => cdr)))
+
+(define (bytes? x)
+  (eq? (core:type x) <cell:bytes>))
+
+(define (char? x)
+  (and (eq? (core:type x) <cell:char>)
+       (> (char->integer x) -1)))
+
+(define (eof-object? x)
+  (and (eq? (core:type x) <cell:char>)
+       (= (char->integer x) -1)))
+
+(define (closure? x)
+  (eq? (core:type x) <cell:closure>))
+
+(define (continuation? x)
+  (eq? (core:type x) <cell:continuation>))
+
+(define (keyword? x)
+  (eq? (core:type x) <cell:keyword>))
+
+(define (macro? x)
+  (eq? (core:type x) <cell:macro>))
+
+(define (number? x)
+  (eq? (core:type x) <cell:number>))
+
+(define (port? x)
+  (eq? (core:type x) <cell:port>))
+
+(define (special? x)
+  (eq? (core:type x) <cell:special>))
+
+(define (string? x)
+  (eq? (core:type x) <cell:string>))
+
+(define (struct? x)
+  (eq? (core:type x) <cell:struct>))
+
+(define (symbol? x)
+  (eq? (core:type x) <cell:symbol>))
+
+(define (values? x)
+  (eq? (core:type x) <cell:values>))
+
+(define (variable? x)
+  (eq? (core:type x) <cell:variable>))
+
+(define (variable-global? x)
+  (core:cdr x))
+
+(define (vector? x)
+  (eq? (core:type x) <cell:vector>))
+
+(define (broken-heart? x)
+  (eq? (core:type x) <cell:broken-heart>))
+
+(define (atom? x)
+  (not (pair? x)))
+
+(define (boolean? x)
+  (or (eq? x #f) (eq? x #t)))
+
+
+;;; core: accessors
+(define (string . lst)
+  (list->string lst))
+
+(define (keyword->list s)
+  (string->list (keyword->string s)))
+
+(define (symbol->list s)
+  (string->list (symbol->string s)))
+
+(define (integer->char x)
+  (core:make-cell <cell:char> 0 x))
+
+(define (char->integer x)
+  (core:make-cell <cell:number> 0 x))

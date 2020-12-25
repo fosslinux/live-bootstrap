@@ -1,0 +1,103 @@
+Subject: Mes 0.4 released
+
+I am pleased to announce the release of Mes 0.4, representing 115
+commits over barely two weeks.  It now runs Nyacc and PEG and has much
+reduced core.
+
+* About
+
+    Mes aims to create an entirely source-based bootstrapping path.  The
+    target is to [have GuixSD] boostrap from a minimal, easily inspectable
+    binary --that should be readable as source-- into something close to
+    R6RS Scheme.
+
+    As bootstrapping is presumably easiest and probably most fun with
+    Scheme, the next step for Mes is mescc: a C compiler/linker to
+    boostrap into GNU Gcc and GNU Guile, possibly via Tiny-CC.
+
+    It currently has an interpreter written in C (mes) with Garbage
+    Collector (Jam Scraper), a library of loadable Scheme modules--
+    notably Dominique Boucher's LALR[1], Pre-R6RS portable
+    syntax-case[2] with R7RS ellipsis, Nyacc[3] and Guile's PEG[4]
+    --and test suite just barely enough to support a simple REPL
+    (repl.mes) and a proof-of-concept C-compiler (mescc.mes) that
+    produces an elf from the simplest of C files.
+
+    Mes is inspired by The Maxwell Equations of Software: LISP-1.5[5]
+    -- John McCarthy page 13
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.4 -O mes-0.4.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.4 since 0.3
+ ** Core
+ *** Improved performance.
+ Macros are now memoized; after expansion and before eval'ing the
+ expanded form, their input s-expression is replaced by the expansion.
+ This yields a nice performance improvement which finally allowed
+ moving all non-essential bits from the C-core into Scheme...including
+ the reader.  The Scheme reader is much, much slower than the previous
+ C version, making Mes--again-- feel slow.  Think of that as a feature.
+ *** Bootstrap with minimal reader in C.
+ The C-reader needs only support reading of words and lists
+ (s-expressions), line-comments to read the initial Scheme reader which
+ then takes over and handles reading of quoting, characters, strings,
+ block-comments.
+ *** Reduced size.
+ Total C size: ~1500LOC.  The main Mes evaluator is now ~1000LOC
+ including cell creation and garbage collector.  This code is able to
+ execute a Scheme program that has been loaded into memory.  Another
+ ~500LOC is spent to load a minimal Scheme program and to dump it, to
+ provide a small posix interface, math functions and do some error
+ reporting.
+ *** Programs can be dumped and loaded using --dump and --load.
+ ** Language
+ *** Minimal syntactic exception support for Nyacc.
+ *** Minimal syntactic fluids support for Nyacc.
+ *** Keywords are now supported.
+ *** Cond now supports =>.
+ *** Guile's optargs: lambda* and define* are now supported.
+ *** #;-comments are now supported.
+ *** Non-nested #| |#-comments are now supported.
+ *** Quasisyntax is now supported.
+ *** R7RS syntax-rules with custom ellipsis, with-ellipsis are now supported.
+ *** 9 new [partial] modules
+ (mes fluids), (mes nyacc), (mes optargs), (mes pmatch), (mes peg),
+ (srfi srfi-13), (srfi srfi-9-psyntax), (srfi srfi-26), (srfi srfi-43),
+ (rnrs arithmetic bitwise), (sxml xpath)
+ *** 36 new functions
+ 1+, 1-, abs, and=>, append-reverse, ash, char<=?, char<?, char>=?,
+ char>?, even?, filter, delete, delq, vector-copy, fold, fold-right,
+ getenv, iota, keyword->symbol list-head, list-tail, negative?, odd?,
+ positive?, remove!, remove, string->number, string-copy,
+ string-prefix?, string=, string=?, symbol->keyword symbol-append,
+ symbol-prefix?, unless, write, zero?.
+ ** Noteworthy bug fixes
+ *** Macros are now memoized.
+ *** An error is reported when using a wrong number of arguments with a call.
+ *** Cond now evaluates its test clauses only once.
+ *** Append can also handle one argument.
+ *** For-each now supports 2 list arguments.
+ *** Map now supports 3 list arguments.
+ *** Backslash in string is supported.
+ *** Closure is not a pair.
+ *** All standard characters are supported.
+ *** Mescc now also runs in Guile.
+
+
+Greetings,
+Jan
+
+[1] https://github.com/schemeway/lalr-scm
+[2] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[3] https://www.nongnu.org/nyacc/
+[4] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[5] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf

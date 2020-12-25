@@ -1,0 +1,100 @@
+                                                              -*- org -*-
+#+TITLE: Tentative GNU Mes Road Map
+
+Copyright © 2016,2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+The goals of the GNU Mes project are two-fold:
+
+  - to bootstrap the GNU System purely from source, without using any binary
+    seeds.
+
+  - to aid the Reproducible-Builds.org effort; demonstrate the impact and
+    importance of GNU and Software Freedom.
+
+Since its inception, the project has gone a long way towards that goal.  Below
+is a list of items we want for version "1.0" of GNU Mes.
+
+You're welcome to discuss this road map on bug-mes@gnu.org or #bootstrappable
+on Freenode!
+
+* TODO
+** release 0.x, unsorted
+  - Merge the Scheme-only bootstrap which uses Gash and Gash Core
+    Utilities to remove from bootstrap-binary seed : Awk, Bash, Core
+    Utilities, Grep, Gzip, Sed, Tar.
+  - Introduce the Reduced Binaries Seed bootstrap to NixOS (Debian,
+    Arch, Gentoo, ...?)
+  - Full Source Bootstrap: compile mes.c using M2-Planet.  Jeremiah
+    branched-out from mes; see https://github.com/oriansj/mes-m2, also see the
+    branches: wip-full-source-bootstrap, wip-m2-merge and wip-m2.
+  - Full Guile-compatible module support: define-module, define-public,
+    export, use-modules, ...
+  - ARMv7/AArch64 support: Mes C Library and MesCC.
+  - Simplify eval-apply and other core functionality (see mes-m2).
+  - Support native x86_64 bootstrap.
+  - Simplify MesCC ``MesCC should optimize ease of convincing us of its
+    correctness''
+  - tcc: remove or upstream patches from tcc-boot.
+  - tcc: build 0.9.27 directly instead of via 0.9.26, see tinycc
+** after release 1.0
+  - Build Guix packages using Mes: run or simplify (guix build utils),
+    (guix build gnu-build-system).
+  - Build Guix packages without guix-daemon.  See Ludovic's initrd build
+    work.
+  - Bootstrap support for the Hurd.  Most needed now are fork and exec.
+  - Replace the initial gcc-2.95.3 with gcc-4.6.4.
+  - FreeBSD, *BSD?
+    wip-bootstrappable@0.9.27 branch
+  - Skip tcc: Build gcc using MesCC.
+  - better garbage collector.
+  - mes/mescc: proper docstrings, api reference documentation.
+  - mes/mescc: bootstrap a minimal Guile?
+    + libguile/{eval,init,list,strings,values,..}.
+    + ice-9/eval.scm
+  - syntax-case bootstrap problem
+    + resolve portable syntax-case bootstrap, or
+    + get full source syntax-case up (Andre van Tonder?)
+      https://srfi.schemers.org/srfi-72/srfi-72.html, or
+    + ... drop it?
+* DONE
+  - 0.22 GNU Mes now builds reproducibly cross-platform, runs on the
+    Hurd and has better support for other distributions and kernels.
+  - 0.21 GNU Mes now supports a Scheme-only bootstrap and is packaged in
+    Debian GNU/Linux.
+  - 0.20 GNU Mes brings the Reduced Binary Source bootstrap to Guix.
+  - 0.19 GNU Mes now compiles TinyCC in ~8min and supports building Bash and
+    GNU Tar.
+  - 0.18 GNU Mes now supports GuixSD bootstrap (x86,x86_64) and has native
+    x86_64 support.
+  - 0.17.1 GNU Mes now allows removing glibc, binutils and gcc from the GuixSD
+    bootstrap.
+  - 0.17 GNU Mes is now an official GNU project and bootstraps gcc-4.7.4.
+  - 0.16.1 Mes now has info docs and installs ootb on Debian buster/testing.
+  - 0.16 Mes Lib C now bootstraps glibc-2.2.5, binutils-2.20.1, gcc-4.1.0.
+  - 0.15: MesCC now has a libc+gnu that supports compiling binutils-2.14,
+    gcc-2.95.3 and glibc-2.2.5.
+  - 0.14: Mes+MesCC now compiles a slightly patched self-hosting tcc.
+  - 0.13: Mes+MesCC now compiles a modified, functional tcc.c (~25,000LOC) in
+    1h30'.
+  - 0.12: Mes+MesCC now compiles mes.c (~3000LOC) in ~4min.
+  - 0.11: MesCC now compiles a mes-tcc that passes 26/69 of mescc's C tests.
+  - 0.10: Mescc now compiles a mes-tcc that compiles a trivial C to a running
+    a.out.
+  - 0.9: Mescc now writes M1 macro assembly files and compiles tcc.
+  - 0.8: Mescc now writes object files in stage0's labeled hex2 format.
+  - 0.7: Mescc supports -E, -c, -o options, include more complete set of
+    header files, enough to work on compiling tinycc's tcc.c albeit a somewhat
+    modified version.
+  - 0.6: Work with unmodified, unbundled Nyacc; compile 33/55 tinycc's
+    tests/test2 suite.
+  - 0.5: Mutual self-hosting Scheme interpreter and C compiler: mes.c and
+    mescc, Support call-with-current-continuation, refactor catch/throw
+  - 0.4: Support Nyacc, Gcc-compiled Mes compiles minimal main.c using nyacc
+  - 0.3: Garbage collector
+  - 0.2: Support psyntax
+  - 0.1: Mes eval/apply feature complete; support syntax-rules, compile main.c
+    using LALR, dump ELF

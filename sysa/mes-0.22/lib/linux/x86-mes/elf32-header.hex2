@@ -1,0 +1,225 @@
+### Copyright (C) 2016 Jeremiah Orians
+### Copyright (C) 2017,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+###
+### This file is part of GNU Mes.
+###
+### GNU Mes is free software; you can redistribute it and/or modify it
+### under the terms of the GNU General Public License as published by
+### the Free Software Foundation; either version 3 of the License, or (at
+### your option) any later version.
+###
+### GNU Mes is distributed in the hope that it will be useful, but
+### WITHOUT ANY WARRANTY; without even the implied warranty of
+### MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+### GNU General Public License for more details.
+###
+### You should have received a copy of the GNU General Public License
+### along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+### Commentary:
+
+# elf32-header.hex2: 32 bit elf header in hex2, with text segment, data
+# segment and symbol tables.
+
+# stage0's hex2 format for x86
+#    !<label>          1 byte relative
+#    $<label>          2 byte address
+#    @<label>          2 byte relative
+#    &<label>          4 byte address
+#    %<label>          4 byte relative
+#    local_<label>     function-local
+#    string_<index>    string #<index>
+
+### Code:
+
+:ELF_base
+7F 45 4C 46                    # e_ident[EI_MAG0-3] ELF's magic number
+
+01                             # e_ident[EI_CLASS] Indicating 32 bit
+01                             # e_ident[EI_DATA] Indicating little endianness
+01                             # e_ident[EI_VERSION] Indicating original elf
+
+00                             # e_ident[EI_OSABI] Set at 0 because none cares
+00                             # e_ident[EI_ABIVERSION] See above
+
+00 00 00 00 00 00 00           # e_ident[EI_PAD]
+
+02 00                          # e_type Indicating Executable
+03 00                          # e_machine Indicating 32bit x86
+01 00 00 00                    # e_version Indicating original elf
+
+&ELF_text                      # e_entry Address of the entry point
+%ELF_program_headers>ELF_base  # e_phoff Address of program header table
+%ELF_section_headers>ELF_base  # e_shoff Address of section header table
+
+00 00 00 00                    # e_flags
+
+34 00                          # e_ehsize Indicating our 52 Byte header
+
+20 00                          # e_phentsize size of a program header table
+01 00                          # e_phnum number of entries in program table
+
+28 00                          # e_shentsize size of a section header table
+07 00                          # e_shnum number of entries in section table
+
+04 00                          # e_shstrndx index of the section names
+
+# @34
+00 00 00 00
+00 00 00 00
+00 00 00 00
+
+# @40
+:ELF_program_headers
+:ELF_program_header__text
+01 00 00 00                    # ph_type: PT-LOAD = 1
+00 00 00 00                    # ph_offset
+&ELF_base                      # ph_vaddr
+&ELF_base                      # ph_physaddr
+%ELF_end>ELF_base              # ph_filesz
+%ELF_end>ELF_base              # ph_memsz
+07 00 00 00                    # ph_flags: PF-X|PF-W|PF-R = 7
+01 00 00 00                    # ph_align
+
+# @60
+#:ELF_program_header__data     # NOT USED
+                               # FIXME: linux 4.17 does not allow this overlap
+                               #    Uhuuh, elf segment at 0000000001000000
+                               #    requested but the memory is mapped already
+01 00 00 00                    # ph_type: PT-LOAD = 1
+00 00 00 00                    # ph_offset
+&ELF_base                      # ph_vaddr
+&ELF_base                      # ph_physaddr
+%ELF_end>ELF_base              # ph_filesz
+%ELF_end>ELF_base              # ph_memsz
+07 00 00 00                    # ph_flags: PF-X|PF-W|PF-R = 7
+01 00 00 00                    # ph_align
+
+# @80
+:ELF_comment
+4d 45 53 00                     # MES
+00 00 00 00                     # align
+00 00 00 00
+00 00 00 00
+
+4d 45 53 00                     # MES
+00 00 00 00                     # align
+00 00 00 00
+00 00 00 00
+
+# @a0
+:ELF_shstr
+00
+:ELF_shstr__text
+2e 74 65 78 74 00               # .text
+:ELF_shstr__data
+2e 64 61 74 61 00               # .data
+:ELF_shstr__comment
+2e 63 6f 6d 6d 65 6e 74 00      # .comment
+:ELF_shstr__shstr
+2e 73 68 73 74 72 74 61 62 00   # .shstrtab
+:ELF_shstr__sym
+2e 73 79 6d 74 61 62 00         # .symtab
+:ELF_shstr__str
+2e 73 74 72 74 61 62 00         # .strtab
+
+# @d0
+
+:ELF_section_headers
+00 00 00 00                     # sh_name
+00 00 00 00                     # sh_type
+00 00 00 00                     # sh_flags
+00 00 00 00                     # sh_addr
+00 00 00 00                     # sh_offset
+00 00 00 00                     # sh_length
+00 00 00 00                     # sh_link
+00 00 00 00                     # sh_info
+01 00 00 00                     # sh_1?
+00 00 00 00                     # sh_entsize
+
+## FIXME: M0 for calculations?
+:ELF_section_header_text
+%ELF_shstr__text>ELF_shstr      # sh_name
+01 00 00 00                     # sh_type = SHT_PROGBITS = 1
+06 00 00 00                     # sh_flags = SHF-ALLOC|SHF-EXEC =2 | 4 = 6
+&ELF_text                       # sh_addr
+%ELF_text>ELF_base              # sh_offset
+%ELF_data>ELF_text              # sh_length
+00 00 00 00                     # sh_link
+00 00 00 00                     # sh_info
+01 00 00 00                     # sh_1?
+00 00 00 00                     # sh_entsize
+
+:ELF_section_header_data
+%ELF_shstr__data>ELF_shstr     # sh_name
+01 00 00 00                    # sh_type = SHT_PROGBITS = 1
+03 00 00 00                    # sh_flags = SHF-WRITE|SHF-ALLOC = 1 | 2 = 3
+&ELF_data                      # sh_addr
+%ELF_data>ELF_base             # sh_offset
+%ELF_sym>ELF_data              # sh_length
+00 00 00 00                    # sh_link
+00 00 00 00                    # sh_info
+01 00 00 00                    # sh_1?
+00 00 00 00                    # sh_entsize
+
+:ELF_section_header_comment
+%ELF_shstr__comment>ELF_shstr  # sh_name
+01 00 00 00                    # sh_type = SHT_PROGBITS = 1
+00 00 00 00                    # sh_flags
+&ELF_comment                   # sh_addr
+%ELF_comment>ELF_base          # sh_offset
+%ELF_shstr>ELF_comment         # sh_length
+00 00 00 00                    # sh_link
+00 00 00 00                    # sh_info
+01 00 00 00                    # sh_1?
+00 00 00 00                    # sh_entsize
+
+:ELF_section_header_shstr
+%ELF_shstr__shstr>ELF_shstr    # sh_name
+03 00 00 00                    # sh_type: str-sht-strtab
+00 00 00 00                    # sh_flags
+&ELF_shstr                     # sh_addr
+%ELF_shstr>ELF_base            # sh_offset
+%ELF_section_headers>ELF_shstr # sh_length
+00 00 00 00                    # sh_link
+00 00 00 00                    # sh_info
+01 00 00 00                    # sh_1?
+00 00 00 00                    # sh_entsize
+
+:ELF_section_header_sym
+%ELF_shstr__sym>ELF_shstr      # sh_name
+02 00 00 00                    # sh_type: str-sht-symtab
+00 00 00 00                    # sh_flags
+&ELF_sym                       # sh_addr
+%ELF_sym>ELF_base              # sh_offset
+%ELF_end>ELF_sym               # sh_length
+06 00 00 00                    # sh_link:6
+00 00 00 00                    # sh_info
+01 00 00 00                    # sh_1?
+10 00 00 00                    # sh_entsize
+
+:ELF_section_header_str
+%ELF_shstr__str>ELF_shstr      # sh_name
+03 00 00 00                    # sh_type: str-sht-strtab
+00 00 00 00                    # sh_flags
+&ELF_str                       # sh_addr
+%ELF_str>ELF_base              # sh_offset
+%ELF_sym>ELF_str               # sh_length
+00 00 00 00                    # sh_link
+00 00 00 00                    # sh_info
+01 00 00 00                    # sh_1?
+00 00 00 00                    # sh_entsize
+
+# @1e8
+00 00 00 00  # align
+00 00 00 00
+
+# @1f0
+
+00 00 00 00  # align
+00 00 00 00
+00 00 00 00
+00 00 00 00
+
+# @200
+:ELF_text

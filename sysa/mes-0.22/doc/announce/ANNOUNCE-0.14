@@ -1,0 +1,101 @@
+Subject: Mes 0.14 released
+
+I am pleased to announce the release of Mes 0.14, representing 98
+commits over 4 weeks.  Mes+MesCC now compiles a self-hosting TinyCC
+that has only been slightly patched.
+
+This means that we can now build a tcc that depends only on a 1MB
+ASCII M1 seed.  GuixSD currently uses a ~250MB binary seed to build
+gcc.
+
+Next targets are: build gcc using this almost full-source bootstrapped
+tcc, and reduce the 1MB ASCII M1 seed to ~100KB of M2 source, which is
+a restricted subset of C.
+
+Packages are available from Guix's wip-bootstrap branch.
+
+* About
+
+    Mes[0] aims to help create full source bootstrapping for GuixSD[1]
+    as part of the bootstrappable builds[2] project.
+
+    It currently consists of a mutual self-hosting Scheme interpreter
+    prototype in C and a Nyacc-based C compiler in Scheme.  This C
+    prototype is being simplified to be transpiled by M2-Planet[3].
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[4], pre-R6RS portable syntax-case[5] with R7RS ellipsis, Matt
+    Wette's Nyacc[6], Guile's PEG[7] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    MesCC.
+
+    Mes+MesCC can compile an only slightly patched TinyCC[8] that is
+    self-hosting.  A GNU Gcc-compiled tcc is known[9] to compile GCC.
+
+    Mes is inspired by The Maxwell Equations of Software: LISP-1.5[10]
+    -- John McCarthy page 13, GNU Guix's source/binary packaging
+    transparency and Jeremiah Orians's stage0[11] ~300 byte self-hosting
+    hex assembler.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/-/archive/v0.14/mes-0.14.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.14 since 0.13
+ ** Core
+ *** Bootstrapped Mes+MesCC  now compiles a tcc that is self-hosting and only slightly patched.
+ *** The reader now supports binary numbers (previously: read as decimal).
+ *** String port support has been moved to C.
+ *** The build has been simplified, the Make-in-Scheme experiment has been removed.
+ *** 2 new functions
+ chmod, logxor.
+ ** Language
+ *** Mes now supports define-immutable-record-type and single set-field from srfi-9 gnu.
+ *** 12 new functions
+ basename, chmod, const, delete-duplicates, logxor, string-contains,
+ string-map, string-replace, string-trim, string-trim-both,
+ string-trim-right, unfold.
+ ** MesCC
+ *** MesCC now supports standalone usage of nestedly defined enums, structs and unions.
+ *** MesCC now supports comparison of unsigned and promotion of signed/unsigned -> unsigned.
+ *** MesCC now supports sign extension for char, short.
+ *** MesCC now has stubbing for floats; compiling works, data is fu.
+ *** MesCC now has full suport for switch case, e.g. with default as first clause.
+ *** MesCC now supports destruction of casted expressions: ((struct foo*)p)->bar.
+ *** MesCC now has full support for pre/post, e.g.: (foo--)->bar and permutations.
+ *** MesCC now supports sizeof any expression or type.
+ *** MesCC now supports initialization of anonymous unions.
+ *** MesCC now supports bit fields.
+ *** MesCC now supports valued functions in expressions: destruction and dereferencing.
+ *** MesCC now supports function-static variables.
+ *** MesCC now supports initializer lists in structs and unions.
+ *** MesCC now has full support for heterogeneous variable declarations, e.g.: char p, *x = "foo", buf[3];
+ **** 4 new functions
+ __lshrdi3, __ashldi3, __ashrdi3, strncpy.
+ **** 9 new mlibc stubs
+ __fixdfdi, __fixsfdi, __fixunsxfdi, __fixxfdi, __floatundixf, ldexp,
+ strtod, strtof, strtold.
+
+Greetings,
+janneke
+
+[0] https://gitlab.com/janneke/mes
+[1] https://www.gnu.org/software/guix
+[2] http://bootstrappable.org
+[3] https://github.com/oriansj/m2-planet
+[4] https://github.com/schemeway/lalr-scm
+[5] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[6] https://www.nongnu.org/nyacc/
+[7] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[8] https://gitlab.com/janneke/tinycc
+[9] https://lists.gnu.org/archive/html/tinycc-devel/2017-05/msg00103.html
+[10] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[11] https://github.com/oriansj/stage0

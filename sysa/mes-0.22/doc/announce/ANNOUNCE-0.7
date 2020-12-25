@@ -1,0 +1,83 @@
+Subject: Mes 0.7 released
+
+I am pleased to announce the release of Mes 0.7, representing 32
+commits over 4 weeks.  Mescc now behaves more like a regular C
+compiler: supporting -E, -c, -o options and with a more complete set
+of header files [stubs]; enough to work on compiling tinycc's tcc.c
+albeit a somewhat modified version[8].
+
+* About
+
+    Mes aims to create full source bootstrapping for GuixSD: an
+    entirely source-based bootstrap path.  The target is to [have
+    GuixSD] boostrap from a minimal, easily inspectable binary --that
+    should be readable as source-- into something close to R6RS
+    Scheme.
+
+    It currently consists of a mutual self-hosting [close to Guile-]
+    Scheme interpreter prototype in C and a Nyacc-based C compiler in
+    [Guile] Scheme.
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[1], Pre-R6RS portable syntax-case[2] with R7RS ellipsis, Matt
+    Wette's Nyacc[3] Guile's PEG[4] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    (mescc.mes) that can produce the second initial ELF binary from
+    binary from mes.c, in only about 2h30'.
+
+    Mes was inspired by The Maxwell Equations of Software: LISP-1.5[5]
+    -- John McCarthy page 13, GNU Guix's[6] source/binary packaging
+    transparency and Jeremiah Orians's stage0[7] bootstrap project.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.7 -O mes-0.7.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.7 since 0.6
+ ** Core
+ *** The minimal C reader is now always included; dependencies
+ on i686-unknown-linux-gnu-gcc and binary read-0-32.mo have been
+ dropped, these are now optional.
+ ** Language
+ *** Mes reader now supports octal numbers #oXXX.
+ *** 10 new functions
+ current-output-port, getopt-long, negate, open-output-file,
+ option-ref, set-current-output-port, string-rindex, string-suffix?,
+ with-ouwith-output-to-file, with-output-to-port.
+ ** Mescc
+ *** Mescc can now be installed and used alongside a gcc installation.
+ *** Mescc can now handle const anywhere.
+ *** Mescc now supports array fields in structs.
+ *** Mescc now supports forward declarations and typedef.
+ *** Mescc can now handle comments anywhere.
+ *** Mescc now supports addition and substraction for enum field values.
+ *** Mescc now supports anonymous enums.
+ *** Mescc now supports all C99 header files needed to compile tcc.c.
+ *** build: C sources are now preprocessed separately, then compiled and linked.
+ *** build: mlibc and C sources are now compiled separately and then linked.
+ *** mlibc has been moved from Scheme snippets into C.
+ *** Mescc now supports -c, -D, -E, -I and -o options.
+ **** open now supports optional third mode parameter.
+ ** Noteworthy bug fixes
+ *** string-index now supports function predicate.
+ *** number->string for radix > 10 now produces `a' instead of `:'.
+
+Greetings,
+janneke
+
+[1] https://github.com/schemeway/lalr-scm
+[2] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[3] https://www.nongnu.org/nyacc/
+[4] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[5] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[6] https://www.gnu.org/software/guix/
+[7] https://github.com/oriansj/stage0
+[8] https://gitlab.com/janneke/tinycc

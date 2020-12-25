@@ -1,0 +1,248 @@
+2018-12-24  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* /: removed lalr2.scm
+
+2018-11-21  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-num-reader): support 0X (cap x) for hex numbers
+
+2018-11-16  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/sx-util.scm (sx-join): changed the way sx-split and sx-join
+	work with repect to attributes, the attr returned from sx-split
+	and passed to sx-join are the tails of '(@ (a "1") (b "2"))
+	instead of the entire form.  One can pass '() or #f to sx-join.
+
+2018-10-14  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/sx-util.scm (sxm-node): cleaned up sx-match now accepts
+	(,_ ...) to accept all, and supports string matching
+
+2018-09-28  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/sx-util.scm: added make-sx;
+
+2018-09-23  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-comm-reader): For comment patterns ending with
+	newline, when see eof-object should return match pair but was just
+	returning the string (i.e., was "comment" now '($lone-comm "comment"))
+
+2018-09-05  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm (process-spec): added alt-start spec attribute in order
+	to prevent warning about unused LHS non-terminals; but not working
+
+	* lalr.scm (drop-dot-new): new routine to replace string-sub
+	and it's use; no dependence on (ice-9 regex) now
+
+2018-08-19  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/sx-util.scm: added sx-split, sx-split*, sx-join, sx-join*
+
+2018-08-12  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-num-reader): for case (12) iter args swapped:
+	fixed with "5 ba" => "ba 5"
+
+2018-08-11  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/sx-util.scm: removed sx+attr routines, added sx-attr-add
+	and sx-attr-add*; updated c99/body.scm to use sx-attr-add
+
+2018-07-29  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm (compact-machine): default for #:keep is now 0, was 3
+
+	* parse.scm: reworked the parsers; instead of one for interactive
+	and one for non-interative, with each handling unhashed (symbolic)
+	or hashed (numberic), we now have one for symbolic and one for
+	numeric with each handling interactive and non-interactive; I
+	think this is now cleaner
+
+	* lang/util.scm: removed dead sx- code; now in sx-util.scm;
+	moved lang-dir, xtra-dir from lang/mach.scm files to here and
+	renamed xtra-dir to mach-dir
+
+2018-07-27  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* parse.scm: Removed dependence on srfi-43 by adding vector-map.
+
+2018-07-25  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm (compact-machine): The default set of keepers is now
+	($lone-comm $code-comm) and the requires keepers list was removed
+	but $error is hardcoded as only required keeper.  I was having
+	issues with the ia-parser/num because it looks for lone $default
+	to reduce without lookahead.  I still need to think about this.
+
+2018-07-12  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* parse.scm (make-lalr-ia-parser/num): broke make-lalr-ia-parser
+	into make-lalr-ia-parser/sym for unhashed and
+	make-lalr-ia-parser/num for hashed.  The /num version is working;
+	need to recode the sym one still.
+
+	* lalr.scm (compact-machine): removed $end from required-keepers;
+	changed $default from -1 to 1 so that all token values are > 0.
+	The pat-v could potentially now be a vector.
+
+2018-07-09  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm (compact-machine): force $end to be -2, so parsers
+	don't have to look up the value
+
+	* parse.scm (make-lalr-ia-parser/num): added /sym and /num parsers;
+	abandoning attempt to make general purpose parsers for hashed/unhashed
+
+2018-05-12  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-lexer-generator): added extra keyword arg to
+	handle extra reader.  This makes the lexer-generator a bit more
+	flexible for non-C languages.
+	(make-num-reader): update to read "12-3" as a float
+
+2018-05-05  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/util.scm: removed sx- routines; renamed sxml-util to
+	sx-util; removed sx-match;  sx-match is now in sx-util
+
+2018-03-28  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/util.scm: sx-ref* now returns #f for non-usable xxx
+
+2018-01-21  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* version.scm: release version 0.83.0
+
+2017-11-23  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (read-c-chlit): did not parse '\177' correctly (prev
+	code fix may have done this).  Fixed (I hope) and added test
+	case for escapes in C chlit and C string in test-suite.
+
+2017-11-12  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (read-oct): changed (read-oct ch) to (read-oct) to be
+	consistent with (read-hex).
+
+2017-11-11  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (read-c-chlit): removed (unread-char ch) for U but no '
+	This bug was causingd janneke's tccpp.c to not parse.
+
+2017-09-23  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* util.scm: updated ugly-print w/ new api similar to pretty-print
+
+2017-09-10  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* util.scm (ugly-print): changed letrec to letrec*.  Not sure why
+	this has been working forever and broke in install context.  Seems
+	to work now.
+
+2017-08-20  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-comm-reader): added option to remove prefix
+	from comments; That is, for a multi-line comment that starts in
+	column 10, spaces up to column 10 will be removed in following
+	lines
+
+2017-08-02  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (read-c-string): numeric escapes (e.g., \0) were
+	not working due to use of ch instead of c1 in numeric check
+
+2017-07-28  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-num-reader): bug report from janneke: c-parser
+	is not parsing "0ULL".  the num reader has been updated (state 12)
+	to handle this
+	(cnumstr->scm): updated to trim ULL from 0ULL.
+
+2017-06-29  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-chseq-reader): make robust to <eof>
+
+2017-06-11  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (nyacc): make-ident-like-p tested for string but not for
+	empty string: added `not eof-object?'
+
+2017-06-03  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (read-c-chlit): added '\r' and '\|' moved '\\' to case
+
+2017-05-28  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm (step4): added precedence for resolving RR conflicts!
+
+2017-05-20  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm (lalr-spec): removed more with/prune syntax; added
+	reserve directive for reserved terminals (e.g., "volatile")
+
+2017-05-06  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm: updated write-lalr-tables and write-lalr-actions to
+	accept a prefix string
+
+2017-05-04  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/util.scm (make-pp-formatter): fixed bug in column counting
+	that prevented line-wrap to occur.
+
+2017-04-12  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lex.scm (make-comm-reader): comments which end in newline can
+	now also end in #<eof>
+
+2017-03-03  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm: added "keepers" keyword argument to compact-machine
+	and also added $end as default
+
+2017-01-08  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* ../../test-suite/nyacc/lang/c99/exam.d/ex05.c: C99 does not
+	allow lone `;' outside of functions.  Removed.
+
+2017-01-07  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lang/util.scm: add report-error: prints msg w/ file, line
+
+	* parse.scm (make-lalr-parser): changed printout of parse error to
+	(throw 'parse-error . args) and expect the full parser to catch
+	the error
+
+2017-01-06  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm (process-spec): in add-el changed memq to member since
+	we are using strings for terminals
+
+2016-11-25  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* added support for ellipsis to lang/c99/cpp.scm
+
+2016-11-24  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* added (ellipsis) to lang/c99/pprint.scm
+
+2016-04-09  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* bison.scm: new file providing make-lalr-machin/bison.  It is
+	similar to make-lalr-machine but uses external bison program
+	instead of the default from-scratch lalr code.
+
+2016-03-04  Matt Wette  <mwette@alumni.caltech.edu>
+
+	* lalr.scm: changed grammar parser to interpret $string as
+	terminal.  This saves typing a quote in front.
+
+Copyright (C) 2015-2017 Matthew R. Wette
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
+

@@ -1,0 +1,101 @@
+#! /bin/sh
+
+# GNU Mes --- Maxwell Equations of Software
+# Copyright © 2017,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+#
+# This file is part of GNU Mes.
+#
+# GNU Mes is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# GNU Mes is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+set -e
+
+MES_ARENA=${MES_ARENA-20000000}
+export MES_ARENA
+MES_MAX_ARENA=${MES_MAX_ARENA-${MES_ARENA}}
+export MES_MAX_ARENA
+MES_STACK=${MES_STACK-5000000}
+export MES_STACK
+
+. ./config.sh
+
+if $courageous; then
+    echo "Applying courage"
+    set +e
+fi
+
+CFLAGS=
+if test $mes_libc = mes; then
+    CFLAGS="${CFLAGS}
+-static
+-nostdinc
+-nostdlib
+-fno-builtin
+"
+fi
+
+CPPFLAGS="
+-D HAVE_CONFIG_H=1
+-I ../include
+-I ${srcdir}/include
+-I ${srcdir}/include/$mes_kernel/$mes_cpu
+"
+
+LIBS=
+LDFLAGS=
+if test $mes_libc = mes; then
+    LDFLAGS="
+-nostdlib
+"
+    LIBS=-lc
+fi
+
+export CFLAGS
+export CPPFLAGS
+export LDFLAGS
+#export LIBS
+
+recheck=${recheck-false}
+export recheck
+
+./pre-inst-env ${SHELL} ${srcdest}build-aux/check-boot.sh
+./pre-inst-env ${SHELL} ${srcdest}build-aux/check-mes.sh
+
+if test $compiler = gcc; then
+    (
+        cd gcc-lib
+        srcdest=$srcdir/../
+        srcdir=../$srcdir
+        ../pre-inst-env ${SHELL} ${srcdest}build-aux/check-mescc.sh
+    )
+fi
+
+(
+    cd mescc-lib
+    srcdest=$srcdir/../
+    srcdir=../$srcdir
+    compiler=mescc
+    mes_lib=mes
+    CFLAGS="
+-nostdinc
+-nostdlib
+-fno-builtin
+"
+    LDFLAGS="
+-nostdlib
+"
+    LIBS=-lc
+    AR="${srcdest}pre-inst-env mesar"
+    CC="${srcdest}pre-inst-env mescc"
+    ../pre-inst-env ${SHELL} ${srcdest}build-aux/check-mescc.sh
+)

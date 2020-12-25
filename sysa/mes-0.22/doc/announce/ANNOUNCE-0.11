@@ -1,0 +1,70 @@
+Subject: Mes 0.11 released
+
+I am pleased to announce the release of Mes 0.11, representing 16
+commits over 10 weeks.  MesCC now compiles a less heavily patched
+TinyCC into a mes-tcc that in turn passes 41/69 of mescc's C tests.
+
+When mes-tcc passes all 69 tests, this almost-full-source-bootstrapped
+version of TinyCC should be able to compile itself.  An unpatched, GNU
+Gcc-compiled tcc is known to compile GNU Gcc.
+
+* About
+
+    Mes[0] aims to create full source bootstrapping for GuixSD[1] as
+    part of the bootstrappable builds[2] project.
+
+    It currently consists of a mutual self-hosting [close to Guile-]
+    Scheme interpreter prototype in C and a Nyacc-based C compiler in
+    [Guile] Scheme.  This C prototype will be rewritten in stage0[3]
+    M1 assembly (or compiled by M2-Planet or stage2 slow-LISP, or ...).
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[4], Pre-R6RS portable syntax-case[5] with R7RS ellipsis, Matt
+    Wette's Nyacc[6], Guile's PEG[7] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    MesCC (mescc.mes).
+
+    MesCC can compile a modified TinyCC[8] that is close to being
+    self-hosting.  A GNU Gcc-compiled tcc is known[9] to compile GCC.
+
+    Mes is inspired by The Maxwell Equations of Software: LISP-1.5[10]
+    -- John McCarthy page 13, GNU Guix's source/binary packaging
+    transparency and Jeremiah Orians's stage0 ~300 byte self-hosting
+    hex assembler.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.11 -O mes-0.11.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.11 since 0.10
+ ** MesCC
+ *** MesCC now compiles a mes-tcc that passes 41/69 of mescc's C tests.
+ *** MesCC's libc can now be compiled with tcc (syscall support: write).
+ *** MesCC now compiles a less-patched tcc: -214/+458 lines [WAS: -333/+747].
+ *** MesCC now supports empty for.
+ *** MesCC has been greatly refactored, 500/3000 lines have been removed.
+ *** MesCC now supports complex [struct] by value assign foo.bar, foo->bar, foo[bar].
+ *** MesCC now depends on Nyacc 0.82.4.
+
+Greetings,
+janneke
+
+[0] https://gitlab.com/janneke/mes
+[1] https://www.gnu.org/software/guix
+[2] http://bootstrappable.org
+[3] https://github.com/oriansj/stage0
+[4] https://github.com/schemeway/lalr-scm
+[5] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[6] https://www.nongnu.org/nyacc/
+[7] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[8] https://gitlab.com/janneke/tinycc
+[9] https://lists.gnu.org/archive/html/tinycc-devel/2017-05/msg00103.html
+[10] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf

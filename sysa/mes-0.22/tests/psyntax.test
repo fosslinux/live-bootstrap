@@ -1,0 +1,234 @@
+#! /bin/sh
+# -*-scheme-*-
+MES_ARENA=${MES_ARENA-10000000} exec ${MES-bin/mes} --no-auto-compile -L ${0%/*} -L module -C module -e '(tests psyntax)' -s "$0" "$@"
+!#
+
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (tests psyntax)
+  #:use-module (mes mes-0)
+  #:use-module (mes test))
+
+(cond-expand
+ (mes
+  (mes-use-module (mes psyntax))
+  (mes-use-module (mes test)))
+ (guile-2.2
+  (define sc-expand identity)
+  (define syntax-object->datum syntax->datum)
+  (define datum->syntax-object datum->syntax))
+ (guile-2
+  (define sc-expand identity)
+  (define syntax-object->datum syntax->datum)
+  (define datum->syntax-object datum->syntax)
+  (define-macro (with-ellipsis . stuff) #t))
+ (guile
+  (use-modules (ice-9 syncase))
+  (define sc-expand identity)))
+
+(pass-if "first dummy" #t)
+(pass-if-not "second dummy" #f)
+
+(cond-expand
+ (guile)
+ (mes
+  (pass-if "andmap"
+    (seq? (andmap (lambda (x) (> x 0)) '(3 2 1)) #t))
+
+  (pass-if "andmap 2"
+    (seq? (andmap (lambda (x) (> x 0)) '(3 2 1 0)) #f))
+
+  (pass-if "putprop" (putprop 'foo '*sc-expander 'bar))
+
+  (pass-if "getprop"
+    (seq? (getprop 'foo '*sc-expander) 'bar)))
+ )
+
+(pass-if "syntax-case"
+  (sequal? (let* ((sexp '(syntax-case '((1 2) (3 4)) ()
+                           (((x ...) ...) (syntax (x ... ...)))))
+                  (expanded (sc-expand sexp)))
+             (primitive-eval expanded))
+           '(1 2 3 4)))
+
+(pass-if "sc-expand"
+  (sequal? (let ()
+             (syntax-case '((1 2) (3 4)) ()
+               (((x ...) ...) (syntax (x ... ...)))))
+           '(1 2 3 4)))
+
+(pass-if "syntax-object->datum"
+  (sequal? (syntax-object->datum (syntax (set! a b)))
+           '(set! a b)))
+
+(pass-if-equal "syntax-case swap!"
+    '((lambda (temp)
+        (set! a b)
+        (set! b temp))
+      a)
+  (syntax-object->datum
+   (let ((exp '(set! a b)))
+     (syntax-case exp ()
+       ((swap! a b)
+        (syntax
+         ((lambda (temp)
+            (set! a b)
+            (set! b temp))
+          a)))))))
+
+(pass-if-equal "syntax-case swap! let"
+    '(let ((temp a)) (set! a b) (set! b temp))
+  (syntax-object->datum
+   (let ((exp '(set! a b)))
+     (syntax-case exp ()
+       ((swap! a b)
+        (syntax
+         (let ((temp a))
+           (set! a b)
+           (set! b temp))))))))
+
+(cond-expand
+ (guile)
+ (mes
+  (pass-if-equal "syntax-case manual swap!"
+      '("bar" "foo")
+    (let* ((sc (sc-expand '(syntax-case exp () ((swap! a b) (syntax (let ((temp a)) (set! a b) (set! b temp)))))))
+           (exp '(swap foo bar))
+           (foo "foo")
+           (bar "bar")
+           (s (eval sc (current-module)))
+           (d (syntax-object->datum s))
+           (e (core:macro-expand d)))
+      (eval e (current-module))
+      (list foo bar)))))
+
+(pass-if-equal "define-syntax swap! [syntax-case]"
+    (list "bar" "foo")
+  (let ()
+    (define-syntax swap!
+      (lambda (exp)
+        (syntax-case exp ()
+          ((swap! a b)
+           (syntax
+            ((lambda (temp)
+               (set! a b)
+               (set! b temp)) a))))))
+    (let ((foo "foo")
+          (bar "bar"))
+      (swap! foo bar)
+      (list foo bar))))
+
+(pass-if-equal "define-syntax swap! [syntax-case+let]"
+  (list "bar" "foo")
+  (let ()
+    (define-syntax swap!
+      (lambda (exp)
+        (syntax-case exp ()
+          ((swap! a b)
+           (syntax
+            (let ((temp a))
+              (set! a b)
+              (set! b temp)))))))
+    (let ((foo "foo")
+          (bar "bar"))
+      (swap! foo bar)
+      (list foo bar))))
+
+(pass-if-equal "define-syntax sr:when [syntax-rules]"
+    "if not now, then?"
+  (let ()
+    (define-syntax sr:when
+      (syntax-rules ()
+        ((sc:when condition exp ...)
+         (if condition
+             (begin exp ...)))))
+    (let ()
+      (sr:when #t "if not now, then?"))))
+
+(pass-if-equal "define-syntax-rule"
+    "if not now, then?"
+  (let ()
+    (define-syntax-rule (sre:when c e ...)
+      (if c (begin e ...)))
+    (let ()
+      (sre:when #t "if not now, then?"))))
+
+(pass-if-equal "syntax-rules plus"
+    (+ 1 2 3)
+  (let ()
+    (define-syntax plus
+      (syntax-rules ()
+        ((plus x ...) (+ x ...))))
+    (plus 1 2 3)))
+
+(cond-expand
+ (guile
+  (pass-if-equal "macro with quasisyntax"
+      '("foo" "foo")
+    (let ()
+      (define-syntax string-let
+        (lambda (stx)
+          (syntax-case stx ()
+            ((_ id body ...)
+             #`(let ((id #,(symbol->string (syntax->datum #'id))))
+                 body ...)))))
+      (string-let foo (list foo foo)))))
+ (mes))
+
+  ;; (pass-if-equal "custom ellipsis within normal ellipsis"
+  ;;     '((((a x) (a y) (a …))
+  ;;        ((b x) (b y) (b …))
+  ;;        ((c x) (c y) (c …)))
+  ;;       (((a x) (b x) (c x))
+  ;;        ((a y) (b y) (c y))
+  ;;        ((a …) (b …) (c …))))
+  ;;   (let ()
+  ;;     (define-syntax foo
+  ;;       (syntax-rules ()
+  ;;         ((_ y ...)
+  ;;          (syntax-rules … ()
+  ;;            ((_ x …)
+  ;;             '((((x y) ...) …)
+  ;;               (((x y) …) ...)))))))
+  ;;     (define-syntax bar (foo x y …))
+  ;;     (bar a b c)))
+
+(let ()
+ (define-syntax define-quotation-macros
+   (lambda (x)
+     (syntax-case x ()
+       ((_ (macro-name head-symbol) ...)
+        #'(begin (define-syntax macro-name
+                   (lambda (x)
+                     (with-ellipsis :::
+                                    (syntax-case x ()
+                                      ((_ x :::)
+                                       #'(quote (head-symbol x :::)))))))
+                 ...)))))
+ (define-quotation-macros (quote-a a) (quote-b b) (quote-c c))
+
+ (pass-if-equal "with-ellipsis"
+     '(a 1 2 3)
+     (quote-a 1 2 3)))
+
+(result 'report (if (and guile?
+                         (equal? (effective-version) "2.0")) 1
+                         0))

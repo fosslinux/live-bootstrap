@@ -1,0 +1,164 @@
+                                                              -*- org -*-
+#+TITLE: bootstrappable.org project
+
+Copyright © 2016,2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+* What?
+** Full source bootstrapping for the GNU System
+
+A package in GNU Guix is uniquely identified by the hash of its source
+code, its dependencies, and its build recipe.
+
+Every package can be built from source, except for the bootstrap
+binaries.
+
+*** From the GNU Guix manual
+
+The distribution is fully “bootstrapped” and “self-contained”: each
+package is built based solely on other packages in the distribution.
+
+The root of this dependency graph is a small set of “bootstrap
+binaries”, provided by the ‘(gnu packages bootstrap)’ module.  For more
+information on bootstrapping, *note Bootstrapping::.
+
+**** Guix v1.0 bootstrap binary seed
+
+$ du -schx $(readlink $(guix build bootstrap-tarballs)/*)
+2.1M	/gnu/store/9623n4bq6iq5c8cwwdq99qb7d0xj93ym-binutils-static-stripped-tarball-2.28.1/binutils-static-stripped-2.28.1-x86_64-linux.tar.xz
+18M	/gnu/store/437xwygmmwwpkddcyy1qvjcv4hak89pb-gcc-stripped-tarball-5.5.0/gcc-stripped-5.5.0-x86_64-linux.tar.xz
+1.8M	/gnu/store/55ccx18a0d1x5y6a575jf1yr0ywizvdg-glibc-stripped-tarball-2.26.105-g0890d5379c/glibc-stripped-2.26.105-g0890d5379c-x86_64-linux.tar.xz
+5.7M	/gnu/store/bqf0ajclbvnbm0a46819f30804y3ilx0-guile-static-stripped-tarball-2.2.3/guile-static-stripped-2.2.3-x86_64-linux.tar.xz
+5.8M	/gnu/store/j8yzjmh9sy4gbdfwjrhw46zca43aah6x-static-binaries-tarball-0/static-binaries-0-x86_64-linux.tar.xz
+33M	total
+$ for i in $(readlink $(guix build bootstrap-tarballs)/*);\
+  do sudo tar xf $i; done
+$ du -schx *
+130M	bin
+13M	include
+54M	lib
+51M	libexec
+5.2M	share
+252M	total
+
+**** Guix Reduced Binary Seed bootstrap binary seed
+
+$ du -schx $(readlink $(guix build bootstrap-tarballs)/*)
+5.7M	/gnu/store/9f8gi8raqfx9j3l9d00qrrc0jg3r1kyj-guile-static-stripped-tarball-2.2.6/guile-static-stripped-2.2.6-x86_64-linux.tar.xz
+80K	/gnu/store/b6rjl52hibhmvyw4dg8678pwryhla0h2-linux-libre-headers-stripped-tarball-4.19.56/linux-libre-headers-stripped-4.19.56-x86_64-linux.tar.xz
+12K	/gnu/store/d7zlxsjcnqilmvqwx7scija9x9bjw8cw-mescc-tools-static-stripped-tarball-0.5.2-0.bb062b0/mescc-tools-static-stripped-0.5.2-0.bb062b0-x86_64-linux.tar.xz
+428K	/gnu/store/n7zc4kpi8ny6jlfaikkzxlwhc5fvr1vr-mes-minimal-stripped-tarball-0.19/mes-minimal-stripped-0.19-x86_64-linux.tar.xz
+6.0M	/gnu/store/nv4djwlrljfqmynqr2cqvfwz0ydx7kxb-static-binaries-tarball-0/static-binaries-0-x86_64-linux.tar.xz
+13M	total
+$ for i in $(readlink $(guix build bootstrap-tarballs)/*);\
+  do sudo tar xf $i; done
+Password:
+$ du -schx *
+93M	bin
+700K	include
+38M	lib
+14M	share
+145M	total
+
+**** Guix Scheme-only bootstrap binary seed
+
+$ du -schx $(readlink $(~/src/guix/wip-bootstrap/pre-inst-env guix build bootstrap-tarballs)/*)
+5.7M	/gnu/store/1mq2pcd2h7g54xpi2jrgj6ibbi4lgi3c-guile-static-stripped-tarball-2.2.6/guile-static-stripped-2.2.6-x86_64-linux.tar.xz
+80K	/gnu/store/bl1r2bpk6fam8r2gjvr5mvr48i3dm2hn-linux-libre-headers-stripped-tarball-4.19.56/linux-libre-headers-stripped-4.19.56-x86_64-linux.tar.xz
+12K	/gnu/store/w0dlz486dhb8aiq8pxm5akllz628fqin-mescc-tools-static-stripped-tarball-0.5.2-0.bb062b0/mescc-tools-static-stripped-0.5.2-0.bb062b0-x86_64-linux.tar.xz
+428K	/gnu/store/15j6l18q44ymlrh1cfp4s4hc9835xic5-mes-minimal-stripped-tarball-0.19/mes-minimal-stripped-0.19-x86_64-linux.tar.xz
+6.2M	total
+$ for i in $(readlink $(~/src/guix/wip-bootstrap/pre-inst-env guix build bootstrap-tarballs)/*);\
+  do sudo tar xf $i; done
+$ du -schx *
+4.9M	bin
+700K	include
+38M	lib
+14M	share
+57M	total
+
+* Why?
+** Reproducibility is essential to Software Freedom
+
+Reproducible builds are a set of software development practices that
+create a verifiable path from human readable source code to the binary
+code used by computers.
+
+*** What about the bootstrap binaries and the compilers?
+
+We have the sources: they always lead to bitwise-same binary, but what
+about the bootstrap binaries and compilers?
+
+*** The current way out: Ignore the problem
+
+ ``recipe for yogurt: add yogurt to milk''
+
+*** New solution: Full source bootstrapping path
+
+* How?
+** Software: MesCC-tools, M2-Planet, GNU Mes and MesCC
+** MesCC-tools
+
+    https://savannah.gnu.org/projects/mescc-tools
+
+*** hex.0: ~500 byte well-documented, self-hosting hex assembler
+
+This 500 byte program is written in ASCII hex.  When converted
+byte-for-byte from ASCCI to binary we have the only binary seed that
+our full source bootstrap path needs.
+
+We bless this simple and easily verifyable binary and consider it to
+be source.
+
+*** hex1: next level hex assembler written in hex.0
+*** M0: a macro assembler written in hex.1
+*** M1: a macro assembler written in M0
+*** hex2: a hex2 linker written in M0
+*** M2-Planet: a self-hosting M2 (C-with-structs) transpiler written in M1
+*** GNU Mes: A Scheme interpreter written in C, with cpp transformed into M2
+*** MesCC: A C compiler written in Scheme
+*** tcc-boot: a patched version of TinyCC
+
+** GNU Mes and MesCC
+
+    https://www.gnu.org/software/mes
+
+*** mes.c: a Scheme interpreter in ~5,000LOC of simple C
+*** mescc: a C compiler written in Scheme (uses Nyacc C99 parser in Scheme)
+*** mes.M2: this Scheme interpreter in bootstrappable M2
+
+** TinyCC
+
+    https://gitlab.com/janneke/tinycc
+
+* TODO
+** merge scheme-only bootstrap into Guix.
+** reduced binary seed bootstrap into NixOS, Debian.
+** remove or upstream patches from tcc-boot
+** prepare src/mes.c for M2-Planet transpiler.
+** ARM, the Hurd
+** fix bootstrap-loops: (Nyacc?, mes.M2, psyntax.pp?)
+** make GNU gcc (8.0?) bootstrappable again, remove [need for] tcc stage
+* DONE
+** reduced binary seed bootstrap into Guix.
+** replace Guix bootstrap for x86_64.
+** replace Guix bootstrap for x86.
+** add full source gcc-4.7 package build.
+** bootstrap gcc+glibc-built binutils-20.1, gcc-4.1.0.
+** have tcc-boot compile gnutools triplet: binutils-2.14, gcc-2.95.3, glibc-2.2.5.
+** have tcc-boot's mes-tcc compile a fully functional tcc
+** hex.0, hex.1, M0
+** M1, hex2_linker in simple C
+** M2-Planet is now self-hosting, written in M2
+** mes+mescc are mutual self-hosting
+** patched tcc compiled with mes+mescc
+** during development we run mescc on Guile (mes is ~30 times slower)
+** tcc compiled with gcc is known to compile gcc
+
+* Contact
+** bug-mes@gnu.org
+** #bootstrappable, #guix on freenode
+** bootstrappable.org

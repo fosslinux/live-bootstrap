@@ -1,0 +1,111 @@
+                                                              -*- org -*-
+#+TITLE: Building and Installing GNU Mes
+
+Copyright © 2016,2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+Mes can be built in two modes: as a regulare package build or as a
+bootstrap package.
+
+After bootstrapping Mes it can be used to bootstrap TinyCC (tcc) in a
+similar way.
+
+* Get it
+   git clone [[git://git.savannah.gnu.org][git://git.savannah.gnu.org/mes.git]]
+
+* Regular build
+** Prerequisites
+*** Guix
+   #+BEGIN_SRC bash
+   guix environment -l guix.scm     #64 bit + 32bit
+   guix environment --system=i686-linux -l guix.scm #32 bit only
+   #+END_SRC
+
+*** Other GNU/Linux
+  - [[https://savannah.gnu.org/projects/mescc-tools/][mescc-tools]], 0.6.1 is known to work.
+  - [[https://savannah.gnu.org/projects/nyacc][Nyacc]], 0.93.0 is known to work.
+  - GNU Gcc, 4.9.3 is known to work.
+  - GNU Guile, version 2.0.12 or is know to work.
+  - SH, /bin/sh, GNU Bash 4.3 is known to work.
+  - GNU coreutils
+  - sed, GNU sed 4.2 is known to work.
+  - Perl, 5.22 is known to work.
+
+** Build it
+
+   #+BEGIN_SRC bash
+   ./configure
+   make
+   #+END_SRC
+
+If you get something like
+
+   #+BEGIN_SRC bash
+   mes.c:(.text+0x8da0): undefined reference to `__stack_chk_fail'
+   #+END_SRC
+
+then your compiler inserts stack protection code.  The Mes C Library
+does not support that.  Turn it off lik this
+
+   #+BEGIN_SRC bash
+   ./configure CFLAGS=-fno-stack-protector
+   #+END_SRC
+
+** Check it
+
+   #+BEGIN_SRC bash
+   make check
+   #+END_SRC
+
+** Install it
+
+   #+BEGIN_SRC bash
+   make install
+   #+END_SRC
+
+* Guix it
+
+   #+BEGIN_SRC bash
+   guix build -f guix.scm
+   #+END_SRC
+
+* Bootstrap build
+
+The bootstrap build is part of Guix, see
+https://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/commencement.scm
+
+** Prerequisites
+  - [[https://savannah.gnu.org/projects/mescc-tools/][mescc-tools]], 0.6.1 is known to work.
+  - [[https://savannah.gnu.org/projects/nyacc][Nyacc]], 0.93.0 is known to work.
+
+** Build it
+
+   #+BEGIN_SRC bash
+   sh configure.sh [--prefix=<prefix>]
+   sh bootstrap.sh
+   #+END_SRC
+
+** Check it
+
+   #+BEGIN_SRC bash
+   sh check.sh
+   #+END_SRC
+
+** Install it
+
+   #+BEGIN_SRC bash
+   sh install.sh
+   #+END_SRC
+* Regular build and bootstrap combine
+
+To build mes.c using MesCC, configure using --with-bootstrap:
+
+   #+BEGIN_SRC bash
+   ./configure --with-bootstrap
+   make
+   #+END_SRC
+
+This creates bin/mes-gcc and bin/mes-mescc.

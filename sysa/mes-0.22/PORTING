@@ -1,0 +1,84 @@
+#+COMMENT:                                                            -*- org -*-
+#+TITLE: Porting GNU Mes
+
+* Porting GNU Mes to ARM
+
+The ARM port can be found in wip-arm on savannah.
+
+For development, we use Guix's qemu-binfmt-service-type.
+
+** Guix Setup, see [[info:guix#Virtualization%20Services][Virtualization Services]].
+
+Add something like
+   #+BEGIN_SRC scheme
+      (service qemu-binfmt-service-type
+               (qemu-binfmt-configuration
+                (platforms (lookup-qemu-platforms "arm"))
+                (guix-support? #t)))
+   #+END_SRC
+to your config.scm and run guix system reconfigure.
+
+** Setup environment
+
+   #+BEGIN_SRC bash
+   guix environment -s armhf-linux --pure --ad-hoc bash coreutils diffutils gawk gcc-toolchain grep guile help2man make nyacc pkg-config sed texinfo
+   PATH=~/src/mescc-tools-arm/bin:$PATH
+   #+END_SRC
+
+(No git, graphviz on ARM yet).
+
+** Try it
+   #+BEGIN_SRC bash
+   ./configure --with-courage --with-system-libc
+   ./simple.sh
+   #+END_SRC
+
+some failures are expected.
+
+** Build it
+   #+BEGIN_SRC bash
+   ./configure --with-courage --with-system-libc
+   make MES=guile
+   make check
+   #+END_SRC
+
+expect many failures.  Non-system-libc, i.e. using the Mes C Library is currently WIP.
+
+* Porting GNU Mes to x86_64
+
+The x86_64 port is almost done, only a few bugs remain.  The Guix
+bootstrap for x86_64 uses x86 mes and that is not expected to change.
+
+* Porting GNU Mes to GNU/Hurd
+
+The Hurd port can be found in wip-hurd on savannah.  For development, we
+use a Debian GNU/Hurd vm.
+
+* Porting GNU Mes to FreeBSD
+The FreeBSD port can be found in wip-freebsd on savannah.
+
+* Porting the Reduced Binary Seed bootstrap to NixOS
+The NixOS port of the Reduced Binary Seed bootstrap lives on the
+mes-bootstrap branch in https://github.com/xwvvvvwx/nixpkgs
+
+* Porting the Reduced Binary Seed bootstrap to Debian GNU/Linux
+To port the Reduced Binary Seed bootstrap to a traditional distribution
+such as Debian, two things need to happen: the bootstrap must be ported
+and the distribution build process needs to change to start from a only
+binary seed.
+
+The porting aspect is probably easiest: we start by packaging GNU Mes as
+a regular package.  Having Mes built as a regular package, we can then
+build a bootstrap Mes.  This bootstrap Mes can be used to build tinycc,
+and so on.
+
+Once we have shown that the Debian base system can be bootstrapped from
+a Reduced Binary seed, thus significantly reducing the Trusted Computing
+Base (TCB), strategic decisions about the build process can start.
+
+* Legalese
+Copyright © 2019 Jan (janneke) Nieuwenhuizen <[[mailto:janneke@gnu.org][janneke@gnu.org]]>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.

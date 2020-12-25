@@ -1,0 +1,50 @@
+nyacc/lang/c99/
+
+Copyright (C) 2015,2016,2019 Matthew R. Wette
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.  This file is offered as-is,
+without any warranty.
+
+manifest:
+
+cpp.scm		C preprocessor using tables
+		includes: cpp-act.scm,cpp-tab.scm
+cppmach.scm	CPP expression grammer, machine and act/tab file generation
+
+mach.scm	C grammer, machine and act/tab file generation
+		depends: cpp.scm
+
+parser.scm	C file parser, C expression parser
+		includes: c99-act.scm, c99-tab.scm, c99x-act.scm, c99-tab.scm,
+		          body.scm
+		depends: cpp.scm
+
+body.scm	included in parser.scm
+
+cxmach.scm	parse constant expressions
+
+cxeval.scm	evaluate constant expressions
+
+pprint.scm	C pretty printer, from SXML output of above parsers
+
+util.scm	utilities merge, remove trees from included files
+
+munge.scm	utilities to process information in trees
+
+ffi-help.scm	generate FFI api code from C headers
+
+mach.d/
+  cpp-act.scm	cpp expression parser actions, generated from cppmach.scm
+  cpp-tab.scm	cpp expression parser tables, generated from cppmach.scm
+
+  c99-act.scm	parser actions, generated from mach.scm
+  c99-tab.scm	parser tables, generated from mach.scm
+
+  c99x-act.scm	expression parser actions, generated from mach.scm
+  c99x-tab.scm	expression parser tables, generated from mach.scm
+
+  c99cx-act.scm	constant expression parser actions, generated from cxmach.scm
+  c99cx-tab.scm	constant expression parser tables, generated from cxmach.scm
+

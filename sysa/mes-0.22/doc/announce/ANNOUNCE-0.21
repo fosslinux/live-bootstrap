@@ -1,0 +1,132 @@
+
+Subject: GNU Mes 0.21 released
+
+<#secure method=pgpmime mode=sign>
+
+We are pleased to announce the release of GNU Mes 0.21, representing
+54 commits over 10 weeks.
+
+Mes has now brought the Reduced Binary Seed bootstrap to Guix (bootstrap
+a GNU/Linux system without binary GNU toolchain or equivalent).  See
+https://guix.gnu.org/blog/2019/guix-reduces-bootstrap-seed-by-50/
+
+This release supports a Scheme-only bootstrap: Mes can now be built with
+Gash and the experimental Gash Core Utils instead of using GNU Awk, GNU
+Bash, the GNU Core Utilities, GNU Grep, GNU Gzip, GNU Make, GNU SED, and
+GNU Tar.  Also, the Mes C Library now supports bootstrapping those.
+Finally, this release brings Mes as a package to Debian GNU/Linux.
+
+We are excited that the Nlnet Foundation[12] is now sponsoring this
+work!
+
+Next targets:
+
+ - Introduce the Reduced Binaries Seed bootstrap to NixOS (Debian,
+   Gentoo, ...?)
+ - Scheme-only bootstrap: use Guile, Gash and Gash Core Utils to remove
+   awk, bash, core utilities, grep, gzip, make, sed, tar, etc. from the
+   Guix bootstrap binaries
+ - ARM support
+ - Full Source Bootstrap: compile Mes.c using M2-Planet
+ - Reduced Binary Seed bootstrap for ARM
+ - the Hurd
+
+Packages are available in Guix master.
+
+* About
+
+  GNU Mes[0] brings a Reduced Binary Seed bootstrap[1] to GNU Guix[2].
+  This bootstrap has halved the size of opaque, uninspectable binaries
+  that were needed to bootstrap Guix 1.0.  The final goal is to help
+  create a full source bootstrap as part of the bootstrappable builds[3]
+  effort for any interested UNIX-like operating system.
+
+  Mes consists of a mutual self-hosting Scheme interpreter written in
+  ~5,000 LOC of simple C, and a C compiler written in Scheme.  This
+  mes.c is being simplified[4] to be transpiled by M2-Planet[5].
+
+  The Scheme interpreter has a Garbage Collector, a library of loadable
+  Scheme modules-- notably Dominique Boucher's LALR[6], Pre-R6RS
+  [portable syntax-case[7] with R7RS ellipsis, Matt Wette's Nyacc[8]
+  --and test suite, just enough to support a REPL and a C99 compiler:
+  MesCC.
+
+  Mes+MesCC can compile an only lightly patched TinyCC[9] that is
+  self-hosting.  Using this tcc and the Mes C library we now have a
+  Reduced Binary Seed bootstrap for the gnutools triplet: glibc-2.2.5,
+  binutils-2.20.1, gcc-2.95.3.  This is enough to bootstrap Guix for
+  i686-linux and x86_64-linux.
+
+  Mes is inspired by The Maxwell Equations of Software: LISP-1.5[10] -- John
+  McCarthy page 13, GNU Guix's source/binary packaging transparency and
+  Jeremiah Orians's stage0[11] ~500 byte self-hosting hex assembler.
+
+* Download
+
+  git clone git://git.savannah.gnu.org/mes.git
+
+  Here are the compressed sources and a GPG detached signature[*]:
+    https://ftp.gnu.org/gnu/mes/mes-0.21.tar.gz
+    https://ftp.gnu.org/gnu/mes/mes-0.21.tar.gz.sig
+
+  Use a mirror for higher download bandwidth:
+    https://ftpmirror.gnu.org/mes/mes-0.21.tar.gz
+    https://ftpmirror.gnu.org/mes/mes-0.21.tar.gz.sig
+
+  Here are the MD5 and SHA1 checksums:
+
+  dea43529d2d84fb4b9d81bdd9efcc715  mes-0.21.tar.gz
+  35721a81feeab6e0d5913b8bf78f18951edbb964  mes-0.21.tar.gz
+
+  [*] Use a .sig file to verify that the corresponding file (without the
+  .sig suffix) is intact.  First, be sure to download both the .sig file
+  and the corresponding tarball.  Then, run a command like this:
+
+    gpg --verify mes-0.21.tar.gz.sig
+
+  If that command fails because you don't have the required public key,
+  then run this command to import it:
+
+    gpg --keyserver keys.gnupg.net --recv-keys 1A858392E331EAFDB8C27FFBF3C1A0D9C1D65273
+
+  and rerun the 'gpg --verify' command.
+
+* Get informed, get involved
+
+  See https://bootstrappable.org
+  Join #bootstrappable on irc.freenode.net.
+
+* Changes in 0.21 since 0.20
+ ** Core
+ *** Mes can now be bootstrapped with Gash and Gash Core Utils.
+ *** Mes now supports a Scheme-only bootstrap.
+ *** Mes now supports -c EXPR.
+ ** MesCC
+ *** Mes C Library now supports bootstrapping GNU Awk, GNU Bash, GNU SED, and GNU Tar.
+ *** Mes C Library now has limited float support in vfprintf, vsnprintf, vsscanf.
+ **** 7 new functions
+ abtod, atof, creat, dtoab, execlp, isgraph, mknod, readlink, strtod,
+ symlink.
+ **** 5 new stubs
+ getgrgid, getgrnam, getpgid, getpgrp, mktime, setgrent.
+ ** Noteworthy bug fixes
+ *** A bug with `mes -c EXPR' has been fixed.
+ *** The REPL now works again on x86_64.
+ *** --with-system-libc now works again.
+
+Greetings,
+janneke and Danny.
+
+[0] https://www.gnu.org/software/mes
+[1] https://guix.gnu.org/blog/2019/guix-reduces-bootstrap-seed-by-50/
+[2] https://www.gnu.org/software/guix
+[3] https://bootstrappable.org
+[4] https://github.com/oriansj/mes-m2
+[5] https://github.com/oriansj/m2-planet
+[6] https://github.com/schemeway/lalr-scm
+[7] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[8] https://www.nongnu.org/nyacc
+[9] https://gitlab.com/janneke/tinycc
+[10] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[11] https://savannah.nongnu.org/projects/stage0
+[12] https://nlnet.nl/project/GNUMes

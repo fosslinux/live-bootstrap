@@ -1,0 +1,97 @@
+Subject: Mes 0.12 released
+
+I am pleased to announce the release of Mes 0.12, representing 120
+commits over 20 weeks.  MesCC is prototyped running on Guile and can
+now run on Mes.  Performance of Mes running MesCC has been improved by
+a factor of 100; mes.c (~3000 LOC) now compiles in ~4min.  Many fixes
+and enhancements make that now also TinyCC parses (~1.5h) and compiles
+(~20min) with Mes+MesCC (Guile+MesCC takes ~2min).
+
+Special thanks go to Ricardo Wurmus for sharing the recursive macro
+expand perspective and starting work on that, to Han-Wen Nienhuys for
+his sharp `Ah, so you skipped SICP chapter 3' remark and to rain1 for
+their continuous help on #bootstrapping and their `let's only expand
+global variables' insight.
+
+* About
+
+    Mes[0] aims to create full source bootstrapping for GuixSD[1] as
+    part of the bootstrappable builds[2] project.
+
+    It currently consists of a mutual self-hosting [close to Guile-]
+    Scheme interpreter prototype in C and a Nyacc-based C compiler in
+    [Guile] Scheme.  This C prototype will be simplified to be
+    transpiled by M2-Planet[3].
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[4], pre-R6RS portable syntax-case[5] with R7RS ellipsis, Matt
+    Wette's Nyacc[6], Guile's PEG[7] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    MesCC (mescc.mes).
+
+    MesCC can compile a modified TinyCC[8] that is close to being
+    self-hosting.  A GNU Gcc-compiled tcc is known[9] to compile GCC.
+
+    Mes is inspired by The Maxwell Equations of Software: LISP-1.5[10]
+    -- John McCarthy page 13, GNU Guix's source/binary packaging
+    transparency and Jeremiah Orians's stage0[11] ~300 byte self-hosting
+    hex assembler.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.12 -O mes-0.12.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.12 since 0.11
+ ** Core
+ *** Mes can now run Nyacc (0.80.42) to compile itself in ~4min (~3000 LOC).
+ *** Mes now recursively expands global variables per top level statement.
+ *** Mes now recursively expands macros per top level statement.
+ *** Mes now boots from MES_BOOT (default: module/mes/boot-0.scm).
+ *** Mes now has a full Scheme reader in C again.
+ This gives a 10x-20x performance improvement and increases the
+ bootstrap footprint by 160 LOC.
+ *** Mes reader now supports older abbreviated character forms
+ #\bel, #\bs, #\ht and #\vt.
+ *** 3 new functions
+ equal2?, memq, core:write.
+ ** Language
+ *** Mes now has an incremental Scheme semantics test suite with 71 small tests.
+ *** Variable names can now have ticks.
+ *** Mes now evaluates expresions of COND only once.
+ *** srfi-9 records have been reimplemented.
+ *** #\page is now whitespace.
+ *** #<eof> is no longer a character.
+ *** 2 new macros
+ define-macro*, with-fluids.
+ *** 9 new functions
+ dirname, last, reverse-list->string, setenv, string-drop-right,
+ string-fold, string-fold-right, string-null?, write.
+ ** MesCC
+ **** 9 new functions
+ chmod, getopt_long, ferror, itoab, longjmp, qsort, setenv, setjmp, strtol.
+ **** 2 new header files
+ endian.h, sys/signal.h.
+
+Greetings,
+janneke
+
+[0] https://gitlab.com/janneke/mes
+[1] https://www.gnu.org/software/guix
+[2] http://bootstrappable.org
+[3] https://github.com/oriansj/m2-planet
+[4] https://github.com/schemeway/lalr-scm
+[5] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[6] https://www.nongnu.org/nyacc/
+[7] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[8] https://gitlab.com/janneke/tinycc
+[9] https://lists.gnu.org/archive/html/tinycc-devel/2017-05/msg00103.html
+[10] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[11] https://github.com/oriansj/stage0

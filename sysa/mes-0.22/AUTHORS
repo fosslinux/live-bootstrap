@@ -1,0 +1,88 @@
+                                                              -*- org -*-
+#+TITLE: GNU Mes Authors
+
+Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+Main author
+All files except the imported files listed below
+
+Danny Milosavljevic <dannym@scratchpost.org>
+ARM port
+lib/mes/div.c
+Additions and fixes throughout
+
+Jeremiah Orians <jeremiah@pdp10.guru>
+lib/stdio/fopen.c (first simple version of fopen)
+scaffold/tests/98-fopen.c
+
+Han-Wen Nienhuys <hanwen@xs4all.nl>
+lib/string/memmem.c (_memmem, memmem)
+
+Peter de Wachter
+Small fixes and additions to
+lib/x86-mes/x86.M1
+lib/x86_64-mes/x86_64.M1
+include/stdint.h
+module/mescc/compile.mes
+
+rain1
+scaffold/tests/90-goto-var.c
+scaffold/tests/91-goto-array.c
+
+List of imported files
+
+D A Gwyn
+lib/alloca.c
+
+Included verbatim from gnulib
+build-aux/gitlog-to-changelog
+
+Portable hygienic pattern matcher
+mes/module/mes/match.scm
+
+Portable LALR(1) parser generator
+mes/module/mes/lalr.scm
+
+Portable syntax-case from Chez Scheme; patches from Guile
+mes/module/mes/psyntax.ss
+mes/module/mes/psyntax.pp [generated]
+
+Getopt-long from Guile
+module/mes/getopt-long.scm
+
+Optargs from Guile
+mes/module/mes/optargs.scm
+
+PEG from Guile
+mes/module/mes/peg/
+
+Pmatch from Guile
+mes/module/mes/pmatch.scm
+
+Pretty-print from Guile
+mes/module/mes/pretty-print.scm
+
+Srfi-1 bits from Guile
+mes/module/srfi/srfi-1.scm
+
+Srfi-16 from Guile
+mes/module/srfi/srfi-16.scm
+
+Srfi-26 from Guile
+mes/module/srfi/srfi-26.scm
+
+GNU FDL in texinfo from GNU
+doc/fdl-1.3.texi
+
+Hurd and Mach support from GNU C Library
+include/gnu/hurd-types.h
+include/mach/mach-init.h
+lib/mach/msg.c
+lib/mach/mach-init.c
+lib/mach/*.S
+
+* legalese
+Copyright © 2016,2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.

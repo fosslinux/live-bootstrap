@@ -1,0 +1,61 @@
+#! /bin/sh
+# -*-scheme-*-
+exec ${MES-bin/mes} --no-auto-compile -L ${0%/*} -L module -C module -e '(tests vector)' -s "$0" "$@"
+!#
+
+;;; -*-scheme-*-
+
+;;; GNU Mes --- Maxwell Equations of Software
+;;; Copyright © 2016,2017,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;;
+;;; This file is part of GNU Mes.
+;;;
+;;; GNU Mes is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Mes is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (tests vector)
+  #:use-module (mes mes-0)
+  #:use-module (mes test))
+
+(mes-use-module (mes scm))
+(mes-use-module (mes test))
+
+(pass-if "first dummy" #t)
+(pass-if-not "second dummy" #f)
+
+(pass-if "equal?" (sequal? #(1) #(1)))
+(pass-if "equal?" (not (equal? #() #(1))))
+(pass-if "vector" (sequal? #(vector 0 1 2) #(vector 0 1 2)))
+(pass-if "vector?" (vector? #(1 2 c)))
+(pass-if "vector-length" (seq? (vector-length #(1)) 1))
+
+(if (not guile?)
+    (pass-if "core:make-vector" (sequal? (core:make-vector 3) #(*unspecified* *unspecified* *unspecified*))))
+
+(pass-if "vector-ref" (seq? (vector-ref #(0 1) 1) 1))
+(pass-if "vector-set!" (equal? (let ((v #(0 1))) (vector-set! v 1 'q) v) #(0 q)))
+(pass-if "vector-set! 2" (not (equal? (let ((v #(0 1))) (vector-set! v 1 'q) v) #())))
+(pass-if "vector-set! 3" (sequal? (let ((v1 #(0))
+                                        (v2 #(1)))
+                                    (vector-set! v2 0 (cons 0 (vector-ref v1 0)))
+                                    (vector-set! v1 0 'mwhuharhararrrg)
+                                    v2)
+                                  #((0 . 0))))
+(pass-if "list->vector" (sequal? (list->vector '(a b c)) #(a b c)))
+(pass-if "vector list" (let ((v #(0))
+                             (l '(a b c)))
+                         (vector-set! v 0 l)
+                         (set-cdr! l '())
+                         (sequal? (vector->list v) '((a)))))
+
+(result 'report)

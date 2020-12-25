@@ -1,0 +1,45 @@
+Subject: 	on bootstrapping: introducing Mes
+Date: 	Sun, 19 Jun 2016 13:08:02 +0200
+
+Hi,
+
+I have a minimal LISP-1.5-resembling interpreter in C that now can
+also interpret itself
+
+    https://gitlab.com/janneke/mes
+
+It was inspired by the seemingly often ignored bootstrapping question
+made so painfully visible by GuixSD and by OriansJ with their self
+hosting hex assembler project.
+
+As a next step after a hex assembler I was thinking of getting Scheme up
+and running and use that to create a tiny C compiler, probably using
+PEG.  For that I think we need define-syntax, which I had a peek at and
+still scares the all-sorts-of-things out of me :-)
+
+I searched for minimal Lisp/Scheme to get that going and found an
+article called the Maxwell Equations of Software 1) with a pointer to
+the 1962 LISP 1.5 paper by John McCarthy 2).
+
+First I `implemented' Mes/LISP-1.5: the bottom half of page 13 and the
+necessary helper procedures defined on pages 8-12 using Guile, removing
+all but the primitives needed to run LISP-1.5/Mes (I think): car, cdr,
+cond, cons, define, eq?, '()/nil, null?, pair? and quote.  I cheated
+with read, and with display and newline for debugging.
+
+Then I translated the program into C and got rid of read by using
+getchar/ungetchar.
+
+It's been great fun and now I'm kind of stuck a bit at the point of
+implementing macros.  I have a simplistic version in C but want to
+remove that again --I like the idea of having the absolute minimal LISP
+interpreter in C-- and only introduce macros after having bootstrapped
+into the LISP/Mes domain.
+
+Greetings,
+Jan
+
+1) http://www.michaelnielsen.org/ddi/lisp-as-the-maxwells-equations-of-software/
+2) 
+http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+

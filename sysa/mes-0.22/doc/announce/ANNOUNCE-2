@@ -1,0 +1,87 @@
+Subject: on bootstrapping: 2nd status report on Mes
+Date: 	Sun, 25 Sep 2016 13:52:11 +0200
+
+Hi!
+
+In June I announced[0] Mes as a project that seeks to reduce the size of/
+dependency on bootstrap binaries, esp. for a system like GuixSD
+
+The strategy was to create a minimal trusted binary (prototyped in C but
+eventually to be hand-crafted in assembly/hex) that interpets a minimal
+LISP.  Then using this minimal but already convenient LISP, extend it
+into Scheme and write a tiny C compiler/linker.
+
+Last time I had a minimal LISP-1.5-resembling interpreter in 900 lines
+of C that could interpret itself and an extension layer written in LISP
+providing a minimal Scheme environment.  I was stuck on adding macros in
+LISP and had a broken macro implentation in C that I wanted to remove.
+Also I hoped to greatly reduce the size of the C part.
+
+New status[1]
+
+    * Provide Scheme primitives directly in 1400 lines of C
+    * Remove LISP-1.5 staging
+    * closures clue-bat, fixing bugs in begin, lambda, lexical
+      scoping etc. ... learned a lot!
+    * quasiquote, unquote, unquote-splicing (in C, too slow in Scheme)
+    * define-macro (in C)
+    * define-syntax, syntax-rules (in Scheme, using define-macro)
+    * all primitives needed to run LALR (strings, vectors, records,
+      some srfi bits; mostly in Scheme)
+    * test suite with 97 tests that run with Mes and also with Guile
+    * minimal and partial ANSI C parser for hello world
+    * minimal and simplistic 32 bit elf c-ast->elf generator
+
+      Mes can now create a running 32-bit elf binary from this hello
+      world C source with a simplistic for loop
+
+         int main ()
+         {
+           int i;
+           puts ("Hi Mes!\n");
+           for (i = 0; i < 4; ++i)
+             puts ("  Hello, world!\n");
+           return 1;
+         }
+
+      It takes Mes 1'20" to compile this program, Guile takes 0.5 seconds.
+
+    * cannot get psyntax.pp hooked-up or running
+    * do not understand syntax stuff [well enough] to implement in C
+      -> no let-syntax, no MATCH
+      -> no syntax-case, no PEG parser
+
+In theory the bootstrapping problem I set out to solve seems to be
+cracked.  The remaining problem is reduced to `just work':
+implementing a minimal C compiler in Scheme.  Questions here: I'm not
+convinced yet that this is a meaningful project...aaand I really not
+want to tackle this without having MATCH, which Mes does not have yet.
+
+Of the possible directions that I see
+
+   0 write the C compiler in Scheme without match
+   1 rewrite match without let-syntax
+   2 grok+write let-syntax/syntax-case using define-macro, some bits in C
+   3 run and hook-up psyntax.pp...BUT that would probably require:
+   4 address performance problem, possibly by
+   5 rewrite Mes into a VM-based solution
+
+none I find really attractive.  Option 5, a VM is proven to work but
+that's quite a change of direction.  Looking at other VM-based projects
+(e.g. GNU Epsilon[2]) I fear that this must result in a much larger code
+base in C, throwing out the minimal trusted binary idea.  The other
+puzzles and work 0, 2 or 3 still need to be done.
+
+However, diving into syntax-macro or eval work (2 or 3) most probably
+needs the performance issue addressed.  And if it turns out that a big
+VM solution is needed, that may still invalidate this project after
+having done even more work.
+
+Help! :-)  Ideas?
+
+Greetings,
+Jan
+
+[0] https://lists.gnu.org/archive/html/guile-user/2016-06/msg00061.html
+[1] https://gitlab.com/janneke/mes
+[2] http://git.savannah.gnu.org/cgit/epsilon.git

@@ -1,0 +1,99 @@
+Subject: on bootstrapping: first Mes 0.3 released
+
+I am pleased to announce the first release of Mes: 0.3, representing
+152 commits over 3 months since the second status report[1].
+
+* About
+
+    Mes aims to create an entirely source-based bootstrapping path.  The
+    target is to [have GuixSD] boostrap from a minimal, easily inspectable
+    binary --that should be readable as source-- into something close to
+    R6RS Scheme.
+
+    As bootstrapping is presumably easiest and probably most fun with
+    Scheme, the next step for Mes is mescc: a C compiler/linker to
+    boostrap into GNU Gcc and GNU Guile, possibly via Tiny-CC.
+
+    It currently has an interpreter written in C (mes) with Garbage
+    Collector (Jam Scraper), a library of loadable Scheme modules with
+    test suite just barely enough to support a simple REPL (repl.mes)
+    and a proof-of-concept c-compiler (mescc.mes) that produces an elf
+    from the simplest of C files.
+
+    Mes is inspired by The Maxwell Equations of Software: LISP-1.5[2]
+    -- John McCarthy page 13
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.3 -O mes-0.3.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+
+* Changes in 0.3 since 0.2
+ ** Core
+ *** Number-based rather than pointer-based cells.
+ *** Garbage collector aka Jam scraper.
+ A variant on SICP's stop and copy Garbage Collector (Jam Scraper?)
+ algorithm has been implemented.
+ *** The reader has been moved to Scheme.
+ ** Language
+ *** Simple loadable modules.
+ *** Srfi-9 and match use handwritten syntax-rules (mes-use-module (mes syntax)).
+ *** Optional syntax-case using psyntax (mes-use-module (mes psyntax)).
+ ** Noteworthy bug fixes
+ *** Srfi-0 has been fixed.
+
+* Changes in 0.2 since 0.1
+ ** Core
+ *** Names of symbols and strings are list of characters [WAS: c-string].
+ *** Sc-expand from pre-R6RS's psyntax has been integrated.
+ *** Undefined variable error now shows the name of the undefined variable.
+ *** There is now only one SCM type for builtin functions.
+ *** Macro expansion has been cleaned-up.
+ ** Language
+ *** Mes now provides a subset of R6RS.
+ *** Mes now provides syntax-case.
+ *** Mes now provides `load'.
+ ** Noteworthy bug fixes
+ *** Using values as second parameter of builtin function yields first value.
+ *** Quoted internals (e.g. 'if 'lambda) are now symbols.
+ *** Syntax error now exits.
+ *** Make+Bash voodoo has been replaced by build-aux/mes-snarf.scm.
+ *** Apply now accepts multiple list arguments.
+ *** Apply of character, inernal, number, string is an error.
+ *** Quasisyntax reading 
+
+* Changes in 0.1 (since progress report #2)
+ ** Core
+ *** expand_macro is now a separate function.
+ *** A smaller core can now compiled using BOOT=1.
+ The smaller core does not provide define, define-macro, or quasiquote;
+ these are provided from a Scheme version of implemented eval/apply.
+ ** Language
+ *** Mes now provides a subset of R5RS.
+ *** Mes now provides let-syntax.
+ *** Mes now provides match.
+ *** Mes now provides quasisyntax, unsyntax and unsyntax-splicing.
+ ** User interface
+ *** Mes now provides a REPL, run:
+     scripts/repl.mes
+ *** Mes compiler can be run as a script:
+     scripts/mescc.mes doc/examples/main.c
+ *** Macro expansion can be inspected in the REPL, e.g.:
+     ,expand (and 0 1)
+ ** Noteworthy bug fixes
+ *** Performance: scripts/mescc.mes now takes 2s to compile main.c (was 1'20").
+ *** Symbols are now truly unique.
+   * '(), #t, #f are no longer symbols.
+
+Greetings,
+Jan
+
+[1] https://lists.nongnu.org/archive/html/guile-user/2016-09/msg00061.html 
+[2] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf

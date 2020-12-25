@@ -1,0 +1,133 @@
+
+Subject: GNU Mes 0.20 released
+
+<#secure method=pgpmime mode=sign>
+
+We are pleased to announce the release of GNU Mes 0.20, representing
+147 commits over 38 weeks.
+
+Mes has now brought the Reduced Binary Seed bootstrap to Guix (bootstrap
+a GNU/Linux system without binary GNU toolchain or equivalent).  It
+should land in Guix master any day now: a big thank you to everyone who
+helped, notably Ludovic and Mark.
+
+This release is a step towards the upcoming Scheme-only bootstrap and
+bringing Mes into NixOS and Debian.  This effort is now sponsored by
+NLnet[12].
+
+Next targets:
+
+ - ARM support
+ - Reduced Binary Seed bootstrap for ARM
+ - Scheme-only bootstrap: use Guile and Gash to remove bash,
+   coreutils&co, grep, sed, etc. from the Guix bootstrap binaries
+ - mes-m2: port Mes.c to M2-Planet
+ - Introduce Reduced Binaries Seed bootstrap to NixOS
+ - Debian?
+ - Hurd
+
+Packages are available in Guix master.
+
+* About
+
+  GNU Mes[0] brings a Reduced Binary Seed bootstrap[1] to GNU Guix[2]
+  and potentially to any other interested GNU/Linux distribution, and
+  aims to help create a full source bootstrap as part of the
+  bootstrappable builds[3] effort.
+
+  It consists of a mutual self-hosting Scheme interpreter written in
+  ~5,000 LOC of simple C and a Nyacc-based C compiler written in Scheme.
+  This mes.c is being simplified[4] to be transpiled by M2-Planet[5].
+
+  The Scheme interpreter (mes.c) has a Garbage Collector, a library of
+  loadable Scheme modules-- notably Dominique Boucher's LALR[6], Pre-R6RS
+  [portable syntax-case[7] with R7RS ellipsis, Matt Wette's Nyacc[8] --and test
+  suite just barely enough to support a simple REPL and simple
+  C-compiler: MesCC.
+
+  Mes+MesCC can compile an only lightly patched TinyCC[9] that is
+  self-hosting.  Using this tcc and the Mes C library we now have a
+  Reduced Binary Seed bootstrap for the gnutools triplet: glibc-2.2.5,
+  binutils-2.20.1, gcc-2.95.3.  This is enough to bootstrap Guix for
+  i686-linux and x86_64-linux.
+
+  Mes is inspired by The Maxwell Equations of Software: LISP-1.5[10] -- John
+  McCarthy page 13, GNU Guix's source/binary packaging transparency and
+  Jeremiah Orians's stage0[11] ~500 byte self-hosting hex assembler.
+
+* Download
+
+  git clone git://git.savannah.gnu.org/mes.git
+
+  Here are the compressed sources and a GPG detached signature[*]:
+    https://ftp.gnu.org/gnu/mes/mes-0.20.tar.gz
+    https://ftp.gnu.org/gnu/mes/mes-0.20.tar.gz.sig
+
+  Use a mirror for higher download bandwidth:
+    https://ftpmirror.gnu.org/mes/mes-0.20.tar.gz
+    https://ftpmirror.gnu.org/mes/mes-0.20.tar.gz.sig
+
+  Here are the MD5 and SHA1 checksums:
+
+  df839a83e4a2ad6c2a4accc5bf17b1a7  mes-0.20.tar.gz
+  38d4cb3fa28fa1f5fc57fea9e046d4d8052bbb8c  mes-0.20.tar.gz
+
+  [*] Use a .sig file to verify that the corresponding file (without the
+  .sig suffix) is intact.  First, be sure to download both the .sig file
+  and the corresponding tarball.  Then, run a command like this:
+
+    gpg --verify mes-0.20.tar.gz.sig
+
+  If that command fails because you don't have the required public key,
+  then run this command to import it:
+
+    gpg --keyserver keys.gnupg.net --recv-keys 1A858392E331EAFDB8C27FFBF3C1A0D9C1D65273
+
+  and rerun the 'gpg --verify' command.
+
+* Get informed, get involved
+
+  See https://bootstrappable.org
+  Join #bootstrappable on irc.freenode.net.
+
+* Changes in 0.20 since 0.19
+ ** Core
+ *** The build system has been simplified, again.
+ Mes now builds ootb on Debian.
+ *** Mes now supports -c EXPR.
+ ** Divide by zero is now flagged.
+ ** Language
+ *** 1 new function:
+ take-while.
+ ** MesCC
+ *** The C libraries have been exploded into one function per file.
+ *** MesCC now has enhanced POSIX/gcc comand line support, e.g. -DFOO=1,
+ -nodefaultlibs, -nostartfiles, -nostdlib.
+ *** The archiver is now called `mesar'.
+ *** MesCC now supports Nyacc-0.99.
+ *** MesCC now depends on MesCC-Tools 0.6.0.
+ *** 1 new function
+ __mesabi_uldiv.
+ ** Noteworthy bug fixes
+ *** interger division has been fixed.
+ *** isatty now looks at terminfo.
+ *** signal now uses sigaction correctly for non-x86.
+ *** string->number now support #x hex-prefix.
+ *** ungetc now has a buffer per file handle.
+
+Greetings,
+janneke and Danny.
+
+[0] https://www.gnu.org/software/mes
+[1] http://joyofsource.com/reduced-binary-seed-bootstrap.html
+[2] https://www.gnu.org/software/guix
+[3] https://bootstrappable.org
+[4] https://github.com/oriansj/mes-m2
+[5] https://github.com/oriansj/m2-planet
+[6] https://github.com/schemeway/lalr-scm
+[7] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[8] https://www.nongnu.org/nyacc
+[9] https://gitlab.com/janneke/tinycc
+[10] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[11] https://savannah.nongnu.org/projects/stage0
+[12] https://nlnet.nl/project/GNUMes

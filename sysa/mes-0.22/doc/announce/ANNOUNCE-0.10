@@ -1,0 +1,96 @@
+Subject: Mes 0.10 released
+
+I am pleased to announce the release of Mes 0.10, representing 82
+commits over 6 weeks.  Mescc now compiles a bootstrappable-modified
+TinyCC into a mes-tcc that in turn can successfully compile a trivial
+C program.
+
+* About
+
+    Mes[0] aims to create full source bootstrapping for GuixSD[1] as
+    part of the bootstrappable builds[2] project.
+
+    It currently consists of a mutual self-hosting [close to Guile-]
+    Scheme interpreter prototype in C and a Nyacc-based C compiler in
+    [Guile] Scheme.  This C prototype will be rewritten in stage0[3]
+    M1 assembly (or possibly stage2 slow-LISP, or ...).
+
+    The Scheme interpreter prototype (mes.c) has a Garbage Collector,
+    a library of loadable Scheme modules-- notably Dominique Boucher's
+    LALR[4], Pre-R6RS portable syntax-case[5] with R7RS ellipsis, Matt
+    Wette's Nyacc[6], Guile's PEG[7] --and test suite just barely
+    enough to support a simple REPL (repl.mes) and simple C-compiler
+    (mescc.mes).
+
+    The simple C compiler can compile a modified TinyCC[8] that is
+    starting to work!  A gcc-compiled tcc is known[9] to compile GCC.
+
+    Mes is inspired by The Maxwell Equations of Software: LISP-1.5[10]
+    -- John McCarthy page 13, GNU Guix's source/binary packaging
+    transparency and Jeremiah Orians's stage0 ~300 byte self-hosting
+    hex assembler.
+
+* Download
+
+    git clone https://gitlab.com/janneke/mes
+
+    wget https://gitlab.com/janneke/mes/repository/archive.tar.gz?ref=v0.10 -O mes-0.10.tar.gz
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] by the usual
+
+    guix package -f guix.scm
+
+* Changes in 0.10 since 0.9
+ ** Core
+ *** 2 new functions
+ logand, lognot.
+ ** Mescc
+ *** Mes now includes M1 sources for full source bootstrapping up to tcc.
+ *** Mescc now depends on Nyacc 0.81.0.
+ *** Mescc now compiles a mes-tcc that compiles a trivial C to a running a.out.
+ *** Mescc now supports several (as used my tinycc) struct by value assignments.
+ *** Mescc now has _start in a separate crt1.c.
+ *** Mescc now supports initializer arithmetic.
+ *** Mescc now supports arrays of struct of arbitrary size.
+ *** Mescc now supports pointer arithmetic.
+ *** Mescc now defines __i386__, __linux__.
+ *** Mescc now supports --*p, ++*p.
+ *** Mescc now supports int foo[bar] = {baz,...}.
+ *** Mescc now supports \x00 in strings in M1.
+ *** Mescc now supports complex enum expressions.  Thanks, rain1!
+ *** Mescc now supports short.
+ *** Mescc now supports foo.bar = foo.baz = bla.
+ *** Mescc now supports foo = bar < baz and comparison permutations.
+ *** Mescc now supports (anonymous) structs in unions.
+ *** Mescc now writes M1 strings if possible.
+ **** 2 improved mlibc functions
+ malloc, realloc.
+ **** 13 new mlibc functions
+ fclose, fgetc, fprintf, fwrite, memcpy, memmove, memset, snprintf, strcat,
+ strchr, strrchr, strtoull, vnsprintf.
+ **** 15 new tinycc-support tests
+ 76-pointer-arithmetic.c, 77-pointer-assign.c, 78-union-struct.c,
+ 79-int-array.c, 7a-struct-char-array.c, 7b-struct-int-array.c,
+ 7c-dynarray.c, 7d-cast-char.c, 7e-struct-array-access.c,
+ 7f-struct-pointer-arithmetic.c, 7g-struct-byte-word-field.c,
+ 7h-struct-assign.c, 7i-struct-struct.c, 7j-strtoull.c,
+ 7k-for-each-elem.c.
+ ** Noteworthy bug fixes
+ *** Mescc has many fixes for foo.bar[baz], foo[bar].baz with ./-> permutations.
+ *** Many bugs and limitations in mescc have been fixed and removed.
+
+Greetings,
+janneke
+
+[0] https://gitlab.com/janneke/mes
+[1] https://www.gnu.org/software/guix
+[2] http://bootstrappable.org
+[3] https://github.com/oriansj/stage0
+[4] https://github.com/schemeway/lalr-scm
+[5] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[6] https://www.nongnu.org/nyacc/
+[7] https://www.gnu.org/software/guile/docs/master/guile.html/PEG-Parsing.html
+[8] https://gitlab.com/janneke/tinycc
+[9] https://lists.gnu.org/archive/html/tinycc-devel/2017-05/msg00103.html
+[10] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf

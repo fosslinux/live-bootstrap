@@ -1,0 +1,113 @@
+Subject: GNU Mes 0.17 released
+
+<#secure method=pgpmime mode=sign>
+We are delighted to announce the release of GNU Mes 0.17, representing
+64 commits over 6 weeks.
+
+Mes is now an official GNU package and we have bootstrapped gcc-4.7.4
+for x86-linux with a reduced binary seed (i.e., without regular toolchain).
+
+Next targets:
+
+ - upstream the x86 Mes bootstrap to GuixSD
+ - create a x86_64 Mes C Lib, see if that is is enough to bootstrap x86_64
+ - reduce the 1MB ASCII M1 seed to ~5000 LOC/~100KB of M2 source
+ - create a plan for Geesh and Gash and use them to reduce the
+   bootstrap binary dependencies
+ - and/or otherwise reduce the bootstrap binary dependencies
+
+Packages are available from Guix's wip-bootstrap branch.
+
+* About
+
+GNU Mes[0] aims to help create full source bootstrapping for GNU/Linux
+distributions such as GuixSD[1] as part of the bootstrappable builds[2]
+effort.
+
+It consists of a mutual self-hosting Scheme interpreter written in
+~5,000 LOC of simple C and a Nyacc-based C compiler written in Scheme.
+This mes.c is being simplified[3] to be transpiled by M2-Planet[4].
+
+The Scheme interpreter (mes.c) has a Garbage Collector, a library of
+loadable Scheme modules-- notably Dominique Boucher's LALR[5],
+Pre-R6RS portable syntax-case[6] with R7RS ellipsis, Matt Wette's
+Nyacc[7] --and test suite just barely enough to support a simple REPL
+and simple C-compiler: MesCC.
+
+Mes+MesCC can compile an only lightly patched TinyCC[8] that is
+self-hosting.  Using this tcc and the Mes C library we now have a
+reduced-binary-seed bootstrap for the gnutools triplet: glibc-2.2.5,
+binutils-2.20.1, gcc-4.7.4.
+
+Mes is inspired by The Maxwell Equations of Software: LISP-1.5[9] --
+John McCarthy page 13, GNU Guix's source/binary packaging transparency
+and Jeremiah Orians's stage0[10] ~500 byte self-hosting hex assembler.
+
+* Download
+
+  git clone git://git.savannah.gnu.org/mes.git
+
+  Here are the compressed sources and a GPG detached signature[*]:
+    https://ftp.gnu.org/gnu/mes/mes-0.17.tar.gz
+    https://ftp.gnu.org/gnu/mes/mes-0.17.tar.gz.sig
+
+  Use a mirror for higher download bandwidth:
+    https://www.gnu.org/order/ftp.html
+
+  Here are the MD5 and SHA1 checksums:
+
+  93ca82612e203fd667dfbdfb83c06549  mes-0.17.tar.gz
+  d38ec93ab6dc2c92a5c5e96fef7f9295972772c2  mes-0.17.tar.gz
+
+  [*] Use a .sig file to verify that the corresponding file (without the
+  .sig suffix) is intact.  First, be sure to download both the .sig file
+  and the corresponding tarball.  Then, run a command like this:
+
+    gpg --verify mes-0.17.tar.gz.sig
+
+  If that command fails because you don't have the required public key,
+  then run this command to import it:
+
+    gpg --keyserver keys.gnupg.net --recv-keys 1A858392E331EAFDB8C27FFBF3C1A0D9C1D65273
+
+  and rerun the 'gpg --verify' command.
+
+Mes runs from the source tree and can also be built, packaged and
+installed in Guix[SD] from a git checkout by running
+
+    guix package -f .guix.scm
+
+* Get informed, get involved
+
+    Join #bootstrappable on irc.freenode.net.
+
+* Changes in 0.17 since 0.16.1
+ ** Core
+ *** GNU Mes is now an official GNU package.
+ *** MesCC is now installed as a regular Guile package.
+ *** Support --srcdir build.
+ *** Support all standard GNU make targets.
+ ** MesCC
+ *** Mes C Lib now bootstraps glibc-2.2.5, binutils-2.20.1, gcc-4.7.4.
+* Changes in 0.16.1 since 0.16
+ ** Core
+ *** Mes now builds out of the box on Debian buster/testing.
+ *** Mes now comes with a generic build recipe: build-aux/setup-mes.sh.
+ *** Mes now comes with INFO documentation.
+ ** MesCC
+ *** MesCC now exits if spawning BLOOD_ELF, M1, or HEX2 fails.
+
+Greetings,
+janneke
+
+[0] https://www.gnu.org/software/mes
+[1] https://www.gnu.org/software/guix
+[2] http://bootstrappable.org
+[3] https://github.com/oriansj/mes-m2
+[4] https://github.com/oriansj/m2-planet
+[5] https://github.com/schemeway/lalr-scm
+[6] https://www.cs.indiana.edu/chezscheme/syntax-case/old-psyntax.html
+[7] https://www.nongnu.org/nyacc
+[8] https://gitlab.com/janneke/tinycc
+[9] http://www.softwarepreservation.org/projects/LISP/book/LISP%201.5%20Programmers%20Manual.pdf
+[10] https://github.com/oriansj/stage0

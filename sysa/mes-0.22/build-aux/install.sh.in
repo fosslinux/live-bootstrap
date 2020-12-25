@@ -1,0 +1,133 @@
+#! @SHELL@
+
+# GNU Mes --- Maxwell Equations of Software
+# Copyright © 2017,2018,2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+#
+# This file is part of GNU Mes.
+#
+# GNU Mes is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# GNU Mes is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+set -e
+
+. ./config.sh
+
+v=
+_v=
+if test "$V" = 2; then
+    set -x
+fi
+if test -n "$V"; then
+    if test "$V" -gt 0; then
+        v=v
+        _v=-v
+    fi
+fi
+
+set -u
+
+# Use bash or lose if pipes fail
+if test -n "$BASHOPTS"; then
+   set -o pipefail
+fi
+
+DESTDIR=${DESTDIR-}
+mkdir -p ${DESTDIR}${bindir}
+cp $_v bin/mes ${DESTDIR}${bindir}/mes
+if test -f bin/mes-gcc; then
+    cp $_v bin/mes-gcc ${DESTDIR}${bindir}/mes-gcc
+fi
+if test -f bin/mes-mescc; then
+    cp $_v bin/mes-mescc ${DESTDIR}${bindir}/mes-mescc
+fi
+cp $_v scripts/mesar ${DESTDIR}${bindir}/mesar
+cp $_v scripts/mescc.scm ${DESTDIR}${bindir}/mescc.scm
+cp $_v scripts/mescc ${DESTDIR}${bindir}/mescc
+
+sed \
+    -e "s,^#! /bin/sh,#! ${SHELL}," \
+    scripts/diff.scm > ${DESTDIR}${bindir}/diff.scm
+chmod +x ${DESTDIR}${bindir}/diff.scm
+
+mkdir -p ${DESTDIR}${docdir}
+
+if test -n "${PERL}"\
+       && test -n "${GIT}"\
+       && ${PERL} -v > /dev/null\
+       && ! test -f .git-for-build; then
+    ${PERL} ${srcdest}build-aux/gitlog-to-changelog --srcdir=. > ChangeLog+
+fi
+
+cp\
+    AUTHORS\
+    BOOTSTRAP\
+    COPYING\
+    HACKING\
+    NEWS\
+    README\
+    ROADMAP\
+    ${DESTDIR}${docdir}
+
+if test -f ChangeLog+; then
+    cp $_v ChangeLog+ ${DESTDIR}${docdir}/ChangeLog
+    rm -f ChangeLog+
+else
+    cp $_v ChangeLog ${DESTDIR}${docdir}
+fi
+
+__exclude_go=
+__exclude_scm=
+if test -f module/mescc.go; then
+    __exclude_go=--exclude='*.go'
+    __exclude_scm=--exclude='*.scm'
+fi
+
+mkdir -p $DESTDIR$includedir
+mkdir -p $DESTDIR$libdir
+mkdir -p $DESTDIR$pkgdatadir
+tar -cf- -C ${srcdir}/include . | tar -${v}xf- -C $DESTDIR$includedir
+tar -cf- -C ${srcdir}/lib $mes_cpu-mes | tar -${v}xf- -C $DESTDIR$libdir
+tar -cf- -C ${srcdir}/lib $mes_kernel/$mes_cpu-mes | tar -${v}xf- -C $DESTDIR$libdir
+if test -z "$srcdest"; then
+    tar -cf- $__exclude_go module | tar -${v}xf- -C $DESTDIR$pkgdatadir
+else
+    tar -cf- -C ${srcdest} module | tar -${v}xf- -C $DESTDIR$pkgdatadir
+fi
+tar -cf- -C ${srcdest}mes module | tar -${v}xf- -C $DESTDIR$pkgdatadir
+if test -d gcc-lib/$mes_cpu-mes; then
+    tar -cf- -C gcc-lib/$mes_cpu-mes . | tar -${v}xf- -C $DESTDIR$libdir
+fi
+if test -d mescc-lib/$mes_cpu-mes; then
+    tar -cf- -C mescc-lib $mes_cpu-mes | tar -${v}xf- -C $DESTDIR$libdir
+fi
+
+mkdir -p ${DESTDIR}${guile_site_dir}
+mkdir -p ${DESTDIR}${guile_site_ccache_dir}
+tar -cf- -C ${srcdest}module $__exclude_go . | tar -${v}xf- -C ${DESTDIR}${guile_site_dir}
+tar -cf- -C module $__exclude_scm . | tar -${v}xf- -C ${DESTDIR}${guile_site_ccache_dir}
+
+if test -f doc/mes.info; then
+    mkdir -p ${DESTDIR}${infodir}
+    tar -cf- doc/mes.info* doc/images | tar -${v}xf- --strip-components=1 -C ${DESTDIR}${infodir}
+    install-info --info-dir=${DESTDIR}${infodir} doc/mes.info
+fi
+
+if test -f doc/mes.1; then
+    mkdir -p ${DESTDIR}${mandir}/man1
+    cp $_v doc/mes.1 ${DESTDIR}${mandir}/man1/
+fi
+
+if test -f doc/mescc.1; then
+    mkdir -p ${DESTDIR}${mandir}/man1
+    cp $_v doc/mescc.1 ${DESTDIR}${mandir}/man1/
+fi
