@@ -2,24 +2,25 @@
 
 set -ex
 
-# Copy the required seeds (mes) and scripts (mescc) over
-cp mes-bins/mes bin/
-cp mes-bins/mescc.scm bin/
-chmod 755 bin/mes bin/mescc.scm
-
 # All of the stuff for mescc
 MES_ARENA=20000000
 MES_MAX_ARENA=20000000
-MES_STACK=5000000
+MES_STACK=6000000
 MES_PREFIX=/after
-GUILE_LOAD_PATH=/after/mes-0.22/mes/module
+GUILE_LOAD_PATH=/after/nyacc/module:/after/mes/mes/module
 MES=/after/bin/mes
 bindir=/after/bin
+libdir=/after/mes/lib
 
-# Ready...
-cd mes-0.22
-# Set...
-# Compile!
+chmod 755 bin/mescc.scm
+
+cd mes
+# Bootstrap Mes using M2-Planet
+kaem --verbose --file kaem.run
+cp bin/mes-m2 ${MES}
+chmod 755 ${MES}
+
+# Recompile Mes and Mes C library using mes-m2 bootstrapped Mes
 
 # Start with crt1.o
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/crt1.c
@@ -27,18 +28,25 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I
 # Now for libc-mini.a
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/eputs.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/oputs.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/mini.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/globals.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/exit.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/_exit.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/_write.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/puts.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strlen.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/mini-write.c
-catm libc-mini.a eputs.o oputs.o mini.o exit.o puts.o strlen.o mini-write.o
-catm libc-mini.s eputs.s oputs.s mini.s exit.s puts.s strlen.s mini-write.s
+catm ${libdir}/x86-mes/libc-mini.a eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o mini-write.o
+catm ${libdir}/x86-mes/libc-mini.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s mini-write.s
+
+# libmescc.a
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/syscall-internal.c
+catm ${libdir}/x86-mes/libmescc.a globals.o syscall-internal.o
+catm ${libdir}/x86-mes/libmescc.s globals.s syscall-internal.s
 
 # libc.a
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isnumber.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/abtol.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/div.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/cast.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/eputc.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/fdgetc.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/fdputc.c
@@ -55,6 +63,7 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isdigit.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isspace.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isxdigit.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/assert_msg.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/write.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/atoi.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/lseek.c
@@ -88,6 +97,7 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strcmp.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strcpy.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strncmp.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/raise.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/access.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/brk.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/chmod.c
@@ -99,15 +109,17 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/fsync.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/_getcwd.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/gettimeofday.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/ioctl.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/ioctl3.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/_open3.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/_read.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/time.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/unlink.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/waitpid.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/syscall.c
-catm libc.a eputs.o oputs.o mini.o exit.o puts.o strlen.o isnumber.o abtol.o div.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o access.o brk.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl.o _open3.o _read.o time.o unlink.o waitpid.o syscall.o 
-catm libc.s eputs.s oputs.s mini.s exit.s puts.s strlen.s isnumber.s abtol.s div.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s access.s brk.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl.s _open3.s _read.s time.s unlink.s waitpid.s syscall.s 
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/getpid.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/kill.c
+catm ${libdir}/x86-mes/libc.a eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o isnumber.o abtol.o cast.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o assert_msg.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o raise.o access.o brk.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl3.o _open3.o _read.o time.o unlink.o waitpid.o syscall.o getpid.o kill.o
+catm ${libdir}/x86-mes/libc.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s isnumber.s abtol.s cast.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s assert_msg.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s raise.s access.s brk.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl3.s _open3.s _read.s time.s unlink.s waitpid.s syscall.s getpid.s kill.s
 
 # libc+tcc.a
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/islower.c
@@ -164,10 +176,15 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/close.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/rmdir.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/stat.c
-catm libc+tcc.a eputs.o oputs.o mini.o exit.o puts.o strlen.o isnumber.o abtol.o div.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o access.o brk.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl.o _open3.o _read.o time.o unlink.o waitpid.o syscall.o islower.o isupper.o tolower.o toupper.o abtod.o dtoab.o search-path.o execvp.o fclose.o fdopen.o ferror.o fflush.o fopen.o fprintf.o fread.o fseek.o ftell.o fwrite.o printf.o remove.o snprintf.o sprintf.o sscanf.o vfprintf.o vprintf.o vsnprintf.o vsprintf.o vsscanf.o calloc.o qsort.o strtod.o strtof.o strtol.o strtold.o strtoll.o strtoul.o strtoull.o memmem.o strcat.o strchr.o strlwr.o strncpy.o strrchr.o strstr.o strupr.o sigaction.o ldexp.o mprotect.o localtime.o sigemptyset.o setjmp.o close.o rmdir.o stat.o
-catm libc+tcc.s eputs.s oputs.s mini.s exit.s puts.s strlen.s isnumber.s abtol.s div.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s access.s brk.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl.s _open3.s _read.s time.s unlink.s waitpid.s syscall.s islower.s isupper.s tolower.s toupper.s abtod.s dtoab.s search-path.s execvp.s fclose.s fdopen.s ferror.s fflush.s fopen.s fprintf.s fread.s fseek.s ftell.s fwrite.s printf.s remove.s snprintf.s sprintf.s sscanf.s vfprintf.s vprintf.s vsnprintf.s vsprintf.s vsscanf.s calloc.s qsort.s strtod.s strtof.s strtol.s strtold.s strtoll.s strtoul.s strtoull.s memmem.s strcat.s strchr.s strlwr.s strncpy.s strrchr.s strstr.s strupr.s sigaction.s ldexp.s mprotect.s localtime.s sigemptyset.s setjmp.s close.s rmdir.s stat.s
+catm ${libdir}/x86-mes/libc+tcc.a ${libdir}/x86-mes/libc.a islower.o isupper.o tolower.o toupper.o abtod.o dtoab.o search-path.o execvp.o fclose.o fdopen.o ferror.o fflush.o fopen.o fprintf.o fread.o fseek.o ftell.o fwrite.o printf.o remove.o snprintf.o sprintf.o sscanf.o vfprintf.o vprintf.o vsnprintf.o vsprintf.o vsscanf.o calloc.o qsort.o strtod.o strtof.o strtol.o strtold.o strtoll.o strtoul.o strtoull.o memmem.o strcat.o strchr.o strlwr.o strncpy.o strrchr.o strstr.o strupr.o sigaction.o ldexp.o mprotect.o localtime.o sigemptyset.o setjmp.o close.o rmdir.o stat.o
+catm ${libdir}/x86-mes/libc+tcc.s ${libdir}/x86-mes/libc.s islower.s isupper.s tolower.s toupper.s abtod.s dtoab.s search-path.s execvp.s fclose.s fdopen.s ferror.s fflush.s fopen.s fprintf.s fread.s fseek.s ftell.s fwrite.s printf.s remove.s snprintf.s sprintf.s sscanf.s vfprintf.s vprintf.s vsnprintf.s vsprintf.s vsscanf.s calloc.s qsort.s strtod.s strtof.s strtol.s strtold.s strtoll.s strtoul.s strtoull.s memmem.s strcat.s strchr.s strlwr.s strncpy.s strrchr.s strstr.s strupr.s sigaction.s ldexp.s mprotect.s localtime.s sigemptyset.s setjmp.s close.s rmdir.s stat.s
 
 # mes itself
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/builtins.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/cc.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/core.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/display.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/eval-apply.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/gc.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/hash.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/lib.c
@@ -176,242 +193,89 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/module.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/posix.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/reader.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/stack.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/string.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/struct.c
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/symbol.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/vector.c
 
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -nostdlib -o /after/bin/mes-new -L . -lc crt1.o gc.o hash.o lib.o math.o mes.o module.o posix.o reader.o string.o struct.o vector.o -lc
-
-# Now we get to repeat that entire dance using the new mes!
-cp /after/bin/mes-new /after/bin/mes
-
-# Start with crt1.o
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/crt1.c
-
-# Now for libc-mini.a
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/eputs.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/oputs.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/mini.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/exit.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/puts.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strlen.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/mini-write.c
-catm libc-mini.a eputs.o oputs.o mini.o exit.o puts.o strlen.o mini-write.o
-catm libc-mini.s eputs.s oputs.s mini.s exit.s puts.s strlen.s mini-write.s
-
-# libc.a
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isnumber.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/abtol.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/div.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/eputc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/fdgetc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/fdputc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/fdputs.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/fdungetc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/itoa.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/ltoa.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/ltoab.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/mes_open.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/ntoab.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/oputc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/ultoa.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/utoa.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isdigit.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isspace.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isxdigit.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/write.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/atoi.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/lseek.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/__assert_fail.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/__buffered_read.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/__mes_debug.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/execv.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/getcwd.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/getenv.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/isatty.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/open.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/buffered-read.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/setenv.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/wait.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fgetc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fputc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fputs.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/getc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/getchar.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/putc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/putchar.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/ungetc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/free.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/malloc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/realloc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/memchr.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/memcmp.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/memcpy.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/memmove.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/memset.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strcmp.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strcpy.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strncmp.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/access.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/brk.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/chmod.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/clock_gettime.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/dup2.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/dup2.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/execve.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/fork.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/fsync.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/_getcwd.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/gettimeofday.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/ioctl.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/_open3.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/_read.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/time.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/unlink.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/waitpid.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/syscall.c
-catm libc.a eputs.o oputs.o mini.o exit.o puts.o strlen.o isnumber.o abtol.o div.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o access.o brk.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl.o _open3.o _read.o time.o unlink.o waitpid.o syscall.o 
-catm libc.s eputs.s oputs.s mini.s exit.s puts.s strlen.s isnumber.s abtol.s div.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s access.s brk.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl.s _open3.s _read.s time.s unlink.s waitpid.s syscall.s 
-
-# libc+tcc.a
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/islower.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/isupper.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/tolower.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/ctype/toupper.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/abtod.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/dtoab.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/mes/search-path.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/execvp.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fclose.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fdopen.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/ferror.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fflush.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fopen.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fprintf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fread.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fseek.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/ftell.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/fwrite.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/printf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/remove.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/snprintf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/sprintf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/sscanf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/vfprintf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/vprintf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/vsnprintf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/vsprintf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdio/vsscanf.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/calloc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/qsort.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/strtod.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/strtof.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/strtol.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/strtold.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/strtoll.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/strtoul.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stdlib/strtoull.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/memmem.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strcat.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strchr.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strlwr.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strncpy.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strrchr.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strstr.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/string/strupr.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stub/sigaction.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stub/ldexp.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stub/mprotect.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stub/localtime.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/stub/sigemptyset.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/x86-mes-mescc/setjmp.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/close.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/rmdir.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/stat.c
-catm libc+tcc.a eputs.o oputs.o mini.o exit.o puts.o strlen.o isnumber.o abtol.o div.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o access.o brk.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl.o _open3.o _read.o time.o unlink.o waitpid.o syscall.o islower.o isupper.o tolower.o toupper.o abtod.o dtoab.o search-path.o execvp.o fclose.o fdopen.o ferror.o fflush.o fopen.o fprintf.o fread.o fseek.o ftell.o fwrite.o printf.o remove.o snprintf.o sprintf.o sscanf.o vfprintf.o vprintf.o vsnprintf.o vsprintf.o vsscanf.o calloc.o qsort.o strtod.o strtof.o strtol.o strtold.o strtoll.o strtoul.o strtoull.o memmem.o strcat.o strchr.o strlwr.o strncpy.o strrchr.o strstr.o strupr.o sigaction.o ldexp.o mprotect.o localtime.o sigemptyset.o setjmp.o close.o rmdir.o stat.o
-catm libc+tcc.s eputs.s oputs.s mini.s exit.s puts.s strlen.s isnumber.s abtol.s div.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s access.s brk.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl.s _open3.s _read.s time.s unlink.s waitpid.s syscall.s islower.s isupper.s tolower.s toupper.s abtod.s dtoab.s search-path.s execvp.s fclose.s fdopen.s ferror.s fflush.s fopen.s fprintf.s fread.s fseek.s ftell.s fwrite.s printf.s remove.s snprintf.s sprintf.s sscanf.s vfprintf.s vprintf.s vsnprintf.s vsprintf.s vsscanf.s calloc.s qsort.s strtod.s strtof.s strtol.s strtold.s strtoll.s strtoul.s strtoull.s memmem.s strcat.s strchr.s strlwr.s strncpy.s strrchr.s strstr.s strupr.s sigaction.s ldexp.s mprotect.s localtime.s sigemptyset.s setjmp.s close.s rmdir.s stat.s
-
-# mes itself
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/gc.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/hash.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/lib.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/math.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/mes.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/module.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/posix.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/reader.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/string.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/struct.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/vector.c
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -nostdlib -o /after/bin/mes-new -L . ./crt1.o gc.o hash.o lib.o math.o mes.o module.o posix.o reader.o string.o struct.o vector.o -lc
+# Link everything into new mes executable
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -L ${libdir} -nostdlib -o /after/bin/mes-new -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
 
 # Now we finally have the final mes+libraries which we will subsequently use to compile tcc
 cp /after/bin/mes-new /after/bin/mes
-cp libc.a /after/lib/
-cp libc+tcc.a /after/lib/
-cp include/assert.h /after/include/assert.h
-cp include/pwd.h /after/include/pwd.h
-cp include/getopt.h /after/include/getopt.h
-cp include/ctype.h /after/include/ctype.h
-cp include/strings.h /after/include/strings.h
-cp include/math.h /after/include/math.h
-cp include/string.h /after/include/string.h
-cp include/memory.h /after/include/memory.h
-cp include/inttypes.h /after/include/inttypes.h
-cp include/stddef.h /after/include/stddef.h
-cp include/stdarg.h /after/include/stdarg.h
-cp include/stdnoreturn.h /after/include/stdnoreturn.h
-cp include/dirent.h /after/include/dirent.h
-cp include/fcntl.h /after/include/fcntl.h
-cp include/limits.h /after/include/limits.h
-cp include/time.h /after/include/time.h
-cp include/errno.h /after/include/errno.h
-cp include/locale.h /after/include/locale.h
-cp include/stdlib.h /after/include/stdlib.h
+
+# Install libraries
+cp ${libdir}/x86-mes/libc.a /after/lib/
+cp ${libdir}/x86-mes/libc+tcc.a /after/lib/
+cp ${libdir}/x86-mes/libmescc.a /after/lib/
+
+# Install header files
+cp include/alloca.h /after/include/alloca.h
+cp include/argz.h /after/include/argz.h
 cp include/ar.h /after/include/ar.h
+cp include/assert.h /after/include/assert.h
+cp include/ctype.h /after/include/ctype.h
+cp include/dirent.h /after/include/dirent.h
+cp include/dirstream.h /after/include/dirstream.h
+cp include/dlfcn.h /after/include/dlfcn.h
+cp include/endian.h /after/include/endian.h
+cp include/errno.h /after/include/errno.h
+cp include/fcntl.h /after/include/fcntl.h
+cp include/features.h /after/include/features.h
+cp include/float.h /after/include/float.h
+cp include/getopt.h /after/include/getopt.h
+cp include/grp.h /after/include/grp.h
+cp include/inttypes.h /after/include/inttypes.h
 cp include/libgen.h /after/include/libgen.h
+cp include/limits.h /after/include/limits.h
+cp include/locale.h /after/include/locale.h
+cp include/math.h /after/include/math.h
+cp include/memory.h /after/include/memory.h
+cp include/pwd.h /after/include/pwd.h
+cp include/setjmp.h /after/include/setjmp.h
+cp include/signal.h /after/include/signal.h
+cp include/stdarg.h /after/include/stdarg.h
+cp include/stdbool.h /after/include/stdbool.h
+cp include/stddef.h /after/include/stddef.h
+cp include/stdint.h /after/include/stdint.h
+cp include/stdio.h /after/include/stdio.h
+cp include/stdlib.h /after/include/stdlib.h
+cp include/stdnoreturn.h /after/include/stdnoreturn.h
+cp include/string.h /after/include/string.h
+cp include/strings.h /after/include/strings.h
+cp include/termio.h /after/include/termio.h
+cp include/time.h /after/include/time.h
+cp include/unistd.h /after/include/unistd.h
+
+cp include/linux/syscall.h /after/include/linux/syscall.h
+cp include/linux/x86/syscall.h /after/include/linux/x86/syscall.h
+
+cp include/mes/builtins.h /after/include/mes/builtins.h
+cp include/mes/cc.h /after/include/mes/cc.h
 cp include/mes/constants.h /after/include/mes/constants.h
 cp include/mes/lib.h /after/include/mes/lib.h
 cp include/mes/lib-mini.h /after/include/mes/lib-mini.h
-cp include/mes/macros.h /after/include/mes/macros.h
-cp include/mes/config.h /after/include/mes/config.h
 cp include/mes/mes.h /after/include/mes/mes.h
-cp include/mes/builtins.h /after/include/mes/builtins.h
-cp include/grp.h /after/include/grp.h
-cp include/termio.h /after/include/termio.h
-cp include/alloca.h /after/include/alloca.h
-cp include/float.h /after/include/float.h
-cp include/signal.h /after/include/signal.h
-cp include/stdbool.h /after/include/stdbool.h
-cp include/gnu/syscall.h /after/include/gnu/syscall.h
-cp include/gnu/hurd-types.h /after/include/gnu/hurd-types.h
-cp include/gnu/hurd.h /after/include/gnu/hurd.h
-cp include/linux/syscall.h /after/include/linux/syscall.h
-cp include/linux/x86/syscall.h /after/include/linux/x86/syscall.h
-cp include/linux/x86_64/syscall.h /after/include/linux/x86_64/syscall.h
-cp include/dirstream.h /after/include/dirstream.h
-cp include/dlfcn.h /after/include/dlfcn.h
-cp include/stdio.h /after/include/stdio.h
-cp include/setjmp.h /after/include/setjmp.h
-cp include/features.h /after/include/features.h
-cp include/mach/mach-init.h /after/include/mach/mach-init.h
-cp include/argz.h /after/include/argz.h
-cp include/sys/stat.h /after/include/sys/stat.h
-cp include/sys/user.h /after/include/sys/user.h
+cp include/mes/symbols.h /after/include/mes/symbols.h
+
 cp include/sys/cdefs.h /after/include/sys/cdefs.h
-cp include/sys/param.h /after/include/sys/param.h
-cp include/sys/time.h /after/include/sys/time.h
+cp include/sys/dir.h /after/include/sys/dir.h
+cp include/sys/file.h /after/include/sys/file.h
 cp include/sys/ioctl.h /after/include/sys/ioctl.h
-cp include/sys/timeb.h /after/include/sys/timeb.h
+cp include/sys/mman.h /after/include/sys/mman.h
+cp include/sys/param.h /after/include/sys/param.h
 cp include/sys/resource.h /after/include/sys/resource.h
 cp include/sys/select.h /after/include/sys/select.h
-cp include/sys/wait.h /after/include/sys/wait.h
-cp include/sys/types.h /after/include/sys/types.h
+cp include/sys/stat.h /after/include/sys/stat.h
+cp include/sys/timeb.h /after/include/sys/timeb.h
+cp include/sys/time.h /after/include/sys/time.h
 cp include/sys/times.h /after/include/sys/times.h
+cp include/sys/types.h /after/include/sys/types.h
 cp include/sys/ucontext.h /after/include/sys/ucontext.h
-cp include/sys/file.h /after/include/sys/file.h
-cp include/sys/dir.h /after/include/sys/dir.h
-cp include/sys/mman.h /after/include/sys/mman.h
-cp include/endian.h /after/include/endian.h
-cp include/stdint.h /after/include/stdint.h
-cp include/unistd.h /after/include/unistd.h
+cp include/sys/user.h /after/include/sys/user.h
+cp include/sys/wait.h /after/include/sys/wait.h
+
+# Test mes
+libdir=/after/lib
+${MES} -c "(display 'Hello,Mes!) (newline)"

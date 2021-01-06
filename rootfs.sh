@@ -45,11 +45,13 @@ mkdir blynn-compiler/{bin,generated}
 popd
 
 # mes
-cp -r mes-0.22 tmp/after/
-ln -s . tmp/after/mes-0.22/x86-mes
-#cp -r nyacc-0.99.3 tmp/after/
-cp -r mes-bins tmp/after/
+cp -r mes tmp/after/
+ln -s lib/x86-mes tmp/after/mes/x86-mes
+cp -r nyacc tmp/after/
 cp mes.kaem tmp/after/
+cp mes-files/mescc.scm tmp/after/bin/
+cp mes-files/config.h tmp/after/mes/include/mes/
+mkdir tmp/after/mes/{bin,m2}
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
