@@ -129,3 +129,5 @@ pkg="m4-1.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
+
+echo "Bootstrapping completed."

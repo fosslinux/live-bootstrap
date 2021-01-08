@@ -1,0 +1,8 @@
+#!/usr/bin/expect
+
+set timeout -1
+
+spawn ./rootfs.sh qemu-system-x86_64 3500M
+expect -exact {not syncing: Attempted to kill init}
+send -- "\x01"
+send -- "x"
