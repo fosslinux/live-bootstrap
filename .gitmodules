@@ -13,3 +13,6 @@
 [submodule "sysa/nyacc"]
 	path = sysa/nyacc
 	url = https://git.savannah.gnu.org/git/nyacc.git
+[submodule "sysa/tcc-0.9.26p1"]
+	path = sysa/tcc-0.9.26p1
+	url = https://gitlab.com/janneke/tinycc

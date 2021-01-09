@@ -209,6 +209,14 @@ cp /after/bin/mes-new /after/bin/mes
 cp ${libdir}/x86-mes/libc.a /after/lib/
 cp ${libdir}/x86-mes/libc+tcc.a /after/lib/
 cp ${libdir}/x86-mes/libmescc.a /after/lib/
+cp ${libdir}/x86-mes/libc.s /after/lib/
+cp ${libdir}/x86-mes/libc+tcc.s /after/lib/
+cp ${libdir}/x86-mes/libmescc.s /after/lib/
+cp ${libdir}/x86-mes/x86.M1 /after/lib/
+cp crt1.o /after/lib/
+cp crt1.s /after/lib/
+cp ${libdir}/linux/x86-mes/elf32-footer-single-main.hex2 /after/lib/linux/
+cp ${libdir}/linux/x86-mes/elf32-header.hex2 /after/lib/linux/
 
 # Install header files
 cp include/alloca.h /after/include/alloca.h
@@ -279,3 +287,5 @@ cp include/sys/wait.h /after/include/sys/wait.h
 # Test mes
 libdir=/after/lib
 ${MES} -c "(display 'Hello,Mes!) (newline)"
+
+cd ..

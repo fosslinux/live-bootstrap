@@ -38,10 +38,14 @@ cd ..
     bin/get_machine bin/mes-m2 bin/kaem bin/catm
 
 # Part 4: blynn-compiler
-
 cd blynn-compiler
 kaem --file go.kaem
 cd ..
 
 # Part 5: mes
 kaem --file mes.kaem
+
+# Part 6: tcc
+cd tcc-0.9.26p1
+kaem --file ../tcc.kaem
+cd ..
