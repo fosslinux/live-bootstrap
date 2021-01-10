@@ -83,7 +83,8 @@ mes-tcc -ar cr ${libdir}/libgetopt.a getopt.o
 
 cd ../tcc-0.9.26p1
 
-# boot0
+# boot0 (ref comments here for all boot*)
+# compile
 mes-tcc \
     -g \
     -v \
@@ -99,7 +100,7 @@ mes-tcc \
     -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/lib/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
     -D TCC_LIBGCC=\"/after/lib/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -111,9 +112,11 @@ mes-tcc \
     -L . \
     -L /after/lib \
     tcc.c
+# Install
 cp boot0-tcc /after/bin/
 chmod 755 /after/bin/boot0-tcc
 cd ../tcc-mes
+# Recompile libc: crt{1,n,i}, libtcc.a, libc.a
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
@@ -146,7 +149,7 @@ boot0-tcc \
     -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/lib/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
     -D TCC_LIBGCC=\"/after/lib/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -193,7 +196,7 @@ boot1-tcc \
     -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/lib/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
     -D TCC_LIBGCC=\"/after/lib/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -240,7 +243,7 @@ boot2-tcc \
     -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/lib/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
     -D TCC_LIBGCC=\"/after/lib/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -287,7 +290,7 @@ boot3-tcc \
     -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/lib/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
     -D TCC_LIBGCC=\"/after/lib/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -334,7 +337,7 @@ boot4-tcc \
     -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/lib/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
     -D TCC_LIBGCC=\"/after/lib/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -368,6 +371,53 @@ chmod 755 /after/bin/tcc
 
 # Also recompile getopt, we don't need to do this during the boot* stages
 # because nothing is linked against it
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/getopt.c
+tcc -ar cr ${libdir}/libgetopt.a getopt.o
+
+# Now compile tcc 0.9.27
+cd ../tcc-0.9.27
+
+# Compile the binary
+tcc \
+    -v \
+    -static \
+    -o tcc \
+    -D TCC_TARGET_I386=1 \
+    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
+    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
+    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_STATIC=1 \
+    -D CONFIG_USE_LIBGCC=1 \
+    -D TCC_VERSION=\"0.9.27\" \
+    -D ONE_SOURCE=1 \
+    tcc.c
+
+# Install the binary
+cp tcc /after/bin/tcc
+chmod 755 /after/bin/tcc
+
+# Test
+tcc -version
+
+# Recompile libc
+# libtcc1.a
+tcc -c -D HAVE_CONFIG_H=1 lib/libtcc1.c
+tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
+cd ../tcc-mes
+# crt{1,n,i}.o
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
+# libc.a
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
+tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+# libgetopt.a
 tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/getopt.c
 tcc -ar cr ${libdir}/libgetopt.a getopt.o
 

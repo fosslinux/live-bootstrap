@@ -36,7 +36,6 @@ ln -s . tmp/after/lib/x86-mes
 ln -s . tmp/after/lib/linux/x86-mes
 mkdir tmp/after/include/{mes,gnu,linux,sys,mach}
 mkdir tmp/after/include/linux/{x86,x86_64}
-# put all the kaems for after in
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
 
@@ -61,11 +60,13 @@ cp mes-files/config.h tmp/after/mes/include/mes/
 cp mes-files/config.h tmp/after/tcc-mes/include/mes/
 mkdir tmp/after/mes/{bin,m2}
 
-# tcc 0.9.26
+# tcc
 cp tcc.kaem tmp/after/
 cp -r tcc-0.9.26p1 tmp/after/
+cp -r tcc-0.9.27 tmp/after/
+touch tmp/after/tcc-0.9.27/config.h
+touch tmp/after/tcc-0.9.26p1/config.h
 pushd tmp/after/tcc-0.9.26p1
-cp ../../../tcc-0.9.26p1-files/config.h .
 ln -s ../mes/module .
 ln -s ../mes/mes .
 ln -s /after/lib x86-mes
