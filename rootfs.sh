@@ -15,7 +15,8 @@ sudo mount -t tmpfs -o size=8G tmpfs tmp
 # base: mescc-tools-seed
 # copy in all the mescc-tools-seed stuff
 cp -r mescc-tools-seed/x86/* tmp
-cp -r mescc-tools-seed/{M2-Planet,mes-m2,mescc-tools} tmp/
+cp -r mescc-tools-seed/{M2-Planet,mes-m2} tmp/
+cp -r mescc-tools-patched tmp/mescc-tools
 # and the kaem seed
 cp ../bootstrap-seeds/POSIX/x86/kaem-optional-seed tmp/init
 cp ../bootstrap-seeds/POSIX/x86/kaem-optional-seed tmp/
@@ -23,11 +24,6 @@ cp -r ../bootstrap-seeds tmp/
 # replace the init kaem with our own custom one
 mv tmp/kaem.run tmp/mescc-tools-seed.kaem.run
 cp base.kaem.run tmp/kaem.run
-# checkout new version of mescc-tools
-pushd tmp/mescc-tools
-git fetch
-git checkout 5768b2a79036f34b9bd420ab4801ad7dca15dff8
-popd
 # create directories needed
 mkdir tmp/bin
 
