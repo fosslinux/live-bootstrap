@@ -19,6 +19,3 @@
 [submodule "sysa/mescc-tools-patched"]
 	path = sysa/mescc-tools-patched
 	url = https://github.com/oriansj/mescc-tools
-[submodule "sysa/tcc-0.9.27"]
-	path = sysa/tcc-0.9.27
-	url = git://repo.or.cz/tinycc.git
