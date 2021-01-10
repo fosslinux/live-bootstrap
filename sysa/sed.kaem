@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -ex
+
+# Variables
+bindir=/after/bin
+
+# Compile
+tcc -c getopt1.c
+tcc -c getopt.c
+tcc -c regex.c
+tcc -c utils.c
+tcc alloca.c -Dalloca -c
+tcc -c -DHAVE_BCOPY sed.c
+
+# Link
+tcc -static -o ${bindir}/sed alloca.o getopt1.o getopt.o regex.o sed.o utils.o

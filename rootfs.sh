@@ -73,6 +73,16 @@ ln -s /after/lib x86-mes
 ln -s /after/lib/linux .
 popd
 
+mkdir -p ../sources
+
+# sed
+url=ftp://ftp.gnu.org/gnu/sed/sed-1.18.tar.gz
+pushd ../sources
+wget --continue "$url"
+popd
+cp sed.kaem tmp/after
+tar -C tmp/after -xf ../sources/$(basename $url)
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
