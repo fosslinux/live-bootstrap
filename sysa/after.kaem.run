@@ -52,3 +52,8 @@ kaem --file tcc.kaem
 cd sed-4.0.7
 kaem --file ../sed-4.0.7.kaem
 cd ..
+
+# Part 8: tar
+cd tar-1.12
+kaem --file ../tar-1.12.kaem
+cd ..

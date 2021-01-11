@@ -79,6 +79,14 @@ mkdir -p ../sources
 cp sed-4.0.7.kaem tmp/after
 cp -r sed-4.0.7 tmp/after
 
+# tar 1.12
+url=https://ftp.gnu.org/gnu/tar/tar-1.12.tar.gz
+pushd ../sources
+wget --continue "$url"
+popd
+cp "$(basename $url .tar.gz).kaem" tmp/after
+tar -C tmp/after -xf "../sources/$(basename $url)"
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
