@@ -10,7 +10,7 @@ tcc -c getopt1.c
 tcc -c getopt.c
 tcc -c regex.c
 tcc -c utils.c
-tcc alloca.c -Dalloca -c
+tcc -c -Dalloca alloca.c
 tcc -c -DHAVE_BCOPY sed.c
 
 # Link
