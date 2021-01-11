@@ -57,3 +57,9 @@ cd ..
 cd tar-1.12
 kaem --file ../tar-1.12.kaem
 cd ..
+
+# Part 9: gzip
+/after/bin/tar xf gzip-1.2.4.tar
+cd gzip-1.2.4
+kaem --file ../gzip-1.2.4.kaem
+cd ..

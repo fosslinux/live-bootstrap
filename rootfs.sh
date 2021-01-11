@@ -87,6 +87,14 @@ popd
 cp "$(basename $url .tar.gz).kaem" tmp/after
 tar -C tmp/after -xf "../sources/$(basename $url)"
 
+# gzip 1.2.4
+url=https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar
+pushd ../sources
+wget --continue "$url"
+popd
+cp "$(basename $url .tar).kaem" tmp/after
+cp "../sources/$(basename $url)" tmp/after
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
