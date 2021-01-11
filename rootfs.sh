@@ -75,9 +75,9 @@ popd
 
 mkdir -p ../sources
 
-# sed 1.18
-cp sed-1.18.kaem tmp/after
-cp -r sed-1.18 tmp/after
+# sed 4.0.7
+cp sed-4.0.7.kaem tmp/after
+cp -r sed-4.0.7 tmp/after
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
