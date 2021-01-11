@@ -63,3 +63,10 @@ cd ..
 cd gzip-1.2.4
 kaem --file ../gzip-1.2.4.kaem
 cd ..
+
+# Part 10: diffutils
+/after/bin/gunzip diffutils-2.7.tar.gz
+/after/bin/tar xf diffutils-2.7.tar
+cd diffutils-2.7
+kaem --file ../diffutils-2.7.kaem
+cd ..

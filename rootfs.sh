@@ -95,6 +95,15 @@ popd
 cp "$(basename $url .tar).kaem" tmp/after
 cp "../sources/$(basename $url)" tmp/after
 
+# diffutils 2.7
+url=https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
+pushd ../sources
+wget --continue "$url"
+popd
+cp "$(basename $url .tar.gz).kaem" tmp/after
+cp "../sources/$(basename $url)" tmp/after
+
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
