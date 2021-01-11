@@ -30,5 +30,5 @@ tcc -c -I. fnmatch.c
 tcc -c -I. regex.c
 
 # Link
-tcc -o ${bindir}/cmp cmp.o cmpbuf.o error.o getopt.o getopt1.o xmalloc.o version.o
-tcc -o ${bindir}/diff diff.o analyze.o cmpbuf.o dir.o io.o util.o context.o ed.o ifdef.o normal.o side.o fnmatch.o getopt.o getopt1.o regex.o version.o
+tcc -static -o ${bindir}/cmp cmp.o cmpbuf.o error.o getopt.o getopt1.o xmalloc.o version.o
+tcc -static -o ${bindir}/diff diff.o analyze.o cmpbuf.o dir.o io.o util.o context.o ed.o ifdef.o normal.o side.o fnmatch.o getopt.o getopt1.o regex.o version.o

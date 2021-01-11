@@ -87,22 +87,24 @@ popd
 cp "$(basename $url .tar.gz).kaem" tmp/after
 tar -C tmp/after -xf "../sources/$(basename $url)"
 
-# gzip 1.2.4
-url=https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar
-pushd ../sources
-wget --continue "$url"
-popd
-cp "$(basename $url .tar).kaem" tmp/after
-cp "../sources/$(basename $url)" tmp/after
+get_file() {
+    url=$1
+    pushd ../sources
+    wget --continue "$url"
+    popd
+    ext="${url##*.}"
+    if [ "$ext" = "tar" ]; then
+	bname=$(basename "$url" .tar)
+    else
+	bname=$(basename "$url" ".tar.${ext}")
+    fi
+    cp "${bname}.kaem" tmp/after
+    cp "../sources/$(basename "$url")" tmp/after
+}
 
-# diffutils 2.7
-url=https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
-pushd ../sources
-wget --continue "$url"
-popd
-cp "$(basename $url .tar.gz).kaem" tmp/after
-cp "../sources/$(basename $url)" tmp/after
-
+# Download remaining sources
+get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar
+get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
@@ -113,7 +115,7 @@ find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
 ${QEMU_CMD:-qemu-system-x86_64} -enable-kvm \
-    -m ${RAM:-8G} \
+    -m "${RAM:-8G}" \
     -nographic \
     -no-reboot \
     -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0
