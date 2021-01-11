@@ -14,7 +14,7 @@
 	path = sysa/nyacc
 	url = https://git.savannah.gnu.org/git/nyacc.git
 [submodule "sysa/tcc-0.9.26p1"]
-	path = sysa/tcc-0.9.26p1
+	path = sysa/tcc-0.9.26
 	url = https://gitlab.com/janneke/tinycc
 [submodule "sysa/mescc-tools-patched"]
 	path = sysa/mescc-tools-patched
@@ -22,3 +22,6 @@
 [submodule "sysa/tcc-0.9.27"]
 	path = sysa/tcc-0.9.27
 	url = git://repo.or.cz/tinycc.git
+[submodule "sysa/sed-1.18"]
+	path = sysa/sed-1.18
+	url = git://git.savannah.gnu.org/sed/sed-history.git

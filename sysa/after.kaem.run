@@ -46,11 +46,9 @@ cd ..
 kaem --file mes.kaem
 
 # Part 6: tcc
-cd tcc-0.9.26p1
-kaem --file ../tcc.kaem
-cd ..
+kaem --file tcc.kaem
 
 # Part 7: sed
 cd sed-1.18
-kaem --file ../sed.kaem
+kaem --file ../sed-1.18.kaem
 cd ..

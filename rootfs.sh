@@ -62,11 +62,11 @@ mkdir tmp/after/mes/{bin,m2}
 
 # tcc
 cp tcc.kaem tmp/after/
-cp -r tcc-0.9.26p1 tmp/after/
+cp -r tcc-0.9.26 tmp/after/
 cp -r tcc-0.9.27 tmp/after/
 touch tmp/after/tcc-0.9.27/config.h
-touch tmp/after/tcc-0.9.26p1/config.h
-pushd tmp/after/tcc-0.9.26p1
+touch tmp/after/tcc-0.9.26/config.h
+pushd tmp/after/tcc-0.9.26
 ln -s ../mes/module .
 ln -s ../mes/mes .
 ln -s /after/lib x86-mes
@@ -75,13 +75,9 @@ popd
 
 mkdir -p ../sources
 
-# sed
-url=ftp://ftp.gnu.org/gnu/sed/sed-1.18.tar.gz
-pushd ../sources
-wget --continue "$url"
-popd
-cp sed.kaem tmp/after
-tar -C tmp/after -xf ../sources/$(basename $url)
+# sed 1.18
+cp sed-1.18.kaem tmp/after
+cp -r sed-1.18 tmp/after
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
@@ -101,4 +97,3 @@ cd ../..
 
 # Cleanup
 sudo umount sysa/tmp
-

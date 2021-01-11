@@ -15,6 +15,7 @@ MES_SOURCE=${MES_PREFIX}
 MES=/after/bin/mes
 
 # Initial tcc
+cd tcc-0.9.26
 ${MES} --no-auto-compile -e main /after/bin/mescc.scm -- \
     -S \
     -o tcc.s \
@@ -81,7 +82,7 @@ mes-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/getopt.c
 mes-tcc -ar cr ${libdir}/libgetopt.a getopt.o
 
-cd ../tcc-0.9.26p1
+cd ../tcc-0.9.26
 
 # boot0 (ref comments here for all boot*)
 # compile
@@ -127,7 +128,7 @@ boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
 boot0-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cp ${libdir}/libc+gnu.a ${libdir}/libc.a
-cd ../tcc-0.9.26p1
+cd ../tcc-0.9.26
 
 # Test boot0
 boot0-tcc -version
@@ -173,7 +174,7 @@ boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
 boot1-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cp ${libdir}/libc+gnu.a ${libdir}/libc.a
-cd ../tcc-0.9.26p1
+cd ../tcc-0.9.26
 
 # Test boot1
 boot1-tcc -version
@@ -220,7 +221,7 @@ boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
 boot2-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cp ${libdir}/libc+gnu.a ${libdir}/libc.a
-cd ../tcc-0.9.26p1
+cd ../tcc-0.9.26
 
 # Test boot2
 boot2-tcc -version
@@ -267,7 +268,7 @@ boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
 boot3-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cp ${libdir}/libc+gnu.a ${libdir}/libc.a
-cd ../tcc-0.9.26p1
+cd ../tcc-0.9.26
 
 # Test boot3
 boot3-tcc -version
@@ -314,7 +315,7 @@ boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
 boot4-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cp ${libdir}/libc+gnu.a ${libdir}/libc.a
-cd ../tcc-0.9.26p1
+cd ../tcc-0.9.26
 
 # Test boot4
 boot4-tcc -version
