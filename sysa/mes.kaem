@@ -3,7 +3,7 @@
 set -ex
 
 # Variables
-prefix=${prefix}
+prefix=/after
 MES_ARENA=20000000
 MES_MAX_ARENA=20000000
 MES_STACK=6000000

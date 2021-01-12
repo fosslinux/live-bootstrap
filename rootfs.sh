@@ -8,7 +8,7 @@ pushd sysa
 
 # SYSTEM A
 
-# Setup tmp 
+# Setup tmp
 mkdir -p tmp/
 sudo mount -t tmpfs -o size=8G tmpfs tmp
 
@@ -102,15 +102,20 @@ get_file() {
     cp "../sources/$(basename "$url")" tmp/after
 }
 
-# Download remaining sources
+# gzip 1.2.4
 get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar
+
+# diffutils 2.7
 get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
+
+# make 3.80
+get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
 # initramfs
-cd tmp 
+cd tmp
 find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
