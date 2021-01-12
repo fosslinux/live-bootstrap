@@ -1,0 +1,34 @@
+#!/bin/sh
+
+set -ex
+
+# Variables
+bindir=/after/bin
+
+# Compile
+tcc -c -DNO_UTIME gzip.c
+tcc -c bits.c
+tcc -c crypt.c
+tcc -c deflate.c
+tcc -c getopt.c
+tcc -c inflate.c
+tcc -c lzw.c
+tcc -c trees.c
+tcc -c unlzh.c
+tcc -c unlzw.c
+tcc -c unpack.c
+tcc -c unzip.c
+# Remove strlwr, it does not build with mes libc
+cp util.c util_patched.c
+sed -i 165,174d util_patched.c
+tcc -c util_patched.c
+tcc -c zip.c
+
+# Link
+tcc -static -o ${bindir}/gzip gzip.o zip.o deflate.o trees.o bits.o unzip.o inflate.o util_patched.o crypt.o lzw.o unlzw.o unpack.o unlzh.o getopt.o
+
+# Install
+cp ${bindir}/gzip ${bindir}/gunzip
+cp ${bindir}/gzip ${bindir}/zcat
+chmod 755 ${bindir}/gunzip
+chmod 755 ${bindir}/zcat

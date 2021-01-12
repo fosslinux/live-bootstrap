@@ -75,9 +75,36 @@ popd
 
 mkdir -p ../sources
 
-# sed 1.18
-cp sed-1.18.kaem tmp/after
-cp -r sed-1.18 tmp/after
+# sed 4.0.7
+cp sed-4.0.7.kaem tmp/after
+cp -r sed-4.0.7 tmp/after
+
+# tar 1.12
+url=https://ftp.gnu.org/gnu/tar/tar-1.12.tar.gz
+pushd ../sources
+wget --continue "$url"
+popd
+cp "$(basename $url .tar.gz).kaem" tmp/after
+tar -C tmp/after -xf "../sources/$(basename $url)"
+
+get_file() {
+    url=$1
+    pushd ../sources
+    wget --continue "$url"
+    popd
+    ext="${url##*.}"
+    if [ "$ext" = "tar" ]; then
+	bname=$(basename "$url" .tar)
+    else
+	bname=$(basename "$url" ".tar.${ext}")
+    fi
+    cp "${bname}.kaem" tmp/after
+    cp "../sources/$(basename "$url")" tmp/after
+}
+
+# Download remaining sources
+get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar
+get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
@@ -88,7 +115,7 @@ find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
 ${QEMU_CMD:-qemu-system-x86_64} -enable-kvm \
-    -m ${RAM:-8G} \
+    -m "${RAM:-8G}" \
     -nographic \
     -no-reboot \
     -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0

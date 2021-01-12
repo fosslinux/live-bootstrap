@@ -22,6 +22,6 @@
 [submodule "sysa/tcc-0.9.27"]
 	path = sysa/tcc-0.9.27
 	url = git://repo.or.cz/tinycc.git
-[submodule "sysa/sed-1.18"]
-	path = sysa/sed-1.18
-	url = git://git.savannah.gnu.org/sed/sed-history.git
+[submodule "sysa/sed-4.0.7"]
+	path = sysa/sed-4.0.7
+	url = https://git.savannah.gnu.org/git/sed/sed-history.git

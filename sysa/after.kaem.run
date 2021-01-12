@@ -49,6 +49,24 @@ kaem --file mes.kaem
 kaem --file tcc.kaem
 
 # Part 7: sed
-cd sed-1.18
-kaem --file ../sed-1.18.kaem
+cd sed-4.0.7
+kaem --file ../sed-4.0.7.kaem
+cd ..
+
+# Part 8: tar
+cd tar-1.12
+kaem --file ../tar-1.12.kaem
+cd ..
+
+# Part 9: gzip
+/after/bin/tar xf gzip-1.2.4.tar
+cd gzip-1.2.4
+kaem --file ../gzip-1.2.4.kaem
+cd ..
+
+# Part 10: diffutils
+/after/bin/gunzip diffutils-2.7.tar.gz
+/after/bin/tar xf diffutils-2.7.tar
+cd diffutils-2.7
+kaem --file ../diffutils-2.7.kaem
 cd ..
