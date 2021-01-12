@@ -99,8 +99,9 @@ get_file() {
     else
 	bname=$(basename "$url" ".tar.${ext}")
     fi
-    cp "${bname}.kaem" tmp/after
-    cp "../sources/$(basename "$url")" tmp/after
+
+    [ -f "${bname}.kaem" ] && cp -v "${bname}.kaem" tmp/after
+    cp -v "../sources/$(basename "$url")" tmp/after
 }
 
 # gzip 1.2.4
