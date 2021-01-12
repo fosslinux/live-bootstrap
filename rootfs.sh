@@ -115,7 +115,7 @@ find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
 if [ "$QEMU_CMD" = 'chroot' ]; then
-	PATH="/after/bin:$PATH" chroot . /init
+	PATH="/after/bin:$PATH" sudo chroot . /init
 else
 	$QEMU_CMD -enable-kvm \
 	    -m "${QEMU_RAM:-8G}" \
