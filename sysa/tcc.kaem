@@ -3,34 +3,35 @@
 set -ex
 
 # Vars
-bindir=/after/bin
-libdir=/after/lib
-GUILE_LOAD_PATH=/after/nyacc/module:/after/mes/mes/module
-MES_PREFIX=/after/mes
+bindir=${bindir}
+libdir=${libdir}
+prefix=${prefix}
+GUILE_LOAD_PATH=${prefix}/nyacc/module:${prefix}/mes/mes/module
+MES_PREFIX=${prefix}/mes
 MES_STACK=15000000
 MES_ARENA=30000000
 MES_MAX_ARENA=30000000
 MES_LIB=${MES_PREFIX}/lib
 MES_SOURCE=${MES_PREFIX}
-MES=/after/bin/mes
+MES=${bindir}/mes
 
 # Initial tcc
 cd tcc-0.9.26
-${MES} --no-auto-compile -e main /after/bin/mescc.scm -- \
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -S \
     -o tcc.s \
-    -I /after/mes/lib \
-    -I /after/mes/include \
+    -I ${prefix}/mes/lib \
+    -I ${prefix}/mes/include \
     -D BOOTSTRAP=1 \
     -I . \
     -D TCC_TARGET_I386=1 \
     -D inline= \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
     -D CONFIG_SYSROOT=\"/\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/mes/include:/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/mes/include:${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D CONFIG_TCC_LIBTCC1_MES=0 \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -39,13 +40,13 @@ ${MES} --no-auto-compile -e main /after/bin/mescc.scm -- \
     -D TCC_VERSION=\"0.9.26\" \
     -D ONE_SOURCE=1 \
     tcc.c
-${MES} --no-auto-compile -e main /after/bin/mescc.scm -- \
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -o mes-tcc \
-    -L /after/lib \
+    -L ${libdir} \
     tcc.s \
     -l c+tcc
-cp mes-tcc /after/bin/
-chmod 755 /after/bin/mes-tcc
+cp mes-tcc ${bindir}/
+chmod 755 ${bindir}/mes-tcc
 
 # test mes-tcc
 mes-tcc -version
@@ -95,14 +96,14 @@ mes-tcc \
     -D HAVE_LONG_LONG_STUB=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I /after/include \
+    -I ${prefix}/include \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -111,11 +112,11 @@ mes-tcc \
     -D TCC_VERSION=\"0.9.26\" \
     -D ONE_SOURCE=1 \
     -L . \
-    -L /after/lib \
+    -L ${libdir} \
     tcc.c
 # Install
-cp boot0-tcc /after/bin/
-chmod 755 /after/bin/boot0-tcc
+cp boot0-tcc ${bindir}/
+chmod 755 ${bindir}/boot0-tcc
 cd ../tcc-mes
 # Recompile libc: crt{1,n,i}, libtcc.a, libc.a
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
@@ -144,14 +145,14 @@ boot0-tcc \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I /after/include \
+    -I ${prefix}/include \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -161,8 +162,8 @@ boot0-tcc \
     -D ONE_SOURCE=1 \
     -L . \
     tcc.c
-cp boot1-tcc /after/bin
-chmod 755 /after/bin/boot1-tcc
+cp boot1-tcc ${bindir}
+chmod 755 ${bindir}/boot1-tcc
 cd ../tcc-mes
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
@@ -191,14 +192,14 @@ boot1-tcc \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I /after/include \
+    -I ${prefix}/include \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -208,8 +209,8 @@ boot1-tcc \
     -D ONE_SOURCE=1 \
     -L . \
     tcc.c
-cp boot2-tcc /after/bin
-chmod 755 /after/bin/boot2-tcc
+cp boot2-tcc ${bindir}
+chmod 755 ${bindir}/boot2-tcc
 cd ../tcc-mes
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
@@ -238,14 +239,14 @@ boot2-tcc \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I /after/include \
+    -I ${prefix}/include \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -255,8 +256,8 @@ boot2-tcc \
     -D ONE_SOURCE=1 \
     -L . \
     tcc.c
-cp boot3-tcc /after/bin
-chmod 755 /after/bin/boot3-tcc
+cp boot3-tcc ${bindir}
+chmod 755 ${bindir}/boot3-tcc
 cd ../tcc-mes
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
@@ -285,14 +286,14 @@ boot3-tcc \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I /after/include \
+    -I ${prefix}/include \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -302,8 +303,8 @@ boot3-tcc \
     -D ONE_SOURCE=1 \
     -L . \
     tcc.c
-cp boot4-tcc /after/bin
-chmod 755 /after/bin/boot4-tcc
+cp boot4-tcc ${bindir}
+chmod 755 ${bindir}/boot4-tcc
 cd ../tcc-mes
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
@@ -332,14 +333,14 @@ boot4-tcc \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I /after/include \
+    -I ${prefix}/include \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -349,8 +350,8 @@ boot4-tcc \
     -D ONE_SOURCE=1 \
     -L . \
     tcc.c
-cp boot5-tcc /after/bin
-chmod 755 /after/bin/boot5-tcc
+cp boot5-tcc ${bindir}
+chmod 755 ${bindir}/boot5-tcc
 cd ../tcc-mes
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
@@ -367,8 +368,8 @@ cp ${libdir}/libc+gnu.a ${libdir}/libc.a
 boot5-tcc -version
 
 # We have our final tcc 0.9.26!
-cp /after/bin/boot5-tcc /after/bin/tcc
-chmod 755 /after/bin/tcc
+cp ${bindir}/boot5-tcc ${bindir}/tcc
+chmod 755 ${bindir}/tcc
 
 # Also recompile getopt, we don't need to do this during the boot* stages
 # because nothing is linked against it
@@ -384,12 +385,12 @@ tcc \
     -static \
     -o tcc \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"/after/lib/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"/after/lib\" \
+    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"/after/lib:/after/lib/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"/after/include\" \
-    -D TCC_LIBGCC=\"/after/lib/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D CONFIG_TCC_STATIC=1 \
     -D CONFIG_USE_LIBGCC=1 \
     -D TCC_VERSION=\"0.9.27\" \
@@ -397,8 +398,8 @@ tcc \
     tcc.c
 
 # Install the binary
-cp tcc /after/bin/tcc
-chmod 755 /after/bin/tcc
+cp tcc ${bindir}/tcc
+chmod 755 ${bindir}/tcc
 
 # Test
 tcc -version

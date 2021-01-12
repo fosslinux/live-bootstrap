@@ -2,15 +2,17 @@
 
 set -ex
 
-# All of the stuff for mescc
+# Variables
+prefix=${prefix}
 MES_ARENA=20000000
 MES_MAX_ARENA=20000000
 MES_STACK=6000000
-MES_PREFIX=/after
-GUILE_LOAD_PATH=/after/nyacc/module:/after/mes/mes/module
-MES=/after/bin/mes
-bindir=/after/bin
-libdir=/after/mes/lib
+MES_PREFIX=${prefix}
+GUILE_LOAD_PATH=${prefix}/nyacc/module:${prefix}/mes/mes/module
+bindir=${prefix}/bin
+MES=${bindir}/mes
+libdir=${prefix}/mes/lib
+incdir=${prefix}/include
 
 chmod 755 bin/mescc.scm
 
@@ -200,92 +202,92 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 src/vector.c
 
 # Link everything into new mes executable
-${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -L ${libdir} -nostdlib -o /after/bin/mes-new -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
+${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -L ${libdir} -nostdlib -o ${bindir}/mes-new -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
 
 # Now we finally have the final mes+libraries which we will subsequently use to compile tcc
-cp /after/bin/mes-new /after/bin/mes
+cp ${bindir}/mes-new ${bindir}/mes
 
 # Install libraries
-cp ${libdir}/x86-mes/libc.a /after/lib/
-cp ${libdir}/x86-mes/libc+tcc.a /after/lib/
-cp ${libdir}/x86-mes/libmescc.a /after/lib/
-cp ${libdir}/x86-mes/libc.s /after/lib/
-cp ${libdir}/x86-mes/libc+tcc.s /after/lib/
-cp ${libdir}/x86-mes/libmescc.s /after/lib/
-cp ${libdir}/x86-mes/x86.M1 /after/lib/
-cp crt1.o /after/lib/
-cp crt1.s /after/lib/
-cp ${libdir}/linux/x86-mes/elf32-footer-single-main.hex2 /after/lib/linux/
-cp ${libdir}/linux/x86-mes/elf32-header.hex2 /after/lib/linux/
+cp ${libdir}/x86-mes/libc.a ${prefix}/lib/
+cp ${libdir}/x86-mes/libc+tcc.a ${prefix}/lib/
+cp ${libdir}/x86-mes/libmescc.a ${prefix}/lib/
+cp ${libdir}/x86-mes/libc.s ${prefix}/lib/
+cp ${libdir}/x86-mes/libc+tcc.s ${prefix}/lib/
+cp ${libdir}/x86-mes/libmescc.s ${prefix}/lib/
+cp ${libdir}/x86-mes/x86.M1 ${prefix}/lib/
+cp crt1.o ${prefix}/lib/
+cp crt1.s ${prefix}/lib/
+cp ${libdir}/linux/x86-mes/elf32-footer-single-main.hex2 ${prefix}/lib/linux/
+cp ${libdir}/linux/x86-mes/elf32-header.hex2 ${prefix}/lib/linux/
 
 # Install header files
-cp include/alloca.h /after/include/alloca.h
-cp include/argz.h /after/include/argz.h
-cp include/ar.h /after/include/ar.h
-cp include/assert.h /after/include/assert.h
-cp include/ctype.h /after/include/ctype.h
-cp include/dirent.h /after/include/dirent.h
-cp include/dirstream.h /after/include/dirstream.h
-cp include/dlfcn.h /after/include/dlfcn.h
-cp include/endian.h /after/include/endian.h
-cp include/errno.h /after/include/errno.h
-cp include/fcntl.h /after/include/fcntl.h
-cp include/features.h /after/include/features.h
-cp include/float.h /after/include/float.h
-cp include/getopt.h /after/include/getopt.h
-cp include/grp.h /after/include/grp.h
-cp include/inttypes.h /after/include/inttypes.h
-cp include/libgen.h /after/include/libgen.h
-cp include/limits.h /after/include/limits.h
-cp include/locale.h /after/include/locale.h
-cp include/math.h /after/include/math.h
-cp include/memory.h /after/include/memory.h
-cp include/pwd.h /after/include/pwd.h
-cp include/setjmp.h /after/include/setjmp.h
-cp include/signal.h /after/include/signal.h
-cp include/stdarg.h /after/include/stdarg.h
-cp include/stdbool.h /after/include/stdbool.h
-cp include/stddef.h /after/include/stddef.h
-cp include/stdint.h /after/include/stdint.h
-cp include/stdio.h /after/include/stdio.h
-cp include/stdlib.h /after/include/stdlib.h
-cp include/stdnoreturn.h /after/include/stdnoreturn.h
-cp include/string.h /after/include/string.h
-cp include/strings.h /after/include/strings.h
-cp include/termio.h /after/include/termio.h
-cp include/time.h /after/include/time.h
-cp include/unistd.h /after/include/unistd.h
+cp include/alloca.h ${incdir}/alloca.h
+cp include/argz.h ${incdir}/argz.h
+cp include/ar.h ${incdir}/ar.h
+cp include/assert.h ${incdir}/assert.h
+cp include/ctype.h ${incdir}/ctype.h
+cp include/dirent.h ${incdir}/dirent.h
+cp include/dirstream.h ${incdir}/dirstream.h
+cp include/dlfcn.h ${incdir}/dlfcn.h
+cp include/endian.h ${incdir}/endian.h
+cp include/errno.h ${incdir}/errno.h
+cp include/fcntl.h ${incdir}/fcntl.h
+cp include/features.h ${incdir}/features.h
+cp include/float.h ${incdir}/float.h
+cp include/getopt.h ${incdir}/getopt.h
+cp include/grp.h ${incdir}/grp.h
+cp include/inttypes.h ${incdir}/inttypes.h
+cp include/libgen.h ${incdir}/libgen.h
+cp include/limits.h ${incdir}/limits.h
+cp include/locale.h ${incdir}/locale.h
+cp include/math.h ${incdir}/math.h
+cp include/memory.h ${incdir}/memory.h
+cp include/pwd.h ${incdir}/pwd.h
+cp include/setjmp.h ${incdir}/setjmp.h
+cp include/signal.h ${incdir}/signal.h
+cp include/stdarg.h ${incdir}/stdarg.h
+cp include/stdbool.h ${incdir}/stdbool.h
+cp include/stddef.h ${incdir}/stddef.h
+cp include/stdint.h ${incdir}/stdint.h
+cp include/stdio.h ${incdir}/stdio.h
+cp include/stdlib.h ${incdir}/stdlib.h
+cp include/stdnoreturn.h ${incdir}/stdnoreturn.h
+cp include/string.h ${incdir}/string.h
+cp include/strings.h ${incdir}/strings.h
+cp include/termio.h ${incdir}/termio.h
+cp include/time.h ${incdir}/time.h
+cp include/unistd.h ${incdir}/unistd.h
 
-cp include/linux/syscall.h /after/include/linux/syscall.h
-cp include/linux/x86/syscall.h /after/include/linux/x86/syscall.h
+cp include/linux/syscall.h ${incdir}/linux/syscall.h
+cp include/linux/x86/syscall.h ${incdir}/linux/x86/syscall.h
 
-cp include/mes/builtins.h /after/include/mes/builtins.h
-cp include/mes/cc.h /after/include/mes/cc.h
-cp include/mes/constants.h /after/include/mes/constants.h
-cp include/mes/lib.h /after/include/mes/lib.h
-cp include/mes/lib-mini.h /after/include/mes/lib-mini.h
-cp include/mes/mes.h /after/include/mes/mes.h
-cp include/mes/symbols.h /after/include/mes/symbols.h
+cp include/mes/builtins.h ${incdir}/mes/builtins.h
+cp include/mes/cc.h ${incdir}/mes/cc.h
+cp include/mes/constants.h ${incdir}/mes/constants.h
+cp include/mes/lib.h ${incdir}/mes/lib.h
+cp include/mes/lib-mini.h ${incdir}/mes/lib-mini.h
+cp include/mes/mes.h ${incdir}/mes/mes.h
+cp include/mes/symbols.h ${incdir}/mes/symbols.h
 
-cp include/sys/cdefs.h /after/include/sys/cdefs.h
-cp include/sys/dir.h /after/include/sys/dir.h
-cp include/sys/file.h /after/include/sys/file.h
-cp include/sys/ioctl.h /after/include/sys/ioctl.h
-cp include/sys/mman.h /after/include/sys/mman.h
-cp include/sys/param.h /after/include/sys/param.h
-cp include/sys/resource.h /after/include/sys/resource.h
-cp include/sys/select.h /after/include/sys/select.h
-cp include/sys/stat.h /after/include/sys/stat.h
-cp include/sys/timeb.h /after/include/sys/timeb.h
-cp include/sys/time.h /after/include/sys/time.h
-cp include/sys/times.h /after/include/sys/times.h
-cp include/sys/types.h /after/include/sys/types.h
-cp include/sys/ucontext.h /after/include/sys/ucontext.h
-cp include/sys/user.h /after/include/sys/user.h
-cp include/sys/wait.h /after/include/sys/wait.h
+cp include/sys/cdefs.h ${incdir}/sys/cdefs.h
+cp include/sys/dir.h ${incdir}/sys/dir.h
+cp include/sys/file.h ${incdir}/sys/file.h
+cp include/sys/ioctl.h ${incdir}/sys/ioctl.h
+cp include/sys/mman.h ${incdir}/sys/mman.h
+cp include/sys/param.h ${incdir}/sys/param.h
+cp include/sys/resource.h ${incdir}/sys/resource.h
+cp include/sys/select.h ${incdir}/sys/select.h
+cp include/sys/stat.h ${incdir}/sys/stat.h
+cp include/sys/timeb.h ${incdir}/sys/timeb.h
+cp include/sys/time.h ${incdir}/sys/time.h
+cp include/sys/times.h ${incdir}/sys/times.h
+cp include/sys/types.h ${incdir}/sys/types.h
+cp include/sys/ucontext.h ${incdir}/sys/ucontext.h
+cp include/sys/user.h ${incdir}/sys/user.h
+cp include/sys/wait.h ${incdir}/sys/wait.h
 
 # Test mes
-libdir=/after/lib
+libdir=${prefix}/lib
 ${MES} -c "(display 'Hello,Mes!) (newline)"
 
 cd ..
