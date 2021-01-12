@@ -3,9 +3,9 @@
 set -ex
 
 # Vars
-bindir=${bindir}
-libdir=${libdir}
-prefix=${prefix}
+prefix=/after
+bindir=${prefix}/bin
+libdir=${prefix}/lib
 GUILE_LOAD_PATH=${prefix}/nyacc/module:${prefix}/mes/mes/module
 MES_PREFIX=${prefix}/mes
 MES_STACK=15000000
