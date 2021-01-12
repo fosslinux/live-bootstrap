@@ -1,14 +1,14 @@
 #!/bin/bash
 set -ex
 
-QEMU_CMD=$1
-RAM=$2
+QEMU_CMD="${1:-qemu-system-x86_64}"	# or 'chroot'
+QEMU_RAM="${2:-8G}"
 
 pushd sysa
 
 # SYSTEM A
 
-# Setup tmp 
+echo "trying to mount ramdisk/tmpfs: size 8G"
 mkdir -p tmp/
 sudo mount -t tmpfs -o size=8G tmpfs tmp
 
@@ -114,13 +114,18 @@ cd tmp
 find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
-${QEMU_CMD:-qemu-system-x86_64} -enable-kvm \
-    -m "${RAM:-8G}" \
-    -nographic \
-    -no-reboot \
-    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0
+if [ "$QEMU_CMD" = 'chroot' ]; then
+	PATH="/after/bin:$PATH" chroot . /init
+else
+	$QEMU_CMD -enable-kvm \
+	    -m "${QEMU_RAM:-8G}" \
+	    -nographic \
+	    -no-reboot \
+	    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0
+fi
 
 cd ../..
 
 # Cleanup
+echo "trying to unmount ramdisk/tmpfs, abort with CTRL+C"
 sudo umount sysa/tmp
