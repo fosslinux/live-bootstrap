@@ -1,8 +1,8 @@
 #!/bin/bash
 set -ex
 
-QEMU_CMD=$1
-RAM=$2
+QEMU_CMD="${1:-qemu-system-x86_64}"	# or 'chroot'
+QEMU_RAM="${2:-8G}"
 
 pushd sysa
 
@@ -116,11 +116,15 @@ cd tmp
 find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
-${QEMU_CMD:-qemu-system-x86_64} -enable-kvm \
-    -m "${RAM:-8G}" \
-    -nographic \
-    -no-reboot \
-    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0
+if [ "${QEMU_CMD}" = 'chroot' ]; then
+	sudo PATH="/after/bin:${PATH}" chroot . /init
+else
+	${QEMU_CMD} -enable-kvm \
+	    -m "${QEMU_RAM:-8G}" \
+	    -nographic \
+	    -no-reboot \
+	    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0
+fi
 
 cd ../..
 
