@@ -98,7 +98,9 @@ get_file() {
     else
 	bname=$(basename "$url" ".tar.${ext}")
     fi
-    cp "${bname}.kaem" tmp/after
+    if [ -f "{bname}.*" ]; then
+        cp "${bname}.*" tmp/after
+    fi
     cp "../sources/$(basename "$url")" tmp/after
 }
 
