@@ -9,7 +9,6 @@ pushd sysa
 # SYSTEM A
 
 # Setup tmp
-echo "trying to mount ramdisk/tmpfs: size 8G"
 mkdir -p tmp/
 sudo mount -t tmpfs -o size=8G tmpfs tmp
 
@@ -134,5 +133,4 @@ fi
 cd ../..
 
 # Cleanup
-echo "trying to unmount ramdisk/tmpfs, abort with CTRL+C"
 sudo umount sysa/tmp
