@@ -89,3 +89,10 @@ cd ..
 cd make-3.80
 kaem --file ../make-3.80.kaem
 cd ..
+
+# Part 14: bzip2
+/after/bin/gunzip bzip2-1.0.8.tar.gz
+/after/bin/tar xf bzip2-1.0.8.tar
+cd bzip2-1.0.8
+kaem --file ../bzip2-1.0.8.kaem
+cd ..
