@@ -17,6 +17,10 @@ MES=${bindir}/mes
 
 # Initial tcc
 cd tcc-0.9.26
+
+# Create config.h
+catm config.h
+
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -S \
     -o tcc.s \
@@ -378,6 +382,9 @@ tcc -ar cr ${libdir}/libgetopt.a getopt.o
 
 # Now compile tcc 0.9.27
 cd ../tcc-0.9.27
+
+# Create config.h
+catm config.h
 
 # Compile the binary
 tcc \

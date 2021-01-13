@@ -58,14 +58,12 @@ cp mes.kaem tmp/after/
 cp mes-files/mescc.scm tmp/after/bin/
 cp mes-files/config.h tmp/after/mes/include/mes/
 cp mes-files/config.h tmp/after/tcc-mes/include/mes/
-mkdir tmp/after/mes/{bin,m2}
+mkdir -p tmp/after/mes/{bin,m2}
 
 # tcc
 cp tcc.kaem tmp/after/
 cp -r tcc-0.9.26 tmp/after/
 cp -r tcc-0.9.27 tmp/after/
-touch tmp/after/tcc-0.9.27/config.h
-touch tmp/after/tcc-0.9.26/config.h
 pushd tmp/after/tcc-0.9.26
 ln -s ../mes/module .
 ln -s ../mes/mes .
