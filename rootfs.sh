@@ -25,17 +25,17 @@ cp -r ../bootstrap-seeds tmp/
 mv tmp/kaem.run tmp/mescc-tools-seed.kaem.run
 cp base.kaem.run tmp/kaem.run
 # create directories needed
-mkdir tmp/bin
+mkdir -p tmp/bin
 
 # after mescc-tools-seed we get into our own directory because
 # the mescc-tools-seed one is hella messy
-mkdir tmp/after/bin -p
-mkdir tmp/after/{lib,include}
-mkdir tmp/after/lib/{tcc,linux}
+mkdir -p tmp/after/bin
+mkdir -p tmp/after/{lib,include}
+mkdir -p tmp/after/lib/{tcc,linux}
 ln -s . tmp/after/lib/x86-mes
 ln -s . tmp/after/lib/linux/x86-mes
-mkdir tmp/after/include/{mes,gnu,linux,sys,mach}
-mkdir tmp/after/include/linux/{x86,x86_64}
+mkdir -p tmp/after/include/{mes,gnu,linux,sys,mach}
+mkdir -p tmp/after/include/linux/{x86,x86_64}
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
 
@@ -46,7 +46,7 @@ cp -r mescc-tools-extra tmp/after/
 pushd tmp/after
 git clone ../../blynn-compiler-oriansj blynn-compiler
 cp ../../blynn-compiler.kaem blynn-compiler/go.kaem
-mkdir blynn-compiler/{bin,generated}
+mkdir -p blynn-compiler/{bin,generated}
 popd
 
 # mes
@@ -94,12 +94,12 @@ get_file() {
     popd
     ext="${url##*.}"
     if [ "$ext" = "tar" ]; then
-	bname=$(basename "$url" .tar)
+	bname=$(basename "$url" ".tar")
     else
 	bname=$(basename "$url" ".tar.${ext}")
     fi
-    if [ -f "{bname}.*" ]; then
-        cp "${bname}.*" tmp/after
+    if [ -f "${bname}."* ]; then
+        cp "${bname}."* tmp/after
     fi
     cp "../sources/$(basename "$url")" tmp/after
 }
