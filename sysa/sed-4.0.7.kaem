@@ -35,3 +35,5 @@ tcc -c -I . -I lib -DPACKAGE=\"sed\" -DVERSION=\"4.0.7\" sed/sed.c
 # Link
 tcc -static -o ${bindir}/sed -L lib lib/libsed.a compile.o execute.o regex.o fmt.o sed.o -lsed
 
+# Test
+sed --version
