@@ -108,6 +108,9 @@ get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar
 # diffutils 2.7
 get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
+# patch 2.5.9
+get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

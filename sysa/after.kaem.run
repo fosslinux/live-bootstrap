@@ -70,3 +70,10 @@ cd ..
 cd diffutils-2.7
 kaem --file ../diffutils-2.7.kaem
 cd ..
+
+# Part 12: patch
+/after/bin/gunzip patch-2.5.9.tar.gz
+/after/bin/tar xf patch-2.5.9.tar
+cd patch-2.5.9
+kaem --file ../patch-2.5.9.kaem
+cd ..
