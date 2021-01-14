@@ -1,0 +1,10 @@
+--- libtcc.c	2021-01-14 08:25:30.774995301 +1100
++++ libtcc.c	2021-01-14 08:26:37.594417450 +1100
+@@ -734,6 +734,7 @@
+     ++nb_states;
+ 
+     s->alacarte_link = 1;
++    s->static_link = 1;
+     s->nocommon = 1;
+     s->warn_implicit_function_declaration = 1;
+     s->ms_extensions = 1;

@@ -71,9 +71,14 @@ cd diffutils-2.7
 kaem --file ../diffutils-2.7.kaem
 cd ..
 
-# Part 12: patch
+# Part 11: patch
 /after/bin/gunzip patch-2.5.9.tar.gz
 /after/bin/tar xf patch-2.5.9.tar
 cd patch-2.5.9
 kaem --file ../patch-2.5.9.kaem
+cd ..
+
+# Part 12: tcc-patched
+cd tcc-0.9.27
+kaem --file ../tcc-patched.kaem
 cd ..

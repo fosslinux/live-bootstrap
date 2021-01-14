@@ -36,8 +36,12 @@ ln -s . tmp/after/lib/x86-mes
 ln -s . tmp/after/lib/linux/x86-mes
 mkdir -p tmp/after/include/{mes,gnu,linux,sys,mach}
 mkdir -p tmp/after/include/linux/{x86,x86_64}
+mkdir -p tmp/tmp
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
+
+# Copy in all of the patches
+cp -r patches tmp/after/
 
 # mescc-tools-extra
 cp -r mescc-tools-extra tmp/after/
@@ -74,8 +78,11 @@ popd
 mkdir -p ../sources
 
 # sed 4.0.7
-cp sed-4.0.7.kaem tmp/after
-cp -r sed-4.0.7 tmp/after
+cp sed-4.0.7.kaem tmp/after/
+cp -r sed-4.0.7 tmp/after/
+
+# tcc patched
+cp tcc-patched.kaem tmp/after/
 
 # tar 1.12
 url=https://ftp.gnu.org/gnu/tar/tar-1.12.tar.gz
@@ -110,6 +117,9 @@ get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
 # patch 2.5.9
 get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz
+
+# patched tcc
+cp tcc-patched.kaem tmp/after/
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
