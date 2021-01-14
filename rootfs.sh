@@ -87,7 +87,9 @@ cp tcc-patched.kaem tmp/after/
 # tar 1.12
 url=https://ftp.gnu.org/gnu/tar/tar-1.12.tar.gz
 pushd ../sources
-wget --continue "$url"
+if [ ! -f "$(basename $url)" ]; then
+    wget "$url"
+fi
 popd
 cp "$(basename $url .tar.gz).kaem" tmp/after
 tar -C tmp/after -xf "../sources/$(basename $url)"
@@ -95,7 +97,9 @@ tar -C tmp/after -xf "../sources/$(basename $url)"
 get_file() {
     url=$1
     pushd ../sources
-    wget --continue "$url"
+    if [ ! -f "$(basename "$url")" ]; then
+        wget "$url"
+    fi
     popd
     ext="${url##*.}"
     if [ "$ext" = "tar" ]; then
