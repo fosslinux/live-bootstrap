@@ -82,3 +82,10 @@ cd ..
 cd tcc-0.9.27
 kaem --file ../tcc-patched.kaem
 cd ..
+
+# Part 13: make
+/after/bin/gunzip make-3.80.tar.gz
+/after/bin/tar xf make-3.80.tar
+cd make-3.80
+kaem --file ../make-3.80.kaem
+cd ..

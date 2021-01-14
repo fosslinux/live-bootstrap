@@ -121,6 +121,9 @@ get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz
 # patched tcc
 cp tcc-patched.kaem tmp/after/
 
+# make 3.80
+get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
