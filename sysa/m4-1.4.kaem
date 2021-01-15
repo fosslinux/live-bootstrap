@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -ex
+
+/after/bin/patch -Np0 -i ../patches/m4-1.4/m4-signal-include.patch
+cp ../m4-1.4.mk Makefile
+/after/bin/make
+
+# Install
+/after/bin/cp m4 /after/bin/m4
+/after/bin/chmod 755 /after/bin/m4
+
+# Test
+/after/bin/m4 --version

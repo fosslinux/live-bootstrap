@@ -1,0 +1,12 @@
+diff -r -U3 m4-1.4/src/m4.c m4-1.4-patched/src/m4.c
+--- src/m4.c	1994-11-02 03:14:28.000000000 +0000
++++ src/m4.c	2021-01-15 00:19:21.947654461 +0000
+@@ -19,7 +19,7 @@
+ #include "m4.h"
+ 
+ #include <getopt.h>
+-#include <sys/signal.h>
++#include <signal.h>
+ 
+ static void usage _((int));
+ 

@@ -96,3 +96,10 @@ cd ..
 cd bzip2-1.0.8
 kaem --file ../bzip2-1.0.8.kaem
 cd ..
+
+# Part 15: m4
+/after/bin/gunzip m4-1.4.tar.gz
+/after/bin/tar xf m4-1.4.tar
+cd m4-1.4
+kaem --file ../m4-1.4.kaem
+cd ..
