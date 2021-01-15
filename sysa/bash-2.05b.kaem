@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -ex
+
+# Variables
+bindir=/after/bin
+
+catm config.h
+catm include/version.h
+catm include/pipesize.h
+
+# Patch
+patch -Np0 -i ../patches/bash-2.05b/mes-libc.patch
+patch -Np0 -i ../patches/bash-2.05b/tinycc.patch
+patch -Np0 -i ../patches/bash-2.05b/missing-defines.patch
+patch -Np0 -i ../patches/bash-2.05b/locale.patch
+patch -Np0 -i ../patches/bash-2.05b/dev-tty.patch
+
+# Compile
+cp ../bash-2.05b.mk Makefile
+cp ../bash-2.05b-builtins.mk builtins/Makefile
+cp ../bash-2.05b-common.mk common.mk
+make mkbuiltins
+cd builtins
+make libbuiltins.a
+cd ..
+make
+
+# Install
+cp bash /after/bin/
+chmod 755 /after/bin/bash
