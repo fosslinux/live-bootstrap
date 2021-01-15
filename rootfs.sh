@@ -133,6 +133,9 @@ get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz
 # bzip2 1.0.8
 get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
 
+# m4 1.4
+get_file https://ftp.gnu.org/gnu/m4/m4-1.4.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
