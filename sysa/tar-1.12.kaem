@@ -15,7 +15,6 @@ tcc -c -DHAVE_DIRENT_H backupfile.c
 tcc -c -I . error.c
 tcc -c -I . fnmatch.c
 tcc -c ftruncate.c
-tcc -c getdate.c
 tcc -c getopt.c
 tcc -c getopt1.c
 tcc -c getversion.c
@@ -25,7 +24,7 @@ tcc -c -DHAVE_GETCWD xgetcwd.c
 tcc -c xmalloc.c
 tcc -c xstrdup.c
 
-tcc -ar cr libtar.a argmatch.o backupfile.o error.o fnmatch.o ftruncate.o getdate.o getopt.o getopt1.o getversion.o modechange.o msleep.o xgetcwd.o xmalloc.o xstrdup.o
+tcc -ar cr libtar.a argmatch.o backupfile.o error.o fnmatch.o ftruncate.o getopt.o getopt1.o getversion.o modechange.o msleep.o xgetcwd.o xmalloc.o xstrdup.o
 cd ..
 
 ## tar
@@ -44,8 +43,10 @@ tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DHAVE_DIRENT_H src/misc.c
 tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DHAVE_GETCWD src/names.c
 tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/open3.c
 tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/rtapelib.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DPACKAGE=\"tar\" -DVERSION=\"1.12\" src/tar.c
+cp src/tar.c src/tar_patched.c
+sed -i 709,709d src/tar_patched.c
+tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DPACKAGE=\"tar\" -DVERSION=\"1.12\" src/tar_patched.c
 tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/update.c
 
 # Link
-tcc -static -o ${bindir}/tar -L lib lib/libtar.a arith.o buffer.o compare.o create.o delete.o extract.o incremen.o list.o mangle.o misc.o names.o open3.o rtapelib.o tar.o update.o -ltar
+tcc -static -o ${bindir}/tar -L lib lib/libtar.a arith.o buffer.o compare.o create.o delete.o extract.o incremen.o list.o mangle.o misc.o names.o open3.o rtapelib.o tar_patched.o update.o -ltar
