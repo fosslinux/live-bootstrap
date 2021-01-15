@@ -87,7 +87,9 @@ cp tcc-patched.kaem tmp/after/
 # tar 1.12
 url=https://ftp.gnu.org/gnu/tar/tar-1.12.tar.gz
 pushd ../sources
-wget --continue "$url"
+if [ ! -f "$(basename $url)" ]; then
+    wget "$url"
+fi
 popd
 cp "$(basename $url .tar.gz).kaem" tmp/after
 tar -C tmp/after -xf "../sources/$(basename $url)"
@@ -95,7 +97,9 @@ tar -C tmp/after -xf "../sources/$(basename $url)"
 get_file() {
     url=$1
     pushd ../sources
-    wget --continue "$url"
+    if [ ! -f "$(basename "$url")" ]; then
+        wget "$url"
+    fi
     popd
     ext="${url##*.}"
     if [ "$ext" = "tar" ]; then
@@ -103,9 +107,11 @@ get_file() {
     else
 	bname=$(basename "$url" ".tar.${ext}")
     fi
-    if [ -f "${bname}."* ]; then
-        cp "${bname}."* tmp/after
-    fi
+    for file in "${bname}."*; do
+        if [ -f "${file}" ]; then
+            cp "${file}" tmp/after
+        fi
+    done
     cp "../sources/$(basename "$url")" tmp/after
 }
 
@@ -123,6 +129,9 @@ cp tcc-patched.kaem tmp/after/
 
 # make 3.80
 get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz
+
+# bzip2 1.0.8
+get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;

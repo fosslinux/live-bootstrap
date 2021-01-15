@@ -1,0 +1,61 @@
+diff -r -N -U3 bzip2-1.0.8/bzip2.c bzip2-1.0.8/bzip2.c
+--- bzip2.c	2019-07-13 18:50:05.000000000 +0100
++++ bzip2.c	2021-01-14 14:11:40.160213521 +0000
+@@ -1051,12 +1051,13 @@
+ {
+ #  if BZ_UNIX
+    IntNative      retVal;
+-   struct utimbuf uTimBuf;
++   //struct utimbuf uTimBuf;
+ 
+-   uTimBuf.actime = fileMetaInfo.st_atime;
+-   uTimBuf.modtime = fileMetaInfo.st_mtime;
++   //uTimBuf.actime = fileMetaInfo.st_atime;
++   //uTimBuf.modtime = fileMetaInfo.st_mtime;
+ 
+-   retVal = utime ( dstName, &uTimBuf );
++   //retVal = utime ( dstName, &uTimBuf );
++   retVal = 0;
+    ERROR_IF_NOT_ZERO ( retVal );
+ #  endif
+ }
+diff -r -N -U3 bzip2-1.0.8/Makefile bzip2-1.0.8/Makefile
+--- Makefile	2019-07-13 18:50:05.000000000 +0100
++++ Makefile	2021-01-14 15:45:17.558516299 +0000
+@@ -21,7 +21,7 @@
+ LDFLAGS=
+ 
+ BIGFILES=-D_FILE_OFFSET_BITS=64
+-CFLAGS=-Wall -Winline -O2 -g $(BIGFILES)
++CFLAGS=-Wall -Winline -O2 -g $(BIGFILES) -I .
+ 
+ # Where you want it installed when you do 'make install'
+ PREFIX=/usr/local
+@@ -44,13 +44,7 @@
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -o bzip2recover bzip2recover.o
+ 
+ libbz2.a: $(OBJS)
+-	rm -f libbz2.a
+ 	$(AR) cq libbz2.a $(OBJS)
+-	@if ( test -f $(RANLIB) -o -f /usr/bin/ranlib -o \
+-		-f /bin/ranlib -o -f /usr/ccs/bin/ranlib ) ; then \
+-		echo $(RANLIB) libbz2.a ; \
+-		$(RANLIB) libbz2.a ; \
+-	fi
+ 
+ check: test
+ test: bzip2
+@@ -114,7 +108,6 @@
+ 	sample1.tst sample2.tst sample3.tst
+ 
+ blocksort.o: blocksort.c
+-	@cat words0
+ 	$(CC) $(CFLAGS) -c blocksort.c
+ huffman.o: huffman.c
+ 	$(CC) $(CFLAGS) -c huffman.c
+diff -r -N -U3 bzip2-1.0.8/utime.h bzip2-1.0.8/utime.h
+--- utime.h	1970-01-01 01:00:00.000000000 +0100
++++ utime.h	2021-01-14 18:11:11.253825037 +0000
+@@ -0,0 +1,2 @@
++#define fchown(filedes, owner, group) 0
++#define fchmod(filedes, mode) 0

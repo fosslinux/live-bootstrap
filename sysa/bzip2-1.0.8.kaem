@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -ex
+
+/after/bin/patch -Np0 -i ../patches/bzip2-1.0.8/bzip2-1.0.8.patch
+/after/bin/make CC=tcc AR="tcc -ar" bzip2
+
+# Install
+/after/bin/cp bzip2 /after/bin/bzip2
+/after/bin/chmod 755 /after/bin/bzip2
+
+# Test
+/after/bin/bzip2 --help
