@@ -8,7 +8,6 @@ AR      = tcc -ar
 CFLAGS  = -I lib \
           -DPRODUCT=\"$(PRODUCT)\" \
           -DVERSION=\"$(VERSION)\"
-          -DHAVE_SIGCONTEXT=0
 
 LDFLAGS = -L . -lm4
 
