@@ -1,0 +1,21 @@
+--- ../bash-2.05b.bak/execute_cmd.c	2021-01-15 09:38:55.730307635 +1100
++++ execute_cmd.c	2021-01-15 09:43:41.046896754 +1100
+@@ -286,12 +286,18 @@
+     {
+       if (currently_executing_command->type == cm_simple)
+ 	return currently_executing_command->value.Simple->line;
++#ifdef COND_COMMAND
+       else if (currently_executing_command->type == cm_cond)
+ 	return currently_executing_command->value.Cond->line;
++#endif
++#ifdef DPAREN_ARITHMETIC
+       else if (currently_executing_command->type == cm_arith)
+ 	return currently_executing_command->value.Arith->line;
++#endif
++#ifdef ARITH_FOR_COMMAND
+       else if (currently_executing_command->type == cm_arith_for)
+ 	return currently_executing_command->value.ArithFor->line;
++#endif
+       else
+ 	return line_number;
+     }

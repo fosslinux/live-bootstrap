@@ -1,0 +1,11 @@
+diff --color -ru shell.c
+--- shell.c	2002-07-02 01:27:11.000000000 +1000
++++ shell.c	2021-01-16 11:23:36.407287955 +1100
+@@ -342,8 +342,6 @@
+ #  endif
+ #endif
+ 
+-  check_dev_tty ();
+-
+ #ifdef __CYGWIN__
+   _cygwin32_check_tmp ();
