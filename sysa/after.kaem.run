@@ -97,15 +97,23 @@ cd bzip2-1.0.8
 kaem --file ../bzip2-1.0.8.kaem
 cd ..
 
-# Part 15: bash
+# Part 15: grep
+/after/bin/gunzip grep-2.4.tar.gz
+/after/bin/tar xf grep-2.4.tar
+cd grep-2.4
+kaem --file ../grep-2.4.kaem
+cd ..
+
+# Part 16: bash
 /after/bin/gunzip bash-2.05b.tar.gz
 /after/bin/tar xf bash-2.05b.tar
 cd bash-2.05b
 kaem --file ../bash-2.05b.kaem
 cd ..
 
-# Part 16: m4
+# Part 17: m4
 /after/bin/gunzip m4-1.4.tar.gz
 /after/bin/tar xf m4-1.4.tar
 cd m4-1.4
 kaem --file ../m4-1.4.kaem
+cd ..

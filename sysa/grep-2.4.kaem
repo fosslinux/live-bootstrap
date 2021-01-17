@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -ex
+
+cp ../grep-2.4.mk Makefile
+/after/bin/make
+
+# Install
+/after/bin/cp grep /after/bin/grep
+/after/bin/chmod 755 /after/bin/grep
+
+# Test
+/after/bin/grep --version
