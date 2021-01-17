@@ -107,7 +107,7 @@ get_file() {
     else
 	bname=$(basename "$url" ".tar.${ext}")
     fi
-    for file in "${bname}."*; do
+    for file in "${bname}"*; do
         if [ -f "${file}" ]; then
             cp "${file}" tmp/after
         fi
