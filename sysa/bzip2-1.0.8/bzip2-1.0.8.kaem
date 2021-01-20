@@ -18,7 +18,9 @@ make CC=tcc AR="tcc -ar" bzip2
 
 # Install
 cp bzip2 /after/bin/bzip2
+cp bzip2 /after/bin/bunzip2
 chmod 755 /after/bin/bzip2
+chmod 755 /after/bin/bunzip2
 
 # Test
 bzip2 --help
