@@ -90,9 +90,9 @@ get_file() {
     popd
     ext="${url##*.}"
     if [ "$ext" = "tar" ]; then
-    	bname=$(basename "$url" ".tar")
+        bname=$(basename "$url" ".tar")
     else
-	    bname=$(basename "$url" ".tar.${ext}")
+        bname=$(basename "$url" ".tar.${ext}")
     fi
     cp -r "${bname}" tmp/after/
     cp "../sources/$(basename "$url")" "tmp/after/${bname}/src/"
