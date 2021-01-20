@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -ex
+
+cd build
+
+# Extract
+gunzip ../src/${pkg}.tar.gz
+tar xf ../src/${pkg}.tar
+cd ${pkg}
+cp ../../mk/main.mk Makefile
+
+# Build
+make
+
+# Install
+cp grep /after/bin/grep
+chmod 755 /after/bin/grep
+
+# Test
+grep --version
+
+cd ../..
