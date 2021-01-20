@@ -52,28 +52,28 @@ mkbuiltins: $(MKBUILTINS_OBJS)
 # libsh
 
 libsh.a: $(SHLIB_OBJS)
-	$(AR) cr $@ $(SHLIB_OBJS)
+	$(AR) cr $@ $^
 
 # libglob
 
 libglob.a: $(GLOB_OBJS)
-	$(AR) cr $@ $(GLOB_OBJS)
+	$(AR) cr $@ $^
 
 # libtilde
 
 libtilde.a: $(TILDE_OBJS)
-	$(AR) cr $@ $(TILDE_OBJS)
+	$(AR) cr $@ $^
 
 # The actual program
 
 mksyntax: $(MKSYNTAX_OBJS)
-	$(CC) $(MKSYNTAX_OBJS) $(LDFLAGS) -o $@ -lgetopt
+	$(CC) $^ $(LDFLAGS) -o $@ -lgetopt
 
 syntax.c: mksyntax
 	./mksyntax -o $@
 
 mksignames: $(MKSIGNAMES_OBJS)
-	$(CC) $(MKSIGNAMES_OBJS) $(LDFLAGS) -o $@ -lgetopt
+	$(CC) $^ $(LDFLAGS) -o $@ -lgetopt
 
 signames.h: mksignames
 	./mksignames $@
