@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-QEMU_CMD="${1:-qemu-system-x86_64}"	# or 'chroot'
+QEMU_CMD="${1:-qemu-system-x86_64}"	# or 'chroot' or 'minikernel'
 QEMU_RAM="${2:-8G}"
 
 pushd sysa
@@ -11,6 +11,8 @@ pushd sysa
 # Setup tmp
 mkdir -p tmp/
 sudo mount -t tmpfs -o size=8G tmpfs tmp
+
+LOGFILE="$PWD/tmp/bootstrap.log"
 
 # base: mescc-tools-seed
 # copy in all the mescc-tools-seed stuff
@@ -125,17 +127,33 @@ cd tmp
 find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
-if [ "${QEMU_CMD}" = 'chroot' ]; then
-	sudo PATH="/after/bin:${PATH}" chroot . /init
-else
-	${QEMU_CMD} -enable-kvm \
-	    -m "${QEMU_RAM}" \
-	    -nographic \
-	    -no-reboot \
-	    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0
-fi
+case "${QEMU_CMD}" in
+	chroot)
+		sudo PATH="/after/bin:${PATH}" chroot . /init | tee "$LOGFILE"
+	;;
+	minikernel)
+		git clone --depth 1 --branch v0.4 https://github.com/bittorf/kritis-linux.git
+
+		kritis-linux/ci_helper.sh \
+			--arch x86_64 \
+			--ramsize 4G \
+			--kernel 5.10.8 \
+			--initrd initramfs.igz \
+			--log "$LOGFILE"
+	;;
+	*)
+		${QEMU_CMD} -enable-kvm \
+		    -m "${QEMU_RAM:-8G}" \
+		    -nographic \
+		    -no-reboot \
+		    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0 | tee "$LOGFILE"
+	;;
+esac
 
 cd ../..
+
+# eventually keep logfile before unmount:
+echo "see logfile: $LOGFILE"
 
 # Cleanup
 sudo umount sysa/tmp
