@@ -2,6 +2,7 @@
 
 set -ex
 
+mkdir build
 cd build
 
 # Extract
@@ -17,8 +18,7 @@ patch -Np0 -i ../../patches/signal-include.patch
 make
 
 # Install
-cp m4 /after/bin/m4
-chmod 755 /after/bin/m4
+install m4 /after/bin/
 
 # Test
 m4 --version

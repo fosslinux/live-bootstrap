@@ -2,6 +2,7 @@
 
 set -ex
 
+mkdir build
 cd build
 
 # Extract
@@ -14,8 +15,7 @@ cp ../../mk/main.mk Makefile
 make
 
 # Install
-cp grep /after/bin/grep
-chmod 755 /after/bin/grep
+install grep /after/bin/
 
 # Test
 grep --version
