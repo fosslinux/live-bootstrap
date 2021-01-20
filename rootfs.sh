@@ -129,7 +129,7 @@ if [ "${QEMU_CMD}" = 'chroot' ]; then
 	sudo PATH="/after/bin:${PATH}" chroot . /init
 else
 	${QEMU_CMD} -enable-kvm \
-	    -m "${QEMU_RAM:-8G}" \
+	    -m "${QEMU_RAM}" \
 	    -nographic \
 	    -no-reboot \
 	    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0
