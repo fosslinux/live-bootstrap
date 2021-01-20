@@ -18,5 +18,7 @@
 
 cd after
 
+PATH=/after/bin:/bin
+
 # Finally, reinvoke kaem in this directory
 ../bin/kaem --file kaem.run

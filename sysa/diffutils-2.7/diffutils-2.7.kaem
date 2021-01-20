@@ -1,0 +1,44 @@
+#!/bin/sh
+
+set -ex
+
+cd build
+
+# Extract
+gunzip ../src/${pkg}.tar.gz
+tar xf ../src/${pkg}.tar
+cd ${pkg}
+
+# Touch config.h file
+catm config.h
+
+# Compile
+tcc -c -I. -DNULL_DEVICE=\"/dev/null\" cmp.c
+tcc -c -I. cmpbuf.c
+tcc -c -I. error.c
+tcc -c -I. getopt.c
+tcc -c -I. getopt1.c
+tcc -c -I. xmalloc.c
+tcc -c -I. version.c
+tcc -c -I. diff.c
+tcc -c -I. analyze.c
+tcc -c -I. -DHAVE_DIRENT_H dir.c
+tcc -c -I. io.c
+tcc -c -I. -DHAVE_DUP2 -DHAVE_FORK=0 util.c
+tcc -c -I. context.c
+tcc -c -I. ed.c
+tcc -c -I. ifdef.c
+tcc -c -I. normal.c
+tcc -c -I. side.c
+tcc -c -I. fnmatch.c
+tcc -c -I. regex.c
+
+# Link
+tcc -static -o ${bindir}/cmp cmp.o cmpbuf.o error.o getopt.o getopt1.o xmalloc.o version.o
+tcc -static -o ${bindir}/diff diff.o analyze.o cmpbuf.o dir.o io.o util.o context.o ed.o ifdef.o normal.o side.o fnmatch.o getopt.o getopt1.o regex.o version.o
+
+# Test
+cmp --version
+diff --version
+
+cd ../..

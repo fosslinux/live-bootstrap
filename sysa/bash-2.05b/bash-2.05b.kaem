@@ -1,0 +1,38 @@
+#!/bin/sh
+
+set -ex
+
+cd build
+
+# Extract
+gunzip ../src/${pkg}.tar.gz
+tar xf ../src/${pkg}.tar
+cd ${pkg}
+cp ../../mk/main.mk Makefile
+cp ../../mk/builtins.mk builtins/Makefile
+cp ../../mk/common.mk common.mk
+
+# Create various .h files
+catm config.h
+catm include/version.h
+catm include/pipesize.h
+
+# Patch
+patch -Np0 -i ../../patches/mes-libc.patch
+patch -Np0 -i ../../patches/tinycc.patch
+patch -Np0 -i ../../patches/missing-defines.patch
+patch -Np0 -i ../../patches/locale.patch
+patch -Np0 -i ../../patches/dev-tty.patch
+
+# Compile
+make mkbuiltins
+cd builtins
+make libbuiltins.a
+cd ..
+make
+
+# Install
+cp bash /after/bin/
+chmod 755 /after/bin/bash
+
+cd ../..

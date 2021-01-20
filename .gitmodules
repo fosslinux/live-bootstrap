@@ -1,27 +1,33 @@
-[submodule "mescc-tools-seed"]
-	path = sysa/mescc-tools-seed
+[submodule "sysa/mescc-tools-seed/src/mescc-tools-seed"]
+	path = sysa/mescc-tools-seed/src/mescc-tools-seed
 	url = https://github.com/oriansj/mescc-tools-seed/
 [submodule "bootstrap-seeds"]
-	path = bootstrap-seeds
+	path = sysa/bootstrap-seeds
 	url = https://github.com/oriansj/bootstrap-seeds
-[submodule "blynn-compiler-oriansj"]
-	path = sysa/blynn-compiler-oriansj
+[submodule "sysa/blynn-compiler/src"]
+	path = sysa/blynn-compiler/src
 	url = https://github.com/oriansj/blynn-compiler
-[submodule "sysa/mes"]
-	path = sysa/mes
+[submodule "sysa/mes/src/mes"]
+	path = sysa/mes/src/mes
 	url = https://gitlab.com/janneke/mes.git
-[submodule "sysa/nyacc"]
-	path = sysa/nyacc
+[submodule "sysa/mes/src/nyacc"]
+	path = sysa/mes/src/nyacc
 	url = https://git.savannah.gnu.org/git/nyacc.git
-[submodule "sysa/tcc-0.9.26p1"]
-	path = sysa/tcc-0.9.26
+[submodule "sysa/tcc-0.9.26/src/tcc-0.9.26"]
+	path = sysa/tcc-0.9.26/src/tcc-0.9.26
 	url = https://gitlab.com/janneke/tinycc
 [submodule "sysa/mescc-tools-patched"]
-	path = sysa/mescc-tools-patched
+	path = sysa/mescc-tools-seed/src/mescc-tools-patched
 	url = https://github.com/oriansj/mescc-tools
-[submodule "sysa/tcc-0.9.27"]
-	path = sysa/tcc-0.9.27
+[submodule "sysa/tcc-0.9.27/src/tcc-0.9.27"]
+	path = sysa/tcc-0.9.27/src/tcc-0.9.27
 	url = git://repo.or.cz/tinycc.git
-[submodule "sysa/sed-4.0.7"]
-	path = sysa/sed-4.0.7
+[submodule "sysa/sed-4.0.7/src"]
+	path = sysa/sed-4.0.7/src
 	url = https://git.savannah.gnu.org/git/sed/sed-history.git
+[submodule "sysa/tcc-0.9.26/src/mes-libc"]
+	path = sysa/tcc-0.9.26/src/mes-libc
+	url = https://gitlab.com/janneke/mes
+[submodule "sysa/tcc-0.9.27/src/mes-libc"]
+	path = sysa/tcc-0.9.27/src/mes-libc
+	url = https://gitlab.com/janneke/mes

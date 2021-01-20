@@ -1,0 +1,41 @@
+#!/bin/sh
+
+set -ex
+
+cd src
+
+# Create config.h
+catm config.h
+
+# Compile
+
+## libsed.a
+cd lib
+
+tcc -c getopt1.c
+tcc -c -I .. getopt.c
+tcc -c -I .. -DENABLE_NLS=0 utils.c
+cp regex_.h regex.h
+tcc -c -I . regex.c
+tcc -c obstack.c
+tcc -c strverscmp.c
+tcc -c getline.c
+tcc -c -DHAVE_FCNTL_H mkstemp.c
+
+tcc -ar cr libsed.a getopt1.o getopt.o utils.o regex.o obstack.o strverscmp.o getline.o mkstemp.o
+cd ..
+
+## sed
+tcc -c -I . -I lib -DSED_FEATURE_VERSION=\"4.0\" sed/compile.c
+tcc -c -I . -I lib sed/execute.c
+tcc -c -I . -I lib sed/regex.c
+tcc -c -I . -I lib sed/fmt.c
+tcc -c -I . -I lib -DPACKAGE=\"sed\" -DVERSION=\"4.0.7\" sed/sed.c
+
+# Link
+tcc -static -o ${bindir}/sed -L lib lib/libsed.a compile.o execute.o regex.o fmt.o sed.o -lsed
+
+# Test
+sed --version
+
+cd ..

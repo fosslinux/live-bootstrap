@@ -20,92 +20,112 @@ set -ex
 
 PATH=/after/bin:/bin
 
+# Set commonly used variables
+prefix=/after
+bindir=${prefix}/bin
+libdir=${prefix}/lib
+incdir=${prefix}/include
+MES_PREFIX=${prefix}/mes/src/mes
+GUILE_LOAD_PATH=${prefix}/mes/src/nyacc/module:${prefix}/mes/src/mes/mes/module:${prefix}/mes/src/mes/module
+
 # Part 2: cp and chown (mescc-tools-extra)
-cd mescc-tools-extra
-kaem --file go.kaem
+pkg="mescc-tools-extra"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 3: Remove remaining dependencies on / (root of /after)
-/after/bin/cp ../bin/hex2 bin/hex2
-/after/bin/cp ../bin/M1 bin/M1
-/after/bin/cp ../bin/M2-Planet bin/M2-Planet
-/after/bin/cp ../bin/blood-elf bin/blood-elf
-/after/bin/cp ../bin/get_machine bin/get_machine
-/after/bin/cp ../bin/mes-m2 bin/mes-m2
-/after/bin/cp ../bin/kaem bin/kaem
-/after/bin/cp ../catm bin/catm
-/after/bin/chmod 755 bin/hex2 bin/M1 bin/M2-Planet bin/blood-elf \
+cp ../bin/hex2 bin/hex2
+cp ../bin/M1 bin/M1
+cp ../bin/M2-Planet bin/M2-Planet
+cp ../bin/blood-elf bin/blood-elf
+cp ../bin/get_machine bin/get_machine
+cp ../bin/mes-m2 bin/mes-m2
+cp ../bin/kaem bin/kaem
+cp ../catm bin/catm
+chmod 755 bin/hex2 bin/M1 bin/M2-Planet bin/blood-elf \
     bin/get_machine bin/mes-m2 bin/kaem bin/catm
+PATH=/after/bin
 
 # Part 4: blynn-compiler
-cd blynn-compiler
-kaem --file go.kaem
+pkg="blynn-compiler"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 5: mes
-kaem --file mes.kaem
+pkg="mes"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
 
-# Part 6: tcc
-kaem --file tcc.kaem
+# Part 6: tcc 0.9.26
+pkg="tcc-0.9.26"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
 
-# Part 7: sed
-cd sed-4.0.7
-kaem --file ../sed-4.0.7.kaem
+# Part 7: tcc 0.9.27
+pkg="tcc-0.9.27"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# Part 8: sed
+pkg="sed-4.0.7"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 8: tar
-cd tar-1.12
-kaem --file ../tar-1.12.kaem
+pkg="tar-1.12"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 9: gzip
-/after/bin/tar xf gzip-1.2.4.tar
-cd gzip-1.2.4
-kaem --file ../gzip-1.2.4.kaem
+pkg="gzip-1.2.4"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 10: diffutils
-/after/bin/gunzip diffutils-2.7.tar.gz
-/after/bin/tar xf diffutils-2.7.tar
-cd diffutils-2.7
-kaem --file ../diffutils-2.7.kaem
+pkg="diffutils-2.7"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 11: patch
-/after/bin/gunzip patch-2.5.9.tar.gz
-/after/bin/tar xf patch-2.5.9.tar
-cd patch-2.5.9
-kaem --file ../patch-2.5.9.kaem
+pkg="patch-2.5.9"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 12: tcc-patched
 cd tcc-0.9.27
-kaem --file ../tcc-patched.kaem
+kaem --file tcc-patched.kaem
 cd ..
 
 # Part 13: make
-/after/bin/gunzip make-3.80.tar.gz
-/after/bin/tar xf make-3.80.tar
-cd make-3.80
-kaem --file ../make-3.80.kaem
+pkg="make-3.80"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 14: bzip2
-/after/bin/gunzip bzip2-1.0.8.tar.gz
-/after/bin/tar xf bzip2-1.0.8.tar
-cd bzip2-1.0.8
-kaem --file ../bzip2-1.0.8.kaem
+pkg="bzip2-1.0.8"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 15: bash
-/after/bin/gunzip bash-2.05b.tar.gz
-/after/bin/tar xf bash-2.05b.tar
-cd bash-2.05b
-kaem --file ../bash-2.05b.kaem
+pkg="bash-2.05b"
+cd ${pkg}
+kaem --file ${pkg}.kaem
 cd ..
 
 # Part 16: m4
-/after/bin/gunzip m4-1.4.tar.gz
-/after/bin/tar xf m4-1.4.tar
-cd m4-1.4
-kaem --file ../m4-1.4.kaem
+pkg="m4-1.4"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..

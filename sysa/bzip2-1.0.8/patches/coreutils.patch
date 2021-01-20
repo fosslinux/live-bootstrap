@@ -1,0 +1,34 @@
+diff -r -N -U3 bzip2-1.0.8/Makefile bzip2-1.0.8/Makefile
+--- Makefile	2019-07-13 18:50:05.000000000 +0100
++++ Makefile	2021-01-14 15:45:17.558516299 +0000
+@@ -21,7 +21,7 @@
+ LDFLAGS=
+ 
+ BIGFILES=-D_FILE_OFFSET_BITS=64
+-CFLAGS=-Wall -Winline -O2 -g $(BIGFILES)
++CFLAGS=-Wall -Winline -O2 -g $(BIGFILES) -I .
+ 
+ # Where you want it installed when you do 'make install'
+ PREFIX=/usr/local
+@@ -44,13 +44,7 @@
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -o bzip2recover bzip2recover.o
+ 
+ libbz2.a: $(OBJS)
+-	rm -f libbz2.a
+ 	$(AR) cq libbz2.a $(OBJS)
+-	@if ( test -f $(RANLIB) -o -f /usr/bin/ranlib -o \
+-		-f /bin/ranlib -o -f /usr/ccs/bin/ranlib ) ; then \
+-		echo $(RANLIB) libbz2.a ; \
+-		$(RANLIB) libbz2.a ; \
+-	fi
+ 
+ check: test
+ test: bzip2
+@@ -114,7 +108,6 @@
+ 	sample1.tst sample2.tst sample3.tst
+ 
+ blocksort.o: blocksort.c
+-	@cat words0
+ 	$(CC) $(CFLAGS) -c blocksort.c
+ huffman.o: huffman.c
+ 	$(CC) $(CFLAGS) -c huffman.c
