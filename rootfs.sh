@@ -113,6 +113,9 @@ get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz
 # bzip2 1.0.8
 get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
 
+# coreutils 5.0
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2
+
 # grep 2.4
 get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
 

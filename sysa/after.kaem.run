@@ -118,19 +118,25 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 15: grep
+# Part 15: coreutils
+pkg="coreutils-5.0"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# Part 16: grep
 pkg="grep-2.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 16: bash
+# Part 17: bash
 pkg="bash-2.05b"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 17: m4
+# Part 18: m4
 pkg="m4-1.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
