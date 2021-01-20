@@ -50,13 +50,13 @@ have greater trust in the bootstrap procedure.
 
 | Item                    | Guix                                  | live-bootstrap              |
 | --                      | --                                    | --                          |
-| Total size of seeds [1] | ~120MB (Reduced Source Bootstrap) [2] | ~1KB                        |
+| Total size of seeds [1] | ~30MB (Reduced Source Bootstrap) [2]  | ~1KB                        |
 | Use of kernel           | Linux-Libre Kernel                    | Any Linux Kernel (2.6+) [3] |
 | Implementation complete | Yes                                   | No (in development)         |
 | Automation              | Almost fully automatic                | Optional user customization |
 
 [1]: Excluding kernel.
-[2]: Reiterating that Guix is working on a full source bootstrap.
+[2]: Reiterating that Guix is working on a full source bootstrap, although that still uses guile (~12 MB).
 [3]: Work is ongoing to use other, smaller POSIX kernels.
 
 ## Why would I want bootstrapping?
@@ -211,7 +211,7 @@ is required later for autotools.
 
 #### Part 11: patch 2.5.9
 
-`patch` is a very useful tool at this stage, allowing us to make sigificantly
+`patch` is a very useful tool at this stage, allowing us to make significantly
 more complex edits, including just changes to lines. Luckily, we are able to
 patch patch using sed only.
 
@@ -222,7 +222,7 @@ been forced to manually specify static linking for each tool. Now that we have
 patch, we can patch tinycc to force static linking and then recompile it.
 
 Note that we have to do this using tinycc 0.9.26, as tinycc 0.9.27 cannot
-recompile itself for unknown reasonsn.
+recompile itself for unknown reasons.
 
 #### Part 13: make 3.80
 
@@ -235,7 +235,19 @@ scripts.
 `bzip2` is a compression format that compresses more than `gzip`. It is
 preferred where we can use it, and makes source code sizes smaller.
 
-#### Part 15: bash 2.05b
+#### Part 15: coreutils 5.0.0
+
+Coreutils is a collection on widely used utilities such as cat, chmod, chown,
+cp, install, ln, mkdir, mv, rm, rmdir, tee, and many others.
+
+A few of the utilities cannot be easily compiled with Mes C library, so we skip them.
+
+#### Part 16: grep 2.4
+
+grep is a pattern matching utility. Is is not immediately needed but will
+be useful later for autotools.
+
+#### Part 17: bash 2.05b
 
 GNU `bash` is the most well known shell and the most complex piece of software
 so far. However, it comes with a number of great benefits over kaem, including
@@ -244,7 +256,7 @@ proper POSIX sh support, globbing, etc.
 NOTE: Currently, there is a bison pregenerated file here, which we are working
 to remove.
 
-#### Part 16: m4 1.4
+#### Part 18: m4 1.4
 
 `m4` is the first piece of software we need in the autotools suite. It allows
 macros to be defined and files to be generated from those macros.
