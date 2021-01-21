@@ -2,6 +2,7 @@
 
 set -ex
 
+mkdir build
 cd build
 
 # Extract
@@ -13,9 +14,9 @@ cp ../../mk/builtins.mk builtins/Makefile
 cp ../../mk/common.mk common.mk
 
 # Create various .h files
-catm config.h
-catm include/version.h
-catm include/pipesize.h
+touch config.h
+touch include/version.h
+touch include/pipesize.h
 
 # Patch
 patch -Np0 -i ../../patches/mes-libc.patch
@@ -32,7 +33,6 @@ cd ..
 make
 
 # Install
-cp bash /after/bin/
-chmod 755 /after/bin/bash
+install bash /after/bin/
 
 cd ../..

@@ -1,0 +1,12 @@
+--- lib/modechange.c	2001-12-09 22:54:19.000000000 +0000
++++ lib/modechange.c	2021-01-17 18:34:22.016427148 +0000
+@@ -28,8 +28,8 @@
+ # include <config.h>
+ #endif
+ 
+-#include "modechange.h"
+ #include <sys/stat.h>
++#include "modechange.h"
+ #include "xstrtol.h"
+ 
+ #if STDC_HEADERS

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -ex
+
+cd build
+
+# Extract
+bunzip2 ../src/${pkg}.tar.bz2
+tar xf ../src/${pkg}.tar
+cd ${pkg}
+cp ../../mk/main.mk Makefile
+
+# Patch and prepare
+cp lib/fnmatch_.h lib/fnmatch.h
+cp lib/ftw_.h lib/ftw.h
+cp lib/search_.h lib/search.h
+catm config.h
+
+patch -Np0 -i ../../patches/modechange.patch
+patch -Np0 -i ../../patches/mbstate.patch
+
+# Build and install
+/after/bin/make -f Makefile
+/after/bin/make -f Makefile install

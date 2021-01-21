@@ -1,0 +1,36 @@
+--- lib/quotearg.c	2002-11-23 07:08:10.000000000 +0000
++++ lib/quotearg.c	2021-01-17 19:41:59.461095532 +0000
+@@ -21,6 +21,7 @@
+ # include <config.h>
+ #endif
+ 
++#include "mbstate_t.h"
+ #include "quotearg.h"
+ 
+ #include "xalloc.h"
+--- lib/mbstate_t.h	1970-01-01 01:00:00.000000000 +0100
++++ lib/mbstate_t.h	2021-01-17 19:42:21.341658668 +0000
+@@ -0,0 +1,23 @@
++#ifndef ____mbstate_t_defined
++#define ____mbstate_t_defined 1
++
++/* Integral type unchanged by default argument promotions that can
++   hold any value corresponding to members of the extended character
++   set, as well as at least one value that does not correspond to any
++   member of the extended character set.  */
++#ifndef __WINT_TYPE__
++# define __WINT_TYPE__ unsigned int
++#endif
++
++/* Conversion state information.  */
++typedef struct
++{
++  int __count;
++  union
++  {
++    __WINT_TYPE__ __wch;
++    char __wchb[4];
++  } __value;		/* Value so far.  */
++} mbstate_t;
++
++#endif

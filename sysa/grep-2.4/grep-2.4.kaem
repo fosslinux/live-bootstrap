@@ -11,16 +11,13 @@ tar xf ../src/${pkg}.tar
 cd ${pkg}
 cp ../../mk/main.mk Makefile
 
-# Patch and prepare
-patch -Np0 -i ../../patches/signal-include.patch
-
 # Build
 make
 
 # Install
-install m4 /after/bin/
+install grep /after/bin/
 
 # Test
-m4 --version
+grep --version
 
 cd ../..

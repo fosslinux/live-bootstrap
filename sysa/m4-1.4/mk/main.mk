@@ -25,4 +25,4 @@ m4: libm4.a $(M4_OBJ)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 libm4.a: $(LIB_OBJECTS)
-	$(AR) cr $@ $(LIB_OBJECTS)
+	$(AR) cr $@ $^
