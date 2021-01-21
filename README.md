@@ -237,14 +237,14 @@ preferred where we can use it, and makes source code sizes smaller.
 
 #### Part 15: coreutils 5.0.0
 
-Coreutils is a collection on widely used utilities such as cat, chmod, chown,
-cp, install, ln, mkdir, mv, rm, rmdir, tee, and many others.
+GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`, `chown`,
+`cp`, `install`, `ln`, `mkdir`, `mv`, `rm`, `rmdir`, `tee`, and many others.
 
 A few of the utilities cannot be easily compiled with Mes C library, so we skip them.
 
 #### Part 16: grep 2.4
 
-grep is a pattern matching utility. Is is not immediately needed but will
+GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
 
 #### Part 17: bash 2.05b
