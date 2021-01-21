@@ -238,7 +238,7 @@ preferred where we can use it, and makes source code sizes smaller.
 #### Part 15: coreutils 5.0.0
 
 GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`, `chown`,
-`cp`, `install`, `ln`, `mkdir`, `mv`, `rm`, `rmdir`, `tee`, and many others.
+`cp`, `install`, `ln`, `mkdir`, `mknod`, `mv`, `rm`, `rmdir`, `tee`, `test`, `true`, and many others.
 
 A few of the utilities cannot be easily compiled with Mes C library, so we skip them.
 
