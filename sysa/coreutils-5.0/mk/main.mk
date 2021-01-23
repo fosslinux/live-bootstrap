@@ -61,13 +61,15 @@ CFLAGS  = -I . -I lib \
           -DHAVE_GETCWD=1 \
           -Dmy_strftime=nstrftime \
           -DDIR_TO_FD\(Dir_p\)=-1 \
-          -DUTILS_OPEN_MAX=1000
+          -DUTILS_OPEN_MAX=1000 \
+          -Dmajor_t=unsigned \
+          -Dminor_t=unsigned
 
 .PHONY: all install
 
 SRC_DIR=src
 
-COREUTILS = basename cat chmod cksum csplit cut echo expand factor false fmt fold head id join kill link ln logname mkfifo mkdir nl od paste pathchk printf ptx pwd readlink rmdir seq split sum tail tee touch tr tsort unexpand unlink wc whoami
+COREUTILS = basename cat chmod cksum csplit cut echo expand factor false fmt fold head id join kill link ln logname mkfifo mkdir mknod nl od paste pathchk printf ptx pwd readlink rmdir seq split sum tail tee touch tr tsort unexpand unlink wc whoami test true
 
 BINARIES = $(addprefix $(SRC_DIR)/, $(COREUTILS))
 
