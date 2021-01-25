@@ -9,13 +9,13 @@ system.
 1. `git clone https://github.com/fosslinux/live-bootstrap`
 2. `git submodule update --init --recursive`
 3. Provide a kernel (vmlinuz file) as the name kernel in the root of the repository.
-4. `./rootfs.sh` - ensure your account has kvm priviliges and qemu installed.
+4. `./rootfs.sh` - ensure your account has kvm privileges and qemu installed.
    a. Alternatively, run `./rootfs.sh chroot` to run it in a chroot.
    b. Alternatively, run `./rootfs.sh` but don't run the actual virtualization
    and instead copy sysa/tmp/initramfs.igz to a USB or some other device and 
    boot from bare metal.
 6. Wait.
-7. Currently, live-bootstrap dosen't provide anything to you, as it is incomplete.
+7. Currently, live-bootstrap doesn't provide anything to you, as it is incomplete.
 
 ## Background
 
@@ -77,8 +77,8 @@ packages. Here is a list of file types that we deem unsuitable for
 bootstrapping.
 
 1. Binaries (apart from seed hex0, kaem, kernel).
-2. Any pregenerated configure scripts, or Makefile.in's from autotools.
-3. Pregenerated bison/flex parsers (identifiable through a `.y` file).
+2. Any pre-generated configure scripts, or Makefile.in's from autotools.
+3. Pre-generated bison/flex parsers (identifiable through a `.y` file).
 4. Any source code/binaries downloaded within a software's build system that is
    outside of our control to verify before use in the build system.
 5. Any non-free software. [1]
@@ -247,16 +247,21 @@ A few of the utilities cannot be easily compiled with Mes C library, so we skip 
 GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
 
-#### Part 17: bash 2.05b
+#### Part 17: heirloom devtools
+`lex` and `yacc` from the Heirloom project. The Heirloom project is a collection
+of standard UNIX utilities derived from code by Caldera and Sun. Differently from
+the analogous utilities from the GNU project, they can be compiled with a simple `Makefile`.
+
+#### Part 21: bash 2.05b
 
 GNU `bash` is the most well known shell and the most complex piece of software
 so far. However, it comes with a number of great benefits over kaem, including
 proper POSIX sh support, globbing, etc.
 
-NOTE: Currently, there is a bison pregenerated file here, which we are working
+NOTE: Currently, there is a bison pre-generated file here, which we are working
 to remove.
 
-#### Part 18: m4 1.4
+#### Part 22: m4 1.4
 
 `m4` is the first piece of software we need in the autotools suite. It allows
 macros to be defined and files to be generated from those macros.
