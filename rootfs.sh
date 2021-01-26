@@ -119,6 +119,9 @@ get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2
 # grep 2.4
 get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
 
+# heirloom-devtools
+get_file http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2
+
 # bash 2.05b
 get_file https://ftp.gnu.org/pub/gnu/bash/bash-2.05b.tar.gz
 

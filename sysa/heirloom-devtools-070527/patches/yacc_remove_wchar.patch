@@ -1,0 +1,1147 @@
+diff -U3 -r yacc/dextern yacc/dextern
+--- yacc/dextern	2005-11-10 20:31:45.000000000 +0000
++++ yacc/dextern	2021-01-25 18:21:45.286602527 +0000
+@@ -39,7 +39,6 @@
+ #include <ctype.h>
+ #include <string.h>
+ #include <stdlib.h>
+-#include <wctype.h>
+ 
+ 	/*  MANIFEST CONSTANT DEFINITIONS */
+ #define	WORD32
+@@ -166,17 +165,17 @@
+ } ITEM;
+ 
+ typedef struct toksymb {
+-	wchar_t *name;
++	char *name;
+ 	int value;
+ } TOKSYMB;
+ 
+ typedef struct mbclit {
+-	wchar_t character;
++	char character;
+ 	int tvalue; /* token issued for the character */
+ } MBCLIT;
+ 
+ typedef struct ntsymb {
+-	wchar_t *name;
++	char *name;
+ 	int tvalue;
+ } NTSYMB;
+ 
+@@ -212,7 +211,7 @@
+ extern int nprod;	/* number of productions */
+ extern int **prdptr;	/* pointers to descriptions of productions */
+ extern int *levprd;	/* contains production levels to break conflicts */
+-extern wchar_t *had_act; /* set if reduction has associated action code */
++extern char *had_act; /* set if reduction has associated action code */
+ 
+ 	/* state information */
+ 
+@@ -273,24 +272,15 @@
+ extern void go2out(void);
+ extern void hideprod(void);
+ extern void callopt(void);
+-extern void warray(wchar_t *, int *, int);
+-extern wchar_t *symnam(int);
+-extern wchar_t *writem(int *);
++extern void warray(char *, int *, int);
++extern char *symnam(int);
++extern char *writem(int *);
+ extern void exp_mem(int);
+ extern void exp_act(int **);
+ extern int apack(int *, int);
+ extern int state(int);
+-extern void fprintf3(FILE *, const char *, const wchar_t *, const char *, ...);
+-extern void error3(const char *, const wchar_t *, const char *, ...);
+-
+-	/* multibyte i/o */
+-
+-#undef	getwc
+-#define	getwc(f)	yacc_getwc(f)
+-extern wint_t yacc_getwc(FILE *);
+-#undef	putwc
+-#define	putwc(c, f)	yacc_putwc(c, f)
+-extern wint_t yacc_putwc(wchar_t, FILE *);
++extern void fprintf3(FILE *, const char *, const char *, const char *, ...);
++extern void error3(const char *, const char *, const char *, ...);
+ 
+ 	/* yaccpar location */
+ 
+diff -U3 -r yacc/y1.c yacc/y1.c
+--- yacc/y1.c	2005-11-26 17:37:56.000000000 +0000
++++ yacc/y1.c	2021-01-25 18:02:31.251542365 +0000
+@@ -41,12 +41,11 @@
+ #include <unistd.h>
+ #include <locale.h>
+ #include <stdarg.h>	/* For error() */
+-#include <wchar.h>
+ 
+ static void mktbls(void);
+ static void others(void);
+ static void summary(void);
+-static wchar_t *chcopy(wchar_t *, wchar_t *);
++static char *chcopy(char *, char *);
+ static int setunion(int *, int *);
+ static void prlook(LOOKSETS *);
+ static void cpres(void);
+@@ -229,13 +228,13 @@
+ 	if (finput == NULL)
+ 		error("cannot find parser %s", parser);
+ 
+-	warray(L"yyr1", levprd, nprod);
++	warray("yyr1", levprd, nprod);
+ 
+ 	aryfil(temp1, nprod, 0);
+ 					/* had_act[i] is either 1 or 0 */
+ 	PLOOP(1, i)
+ 		temp1[i] = ((prdptr[i+1] - prdptr[i]-2) << 1) | had_act[i];
+-	warray(L"yyr2", temp1, nprod);
++	warray("yyr2", temp1, nprod);
+ 
+ 	aryfil(temp1, nstate, -10000000);
+ 	TLOOP(i)
+@@ -244,14 +243,14 @@
+ 	NTLOOP(i)
+ 		for (j = ntstates[i]; j != 0; j = mstates[j])
+ 			temp1[j] = -i;
+-	warray(L"yychk", temp1, nstate);
++	warray("yychk", temp1, nstate);
+ 
+-	warray(L"yydef", defact, nstate);
++	warray("yydef", defact, nstate);
+ 
+ 	if ((fdebug = fopen(DEBUGNAME, "r")) == NULL)
+ 		error("cannot open yacc.debug");
+-	while ((c = getwc(fdebug)) != EOF)
+-		putwc(c, ftable);
++	while ((c = getc(fdebug)) != EOF)
++		putc(c, ftable);
+ 	fclose(fdebug);
+ 	ZAPFILE(DEBUGNAME);
+ 
+@@ -259,19 +258,19 @@
+ 		fprintf(ftable, "# line\t1 \"%s\"\n", parser);
+ 	tmpline = 1;
+ 	/* copy parser text */
+-	while ((c = getwc(finput)) != EOF) {
++	while ((c = getc(finput)) != EOF) {
+ 		if (c == '\n')
+ 			tmpline++;
+ 		if (c == L'$') {
+-			if ((c = getwc(finput)) != L'A')
+-				putwc(L'$', ftable);
++			if ((c = getc(finput)) != L'A')
++				putc(L'$', ftable);
+ 			else { /* copy actions */
+ 				tmpline++;
+ 				faction = fopen(ACTNAME, "r");
+ 				if (faction == NULL)
+ 					error("cannot open action tempfile");
+-				while ((c = getwc(faction)) != EOF)
+-					putwc(c, ftable);
++				while ((c = getc(faction)) != EOF)
++					putc(c, ftable);
+ 				fclose(faction);
+ 				if (gen_lines)
+ 					fprintf(ftable,
+@@ -279,18 +278,18 @@
+ 						tmpline,
+ 						parser);
+ 				ZAPFILE(ACTNAME);
+-				c = getwc(finput);
++				c = getc(finput);
+ 			}
+ 		}
+-		putwc(c, ftable);
++		putc(c, ftable);
+ 	}
+ 	fclose(ftable);
+ }
+ 
+ 
+ /* copies string q into p, returning next free char ptr */
+-static wchar_t *
+-chcopy(wchar_t *p, wchar_t *q)
++static char *
++chcopy(char *p, char *q)
+ {
+ 	while (*p = *q++)
+ 		++p;
+@@ -299,16 +298,16 @@
+ 
+ #define	ISIZE 400
+ /* creates output string for item pointed to by pp */
+-wchar_t *
++char *
+ writem(int *pp)
+ {
+ 	int i, *p;
+ 	static int isize = ISIZE;
+-	static wchar_t *sarr = NULL;
+-	wchar_t *q;
++	static char *sarr = NULL;
++	char *q;
+ 
+ 	if (sarr == NULL) {
+-		sarr = malloc(sizeof (wchar_t) * isize);
++		sarr = malloc(sizeof (char) * isize);
+ 		if (sarr == NULL)
+ 			error("could not allocate output string array");
+ 		for (i = 0; i < isize; ++i)
+@@ -317,7 +316,7 @@
+ 	for (p = pp; *p > 0; ++p) /* EMPTY */;
+ 	p = prdptr[-*p];
+ 	q = chcopy(sarr, nontrst[*p-NTBASE].name);
+-	q = chcopy(q, L" : ");
++	q = chcopy(q, " : ");
+ 
+ 	for (;;) {
+ 		*q++ = ++p == pp ? L'_' : L' ';
+@@ -326,7 +325,7 @@
+ 			break;
+ 		q = chcopy(q, symnam(i));
+ 		while (q > &sarr[isize-30]) {
+-			static wchar_t *sarrbase;
++			static char *sarrbase;
+ 
+ 			sarrbase = sarr;
+ 			isize += ISIZE;
+@@ -339,17 +338,17 @@
+ 
+ 	/* an item calling for a reduction */
+ 	if ((i = *pp) < 0) {
+-		q = chcopy(q, L"    (");
+-		swprintf(q, q + isize - sarr, L"%d)", -i);
++		q = chcopy(q, "    (");
++		sprintf(q, q + isize - sarr, "%d)", -i);
+ 	}
+ 	return (sarr);
+ }
+ 
+ /* return a pointer to the name of symbol i */
+-wchar_t *
++char *
+ symnam(int i)
+ {
+-	wchar_t *cp;
++	char *cp;
+ 
+ 	cp = (i >= NTBASE) ? nontrst[i-NTBASE].name : tokset[i].name;
+ 	if (*cp == L' ')
+diff -U3 -r yacc/y2.c yacc/y2.c
+--- yacc/y2.c	2005-11-26 17:39:44.000000000 +0000
++++ yacc/y2.c	2021-01-25 19:02:52.472120036 +0000
+@@ -35,9 +35,9 @@
+  * Sccsid @(#)y2.c	1.11 (gritter) 11/26/05
+  */
+ 
++#include <getopt.h>
+ #include "dextern"
+ #include "sgs.h"
+-#include <wchar.h>
+ #include <unistd.h>
+ #define	IDENTIFIER 257
+ 
+@@ -66,17 +66,17 @@
+ char *infile;				/* input file name 		*/
+ static int numbval;			/* value of an input number 	*/
+ static int toksize = NAMESIZE;
+-static wchar_t *tokname;	/* input token name		*/
++static char *tokname;	/* input token name		*/
+ char *parser = NULL;		/* location of common parser 	*/
+ 
+ static void finact(void);
+-static wchar_t *cstash(wchar_t *);
++static char *cstash(char *);
+ static void defout(void);
+ static void cpyunion(void);
+ static void cpycode(void);
+ static void cpyact(int);
+-static void lhsfill(wchar_t *);
+-static void rhsfill(wchar_t *);
++static void lhsfill(char *);
++static void rhsfill(char *);
+ static void lrprnt(void);
+ static void beg_debug(void);
+ static void end_toks(void);
+@@ -85,9 +85,9 @@
+ static void exp_prod(void);
+ static void exp_ntok(void);
+ static void exp_nonterm(void);
+-static int defin(int, wchar_t *);
++static int defin(int, char *);
+ static int gettok(void);
+-static int chfind(int, wchar_t *);
++static int chfind(int, char *);
+ static int skipcom(void);
+ static int findchtok(int);
+ static void put_prefix_define(char *);
+@@ -101,11 +101,11 @@
+  * points to initial block - more space
+  * is allocated as needed.
+  */
+-static wchar_t cnamesblk0[CNAMSZ];
+-static wchar_t *cnames = cnamesblk0;
++static char cnamesblk0[CNAMSZ];
++static char *cnames = cnamesblk0;
+ 
+ /* place where next name is to be put in */
+-static wchar_t *cnamp = cnamesblk0;
++static char *cnamp = cnamesblk0;
+ 
+ /* number of defined symbols output */
+ static int ndefout = 3;
+@@ -113,7 +113,7 @@
+ 	/* storage of types */
+ static int defunion = 0;	/* union of types defined? */
+ static int ntypes = 0;		/* number of types defined */
+-static wchar_t *typeset[NTYPES]; /* pointers to type tags */
++static char *typeset[NTYPES]; /* pointers to type tags */
+ 
+ 	/* symbol tables for tokens and nonterminals */
+ 
+@@ -143,8 +143,8 @@
+ 
+ 	/* output string */
+ 
+-static wchar_t *lhstext;
+-static wchar_t *rhstext;
++static char *lhstext;
++static char *rhstext;
+ 
+ 	/* storage for grammar rules */
+ 
+@@ -158,7 +158,7 @@
+ 
+ int **prdptr;
+ int *levprd;
+-wchar_t *had_act;
++char *had_act;
+ 
+ /* flag for generating the # line's default is yes */
+ int gen_lines = 1;
+@@ -181,7 +181,7 @@
+ 	int c;
+ 	int *p;
+ 	char *cp;
+-	wchar_t actname[8];
++	char actname[8];
+ 	unsigned int options = 0;
+ 	char *file_prefix = DEFAULT_PREFIX;
+ 	char *sym_prefix = "";
+@@ -192,16 +192,16 @@
+ 	fdefine = NULL;
+ 	i = 1;
+ 
+-	tokname = malloc(sizeof (wchar_t) * toksize);
++	tokname = malloc(sizeof (char) * toksize);
+ 	tokset = malloc(sizeof (TOKSYMB) * ntoksz);
+ 	toklev = malloc(sizeof (int) * ntoksz);
+ 	nontrst = malloc(sizeof (NTSYMB) * nnontersz);
+ 	mem0 = malloc(sizeof (int) * new_memsize);
+ 	prdptr = malloc(sizeof (int *) * (nprodsz+2));
+ 	levprd = malloc(sizeof (int) * (nprodsz+2));
+-	had_act = calloc(nprodsz + 2, sizeof (wchar_t));
+-	lhstext = malloc(sizeof (wchar_t) * LHS_TEXT_LEN);
+-	rhstext = malloc(sizeof (wchar_t) * RHS_TEXT_LEN);
++	had_act = calloc(nprodsz + 2, sizeof (char));
++	lhstext = malloc(sizeof (char) * LHS_TEXT_LEN);
++	rhstext = malloc(sizeof (char) * RHS_TEXT_LEN);
+ 	aryfil(toklev, ntoksz, 0);
+ 	aryfil(levprd, nprodsz, 0);
+ 	for (ii = 0; ii < ntoksz; ++ii)
+@@ -307,10 +307,10 @@
+ 
+ 	lineno = 1;
+ 	cnamp = cnames;
+-	defin(0, L"$end");
++	defin(0, "$end");
+ 	extval = 0400;
+-	defin(0, L"error");
+-	defin(1, L"$accept");
++	defin(0, "error");
++	defin(1, "$accept");
+ 	mem = mem0;
+ 	lev = 0;
+ 	ty = 0;
+@@ -588,7 +588,7 @@
+ 		/* process a rule */
+ 
+ 		if (t == L'|') {
+-			rhsfill((wchar_t *)0); /* restart fill of rhs */
++			rhsfill((char *)0); /* restart fill of rhs */
+ 			*mem = *prdptr[nprod-1];
+ 			if (++mem >= &tracemem[new_memsize])
+ 				exp_mem(1);
+@@ -638,8 +638,8 @@
+ 				/* action within rule... */
+ 
+ 				lrprnt();		/* dump lhs, rhs */
+-				swprintf(actname, sizeof actname,
+-						L"$$%d", nprod);
++				sprintf(actname, sizeof actname,
++						"$$%d", nprod);
+ 				/*
+ 				 * make it nonterminal
+ 				 */
+@@ -722,8 +722,8 @@
+ 		if (gen_lines)
+ 			fprintf(ftable, "\n# line %d \"%s\"\n",
+ 				lineno, infile);
+-		while ((c = getwc(finput)) != EOF)
+-			putwc(c, ftable);
++		while ((c = getc(finput)) != EOF)
++			putc(c, ftable);
+ 		}
+ 	fclose(finput);
+ }
+@@ -736,15 +736,15 @@
+ 	fprintf(ftable, "# define YYERRCODE %d\n", tokset[2].value);
+ }
+ 
+-static wchar_t *
++static char *
+ cstash(s)
+-register wchar_t *s;
++register char *s;
+ {
+-	wchar_t *temp;
++	char *temp;
+ 	static int used = 0;
+ 	static int used_save = 0;
+ 	static int exp_cname = CNAMSZ;
+-	int len = wcslen(s);
++	int len = strlen(s);
+ 
+ 	/*
+ 	 * 2/29/88 -
+@@ -755,7 +755,7 @@
+ 		exp_cname += CNAMSZ;
+ 		if (!used)
+ 			free(cnames);
+-		if ((cnames = malloc(sizeof (wchar_t)*exp_cname)) == NULL)
++		if ((cnames = malloc(sizeof (char)*exp_cname)) == NULL)
+ 			error("cannot expand string dump");
+ 		cnamp = cnames;
+ 		used = 0;
+@@ -770,7 +770,7 @@
+ }
+ 
+ static int
+-defin(int t, register wchar_t *s)
++defin(int t, register char *s)
+ {
+ 	/* define s to be a terminal if t=0 or a nonterminal if t=1 */
+ 
+@@ -820,7 +820,7 @@
+ 		} else if (s[2] <= L'7' && s[2] >= L'0') { /* \nnn sequence */
+ 			int i = 3;
+ 			val = s[2] - L'0';
+-			while (iswdigit(s[i]) && i <= 4) {
++			while (isdigit(s[i]) && i <= 4) {
+ 				if (s[i] >= L'0' && s[i] <= L'7')
+ 					val = val * 8 + s[i] - L'0';
+ 				else
+@@ -831,17 +831,17 @@
+ 				error("illegal \\nnn construction");
+ 			if (val > 255)
+ 				error(
+-"\\nnn exceed \\377; use \\xnnnnnnnn for wchar_t value of multibyte char");
++"\\nnn exceed \\377; use \\xnnnnnnnn for char value of multibyte char");
+ 			if (val == 0 && i >= 4)
+ 				error("'\\000' is illegal");
+ 		} else if (s[2] == L'x') { /* hexadecimal \xnnn sequence */
+ 			int i = 3;
+ 			val = 0;
+ 			warning(1, "\\x is ANSI C hex escape");
+-			if (iswxdigit(s[i]))
+-				while (iswxdigit(s[i])) {
++			if (isxdigit(s[i]))
++				while (isxdigit(s[i])) {
+ 					int tmpval;
+-					if (iswdigit(s[i]))
++					if (isdigit(s[i]))
+ 						tmpval = s[i] - L'0';
+ 					else if (s[i] >= L'a')
+ 						tmpval = s[i] - L'a' + 10;
+@@ -876,7 +876,7 @@
+ 	/* write out the defines (at the end of the declaration section) */
+ 
+ 	register int i, c;
+-	register wchar_t *cp;
++	register char *cp;
+ 
+ 	for (i = ndefout; i <= ntokens; ++i) {
+ 
+@@ -889,8 +889,8 @@
+ 		}
+ 
+ 		for (; (c = *cp) != 0; ++cp) {
+-			if (iswlower(c) || iswupper(c) ||
+-				iswdigit(c) || c == L'_') /* EMPTY */;
++			if (islower(c) || isupper(c) ||
++				isdigit(c) || c == L'_') /* EMPTY */;
+ 			else
+ 				goto nodef;
+ 			}
+@@ -919,14 +919,14 @@
+ 	reserve = 0;
+ 	lineno += peekline;
+ 	peekline = 0;
+-	c = getwc(finput);
++	c = getc(finput);
+ 	/*
+ 	 * while (c == ' ' || c == '\n' || c == '\t' || c == '\f') {
+ 	 */
+-	while (iswspace(c)) {
++	while (isspace(c)) {
+ 		if (c == L'\n')
+ 			++lineno;
+-		c = getwc(finput);
++		c = getc(finput);
+ 	}
+ 	if (c == L'/') { /* skip comment */
+ 		lineno += skipcom();
+@@ -938,11 +938,11 @@
+ 	case EOF:
+ 		return (ENDFILE);
+ 	case L'{':
+-		ungetwc(c, finput);
++		ungetc(c, finput);
+ 		return (L'=');  /* action ... */
+ 	case L'<':  /* get, and look up, a type name (union member name) */
+ 		i = 0;
+-		while ((c = getwc(finput)) != L'>' &&
++		while ((c = getc(finput)) != L'>' &&
+ 				c != EOF && c != L'\n') {
+ 			tokname[i] = c;
+ 			if (++i >= toksize)
+@@ -954,7 +954,7 @@
+ 		if (i == 0)
+ 			error("missing type name in < ... > clause");
+ 		for (i = 1; i <= ntypes; ++i) {
+-			if (!wcscmp(typeset[i], tokname)) {
++			if (!strcmp(typeset[i], tokname)) {
+ 				numbval = i;
+ 				return (TYPENAME);
+ 				}
+@@ -968,11 +968,11 @@
+ 		tokname[0] = L' ';
+ 		i = 1;
+ 		for (;;) {
+-			c = getwc(finput);
++			c = getc(finput);
+ 			if (c == L'\n' || c == EOF)
+ 				error("illegal or missing ' or \"");
+ 			if (c == L'\\') {
+-				c = getwc(finput);
++				c = getc(finput);
+ 				tokname[i] = L'\\';
+ 				if (++i >= toksize)
+ 					exp_tokname();
+@@ -986,7 +986,7 @@
+ 	case L'%':
+ 	case L'\\':
+ 
+-		switch (c = getwc(finput)) {
++		switch (c = getc(finput)) {
+ 
+ 		case L'0':	return (TERM);
+ 		case L'<':	return (LEFT);
+@@ -1001,81 +1001,81 @@
+ 
+ 	default:
+ 
+-		if (iswdigit(c)) { /* number */
++		if (isdigit(c)) { /* number */
+ 			numbval = c - L'0';
+ 			base = (c == L'0') ? 8 : 10;
+-			for (c = getwc(finput);
+-					iswdigit(c);
+-					c = getwc(finput)) {
++			for (c = getc(finput);
++					isdigit(c);
++					c = getc(finput)) {
+ 				numbval = numbval*base + c - L'0';
+ 				}
+-			ungetwc(c, finput);
++			ungetc(c, finput);
+ 			return (NUMBER);
+-		} else if (iswlower(c) || iswupper(c) ||
++		} else if (islower(c) || isupper(c) ||
+ 				c == L'_' || c == L'.' ||
+ 				c == L'$') {
+ 			i = 0;
+-			while (iswlower(c) || iswupper(c) ||
+-					iswdigit(c) || c == L'_' ||
++			while (islower(c) || isupper(c) ||
++					isdigit(c) || c == L'_' ||
+ 					c == L'.' || c == L'$') {
+ 				tokname[i] = c;
+-				if (reserve && iswupper(c))
+-					tokname[i] = towlower(c);
++				if (reserve && isupper(c))
++					tokname[i] = tolower(c);
+ 				if (++i >= toksize)
+ 					exp_tokname();
+-				c = getwc(finput);
++				c = getc(finput);
+ 				}
+ 			}
+ 		else
+ 			return (c);
+ 
+-		ungetwc(c, finput);
++		ungetc(c, finput);
+ 		}
+ 
+ 	tokname[i] = 0;
+ 
+ 	if (reserve) { /* find a reserved word */
+-		if (!wcscmp(tokname, L"term"))
++		if (!strcmp(tokname, "term"))
+ 			return (TERM);
+-		if (!wcscmp(tokname, L"token"))
++		if (!strcmp(tokname, "token"))
+ 			return (TERM);
+-		if (!wcscmp(tokname, L"left"))
++		if (!strcmp(tokname, "left"))
+ 			return (LEFT);
+-		if (!wcscmp(tokname, L"nonassoc"))
++		if (!strcmp(tokname, "nonassoc"))
+ 			return (BINARY);
+-		if (!wcscmp(tokname, L"binary"))
++		if (!strcmp(tokname, "binary"))
+ 			return (BINARY);
+-		if (!wcscmp(tokname, L"right"))
++		if (!strcmp(tokname, "right"))
+ 			return (RIGHT);
+-		if (!wcscmp(tokname, L"prec"))
++		if (!strcmp(tokname, "prec"))
+ 			return (PREC);
+-		if (!wcscmp(tokname, L"start"))
++		if (!strcmp(tokname, "start"))
+ 			return (START);
+-		if (!wcscmp(tokname, L"type"))
++		if (!strcmp(tokname, "type"))
+ 			return (TYPEDEF);
+-		if (!wcscmp(tokname, L"union"))
++		if (!strcmp(tokname, "union"))
+ 			return (UNION);
+ 		error("invalid escape, or illegal reserved word: %ls", tokname);
+ 		}
+ 
+ 	/* look ahead to distinguish IDENTIFIER from C_IDENTIFIER */
+ 
+-	c = getwc(finput);
++	c = getc(finput);
+ 	/*
+ 	 * while (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '/')
+ 	 * {
+ 	 */
+-	while (iswspace(c) || c == L'/') {
++	while (isspace(c) || c == L'/') {
+ 		if (c == L'\n') {
+ 			++peekline;
+ 		} else if (c == L'/') { /* look for comments */
+ 			peekline += skipcom();
+ 			}
+-		c = getwc(finput);
++		c = getc(finput);
+ 		}
+ 	if (c == L':')
+ 		return (C_IDENTIFIER);
+-	ungetwc(c, finput);
++	ungetc(c, finput);
+ 	return (IDENTIFIER);
+ }
+ 
+@@ -1096,19 +1096,19 @@
+ }
+ 
+ static int
+-chfind(int t, register wchar_t *s)
++chfind(int t, register char *s)
+ {
+ 	int i;
+ 
+ 	if (s[0] == ' ')
+ 		t = 0;
+ 	TLOOP(i) {
+-		if (!wcscmp(s, tokset[i].name)) {
++		if (!strcmp(s, tokset[i].name)) {
+ 			return (i);
+ 		}
+ 	}
+ 	NTLOOP(i) {
+-		if (!wcscmp(s, nontrst[i].name)) {
++		if (!strcmp(s, nontrst[i].name)) {
+ 			return (i + NTBASE);
+ 		}
+ 	}
+@@ -1137,11 +1137,11 @@
+ 
+ 	level = 0;
+ 	for (;;) {
+-		if ((c = getwc(finput)) == EOF)
++		if ((c = getc(finput)) == EOF)
+ 			error("EOF encountered while processing %%union");
+-		putwc(c, ftable);
++		putc(c, ftable);
+ 		if (fdefine)
+-			putwc(c, fdefine);
++			putc(c, fdefine);
+ 
+ 		switch (c) {
+ 
+@@ -1172,29 +1172,29 @@
+ 	/* copies code between \{ and \} */
+ 
+ 	int c;
+-	c = getwc(finput);
++	c = getc(finput);
+ 	if (c == L'\n') {
+-		c = getwc(finput);
++		c = getc(finput);
+ 		lineno++;
+ 		}
+ 	if (gen_lines)
+ 		fprintf(ftable, "\n# line %d \"%s\"\n", lineno, infile);
+ 	while (c != EOF) {
+ 		if (c == L'\\') {
+-			if ((c = getwc(finput)) == L'}')
++			if ((c = getc(finput)) == L'}')
+ 				return;
+ 			else
+-				putwc(L'\\', ftable);
++				putc(L'\\', ftable);
+ 		} else if (c == L'%') {
+-			if ((c = getwc(finput)) == L'}')
++			if ((c = getc(finput)) == L'}')
+ 				return;
+ 			else
+-				putwc(L'%', ftable);
++				putc(L'%', ftable);
+ 		}
+-		putwc(c, ftable);
++		putc(c, ftable);
+ 		if (c == L'\n')
+ 			++lineno;
+-		c = getwc(finput);
++		c = getc(finput);
+ 		}
+ 	error("eof before %%}");
+ }
+@@ -1207,17 +1207,17 @@
+ 
+ 	/* skipcom is called after reading a / */
+ 
+-	if (getwc(finput) != L'*')
++	if (getc(finput) != L'*')
+ 		error("illegal comment");
+-	c = getwc(finput);
++	c = getc(finput);
+ 	while (c != EOF) {
+ 		while (c == L'*') {
+-			if ((c = getwc(finput)) == L'/')
++			if ((c = getc(finput)) == L'/')
+ 				return (i);
+ 			}
+ 		if (c == L'\n')
+ 			++i;
+-		c = getwc(finput);
++		c = getc(finput);
+ 		}
+ 	error("EOF inside comment");
+ 	/* NOTREACHED */
+@@ -1229,7 +1229,7 @@
+ {
+ 	/* copy C action to the next ; or closing } */
+ 	int brac, c, match, i, t, j, s, tok, argument, m;
+-	wchar_t id_name[NAMESIZE+1];
++	char id_name[NAMESIZE+1];
+ 	int id_idx = 0;
+ 
+ 	if (gen_lines) {
+@@ -1239,12 +1239,12 @@
+ 	brac = 0;
+ 	id_name[0] = 0;
+ loop:
+-	c = getwc(finput);
++	c = getc(finput);
+ swt:
+ 	switch (c) {
+ 	case L';':
+ 		if (brac == 0) {
+-			putwc(c, faction);
++			putc(c, faction);
+ 			return;
+ 		}
+ 		goto lcopy;
+@@ -1255,13 +1255,13 @@
+ 		s = 1;
+ 		tok = -1;
+ 		argument = 1;
+-		while ((c = getwc(finput)) == L' ' || c == L'\t') /* EMPTY */;
++		while ((c = getc(finput)) == L' ' || c == L'\t') /* EMPTY */;
+ 		if (c == L'<') { /* type description */
+-			ungetwc(c, finput);
++			ungetc(c, finput);
+ 			if (gettok() != TYPENAME)
+ 				error("bad syntax on $<ident> clause");
+ 			tok = numbval;
+-			c = getwc(finput);
++			c = getc(finput);
+ 		}
+ 		if (c == L'$') {
+ 			fprintf(faction, "yyval");
+@@ -1272,10 +1272,10 @@
+ 			}
+ 			goto loop;
+ 		}
+-		if (iswalpha(c)) {
++		if (isalpha(c)) {
+ 			int same = 0;
+ 			int id_sw = 0;
+-			ungetwc(c, finput);
++			ungetc(c, finput);
+ 			if (gettok() != IDENTIFIER)
+ 				error("bad action format");
+ 			/*
+@@ -1290,16 +1290,16 @@
+ 				id_sw = 1;
+ 			else
+ 				id_sw = 0;
+-			while ((c = getwc(finput)) == L' ' ||
++			while ((c = getc(finput)) == L' ' ||
+ 				c == L'\t') /* EMPTY */;
+ 			if (c == L'#') {
+-				while ((c = getwc(finput)) == L' ' ||
++				while ((c = getc(finput)) == L' ' ||
+ 					c == L'\t') /* EMPTY */;
+-				if (iswdigit(c)) {
++				if (isdigit(c)) {
+ 					m = 0;
+-					while (iswdigit(c)) {
++					while (isdigit(c)) {
+ 						m = m*10+c-L'0';
+-						c = getwc(finput);
++						c = getc(finput);
+ 					}
+ 					argument = m;
+ 				} else
+@@ -1339,13 +1339,13 @@
+ 		}
+ 		if (c == '-') {
+ 			s = -s;
+-			c = getwc(finput);
++			c = getc(finput);
+ 		}
+-		if (iswdigit(c)) {
++		if (isdigit(c)) {
+ 			j = 0;
+-			while (iswdigit(c)) {
++			while (isdigit(c)) {
+ 				j = j*10 + c - L'0';
+-				c = getwc(finput);
++				c = getc(finput);
+ 			}
+ 			j = j*s - offset;
+ 			if (j > 0) {
+@@ -1363,51 +1363,51 @@
+ 			}
+ 			goto swt;
+ 		}
+-		putwc(L'$', faction);
++		putc(L'$', faction);
+ 		if (s < 0)
+-			putwc(L'-', faction);
++			putc(L'-', faction);
+ 		goto swt;
+ 	case L'}':
+ 		if (--brac)
+ 			goto lcopy;
+-		putwc(c, faction);
++		putc(c, faction);
+ 		return;
+ 	case L'/':	/* look for comments */
+-		putwc(c, faction);
+-		c = getwc(finput);
++		putc(c, faction);
++		c = getc(finput);
+ 		if (c != L'*')
+ 			goto swt;
+ 		/* it really is a comment */
+-		putwc(c, faction);
+-		c = getwc(finput);
++		putc(c, faction);
++		c = getc(finput);
+ 		while (c != EOF) {
+ 			while (c == L'*') {
+-				putwc(c, faction);
+-				if ((c = getwc(finput)) == L'/')
++				putc(c, faction);
++				if ((c = getc(finput)) == L'/')
+ 					goto lcopy;
+ 			}
+-			putwc(c, faction);
++			putc(c, faction);
+ 			if (c == L'\n')
+ 				++lineno;
+-			c = getwc(finput);
++			c = getc(finput);
+ 		}
+ 		error("EOF inside comment");
+ 		/* FALLTHRU */
+ 	case L'\'':	/* character constant */
+ 	case L'"':	/* character string */
+ 		match = c;
+-		putwc(c, faction);
+-		while ((c = getwc(finput)) != EOF) {
++		putc(c, faction);
++		while ((c = getc(finput)) != EOF) {
+ 			if (c == L'\\') {
+-				putwc(c, faction);
+-				c = getwc(finput);
++				putc(c, faction);
++				c = getc(finput);
+ 				if (c == L'\n')
+ 					++lineno;
+ 			} else if (c == match)
+ 				goto lcopy;
+ 			else if (c == L'\n')
+ 				error("newline in string or char. const.");
+-			putwc(c, faction);
++			putc(c, faction);
+ 		}
+ 		error("EOF in string or character constant");
+ 		/* FALLTHRU */
+@@ -1419,7 +1419,7 @@
+ 		goto lcopy;
+ 	}
+ lcopy:
+-	putwc(c, faction);
++	putc(c, faction);
+ 	/*
+ 	 * Save the possible identifier name.
+ 	 * Used to print out a warning message.
+@@ -1434,7 +1434,7 @@
+ 	 * If c has a possibility to be a
+ 	 * part of identifier, save it.
+ 	 */
+-	else if (iswalnum(c) || c == L'_') {
++	else if (isalnum(c) || c == L'_') {
+ 		id_name[id_idx++] = c;
+ 		id_name[id_idx] = 0;
+ 	} else {
+@@ -1446,28 +1446,28 @@
+ 
+ static void
+ lhsfill(s)	/* new rule, dump old (if exists), restart strings */
+-wchar_t *s;
++char *s;
+ {
+ 	static int lhs_len = LHS_TEXT_LEN;
+-	int s_lhs = wcslen(s);
++	int s_lhs = strlen(s);
+ 	if (s_lhs >= lhs_len) {
+ 		lhs_len = s_lhs + 2;
+-		lhstext = realloc(lhstext, sizeof (wchar_t)*lhs_len);
++		lhstext = realloc(lhstext, sizeof (char)*lhs_len);
+ 		if (lhstext == NULL)
+ 			error("couldn't expanded LHS length");
+ 	}
+ 	rhsfill(NULL);
+-	wcscpy(lhstext, s); /* don't worry about too long of a name */
++	strcpy(lhstext, s); /* don't worry about too long of a name */
+ }
+ 
+ static void
+-rhsfill(wchar_t *s)	/* either name or 0 */
++rhsfill(char *s)	/* either name or 0 */
+ {
+-	static wchar_t *loc;	/* next free location in rhstext */
++	static char *loc;	/* next free location in rhstext */
+ 	static int rhs_len = RHS_TEXT_LEN;
+ 	static int used = 0;
+-	int s_rhs = (s == NULL ? 0 : wcslen(s));
+-	register wchar_t *p;
++	int s_rhs = (s == NULL ? 0 : strlen(s));
++	register char *p;
+ 
+ 	if (!s)	/* print out and erase old text */
+ 	{
+@@ -1481,10 +1481,10 @@
+ 
+ 	used = loc - rhstext;
+ 	if ((s_rhs + 3) >= (rhs_len - used)) {
+-		static wchar_t *textbase;
++		static char *textbase;
+ 		textbase = rhstext;
+ 		rhs_len += s_rhs + RHS_TEXT_LEN;
+-		rhstext = realloc(rhstext, sizeof (wchar_t)*rhs_len);
++		rhstext = realloc(rhstext, sizeof (char)*rhs_len);
+ 		if (rhstext == NULL)
+ 			error("couldn't expanded RHS length");
+ 		loc = loc - textbase + rhstext;
+@@ -1508,15 +1508,15 @@
+ static void 
+ lrprnt (void)	/* print out the left and right hand sides */
+ {
+-	wchar_t *rhs;
+-	wchar_t *m_rhs = NULL;
++	char *rhs;
++	char *m_rhs = NULL;
+ 
+ 	if (!*rhstext)		/* empty rhs - print usual comment */
+-		rhs = L" /* empty */";
++		rhs = " /* empty */";
+ 	else {
+ 		int idx1; /* tmp idx used to find if there are d_quotes */
+ 		int idx2; /* tmp idx used to generate escaped string */
+-		wchar_t *p;
++		char *p;
+ 		/*
+ 		 * Check if there are any double quote in RHS.
+ 		 */
+@@ -1525,8 +1525,8 @@
+ 				/*
+ 				 * A double quote is found.
+ 				 */
+-				idx2 = wcslen(rhstext)*2;
+-				p = m_rhs = malloc((idx2 + 1)*sizeof (wchar_t));
++				idx2 = strlen(rhstext)*2;
++				p = m_rhs = malloc((idx2 + 1)*sizeof (char));
+ 				if (m_rhs == NULL)
+ 					error(
+ 					"Couldn't allocate memory for RHS.");
+@@ -1617,7 +1617,7 @@
+ exp_tokname(void)
+ {
+ 	toksize += NAMESIZE;
+-	tokname = realloc(tokname, sizeof (wchar_t) * toksize);
++	tokname = realloc(tokname, sizeof (char) * toksize);
+ }
+ 
+ 
+@@ -1633,7 +1633,7 @@
+ 
+ 	prdptr = realloc(prdptr, sizeof (int *) * (nprodsz+2));
+ 	levprd  = realloc(levprd, sizeof (int) * (nprodsz+2));
+-	had_act = realloc(had_act, sizeof (wchar_t) * (nprodsz+2));
++	had_act = realloc(had_act, sizeof (char) * (nprodsz+2));
+ 	for (i = nprodsz-NPROD; i < nprodsz+2; ++i)
+ 		had_act[i] = 0;
+ 
+diff -U3 -r yacc/y3.c yacc/y3.c
+--- yacc/y3.c	2005-11-26 17:37:56.000000000 +0000
++++ yacc/y3.c	2021-01-25 19:01:48.390375872 +0000
+@@ -41,7 +41,7 @@
+ static void precftn(int, int, int);
+ static void wract(int);
+ static void wrstate(int);
+-static void wdef(wchar_t *, int);
++static void wdef(char *, int);
+ #ifndef	NOLIBW
+ static void wrmbchars(void);
+ #endif /* !NOLIBW */
+@@ -121,7 +121,7 @@
+ 	}
+ 
+ 	fprintf(ftable, "\t};\n");
+-	wdef(L"YYNPROD", nprod);
++	wdef("YYNPROD", nprod);
+ #ifndef	NOLIBW
+ 	if (nmbchars > 0) {
+ 		wrmbchars();
+@@ -485,14 +485,14 @@
+ }
+ 
+ static void
+-wdef(wchar_t *s, int n)
++wdef(char *s, int n)
+ {
+ 	/* output a definition of s to the value n */
+ 	fprintf(ftable, "# define %ls %d\n", s, n);
+ }
+ 
+ void
+-warray(wchar_t *s, int *v, int n)
++warray(char *s, int *v, int n)
+ {
+ 	register int i;
+ 	fprintf(ftable, "static YYCONST yytabelem %ls[]={\n", s);
+@@ -549,11 +549,11 @@
+ wrmbchars(void)
+ {
+ 	int i;
+-	wdef(L"YYNMBCHARS", nmbchars);
++	wdef("YYNMBCHARS", nmbchars);
+ 	qsort(mbchars, nmbchars, sizeof (*mbchars),
+ 		(int (*)(const void *, const void *))cmpmbchars);
+ 	fprintf(ftable,
+-		"static struct{\n\twchar_t character;"
++		"static struct{\n\tchar character;"
+ 		"\n\tint tvalue;\n}yymbchars[YYNMBCHARS]={\n");
+ 	for (i = 0; i < nmbchars; ++i) {
+ 		fprintf(ftable, "\t{%#x,%d}",
+diff -U3 -r yacc/y4.c yacc/y4.c
+--- yacc/y4.c	2005-11-26 17:37:56.000000000 +0000
++++ yacc/y4.c	2021-01-25 19:02:06.780876425 +0000
+@@ -36,7 +36,6 @@
+  */
+ 
+ #include "dextern"
+-#include <wchar.h>
+ #include <unistd.h>
+ #define	NOMORE -1000
+ 
+@@ -44,7 +43,7 @@
+ static void stin(int);
+ static void osummary(void);
+ static void aoutput(void);
+-static void arout(wchar_t *, int *, int);
++static void arout(char *, int *, int);
+ static int nxti(void);
+ static int gtnm(void);
+ 
+@@ -414,13 +413,13 @@
+ 	/* write out the optimized parser */
+ 
+ 	fprintf(ftable, "# define YYLAST %d\n", maxa-amem + 1);
+-	arout(L"yyact", amem, (maxa - amem) + 1);
+-	arout(L"yypact", indgo, nstate);
+-	arout(L"yypgo", pgo, nnonter + 1);
++	arout("yyact", amem, (maxa - amem) + 1);
++	arout("yypact", indgo, nstate);
++	arout("yypgo", pgo, nnonter + 1);
+ }
+ 
+ static void
+-arout(wchar_t *s, int *v, int n)
++arout(char *s, int *v, int n)
+ {
+ 	register int i;
+ 
+@@ -448,8 +447,8 @@
+ 	s = 1;
+ 	val = 0;
+ 
+-	while ((c = getwc(finput)) != EOF) {
+-		if (iswdigit(c))
++	while ((c = getc(finput)) != EOF) {
++		if (isdigit(c))
+ 			val = val * 10 + c - L'0';
+ 		else if (c == L'-')
+ 			s = -1;
+diff -U3 -r yacc/Makefile.mk yacc/Makefile.mk
+--- yacc/Makefile.mk	2007-01-04 23:31:24.000000000 +0000
++++ yacc/Makefile.mk	2021-01-25 01:25:15.592235579 +0000
+@@ -1,4 +1,4 @@
+-YOBJ = y1.o y2.o y3.o y4.o y5.o getopt.o
++YOBJ = y1.o y2.o y3.o y4.o getopt.o
+ 
+ LOBJ = libmai.o libzer.o
+ 
