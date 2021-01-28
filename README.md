@@ -181,14 +181,7 @@ old tooling instead.
 
 #### Part 7: sed 4.0.7
 
-You are most likely aware of GNU `sed`, a line editor. Here, we had to make a
-compromise between two versions:
-
-- 1.18: fully functional `s/a/b`, but no `-i`.
-- 4.0.7: fully functional `-i`, but broken `s/a/b`.
-
-We opted for the latter, as otherwise there would be no patching of files for
-quite some time. We can delete lines from files now!
+You are most likely aware of GNU `sed`, a line editor.
 
 #### Part 8: tar 1.12
 
