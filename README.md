@@ -245,16 +245,17 @@ be useful later for autotools.
 of standard UNIX utilities derived from code by Caldera and Sun. Differently from
 the analogous utilities from the GNU project, they can be compiled with a simple `Makefile`.
 
-#### Part 21: bash 2.05b
+#### Part 18: bash 2.05b
 
 GNU `bash` is the most well known shell and the most complex piece of software
 so far. However, it comes with a number of great benefits over kaem, including
 proper POSIX sh support, globbing, etc.
 
-NOTE: Currently, there is a bison pre-generated file here, which we are working
-to remove.
+Bash ships with a bison pre-generated file here which we delete. Unfortunately,
+we have not bootstrapped bison but fortunately for us, heirloom yacc is able to
+cope here.
 
-#### Part 22: m4 1.4
+#### Part 19: m4 1.4
 
 `m4` is the first piece of software we need in the autotools suite. It allows
 macros to be defined and files to be generated from those macros.

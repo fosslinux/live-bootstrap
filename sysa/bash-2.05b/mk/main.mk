@@ -78,6 +78,9 @@ mksignames: $(MKSIGNAMES_OBJS)
 signames.h: mksignames
 	./mksignames $@
 
+y.tab.c: parse.y
+	yacc -d $^
+
 trap.c: signames.h
 
 bash: libsh.a libglob.a libtilde.a $(OBJS)
