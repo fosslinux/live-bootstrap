@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -ex
+
+mkdir build
+cd build
+
+bindir=/after/bin
+libdir=/after/lib
+lexdir=/lex
+
+# Extract
+bunzip2 ../src/${pkg}.tar.bz2
+tar xf ../src/${pkg}.tar ${pkg}/yacc ${pkg}/lex
+cd ${pkg}
+
+# Prepare and patch
+patch -Np0 -i ../../patches/yacc_remove_wchar.patch
+patch -Np0 -i ../../patches/lex_remove_wchar.patch
+
+# Build yacc
+cd yacc
+make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DMAXPATHLEN=100\ -DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt RANLIB=true
+
+# Install yacc
+install yacc ${bindir}
+install -m 644 yaccpar /
+
+# Build lex
+cd ../lex
+make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt RANLIB=true
+
+# Install lex
+mkdir ${lexdir}
+install lex ${bindir}
+install libl.a ${libdir}
+install -m 644 ncform ${lexdir}
+
+cd ../../..
