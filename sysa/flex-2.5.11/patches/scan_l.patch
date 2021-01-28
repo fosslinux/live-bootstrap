@@ -1,0 +1,36 @@
+diff --git scan.l scan.l
+index 18d0de8..c251a5e 100644
+--- scan.l
++++ scan.l
+@@ -32,6 +32,7 @@
+ /*  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR */
+ /*  PURPOSE. */
+ 
++#define yyin_defined
+ #include "flexdef.h"
+ #include "parse.h"
+ 
+@@ -334,8 +335,8 @@ LEXOPT		[aceknopr]
+ 
+ 
+ <SECT2PROLOG>{
+-	^"%{".*	++bracelevel; yyless( 2 );	/* eat only %{ */
+-	^"%}".*	--bracelevel; yyless( 2 );	/* eat only %} */
++	^"%{".*	++bracelevel; yyless( 2 );
++	^"%}".*	--bracelevel; yyless( 2 );
+ 
+ 	^{WS}.*	ACTION_ECHO;	/* indented code in prolog */
+ 
+@@ -480,11 +481,11 @@ LEXOPT		[aceknopr]
+ 				}
+ 			}
+ 
++	"{"{NAME}"}"[[:space:]]?	 {
+     /* Check for :space: at the end of the rule so we don't
+      * wrap the expanded regex in '(' ')' -- breaking trailing
+      * context.
+      */
+-	"{"{NAME}"}"[[:space:]]?	 {
+ 			register Char *nmdefptr;
+             int end_is_ws, end_ch;
+             

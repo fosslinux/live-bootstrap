@@ -16,10 +16,11 @@ build () {
     script_name=${2:-${pkg}.sh}
 
     cd "$pkg" || (echo "Cannot cd into ${pkg}!"; kill $$)
-    echo "${pkg}: beginning build"
+    echo "${pkg}: beginning build using script ${script_name}"
     base_dir="${PWD}"
     patch_dir="${base_dir}/patches"
     mk_dir="${base_dir}/mk"
+    files_dir="${base_dir}/files"
 
     rm -rf "build"
     mkdir -p "build"
@@ -74,7 +75,7 @@ default_src_unpack() {
 
 # Default function to prepare source code.
 # It applies all patches from patch_dir (at the moment only -p0 patches are supported).
-# Then it copies our custom makefile.
+# Then it copies our custom makefile and any other custom files from files directory.
 default_src_prepare() {
     if test -d "${patch_dir}"; then
         for p in "${patch_dir}"/*.patch; do
@@ -85,6 +86,10 @@ default_src_prepare() {
     makefile="${mk_dir}/main.mk"
     if test -e "${makefile}"; then
         cp "${makefile}" Makefile
+    fi
+
+    if test -d "${files_dir}"; then
+        cp "${files_dir}"/* "${PWD}/"
     fi
 }
 
