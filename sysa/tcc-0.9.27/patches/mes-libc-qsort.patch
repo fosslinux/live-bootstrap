@@ -1,0 +1,29 @@
+--- lib/stdlib/qsort.c
++++ lib/stdlib/qsort.c
+@@ -1,6 +1,7 @@
+ /* -*-comment-start: "//";comment-end:""-*-
+  * GNU Mes --- Maxwell Equations of Software
+  * Copyright © 2017,2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
++ * Copyright © 2021 Paul Dersey <pdersey@gmail.com>
+  *
+  * This file is part of GNU Mes.
+  *
+@@ -24,10 +25,14 @@
+ void
+ qswap (void *a, void *b, size_t size)
+ {
+-  char *buf[8];
+-  memcpy (buf, a, size);
+-  memcpy (a, b, size);
+-  memcpy (b, buf, size);
++  char *pa = a;
++  char *pb = b;
++  do
++  {
++    char tmp = *pa;
++    *pa++ = *pb;
++    *pb++ = tmp;
++  } while (--size > 0);
+ }
+ 
+ size_t

@@ -18,6 +18,7 @@ catm config.h
 
 patch -Np0 -i ../../patches/modechange.patch
 patch -Np0 -i ../../patches/mbstate.patch
+patch -Np0 -i ../../patches/ls-strcmp.patch
 
 # Build and install
 /after/bin/make -f Makefile
