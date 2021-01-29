@@ -155,7 +155,7 @@ two stages to this part:
    libc. This second interpreter is faster and less buggy. We need the libc to
    compile all the programs until we get glibc.
 
-#### Part 6: tinycc
+#### Part 6, 7: tinycc
 
 `tinycc` is a minimal C compiler that aims to be small and fast. It complies
 with all C89 and most of C99 standards. This is also a two-tiered process:
@@ -179,17 +179,17 @@ software, using older versions compilable by tinycc. Prior to this point, all
 tools have been adapted significantly for the bootstrap; now, we will be using
 old tooling instead.
 
-#### Part 7: sed 4.0.7
+#### Part 8: sed 4.0.7
 
 You are most likely aware of GNU `sed`, a line editor.
 
-#### Part 8: tar 1.12
+#### Part 9: tar 1.12
 
 GNU `tar` is the most common archive format used by software source code, often
 compressed also. To avoid continuing using submodules, we build GNU tar 1.12,
 the last version compilable by tinycc without significant patching.
 
-#### Part 9: gzip 1.2.4
+#### Part 10: gzip 1.2.4
 
 `gzip` is the most common compression format used for software source code. It
 is luckily distributed as a barebones uncompressed `.tar`, which we extract and
@@ -197,18 +197,18 @@ then build. We do require deletion of a few lines unsupported by mes libc.
 
 Going forward, we can now use `.tar.gz` for source code.
 
-#### Part 10: diffutils 2.7
+#### Part 11: diffutils 2.7
 
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
 
-#### Part 11: patch 2.5.9
+#### Part 12: patch 2.5.9
 
 `patch` is a very useful tool at this stage, allowing us to make significantly
 more complex edits, including just changes to lines. Luckily, we are able to
 patch patch using sed only.
 
-#### Part 12: patched tinycc
+#### Part 13: patched tinycc
 
 In Guix, tinycc is patched to force static linking. Prior to this step, we have
 been forced to manually specify static linking for each tool. Now that we have
@@ -217,35 +217,40 @@ patch, we can patch tinycc to force static linking and then recompile it.
 Note that we have to do this using tinycc 0.9.26, as tinycc 0.9.27 cannot
 recompile itself for unknown reasons.
 
-#### Part 13: make 3.80
+#### Part 14: patched mes-libc
+
+Since patch is available at this point, we can apply additional fixes to
+mes-libc that are not included in the wip-m2 branch and recompile libc.
+
+#### Part 15: make 3.80
 
 GNU `make` is now built so we have a more robust building system. `make` allows
 us to do things like define rules for files rather than writing complex kaem
 scripts.
 
-#### Part 14: bzip2 1.0.8
+#### Part 16: bzip2 1.0.8
 
 `bzip2` is a compression format that compresses more than `gzip`. It is
 preferred where we can use it, and makes source code sizes smaller.
 
-#### Part 15: coreutils 5.0.0
+#### Part 17: coreutils 5.0.0
 
 GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`, `chown`,
-`cp`, `install`, `ln`, `mkdir`, `mknod`, `mv`, `rm`, `rmdir`, `tee`, `test`, `true`, and many others.
+`cp`, `install`, `ln`, `ls`, `mkdir`, `mknod`, `mv`, `rm`, `rmdir`, `tee`, `test`, `true`, and many others.
 
 A few of the utilities cannot be easily compiled with Mes C library, so we skip them.
 
-#### Part 16: grep 2.4
+#### Part 18: grep 2.4
 
 GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
 
-#### Part 17: heirloom devtools
+#### Part 19: heirloom devtools
 `lex` and `yacc` from the Heirloom project. The Heirloom project is a collection
 of standard UNIX utilities derived from code by Caldera and Sun. Differently from
 the analogous utilities from the GNU project, they can be compiled with a simple `Makefile`.
 
-#### Part 18: bash 2.05b
+#### Part 20: bash 2.05b
 
 GNU `bash` is the most well known shell and the most complex piece of software
 so far. However, it comes with a number of great benefits over kaem, including
@@ -255,7 +260,7 @@ Bash ships with a bison pre-generated file here which we delete. Unfortunately,
 we have not bootstrapped bison but fortunately for us, heirloom yacc is able to
 cope here.
 
-#### Part 19: m4 1.4
+#### Part 21: m4 1.4
 
 `m4` is the first piece of software we need in the autotools suite. It allows
 macros to be defined and files to be generated from those macros.

@@ -77,77 +77,77 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 8: tar
+# Part 9: tar
 pkg="tar-1.12"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 9: gzip
+# Part 10: gzip
 pkg="gzip-1.2.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 10: diffutils
+# Part 11: diffutils
 pkg="diffutils-2.7"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 11: patch
+# Part 12: patch
 pkg="patch-2.5.9"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 12: tcc-patched
+# Part 13: tcc-patched
 cd tcc-0.9.27
 kaem --file tcc-patched.kaem
 cd ..
 
-# Part 13: mes-libc-patched
+# Part 14: mes-libc-patched
 cd tcc-0.9.27
 kaem --file mes-libc-patched.kaem
 cd ..
 
-# Part 14: make
+# Part 15: make
 pkg="make-3.80"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 15: bzip2
+# Part 16: bzip2
 pkg="bzip2-1.0.8"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 16: coreutils
+# Part 17: coreutils
 pkg="coreutils-5.0"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 17: grep
+# Part 18: grep
 pkg="grep-2.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 18: heirloom-devtools
+# Part 19: heirloom-devtools
 pkg="heirloom-devtools-070527"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 19: bash
+# Part 20: bash
 pkg="bash-2.05b"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 20: m4
+# Part 21: m4
 pkg="m4-1.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
