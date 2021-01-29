@@ -106,43 +106,48 @@ cd tcc-0.9.27
 kaem --file tcc-patched.kaem
 cd ..
 
-# Part 13: make
+# Part 13: mes-libc-patched
+cd tcc-0.9.27
+kaem --file mes-libc-patched.kaem
+cd ..
+
+# Part 14: make
 pkg="make-3.80"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 14: bzip2
+# Part 15: bzip2
 pkg="bzip2-1.0.8"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 15: coreutils
+# Part 16: coreutils
 pkg="coreutils-5.0"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 16: grep
+# Part 17: grep
 pkg="grep-2.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 16: heirloom-devtools
+# Part 18: heirloom-devtools
 pkg="heirloom-devtools-070527"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 17: bash
+# Part 19: bash
 pkg="bash-2.05b"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 18: m4
+# Part 20: m4
 pkg="m4-1.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
