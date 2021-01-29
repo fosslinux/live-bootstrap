@@ -41,6 +41,7 @@ mkdir -p tmp/after/include/linux/{x86,x86_64}
 mkdir -p tmp/tmp
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
+cp helpers.sh run.sh tmp/after/
 
 # mescc-tools-extra
 cp -r mescc-tools-extra tmp/after/

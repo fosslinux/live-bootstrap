@@ -35,5 +35,7 @@ make
 
 # Install
 install bash /after/bin/
+ln -s /after/bin/bash /bin/bash
+ln -s /after/bin/bash /bin/sh
 
 cd ../..

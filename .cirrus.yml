@@ -11,7 +11,7 @@ lint_task:
     - apt-get -y install shellcheck
     - apt-get -y clean
   check_script:
-    - shellcheck rootfs.sh
+    - shellcheck rootfs.sh sysa/run.sh sysa/helpers.sh
 
 run_task:
   # Required background services
