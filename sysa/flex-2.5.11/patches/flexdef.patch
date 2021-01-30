@@ -1,0 +1,24 @@
+diff --git flexdef.h flexdef.h
+index 3eb710a..94ef024 100644
+--- flexdef.h
++++ flexdef.h
+@@ -421,7 +421,7 @@ extern int yymore_really_used, reject_really_used;
+  */
+ 
+ extern int datapos, dataline, linenum, out_linenum;
+-extern FILE *skelfile, *yyin, *backing_up_file;
++extern FILE *skelfile, *backing_up_file;
+ extern const char *skel[];
+ extern int skel_ind;
+ extern char *infilename, *outfilename, *headerfilename;
+@@ -432,6 +432,10 @@ extern char **input_files;
+ extern int num_input_files;
+ extern char *program_name;
+ 
++#ifndef yyin_defined
++extern FILE* yyin;
++#endif
++
+ extern char *action_array;
+ extern int action_size;
+ extern int defs1_offset, prolog_offset, action_offset, action_index;
