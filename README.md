@@ -265,11 +265,13 @@ cope here.
 `m4` is the first piece of software we need in the autotools suite. It allows
 macros to be defined and files to be generated from those macros.
 
-#### Part 20: flex 2.5.11
+#### Part 22: flex 2.5.11
 `flex` is a tool for generating lexers or scanners: programs that recognize lexical patters.
 
 Unfortunately `flex` also depends on itself for compiling its own scanner, so
 first flex 2.5.11 is compiled, with its scanner definition manually modified so that
 it can be processed by lex for the Heirloom project (the required modifications
 are mostly syntactical, plus a few workarounds to avoid some flex advanced features).
-Then we recompile `flex` using its own lexer.
+
+### Part 23 flex 2.5.14
+Then we recompile unpatched `flex` using its own lexer.

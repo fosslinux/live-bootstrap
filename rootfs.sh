@@ -132,6 +132,9 @@ get_file https://ftp.gnu.org/gnu/m4/m4-1.4.tar.gz
 # flex 2.5.11
 get_file http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.gz
 
+# flex 2.5.14
+get_file http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.14.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

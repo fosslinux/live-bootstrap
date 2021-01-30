@@ -14,6 +14,8 @@ build m4-1.4
 
 # Part 22
 build flex-2.5.11
-build flex-2.5.11
+
+# Part 23
+build flex-2.5.14
 
 echo "Bootstrapping completed."
