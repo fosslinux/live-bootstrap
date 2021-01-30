@@ -26,3 +26,6 @@ m4: libm4.a $(M4_OBJ)
 
 libm4.a: $(LIB_OBJECTS)
 	$(AR) cr $@ $^
+
+install: all
+	install m4 $(PREFIX)/bin

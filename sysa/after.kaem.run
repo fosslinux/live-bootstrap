@@ -147,10 +147,4 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 21: m4
-pkg="m4-1.4"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-echo "Bootstrapping completed."
+bash run.sh
