@@ -70,25 +70,20 @@ cp -r tcc-0.9.27 tmp/after/
 # sed 4.0.7
 cp -r sed-4.0.7 tmp/after/
 
-mkdir -p ../sources
-
 # tar 1.12
 url=https://ftp.gnu.org/gnu/tar/tar-1.12.tar.gz
-pushd ../sources
+cp -r tar-1.12 tmp/after
+mkdir tmp/after/tar-1.12/{src,build}
+pushd tmp/after/tar-1.12/src
 if [ ! -f "$(basename $url)" ]; then
     wget "$url"
 fi
 popd
-cp -r tar-1.12 tmp/after
-tar -C tmp/after/tar-1.12/src -xf "../sources/$(basename $url)" --strip-components=1
+tar -C tmp/after/tar-1.12/src -xf "tmp/after/tar-1.12/src/$(basename $url)" --strip-components=1
 
 get_file() {
     url=$1
-    pushd ../sources
-    if [ ! -f "$(basename "$url")" ]; then
-        wget "$url"
-    fi
-    popd
+    make_build=${2:-0}
     ext="${url##*.}"
     if [ "$ext" = "tar" ]; then
         bname=$(basename "$url" ".tar")
@@ -96,26 +91,35 @@ get_file() {
         bname=$(basename "$url" ".tar.${ext}")
     fi
     cp -r "${bname}" tmp/after/
-    cp "../sources/$(basename "$url")" "tmp/after/${bname}/src/"
+    target="tmp/after/${bname}"
+    mkdir -p "${target}/src"
+    if [ "${make_build}" -ne 0 ]; then
+        mkdir "${target}/build"
+    fi
+    pushd "tmp/after/${bname}/src"
+    if [ ! -f "$(basename "$url")" ]; then
+        wget "$url"
+    fi
+    popd
 }
 
 # gzip 1.2.4
-get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar
+get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar 1
 
 # diffutils 2.7
-get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
+get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz 1
 
 # patch 2.5.9
-get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz
+get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz 1
 
 # make 3.80
-get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz
+get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz 1
 
 # bzip2 1.0.8
-get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
+get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz 1
 
 # coreutils 5.0
-get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2 1
 
 # grep 2.4
 get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
@@ -167,9 +171,6 @@ case "${QEMU_CMD}" in
 esac
 
 cd ../..
-
-# eventually keep logfile before unmount:
-echo "see logfile: $LOGFILE"
 
 # Cleanup
 sudo umount sysa/tmp
