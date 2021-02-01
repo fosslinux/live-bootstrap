@@ -273,5 +273,12 @@ first flex 2.5.11 is compiled, with its scanner definition manually modified so 
 it can be processed by lex for the Heirloom project (the required modifications
 are mostly syntactical, plus a few workarounds to avoid some flex advanced features).
 
-### Part 23 flex 2.5.14
+#### Part 23 flex 2.5.14
 Then we recompile unpatched `flex` using its own lexer.
+
+#### Part 24 musl 1.1.24
+
+`musl` is a C standard library that is lightweight, fast, simple, free, and strives to be correct
+in the sense of standards-conformance and safety. `musl` is used by some distributions of GNU/Linux
+as their C library. Our previous Mes C library was incomplete which prevented us from building many
+newer or more complex programs.

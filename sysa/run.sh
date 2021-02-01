@@ -18,4 +18,7 @@ build flex-2.5.11
 # Part 23
 build flex-2.5.14
 
+# Part 24
+build musl-1.1.24
+
 echo "Bootstrapping completed."

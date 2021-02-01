@@ -1,0 +1,37 @@
+From 1642f5982009e110615a29745f9cafd51a5c1597 Mon Sep 17 00:00:00 2001
+From: Giovanni Mascellani <gio@debian.org>
+Date: Tue, 11 Jun 2019 11:20:07 +0200
+Subject: [PATCH] stdarg.h: add support for tcc.
+
+---
+ arch/i386/bits/alltypes.h.in | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/arch/i386/bits/alltypes.h.in b/arch/i386/bits/alltypes.h.in
+index 1a8432d3..44cb5987 100644
+--- arch/i386/bits/alltypes.h.in
++++ arch/i386/bits/alltypes.h.in
+@@ -2,7 +2,19 @@
+ #define _Int64 long long
+ #define _Reg int
+ 
+-#if __GNUC__ >= 3
++#ifdef __TINYC__
++typedef char *__builtin_va_list;
++#define __builtin_va_start(ap,last) ap = ((char *)&(last)) + ((sizeof(last)+3)&~3)
++#define __builtin_va_arg(ap,type) (ap += (sizeof(type)+3)&~3, *(type *)(ap - ((sizeof(type)+3)&~3)))
++#define __builtin_va_copy(dest, src) (dest) = (src)
++#define __builtin_va_end(ap)
++#ifndef __TINYC_redefine_va_list
++#define __TINYC_redefine_va_list
++#undef __DEFINED_va_list
++#endif
++#endif
++
++#if __GNUC__ >= 3 || defined(__TINYC__)
+ TYPEDEF __builtin_va_list va_list;
+ TYPEDEF __builtin_va_list __isoc_va_list;
+ #else
+-- 
+GitLab
+

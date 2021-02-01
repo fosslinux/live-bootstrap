@@ -139,6 +139,9 @@ get_file http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.
 # flex 2.5.14
 get_file http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.14.tar.gz
 
+# musl 1.1.24
+get_file https://musl.libc.org/releases/musl-1.1.24.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

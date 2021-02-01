@@ -1,0 +1,106 @@
+diff -U3 -r src/internal/syscall.h src/internal/syscall.h
+--- src/internal/syscall.h	2019-10-13 22:58:27.000000000 +0100
++++ src/internal/syscall.h	2021-02-01 00:24:02.099200492 +0000
+@@ -331,7 +331,7 @@
+ #define __sys_open_cp(...) __SYSCALL_DISP(__sys_open_cp,,__VA_ARGS__)
+ #define sys_open_cp(...) __syscall_ret(__sys_open_cp(__VA_ARGS__))
+ 
+-hidden void __procfdname(char __buf[static 15+3*sizeof(int)], unsigned);
++hidden void __procfdname(char __buf[15+3*sizeof(int)], unsigned);
+ 
+ hidden void *__vdsosym(const char *, const char *);
+ 
+diff -U3 -r src/network/lookup.h src/network/lookup.h
+--- src/network/lookup.h	2019-10-13 22:58:27.000000000 +0100
++++ src/network/lookup.h	2021-02-01 00:27:42.695155110 +0000
+@@ -43,9 +43,9 @@
+ #define MAXADDRS 48
+ #define MAXSERVS 2
+ 
+-hidden int __lookup_serv(struct service buf[static MAXSERVS], const char *name, int proto, int socktype, int flags);
+-hidden int __lookup_name(struct address buf[static MAXADDRS], char canon[static 256], const char *name, int family, int flags);
+-hidden int __lookup_ipliteral(struct address buf[static 1], const char *name, int family);
++hidden int __lookup_serv(struct service buf[MAXSERVS], const char *name, int proto, int socktype, int flags);
++hidden int __lookup_name(struct address buf[MAXADDRS], char canon[256], const char *name, int family, int flags);
++hidden int __lookup_ipliteral(struct address buf[1], const char *name, int family);
+ 
+ hidden int __get_resolv_conf(struct resolvconf *, char *, size_t);
+ hidden int __res_msend_rc(int, const unsigned char *const *, const int *, unsigned char *const *, int *, int, const struct resolvconf *);
+diff -U3 -r src/network/lookup_ipliteral.c src/network/lookup_ipliteral.c
+--- src/network/lookup_ipliteral.c	2019-10-13 22:58:27.000000000 +0100
++++ src/network/lookup_ipliteral.c	2021-02-01 00:27:59.955620933 +0000
+@@ -9,7 +9,7 @@
+ #include <ctype.h>
+ #include "lookup.h"
+ 
+-int __lookup_ipliteral(struct address buf[static 1], const char *name, int family)
++int __lookup_ipliteral(struct address buf[1], const char *name, int family)
+ {
+ 	struct in_addr a4;
+ 	struct in6_addr a6;
+diff -U3 -r src/network/lookup_name.c src/network/lookup_name.c
+--- src/network/lookup_name.c	2019-10-13 22:58:27.000000000 +0100
++++ src/network/lookup_name.c	2021-02-01 00:28:56.117136509 +0000
+@@ -23,7 +23,7 @@
+ 	return !*s;
+ }
+ 
+-static int name_from_null(struct address buf[static 2], const char *name, int family, int flags)
++static int name_from_null(struct address buf[2], const char *name, int family, int flags)
+ {
+ 	int cnt = 0;
+ 	if (name) return 0;
+@@ -41,12 +41,12 @@
+ 	return cnt;
+ }
+ 
+-static int name_from_numeric(struct address buf[static 1], const char *name, int family)
++static int name_from_numeric(struct address buf[1], const char *name, int family)
+ {
+ 	return __lookup_ipliteral(buf, name, family);
+ }
+ 
+-static int name_from_hosts(struct address buf[static MAXADDRS], char canon[static 256], const char *name, int family)
++static int name_from_hosts(struct address buf[MAXADDRS], char canon[256], const char *name, int family)
+ {
+ 	char line[512];
+ 	size_t l = strlen(name);
+@@ -130,7 +130,7 @@
+ 	return 0;
+ }
+ 
+-static int name_from_dns(struct address buf[static MAXADDRS], char canon[static 256], const char *name, int family, const struct resolvconf *conf)
++static int name_from_dns(struct address buf[MAXADDRS], char canon[256], const char *name, int family, const struct resolvconf *conf)
+ {
+ 	unsigned char qbuf[2][280], abuf[2][512];
+ 	const unsigned char *qp[2] = { qbuf[0], qbuf[1] };
+@@ -166,7 +166,7 @@
+ 	return EAI_FAIL;
+ }
+ 
+-static int name_from_dns_search(struct address buf[static MAXADDRS], char canon[static 256], const char *name, int family)
++static int name_from_dns_search(struct address buf[MAXADDRS], char canon[256], const char *name, int family)
+ {
+ 	char search[256];
+ 	struct resolvconf conf;
+@@ -284,7 +284,7 @@
+ 	return b->sortkey - a->sortkey;
+ }
+ 
+-int __lookup_name(struct address buf[static MAXADDRS], char canon[static 256], const char *name, int family, int flags)
++int __lookup_name(struct address buf[MAXADDRS], char canon[256], const char *name, int family, int flags)
+ {
+ 	int cnt = 0, i, j;
+ 
+diff -U3 -r src/network/lookup_serv.c src/network/lookup_serv.c
+--- src/network/lookup_serv.c	2019-10-13 22:58:27.000000000 +0100
++++ src/network/lookup_serv.c	2021-02-01 00:29:10.357520778 +0000
+@@ -9,7 +9,7 @@
+ #include "lookup.h"
+ #include "stdio_impl.h"
+ 
+-int __lookup_serv(struct service buf[static MAXSERVS], const char *name, int proto, int socktype, int flags)
++int __lookup_serv(struct service buf[MAXSERVS], const char *name, int proto, int socktype, int flags)
+ {
+ 	char line[128];
+ 	int cnt = 0;
