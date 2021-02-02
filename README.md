@@ -208,7 +208,12 @@ is required later for autotools.
 more complex edits, including just changes to lines. Luckily, we are able to
 patch patch using sed only.
 
-#### Part 13: patched tinycc
+#### Part 13: patched mes-libc
+
+Since patch is available at this point, we can apply additional fixes to
+mes-libc that are not included in the wip-m2 branch and recompile libc.
+
+#### Part 14: patched tinycc
 
 In Guix, tinycc is patched to force static linking. Prior to this step, we have
 been forced to manually specify static linking for each tool. Now that we have
@@ -216,11 +221,6 @@ patch, we can patch tinycc to force static linking and then recompile it.
 
 Note that we have to do this using tinycc 0.9.26, as tinycc 0.9.27 cannot
 recompile itself for unknown reasons.
-
-#### Part 14: patched mes-libc
-
-Since patch is available at this point, we can apply additional fixes to
-mes-libc that are not included in the wip-m2 branch and recompile libc.
 
 #### Part 15: make 3.80
 

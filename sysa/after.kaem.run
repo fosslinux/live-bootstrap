@@ -101,14 +101,14 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 13: tcc-patched
-cd tcc-0.9.27
-kaem --file tcc-patched.kaem
-cd ..
-
-# Part 14: mes-libc-patched
+# Part 13: mes-libc-patched
 cd tcc-0.9.27
 kaem --file mes-libc-patched.kaem
+cd ..
+
+# Part 14: tcc-patched
+cd tcc-0.9.27
+kaem --file tcc-patched.kaem
 cd ..
 
 # Part 15: make
