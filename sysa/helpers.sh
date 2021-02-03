@@ -54,6 +54,8 @@ build () {
 
     echo "${pkg}: build successful"
     cd ..
+
+    unset -f src_unpack src_prepare src_configure src_compile src_install
 }
 
 # Default unpacking function that unpacks a single source tarball.
