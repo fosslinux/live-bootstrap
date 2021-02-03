@@ -27,14 +27,15 @@ build () {
 
     cd "build"
 
-    echo "${pkg}: unpacking source."
-    call src_unpack
-
     build_script="${base_dir}/${script_name}"
     if test -e "${build_script}"; then
         # shellcheck source=/dev/null
         . "${build_script}"
     fi
+
+    echo "${pkg}: unpacking source."
+    call src_unpack
+
     cd "${pkg}" || (echo "Cannot cd into build/${pkg}!"; kill $$)
 
     echo "${pkg}: preparing source."
