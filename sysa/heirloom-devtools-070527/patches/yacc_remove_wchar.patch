@@ -1,3 +1,10 @@
+Remove all kinds of wchar support. Mes Libc does not support wchar in any form,
+so we need to remove it.
+
+heirloom-devtools is all kinds of broken in this way. C standard dictates that
+wchar_t may be defined as char, however heirloom-devtools does not respect this,
+which makes this non-trivial.
+
 diff -U3 -r yacc/dextern yacc/dextern
 --- yacc/dextern	2005-11-10 20:31:45.000000000 +0000
 +++ yacc/dextern	2021-01-25 18:21:45.286602527 +0000

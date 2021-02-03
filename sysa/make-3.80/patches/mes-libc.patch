@@ -1,4 +1,11 @@
-diff --color -ru make-3.80.bak/job.c make-3.80/job.c
+Two incompatibilities:
+
+* mes libc does not provide string.h
+* lseek is not provided by mes libc
+
+Both of these functions are unused later.
+
+diff --color -ru job.c job.c
 --- job.c	2021-01-14 10:26:42.457657979 +1100
 +++ job.c	2021-01-14 10:27:03.332776801 +1100
 @@ -28,8 +28,6 @@
@@ -10,7 +17,7 @@ diff --color -ru make-3.80.bak/job.c make-3.80/job.c
  /* Default shell to use.  */
  #ifdef WINDOWS32
  char *default_shell = "sh.exe";
-diff --color -ru make-3.80.bak/make.h make-3.80/make.h
+diff --color -ru make.h make.h
 --- make.h	2021-01-14 10:26:42.456657974 +1100
 +++ make.h	2021-01-14 10:26:51.154707480 +1100
 @@ -467,9 +467,6 @@

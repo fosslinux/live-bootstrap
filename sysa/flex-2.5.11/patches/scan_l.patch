@@ -1,15 +1,9 @@
+Comments are unsupported by our flex.
+
 diff --git scan.l scan.l
 index 18d0de8..c251a5e 100644
 --- scan.l
 +++ scan.l
-@@ -32,6 +32,7 @@
- /*  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR */
- /*  PURPOSE. */
- 
-+#define yyin_defined
- #include "flexdef.h"
- #include "parse.h"
- 
 @@ -334,8 +335,8 @@ LEXOPT		[aceknopr]
  
  

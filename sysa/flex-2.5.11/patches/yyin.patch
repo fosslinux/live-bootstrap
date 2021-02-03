@@ -1,3 +1,6 @@
+yyin has an odd redefinition error in scan.l, so we ensure that we don't
+acidentally re-declare it.
+
 diff --git flexdef.h flexdef.h
 index 3eb710a..94ef024 100644
 --- flexdef.h
@@ -22,3 +25,13 @@ index 3eb710a..94ef024 100644
  extern char *action_array;
  extern int action_size;
  extern int defs1_offset, prolog_offset, action_offset, action_index;
+--- scan.l
++++ scan.l
+@@ -32,6 +32,7 @@
+ /*  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR */
+ /*  PURPOSE. */
+ 
++#define yyin_defined
+ #include "flexdef.h"
+ #include "parse.h"
+ 

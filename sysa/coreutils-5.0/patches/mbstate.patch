@@ -1,3 +1,6 @@
+mbstate_t is a struct that is required. However, it is not defined by mes libc.
+This implementation was taken from glibc 2.32. 
+
 --- lib/quotearg.c	2002-11-23 07:08:10.000000000 +0000
 +++ lib/quotearg.c	2021-01-17 19:41:59.461095532 +0000
 @@ -21,6 +21,7 @@

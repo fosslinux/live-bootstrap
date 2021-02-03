@@ -1,3 +1,5 @@
+strcoll() does not exist in mes libc, change it to strcmp.
+
 --- src/ls.c
 +++ src/ls.c
 @@ -2597,7 +2597,7 @@ xstrcoll (char const *a, char const *b)

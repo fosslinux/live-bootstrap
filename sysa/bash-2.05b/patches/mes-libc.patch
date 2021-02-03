@@ -1,3 +1,5 @@
+mes libc does not have locale support...
+
 diff --git lib/sh/snprintf.c lib/sh/snprintf.c
 index 7669576..747aeba 100644
 --- lib/sh/snprintf.c
