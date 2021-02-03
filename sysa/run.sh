@@ -21,4 +21,7 @@ build flex-2.5.14
 # Part 24
 build musl-1.1.24
 
+# Part 25
+build tcc-0.9.27 tcc-musl.sh
+
 echo "Bootstrapping completed."

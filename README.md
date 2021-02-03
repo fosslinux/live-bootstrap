@@ -266,6 +266,7 @@ cope here.
 macros to be defined and files to be generated from those macros.
 
 #### Part 22: flex 2.5.11
+
 `flex` is a tool for generating lexers or scanners: programs that recognize lexical patters.
 
 Unfortunately `flex` also depends on itself for compiling its own scanner, so
@@ -274,6 +275,7 @@ it can be processed by lex for the Heirloom project (the required modifications
 are mostly syntactical, plus a few workarounds to avoid some flex advanced features).
 
 #### Part 23 flex 2.5.14
+
 Then we recompile unpatched `flex` using its own lexer.
 
 #### Part 24 musl 1.1.24
@@ -282,3 +284,13 @@ Then we recompile unpatched `flex` using its own lexer.
 in the sense of standards-conformance and safety. `musl` is used by some distributions of GNU/Linux
 as their C library. Our previous Mes C library was incomplete which prevented us from building many
 newer or more complex programs.
+
+`tcc` has slight problems when building and linking `musl`, so we apply a few patches. In particular,
+we replace all weak symbols with strong symbols and will patch `tcc` in the next step to ignore duplicate
+symbols.
+
+#### Part 25 tcc 0.9.27 (musl)
+
+We recompile `tcc` against musl. This is a two stage process. First we build tcc-0.9.27 that itself
+links to Mes C library but produces binaries linked to musl. Then we recompile newly produced tcc
+with itself. Interestingly, tcc-0.9.27 linked against musl is self hosting.
