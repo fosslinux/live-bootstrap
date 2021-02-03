@@ -27,9 +27,12 @@ Global scripts that drive the entire system go directly under `sysx`. `tmp`
 contains the temporary system used for QEMU or a chroot.
 
 Then, each package is in its own specific directory, named `package-version`.
-Within that, there must be a driving script, labelled either
-`package-version.kaem` when driven by kaem or `package-version.sh` when driven
-by a shell (normally bash).
+It then diverges based upon which driver is being used:
+
+- `kaem`: A file named `package-version.kaem` is called by the master script.
+- `bash`: The `build` function from helper.sh is called from the master script.
+  There are default functions run which can be overridden by an optional script
+  `package-version.sh` within the package-specific directory.
 
 In this folder, there are other folders. `src` is required, others are optional.
 Permissable folders:
@@ -37,9 +40,25 @@ Permissable folders:
 - `files`: auxiliary files required for the build distributed by live-bootstrap.
 - `mk`: makefiles.
 - `patches`: patches for the source.
-- `src`: the upstream unmodified source code. This must be either:
-  - a submodule
-  - a folder contianing only `.placeholder` as distributed by git and gitignored,
-    where the tarball is saved to in rootfs.sh. (The gitignore is already
-    global, so the first time it is created with `.placeholder` it must be git
-    added with `-f`).
+- `src`: the upstream unmodified source code. This may be either a submodule or
+  nonexistant.
+
+## Conventions
+
+- **Patches:**
+  - all patches are `-p0`
+  - all patches begin with a patch header
+- **README:**
+  - all stages are explained in README
+- **General:**
+  - Where possible, all blocks of text should be limited to a length of 80
+    characters.
+  - There is no character limit for code, the reasons for this are two-fold:
+    - Often harms readability.
+    - Often impossible/hard in early bootstrap stages.
+
+## git
+
+All changes must be submitted as PRs. Pushing to master is disallowed, even if
+push access is granted to a user. Only pushes to master should be merging of
+patches into master.
