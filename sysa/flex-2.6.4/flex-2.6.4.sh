@@ -16,4 +16,8 @@ src_install() {
     cd src
     default_src_install
     cd ..
+
+    # Remove yacc, we won't need it any longer
+    rm ${PREFIX}/bin/yacc
+    rm /yaccpar
 }
