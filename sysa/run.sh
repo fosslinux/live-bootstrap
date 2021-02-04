@@ -10,7 +10,7 @@ set -e
 export PREFIX=/after
 
 # Part 21
-build m4-1.4
+build m4-1.4.4
 
 # Part 22
 build flex-2.5.11

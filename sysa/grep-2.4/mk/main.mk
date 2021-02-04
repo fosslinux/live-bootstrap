@@ -8,7 +8,9 @@ AR      = tcc -ar
 CFLAGS  = -DPACKAGE=\"$(PACKAGE)\" \
           -DVERSION=\"$(VERSION)\" \
           -DHAVE_DIRENT_H=1 \
-          -DHAVE_UNISTD_H=1
+          -DHAVE_UNISTD_H=1 \
+          -DHAVE_STRERROR=1 \
+          -DREGEX_MALLOC=1
 
 .PHONY: all
 

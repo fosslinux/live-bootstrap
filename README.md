@@ -260,7 +260,7 @@ Bash ships with a bison pre-generated file here which we delete. Unfortunately,
 we have not bootstrapped bison but fortunately for us, heirloom yacc is able to
 cope here.
 
-#### Part 21: m4 1.4
+#### Part 21: m4 1.4.4
 
 `m4` is the first piece of software we need in the autotools suite and flex 2.6.4.
 It allows macros to be defined and files to be generated from those macros.

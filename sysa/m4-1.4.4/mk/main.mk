@@ -7,7 +7,9 @@ AR      = tcc -ar
 
 CFLAGS  = -I lib \
           -DPRODUCT=\"$(PRODUCT)\" \
-          -DVERSION=\"$(VERSION)\"
+          -DVERSION=\"$(VERSION)\" \
+          -DHAVE_SIGNAL_H=1 \
+          -DPACKAGE_STRING=\"GNU\ M4\ 1.4.4\"
 
 LDFLAGS = -L . -lm4
 
