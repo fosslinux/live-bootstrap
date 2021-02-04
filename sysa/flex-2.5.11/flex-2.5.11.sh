@@ -1,13 +1,10 @@
 # When we rebuild flex it no longer needs patching
 # and can use simplified makefile
 src_prepare() {
-    if test -d /lex; then
-        default_src_prepare
-    else
-        cp ../../mk/main2.mk Makefile
-    fi
+    default_src_prepare
+
     touch config.h
-    rm parse.c parse.h scan.c
+    rm parse.c parse.h scan.c skel.c
 }
 
 src_install() {
