@@ -6,6 +6,7 @@ cd src/mes-libc
 
 # Patch
 patch -Np0 -i ../../patches/mes-libc-qsort.patch
+patch -Np0 -i ../../patches/mes-libc-crt1.patch
 
 # Recompile libc
 cd ../tcc-0.9.27

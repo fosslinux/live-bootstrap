@@ -1,0 +1,31 @@
+From 0b0640219338b80cf47026d1970b5503414ed7f3 Mon Sep 17 00:00:00 2001
+From: Rich Felker <dalias@aerifal.cx>
+Date: Sun, 30 Aug 2020 21:37:12 -0400
+Subject: fix i386 __set_thread_area fallback
+
+this code is only needed for pre-2.6 kernels, which are not actually
+supported anyway, and was never tested. the fallback path using
+SYS_modify_ldt failed to clear the upper bits of %eax (all ones due to
+SYS_set_thread_area's return value being an error) before modifying
+%al to attempt a new syscall.
+---
+ src/thread/i386/__set_thread_area.s | 1 +
+ 1 file changed, 1 insertion(+)
+
+(limited to 'src/thread/i386/__set_thread_area.s')
+
+diff --git src/thread/i386/__set_thread_area.s src/thread/i386/__set_thread_area.s
+index c2c21dd5..aa6852be 100644
+--- src/thread/i386/__set_thread_area.s
++++ src/thread/i386/__set_thread_area.s
+@@ -28,6 +28,7 @@ __set_thread_area:
+ 	ret
+ 2:
+ 	mov %ebx,%ecx
++	xor %eax,%eax
+ 	xor %ebx,%ebx
+ 	xor %edx,%edx
+ 	mov %ebx,(%esp)
+-- 
+cgit v1.2.1
+

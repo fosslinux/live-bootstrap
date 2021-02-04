@@ -1,0 +1,13 @@
+tcc does not like jecxz instruction.
+--- src/signal/i386/sigsetjmp.s	2019-10-13 22:58:27.000000000 +0100
++++ src/signal/i386/sigsetjmp.s	2021-02-01 00:19:25.671735415 +0000
+@@ -5,7 +5,8 @@
+ sigsetjmp:
+ __sigsetjmp:
+ 	mov 8(%esp),%ecx
+-	jecxz 1f
++	cmp %ecx,0
++	je 1f
+ 
+ 	mov 4(%esp),%eax
+ 	popl 24(%eax)

@@ -208,7 +208,12 @@ is required later for autotools.
 more complex edits, including just changes to lines. Luckily, we are able to
 patch patch using sed only.
 
-#### Part 13: patched tinycc
+#### Part 13: patched mes-libc
+
+Since patch is available at this point, we can apply additional fixes to
+mes-libc that are not included in the wip-m2 branch and recompile libc.
+
+#### Part 14: patched tinycc
 
 In Guix, tinycc is patched to force static linking. Prior to this step, we have
 been forced to manually specify static linking for each tool. Now that we have
@@ -216,11 +221,6 @@ patch, we can patch tinycc to force static linking and then recompile it.
 
 Note that we have to do this using tinycc 0.9.26, as tinycc 0.9.27 cannot
 recompile itself for unknown reasons.
-
-#### Part 14: patched mes-libc
-
-Since patch is available at this point, we can apply additional fixes to
-mes-libc that are not included in the wip-m2 branch and recompile libc.
 
 #### Part 15: make 3.80
 
@@ -266,6 +266,7 @@ cope here.
 macros to be defined and files to be generated from those macros.
 
 #### Part 22: flex 2.5.11
+
 `flex` is a tool for generating lexers or scanners: programs that recognize lexical patters.
 
 Unfortunately `flex` also depends on itself for compiling its own scanner, so
@@ -273,5 +274,23 @@ first flex 2.5.11 is compiled, with its scanner definition manually modified so 
 it can be processed by lex for the Heirloom project (the required modifications
 are mostly syntactical, plus a few workarounds to avoid some flex advanced features).
 
-### Part 23 flex 2.5.14
+#### Part 23 flex 2.5.14
+
 Then we recompile unpatched `flex` using its own lexer.
+
+#### Part 24 musl 1.1.24
+
+`musl` is a C standard library that is lightweight, fast, simple, free, and strives to be correct
+in the sense of standards-conformance and safety. `musl` is used by some distributions of GNU/Linux
+as their C library. Our previous Mes C library was incomplete which prevented us from building many
+newer or more complex programs.
+
+`tcc` has slight problems when building and linking `musl`, so we apply a few patches. In particular,
+we replace all weak symbols with strong symbols and will patch `tcc` in the next step to ignore duplicate
+symbols.
+
+#### Part 25 tcc 0.9.27 (musl)
+
+We recompile `tcc` against musl. This is a two stage process. First we build tcc-0.9.27 that itself
+links to Mes C library but produces binaries linked to musl. Then we recompile newly produced tcc
+with itself. Interestingly, tcc-0.9.27 linked against musl is self hosting.
