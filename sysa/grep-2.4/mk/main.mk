@@ -21,3 +21,8 @@ all: grep
 
 grep: $(GREP_OBJECTS)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+install: all
+	install grep $(PREFIX)/bin
+	ln -sf $(PREFIX)/bin/grep $(PREFIX)/bin/egrep
+	ln -sf $(PREFIX)/bin/grep $(PREFIX)/bin/fgrep

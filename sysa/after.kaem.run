@@ -129,19 +129,13 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 18: grep
-pkg="grep-2.4"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# Part 19: heirloom-devtools
+# Part 18: heirloom-devtools
 pkg="heirloom-devtools-070527"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 20: bash
+# Part 19: bash
 pkg="bash-2.05b"
 cd ${pkg}
 kaem --file ${pkg}.kaem

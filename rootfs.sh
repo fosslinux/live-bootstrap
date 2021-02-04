@@ -121,9 +121,6 @@ get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz 1
 # coreutils 5.0
 get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2 1
 
-# grep 2.4
-get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
-
 # heirloom-devtools
 get_file http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2
 
@@ -141,6 +138,9 @@ get_file https://musl.libc.org/releases/musl-1.1.24.tar.gz
 
 # flex 2.6.4
 get_file https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz
+
+# grep 2.4
+get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
