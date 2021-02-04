@@ -1,4 +1,7 @@
-diff -r -U3 m4-1.4/src/m4.c m4-1.4-patched/src/m4.c
+sys/signal.h is not the POSIX appropriate place for signal.h, which mes libc
+attempts to conform to.
+
+diff -r -U3 src/m4.c src/m4.c
 --- src/m4.c	1994-11-02 03:14:28.000000000 +0000
 +++ src/m4.c	2021-01-15 00:19:21.947654461 +0000
 @@ -19,7 +19,7 @@

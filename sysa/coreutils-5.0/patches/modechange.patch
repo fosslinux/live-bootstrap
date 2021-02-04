@@ -1,3 +1,6 @@
+modechange.h uses functions defined in sys/stat.h, so we need to move it to
+after sys/stat.h include.
+
 --- lib/modechange.c	2001-12-09 22:54:19.000000000 +0000
 +++ lib/modechange.c	2021-01-17 18:34:22.016427148 +0000
 @@ -28,8 +28,8 @@

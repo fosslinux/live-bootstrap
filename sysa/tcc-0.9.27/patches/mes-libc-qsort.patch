@@ -1,3 +1,6 @@
+Reimplement qswap in a more correct manner that works much more cleanly and
+with larger string sizes.
+
 --- lib/stdlib/qsort.c
 +++ lib/stdlib/qsort.c
 @@ -1,6 +1,7 @@
