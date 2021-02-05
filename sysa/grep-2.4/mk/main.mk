@@ -8,7 +8,9 @@ AR      = tcc -ar
 CFLAGS  = -DPACKAGE=\"$(PACKAGE)\" \
           -DVERSION=\"$(VERSION)\" \
           -DHAVE_DIRENT_H=1 \
-          -DHAVE_UNISTD_H=1
+          -DHAVE_UNISTD_H=1 \
+          -DHAVE_STRERROR=1 \
+          -DREGEX_MALLOC=1
 
 .PHONY: all
 
@@ -19,3 +21,8 @@ all: grep
 
 grep: $(GREP_OBJECTS)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+install: all
+	install grep $(PREFIX)/bin
+	ln -sf $(PREFIX)/bin/grep $(PREFIX)/bin/egrep
+	ln -sf $(PREFIX)/bin/grep $(PREFIX)/bin/fgrep
