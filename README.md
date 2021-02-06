@@ -197,23 +197,18 @@ then build. We do require deletion of a few lines unsupported by mes libc.
 
 Going forward, we can now use `.tar.gz` for source code.
 
-#### Part 11: diffutils 2.7
-
-`diffutils` is useful for comparing two files. It is not immediately needed but
-is required later for autotools.
-
-#### Part 12: patch 2.5.9
+#### Part 11: patch 2.5.9
 
 `patch` is a very useful tool at this stage, allowing us to make significantly
 more complex edits, including just changes to lines. Luckily, we are able to
 patch patch using sed only.
 
-#### Part 13: patched mes-libc
+#### Part 12: patched mes-libc
 
 Since patch is available at this point, we can apply additional fixes to
 mes-libc that are not included in the wip-m2 branch and recompile libc.
 
-#### Part 14: patched tinycc
+#### Part 13: patched tinycc
 
 In Guix, tinycc is patched to force static linking. Prior to this step, we have
 been forced to manually specify static linking for each tool. Now that we have
@@ -222,18 +217,18 @@ patch, we can patch tinycc to force static linking and then recompile it.
 Note that we have to do this using tinycc 0.9.26, as tinycc 0.9.27 cannot
 recompile itself for unknown reasons.
 
-#### Part 15: make 3.80
+#### Part 14: make 3.80
 
 GNU `make` is now built so we have a more robust building system. `make` allows
 us to do things like define rules for files rather than writing complex kaem
 scripts.
 
-#### Part 16: bzip2 1.0.8
+#### Part 15: bzip2 1.0.8
 
 `bzip2` is a compression format that compresses more than `gzip`. It is
 preferred where we can use it, and makes source code sizes smaller.
 
-#### Part 17: coreutils 5.0.0
+#### Part 16: coreutils 5.0.0
 
 GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`,
 `chown`, `cp`, `install`, `ln`, `ls`, `mkdir`, `mknod`, `mv`, `rm`, `rmdir`,
@@ -242,14 +237,14 @@ GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`,
 A few of the utilities cannot be easily compiled with Mes C library, so we skip
 them.
 
-#### Part 18: heirloom devtools
+#### Part 17: heirloom devtools
 
 `lex` and `yacc` from the Heirloom project. The Heirloom project is a collection
 of standard UNIX utilities derived from code by Caldera and Sun. Differently
 from the analogous utilities from the GNU project, they can be compiled with a
 simple `Makefile`.
 
-#### Part 19: bash 2.05b
+#### Part 18: bash 2.05b
 
 GNU `bash` is the most well known shell and the most complex piece of software
 so far. However, it comes with a number of great benefits over kaem, including
@@ -259,13 +254,13 @@ Bash ships with a bison pre-generated file here which we delete. Unfortunately,
 we have not bootstrapped bison but fortunately for us, heirloom yacc is able to
 cope here.
 
-#### Part 20: m4 1.4.4
+#### Part 19: m4 1.4.4
 
 `m4` is the first piece of software we need in the autotools suite and flex
 2.6.4.  It allows macros to be defined and files to be generated from those
 macros.
 
-#### Part 21: flex 2.5.11
+#### Part 20: flex 2.5.11
 
 `flex` is a tool for generating lexers or scanners: programs that recognize
 lexical patters.
@@ -276,7 +271,7 @@ that it can be processed by lex for the Heirloom project (the required
 modifications are mostly syntactical, plus a few workarounds to avoid some flex
 advanced features).
 
-#### Part 22: musl 1.1.24
+#### Part 21: musl 1.1.24
 
 `musl` is a C standard library that is lightweight, fast, simple, free, and
 strives to be correct in the sense of standards-conformance and safety. `musl`
@@ -288,21 +283,26 @@ complex programs.
 patches. In particular, we replace all weak symbols with strong symbols and will
 patch `tcc` in the next step to ignore duplicate symbols.
 
-#### Part 23: tcc 0.9.27 (musl)
+#### Part 22: tcc 0.9.27 (musl)
 
 We recompile `tcc` against musl. This is a two stage process. First we build
 tcc-0.9.27 that itself links to Mes C library but produces binaries linked to
 musl. Then we recompile newly produced tcc with itself. Interestingly,
 tcc-0.9.27 linked against musl is self hosting.
 
-#### Part 24: flex 2.6.14
+#### Part 23: flex 2.6.14
 
 We recompile unpatched GNU `flex` using older flex 2.5.11. This is again a two
 stage process, first compiling flex using `scan.c` (from `scan.l`) created by
 old flex, then recompile `scan.c` using the new version of flex to remove any
 buggy artifacts from the old flex.
 
-#### Part 25: grep 2.4
+#### Part 24: grep 2.4
 
 GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
+
+#### Part 25: diffutils 2.7
+
+`diffutils` is useful for comparing two files. It is not immediately needed but
+is required later for autotools.
