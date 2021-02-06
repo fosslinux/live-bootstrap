@@ -106,9 +106,6 @@ get_file() {
 # gzip 1.2.4
 get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar 1
 
-# diffutils 2.7
-get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz 1
-
 # patch 2.5.9
 get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz 1
 
@@ -141,6 +138,9 @@ get_file https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.
 
 # grep 2.4
 get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
+
+# diffutils 2.7
+get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
