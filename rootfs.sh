@@ -124,14 +124,14 @@ get_file http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070
 # bash 2.05b
 get_file https://ftp.gnu.org/pub/gnu/bash/bash-2.05b.tar.gz
 
-# m4 1.4.4
-get_file https://ftp.gnu.org/gnu/m4/m4-1.4.4.tar.gz
-
 # flex 2.5.11
 get_file http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.gz
 
 # musl 1.1.24
 get_file https://musl.libc.org/releases/musl-1.1.24.tar.gz
+
+# m4 1.4.7
+get_file https://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.gz
 
 # flex 2.6.4
 get_file https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz

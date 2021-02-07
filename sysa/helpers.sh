@@ -103,13 +103,13 @@ default_src_configure() {
 
 # Default function for compiling source. It simply runs make without any parameters.
 default_src_compile() {
-    make
+    make -f Makefile
 }
 
 # Default installing function. PREFIX should be set by run.sh script.
 # Note that upstream makefiles might ignore PREFIX and have to be configured in configure stage.
 default_src_install() {
-    make install PREFIX="${PREFIX}"
+    make -f Makefile install PREFIX="${PREFIX}"
 }
 
 # Check if bash function exists

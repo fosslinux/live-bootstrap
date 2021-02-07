@@ -10,16 +10,16 @@ set -e
 export PREFIX=/after
 
 # Part 19
-build m4-1.4.4
-
-# Part 20
 build flex-2.5.11
 
-# Part 21
+# Part 20
 build musl-1.1.24
 
-# Part 22
+# Part 21
 build tcc-0.9.27 tcc-musl.sh
+
+# Part 22
+build m4-1.4.7
 
 # Part 23
 build flex-2.6.4
