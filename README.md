@@ -325,3 +325,8 @@ be useful later for autotools.
 
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
+
+#### Part 27: coreutils 5.0
+
+`coreutils` is rebuilt against musl.  Additional utilities are built including
+`comm`, `expr`, `date`, `dd`, `sort`, `uname`, and `uniq`.
