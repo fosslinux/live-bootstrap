@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
 We don't actually want any of these things, which should really be hidden
 behind the ifdefs given here to disable them when they are not being
 used (as we do).

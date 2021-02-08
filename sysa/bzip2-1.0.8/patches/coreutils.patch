@@ -1,3 +1,8 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: bzip2-1.0.6
+
 Disable all coreutils calls in the Makefile which we do not have at this
 point of the bootstrap. ranlib can be unconditionally disabled as we do not
 have it either.

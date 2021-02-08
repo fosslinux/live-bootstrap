@@ -1,3 +1,11 @@
+<!--
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # live-bootstrap
 
 An attempt to provide a reproducible, automatic, complete end-to-end bootstrap

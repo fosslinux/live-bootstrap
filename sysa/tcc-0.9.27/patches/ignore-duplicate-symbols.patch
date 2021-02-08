@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+
+SPDX-License-Identifier: LGPL-2.0-or-later
+
 Ignore duplicate symbols. Due to poor support for weak symbols in tcc-ar
 we had to patch musl to replace weak symbols with strong symbols
 --- tccelf.c	2021-02-02 17:41:08.662247892 +0000

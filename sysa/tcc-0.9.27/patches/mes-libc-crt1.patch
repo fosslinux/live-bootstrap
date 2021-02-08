@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+
+SPDX-License-Identifier: LGPL-2.0-or-later
+
 Fix issue in mes-libc crt where argc was getting truncated to lower byte and
 prevented programs with more than 255 arguments from working correctly. 
 

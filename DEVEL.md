@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # Development Guidelines
 
 ## Testing

@@ -1,3 +1,8 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: MIT
+
 tcc does not like jecxz instruction.
 --- src/signal/i386/sigsetjmp.s	2019-10-13 22:58:27.000000000 +0100
 +++ src/signal/i386/sigsetjmp.s	2021-02-01 00:19:25.671735415 +0000

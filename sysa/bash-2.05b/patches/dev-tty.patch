@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
 We do not have /dev at this stage of the bootstrap, including /dev/tty. For
 some reason, bash has a fixation on /dev/tty, even though we are not
 interactive. Removing this check entirely fixes this issue.

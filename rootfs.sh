@@ -1,4 +1,11 @@
 #!/bin/bash
+
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
+# SPDX-FileCopyrightText: 2020-2021 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 set -ex
 
 QEMU_CMD="${1:-qemu-system-x86_64}"	# or 'chroot' or 'minikernel'

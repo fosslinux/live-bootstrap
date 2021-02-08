@@ -1,5 +1,9 @@
 #!/usr/bin/expect
 
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 set timeout -1
 
 spawn ./rootfs.sh qemu-system-x86_64 3500M
