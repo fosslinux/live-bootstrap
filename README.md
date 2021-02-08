@@ -254,13 +254,7 @@ Bash ships with a bison pre-generated file here which we delete. Unfortunately,
 we have not bootstrapped bison but fortunately for us, heirloom yacc is able to
 cope here.
 
-#### Part 19: m4 1.4.4
-
-`m4` is the first piece of software we need in the autotools suite and flex
-2.6.4.  It allows macros to be defined and files to be generated from those
-macros.
-
-#### Part 20: flex 2.5.11
+#### Part 19: flex 2.5.11
 
 `flex` is a tool for generating lexers or scanners: programs that recognize
 lexical patters.
@@ -271,7 +265,7 @@ that it can be processed by lex for the Heirloom project (the required
 modifications are mostly syntactical, plus a few workarounds to avoid some flex
 advanced features).
 
-#### Part 21: musl 1.1.24
+#### Part 20: musl 1.1.24
 
 `musl` is a C standard library that is lightweight, fast, simple, free, and
 strives to be correct in the sense of standards-conformance and safety. `musl`
@@ -283,12 +277,18 @@ complex programs.
 patches. In particular, we replace all weak symbols with strong symbols and will
 patch `tcc` in the next step to ignore duplicate symbols.
 
-#### Part 22: tcc 0.9.27 (musl)
+#### Part 21: tcc 0.9.27 (musl)
 
 We recompile `tcc` against musl. This is a two stage process. First we build
 tcc-0.9.27 that itself links to Mes C library but produces binaries linked to
 musl. Then we recompile newly produced tcc with itself. Interestingly,
 tcc-0.9.27 linked against musl is self hosting.
+
+#### Part 22: m4 1.4.7
+
+`m4` is the first piece of software we need in the autotools suite, flex
+2.6.4 and bison.  It allows macros to be defined and files to be generated from those
+macros.
 
 #### Part 23: flex 2.6.14
 
