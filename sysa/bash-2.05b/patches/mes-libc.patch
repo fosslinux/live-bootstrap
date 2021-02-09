@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
 mes libc does not have locale support...
 
 diff --git lib/sh/snprintf.c lib/sh/snprintf.c

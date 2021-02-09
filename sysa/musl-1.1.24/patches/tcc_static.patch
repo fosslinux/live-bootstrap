@@ -1,3 +1,8 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: MIT
+
 tinycc-0.9.27 does not support the use of the static keyword within an array length or index.
 diff -U3 -r src/internal/syscall.h src/internal/syscall.h
 --- src/internal/syscall.h	2019-10-13 22:58:27.000000000 +0100

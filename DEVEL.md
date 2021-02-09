@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: CC-BY-SA-4.0
+-->
+
 # Development Guidelines
 
 ## Testing
@@ -56,6 +62,13 @@ Permissable folders:
   - There is no character limit for code, the reasons for this are two-fold:
     - Often harms readability.
     - Often impossible/hard in early bootstrap stages.
+- **Licensing:**
+  - Generally, the project is licensed under the GNU GPL v3.0 (or any later
+    version).
+  - Documentation is licensed under CC-BY-SA-4.0.
+  - Patches are licensed under the license of the project which they are
+    patching.
+  - All files (excluding files within submodules) must comply with REUSE v3.0.
 
 ## git
 

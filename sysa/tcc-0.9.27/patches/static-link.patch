@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: LGPL-2.0-or-later
+
 static linking is the only typing of linking mes libc supports, so default to
 it.
 

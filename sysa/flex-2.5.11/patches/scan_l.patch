@@ -1,3 +1,9 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2019-2020 Giovanni Mascellani <gio@debian.org>
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: BSD-2-Clause
+
 Comments are unsupported by our flex.
 
 diff --git scan.l scan.l

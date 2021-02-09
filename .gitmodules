@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: MIT 
+
 [submodule "sysa/mescc-tools-seed/src/mescc-tools-seed"]
 	path = sysa/mescc-tools-seed/src/mescc-tools-seed
 	url = https://github.com/oriansj/mescc-tools-seed/

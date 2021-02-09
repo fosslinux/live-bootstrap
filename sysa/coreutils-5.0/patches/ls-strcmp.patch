@@ -1,3 +1,8 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
 strcoll() does not exist in mes libc, change it to strcmp.
 
 --- src/ls.c

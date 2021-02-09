@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 src_unpack() {
     # Our cp does not support recursive copying
     tar -c -C ../src/ -f tcc-0.9.27.tar tcc-0.9.27/

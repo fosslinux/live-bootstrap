@@ -1,19 +1,8 @@
-/* Copyright (C) 2016 Jeremiah Orians
- * Copyright (C) 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
- * This file is part of mescc-tools.
+/*
+ * SPDX-FileCopyrightText: 2016 Jeremiah Orians
+ * SPDX-FileCopyrightText: 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
  *
- * mescc-tools is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * mescc-tools is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with mescc-tools.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 #include<stdio.h>

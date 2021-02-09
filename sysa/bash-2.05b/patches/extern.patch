@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
 tinycc's extern support is bad. i.e. these externs don't propagate through.
 
 --- builtins/common.c	2021-01-15 21:32:56.938683418 +1100

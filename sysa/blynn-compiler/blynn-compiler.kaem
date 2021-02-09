@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2020-2021 Jeremiah Orians <jeremiah@pdp10.guru>
+# SPDX-FileCopyrightText: 2020-2021 2021 Paul Dersey <pdersey@gmail.com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 set -ex
 
 cd src

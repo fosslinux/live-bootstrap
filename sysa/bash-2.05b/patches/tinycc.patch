@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
 int name, namelen; is wrong for mes libc, it is char* name, so we modify tinycc
 to reflect this.
 

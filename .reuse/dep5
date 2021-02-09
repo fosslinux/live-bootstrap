@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: live-bootstrap
+Upstream-Contact: fosslinux <fosslinux@aussies.space>
+Source: https://github.com/fosslinux/live-bootstrap
+
+# Sample paragraph, commented out:
+#
+# Files: src/*
+# Copyright: $YEAR $NAME <$CONTACT>
+# License: ...

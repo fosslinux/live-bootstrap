@@ -1,3 +1,8 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: MIT
+
 tcc -ar does not support creating empty archives
 --- Makefile	2019-10-13 22:58:27.000000000 +0100
 +++ Makefile	2021-02-01 00:21:14.974687663 +0000

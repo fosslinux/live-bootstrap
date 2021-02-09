@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2019-2020 Giovanni Mascellani <gio@debian.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 CFLAGS = -DVERSION=\"2.5.11\"
 
 all: flex

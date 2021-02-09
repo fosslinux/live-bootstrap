@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2020 Rich Felker <dalias@aerifal.cx>
+
+SPDX-License-Identifier: MIT
+
 From 0b0640219338b80cf47026d1970b5503414ed7f3 Mon Sep 17 00:00:00 2001
 From: Rich Felker <dalias@aerifal.cx>
 Date: Sun, 30 Aug 2020 21:37:12 -0400
