@@ -1,0 +1,23 @@
+SPDX-FileCopyrightText: 2020 Giovanni Mascellani <gio@debian.org>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+commit b1127f6821cc9c40c5a9ee406bee7564c549d9a3
+Author: Giovanni Mascellani <gio@debian.org>
+Date:   Thu Mar 26 18:02:01 2020 +0100
+
+    Compile bison.
+
+diff --git lib/fseterr.c lib/fseterr.c
+index 8cd68e8..0ec7e2c 100644
+--- lib/fseterr.c
++++ lib/fseterr.c
+@@ -53,7 +53,7 @@ fseterr (FILE *fp)
+ #elif defined EPLAN9                /* Plan9 */
+   if (fp->state != 0 /* CLOSED */)
+     fp->state = 5 /* ERR */;
+-#elif 0                             /* unknown  */
++#elif 1                             /* unknown  */
+   /* Portable fallback, based on an idea by Rich Felker.
+      Wow! 6 system calls for something that is just a bit operation!
+      Not activated on any system, because there is no way to repair FP when

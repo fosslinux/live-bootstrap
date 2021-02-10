@@ -25,9 +25,14 @@ build m4-1.4.7
 build flex-2.6.4
 
 # Part 24
-build grep-2.4
+build bison-3.4.1 stage1.sh
+build bison-3.4.1 stage2.sh
+build bison-3.4.1 stage3.sh
 
 # Part 25
+build grep-2.4
+
+# Part 26
 build diffutils-2.7
 
 echo "Bootstrapping completed."
