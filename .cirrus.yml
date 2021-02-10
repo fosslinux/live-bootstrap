@@ -2,14 +2,10 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-container:
-  image: potyarkin/molecule:host-kvm
-  kvm: true
-  cpu: 2
-  memory: 4G
-
-lint_task:
-  install_script:
+shell_lint_task:
+  container:
+    image: debian:stable
+  deps_script:
     - apt-get -y update
     - apt-get -y dist-upgrade
     - apt-get -y install shellcheck
@@ -17,7 +13,25 @@ lint_task:
   check_script:
     - shellcheck rootfs.sh sysa/run.sh sysa/helpers.sh
 
+reuse_lint_task:
+  container:
+    image: debian:stable
+  deps_script:
+    - apt-get -y update
+    - apt-get -y dist-upgrade
+    - apt-get -y install python3-pip git
+    - apt-get -y clean
+    - pip3 install reuse
+  check_script:
+    - reuse lint
+
 run_task:
+  timeout_in: 90m
+  container:
+    image: potyarkin/molecule:host-kvm
+    kvm: true
+    cpu: 2
+    memory: 4G
   # Required background services
   dbus_background_script:
     - mkdir -p /var/run/dbus
