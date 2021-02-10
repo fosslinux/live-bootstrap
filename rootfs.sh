@@ -11,6 +11,12 @@ set -ex
 QEMU_CMD="${1:-qemu-system-x86_64}"	# or 'chroot' or 'minikernel'
 QEMU_RAM="${2:-8G}"
 
+GITDIR="$PWD/$(dirname "$0")"
+if [ ! -f 'rootfs.sh' ]; then
+	echo 'must be run from base of repo'
+	exit 1
+fi
+
 pushd sysa
 
 # SYSTEM A
@@ -20,6 +26,35 @@ mkdir -p tmp/
 sudo mount -t tmpfs -o size=8G tmpfs tmp
 
 LOGFILE="$PWD/tmp/bootstrap.log"
+
+wget()
+{
+	local url="$1"
+	local dir="${CACHEDIR:-$GITDIR/sources}"
+	local file
+
+	file=$(basename "$url")
+	mkdir -p "$dir"
+
+	test -s "$dir/$file" || command wget -O "$dir/$file" "$url"
+	cp -v "$dir/$file" .
+	checksum_do "$dir" "$file"
+}
+
+checksum_do()
+{
+	local dir="$1"
+	local file="$2"
+	local line
+	local store="$GITDIR/SHA256SUMS.sources"
+
+	if line=$(grep "[[:space:]][[:space:]]$file"$ "$store"); then
+		(cd "$dir" && echo "$line" | sha256sum -c)
+	else
+		echo 'Checksum mismatch or not found!'
+		exit 1
+	fi
+}
 
 # base: mescc-tools-seed
 # copy in all the mescc-tools-seed stuff
