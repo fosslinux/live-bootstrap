@@ -1,0 +1,70 @@
+SPDX-FileCopyrightText: 2020 Giovanni Mascellani <gio@debian.org>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+commit b1127f6821cc9c40c5a9ee406bee7564c549d9a3
+Author: Giovanni Mascellani <gio@debian.org>
+Date:   Thu Mar 26 18:02:01 2020 +0100
+
+    Compile bison.
+
+diff --git src/scan-code.l src/scan-code.l
+index 73a3b2d..f348b20 100644
+--- src/scan-code.l
++++ src/scan-code.l
+@@ -21,6 +21,7 @@
+ %option prefix="code_" outfile="lex.yy.c"
+ 
+ %{
++#include "config.h"
+ #include <c-ctype.h>
+ #include <get-errno.h>
+ #include <quote.h>
+@@ -31,6 +32,7 @@
+ #include <src/reader.h>
+ #include <src/scan-code.h>
+ #include <src/symlist.h>
++#include "system.h"
+ 
+ #define FLEX_PREFIX(Id) code_ ## Id
+ #include <src/flex-scanner.h>
+diff --git src/scan-gram.l src/scan-gram.l
+index 66a8caa..efa391a 100644
+--- src/scan-gram.l
++++ src/scan-gram.l
+@@ -21,6 +21,7 @@
+ %option prefix="gram_" outfile="lex.yy.c"
+ 
+ %{
++#include "config.h"
+ #include <c-ctype.h>
+ #include <mbswidth.h>
+ #include <quote.h>
+@@ -33,6 +34,7 @@
+ #include <src/reader.h>
+ #include <src/scan-gram.h>
+ #include <src/uniqstr.h>
++#include "system.h"
+ 
+ #define FLEX_PREFIX(Id) gram_ ## Id
+ #include <src/flex-scanner.h>
+diff --git src/scan-skel.l src/scan-skel.l
+index 487e9f5..19f4832 100644
+--- src/scan-skel.l
++++ src/scan-skel.l
+@@ -21,6 +21,7 @@
+ %option prefix="skel_" outfile="lex.yy.c"
+ 
+ %{
++#include "config.h"
+ #include <dirname.h>
+ #include <error.h>
+ #include <path-join.h>
+@@ -30,6 +31,7 @@
+ #include <src/files.h>
+ #include <src/getargs.h>
+ #include <src/scan-skel.h>
++#include "system.h"
+ 
+ #define FLEX_PREFIX(Id) skel_ ## Id
+ #include <src/flex-scanner.h>

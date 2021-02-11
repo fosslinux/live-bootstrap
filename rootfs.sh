@@ -178,6 +178,9 @@ get_file https://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.gz
 # flex 2.6.4
 get_file https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz
 
+# bison 3.4.1
+get_file https://ftp.gnu.org/gnu/bison/bison-3.4.1.tar.gz
+
 # grep 2.4
 get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
 

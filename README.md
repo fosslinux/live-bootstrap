@@ -305,12 +305,23 @@ stage process, first compiling flex using `scan.c` (from `scan.l`) created by
 old flex, then recompile `scan.c` using the new version of flex to remove any
 buggy artifacts from the old flex.
 
-#### Part 24: grep 2.4
+#### Part 24: bison 3.4.1
+
+GNU `bison` is a parser generator. With `m4` and `flex` we can now bootstrap it
+following https://gitlab.com/giomasce/bison-bootstrap. It's a 3 stage process:
+
+1) Build bison using a handwritten grammar parser in C.
+2) Use bison from previous stage on a simplified bison grammar file.
+3) Build bison using original grammar file.
+
+Finally we have a fully functional `bison` executable.
+
+#### Part 25: grep 2.4
 
 GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
 
-#### Part 25: diffutils 2.7
+#### Part 26: diffutils 2.7
 
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
