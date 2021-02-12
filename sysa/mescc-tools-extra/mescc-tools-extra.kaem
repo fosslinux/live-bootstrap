@@ -87,4 +87,41 @@ hex2 \
     -o ${bindir}/chmod \
     --exec_enable
 
+# fletcher16 command
+M2-Planet \
+    -f /M2-Planet/test/common_x86/functions/file.c \
+    -f /M2-Planet/test/common_x86/functions/exit.c \
+    -f functions/numerate_number.c \
+    -f functions/string.c \
+    -f functions/file_print.c \
+    -f functions/match.c \
+    -f functions/require.c \
+    -f functions/in_set.c \
+    -f /M2-Planet/functions/calloc.c \
+    -f /M2-Planet/test/common_x86/functions/malloc.c \
+    -f fletcher16.c \
+    --architecture x86 \
+    --debug \
+    -o fletcher16.M1
+
+blood-elf -f fletcher16.M1 -o fletcher16-footer.M1
+
+M1 \
+    -f /M2-Planet/test/common_x86/x86_defs.M1 \
+    -f /M2-Planet/test/common_x86/libc-core.M1 \
+    -f fletcher16.M1 \
+    -f fletcher16-footer.M1 \
+    --LittleEndian \
+    --architecture x86 \
+    -o hold
+
+hex2 \
+    -f /M2-Planet/test/common_x86/ELF-i386-debug.hex2 \
+    -f hold \
+    --LittleEndian \
+    --architecture x86 \
+    --BaseAddress 0x8048000 \
+    -o ${bindir}/fletcher16 \
+    --exec_enable
+
 cd ..
