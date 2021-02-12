@@ -38,4 +38,7 @@ build diffutils-2.7
 # Part 27
 build coreutils-5.0
 
+# Part 28
+build gawk-3.0.4
+
 echo "Bootstrapping completed."

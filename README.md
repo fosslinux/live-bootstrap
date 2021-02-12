@@ -330,3 +330,8 @@ is required later for autotools.
 
 `coreutils` is rebuilt against musl.  Additional utilities are built including
 `comm`, `expr`, `date`, `dd`, `sort`, `uname`, and `uniq`.
+
+#### Part 28: gawk 3.0.4
+
+`gawk` is the GNU implementation of `awk`, yet another pattern matching and data
+extraction utility. It is also required for autotools.
