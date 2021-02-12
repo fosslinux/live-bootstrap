@@ -326,7 +326,12 @@ be useful later for autotools.
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
 
-#### Part 27: gawk 3.0.4
+#### Part 27: coreutils 5.0
+
+`coreutils` is rebuilt against musl.  Additional utilities are built including
+`comm`, `expr`, `date`, `dd`, `sort`, `uname`, and `uniq`.
+
+#### Part 28: gawk 3.0.4
 
 `gawk` is the GNU implementation of `awk`, yet another pattern matching and data
 extraction utility. It is also required for autotools.
