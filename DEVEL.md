@@ -49,6 +49,16 @@ Permissable folders:
 - `src`: the upstream unmodified source code. This may be either a submodule or
   nonexistant.
 
+Furthermore, there is a special top-level dir `dev-utils`. In here are
+appropriate utilities that are often useful for development and not generally
+included on normal systems, or are specific to live-bootstrap. Each program
+should be contained within its own directory and include:
+
+- source code
+- compilation script
+
+The directory m2-functions is used for M2-Planet functions (currently).
+
 ## Conventions
 
 - **Patches:**
