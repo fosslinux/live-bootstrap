@@ -35,4 +35,7 @@ build grep-2.4
 # Part 26
 build diffutils-2.7
 
+# Part 27
+build gawk-3.0.4
+
 echo "Bootstrapping completed."

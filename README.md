@@ -325,3 +325,8 @@ be useful later for autotools.
 
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
+
+#### Part 27: gawk 3.0.4
+
+`gawk` is the GNU implementation of `awk`, yet another pattern matching and data
+extraction utility. It is also required for autotools.
