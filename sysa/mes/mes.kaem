@@ -296,3 +296,6 @@ libdir=${prefix}/lib
 ${MES} -c "(display 'Hello,Mes!) (newline)"
 
 cd ../..
+
+# Checksums
+fletcher16 checksums

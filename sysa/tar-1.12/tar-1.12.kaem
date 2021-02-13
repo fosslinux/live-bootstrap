@@ -56,3 +56,6 @@ tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/update.c
 tcc -static -o ${bindir}/tar -L lib lib/libtar.a arith.o buffer.o compare.o create.o delete.o extract.o incremen.o list.o mangle.o misc.o names.o open3.o rtapelib.o tar_patched.o update.o -ltar
 
 cd ..
+
+# Checksums
+fletcher16 checksums

@@ -35,6 +35,7 @@ cp ../bin/kaem bin/kaem
 cp ../catm bin/catm
 chmod 755 bin/hex2 bin/M1 bin/M2-Planet bin/blood-elf \
     bin/get_machine bin/mes-m2 bin/kaem bin/catm
+fletcher16 mescc-tools-seed-checksums
 PATH=/after/bin
 
 # Part 4: blynn-compiler

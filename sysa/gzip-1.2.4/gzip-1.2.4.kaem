@@ -44,3 +44,6 @@ chmod 755 ${bindir}/gunzip
 chmod 755 ${bindir}/zcat
 
 cd ../..
+
+# Checksums
+fletcher16 checksums

@@ -1,0 +1,13 @@
+63031 /after/bin/mes
+23643 /after/bin/mescc.scm
+36724 /after/lib/crt1.s
+42390 /after/lib/crt1.o
+39638 /after/lib/x86.M1
+526 /after/lib/libmescc.s
+10591 /after/lib/libc+tcc.s
+45027 /after/lib/libc.s
+17259 /after/lib/libmescc.a
+20204 /after/lib/libc+tcc.a
+34645 /after/lib/libc.a
+8245 /after/lib/linux/elf32-header.hex2
+15474 /after/lib/linux/elf32-footer-single-main.hex2

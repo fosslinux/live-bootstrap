@@ -83,6 +83,7 @@ mkdir -p tmp/after/include/linux/{x86,x86_64}
 mkdir -p tmp/tmp
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
+cp mescc-tools-seed/checksums tmp/after/mescc-tools-seed-checksums
 cp helpers.sh run.sh tmp/after/
 
 # mescc-tools-extra

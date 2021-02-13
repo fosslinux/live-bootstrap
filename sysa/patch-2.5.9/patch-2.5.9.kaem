@@ -49,3 +49,6 @@ tcc -static -o ${bindir}/patch error.o getopt.o getopt1.o addext.o argmatch.o ba
 patch --version
 
 cd ../..
+
+# Checksums
+fletcher16 checksums

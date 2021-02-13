@@ -44,3 +44,6 @@ tcc -static -o ${bindir}/sed -L lib lib/libsed.a compile.o execute.o regex.o fmt
 sed --version
 
 cd ..
+
+# Checksums
+fletcher16 checksums

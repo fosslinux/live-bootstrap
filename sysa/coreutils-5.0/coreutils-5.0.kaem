@@ -29,3 +29,5 @@ patch -Np0 -i ../../patches/ls-strcmp.patch
 # Build and install
 /after/bin/make -f Makefile
 /after/bin/make -f Makefile install
+
+cd ../..

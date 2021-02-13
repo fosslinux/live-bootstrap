@@ -125,3 +125,6 @@ hex2 \
     --exec_enable
 
 cd ..
+
+# Checksums
+fletcher16 checksums
