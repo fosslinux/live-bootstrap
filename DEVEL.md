@@ -40,14 +40,26 @@ It then diverges based upon which driver is being used:
   There are default functions run which can be overridden by an optional script
   `package-version.sh` within the package-specific directory.
 
-In this folder, there are other folders. `src` is required, others are optional.
-Permissable folders:
+In this folder, there are other folders/files. `src` and `checksums` are
+required, others are optional.
+
+Permissable folders/files:
 
 - `files`: auxiliary files required for the build distributed by live-bootstrap.
 - `mk`: makefiles.
 - `patches`: patches for the source.
 - `src`: the upstream unmodified source code. This may be either a submodule or
   nonexistant.
+- `checksums`: the checksums for the resulting binaries and libraries that
+  are compiled and installed. This may be either a folder or a file. It should
+  be a folder when there are multiple checksumming files required (normally
+  multiple seperate passes) but a file when there is only one checksumming
+  file.
+  - Up to and including `patch`, `fletcher16` is used for the checksumming.
+  - After `patch`, `sha-2` is built which contains an external implementation of
+    `sha256sum`. We then use that currently for all remaining software.
+  - To extract the binaries to get their checksums, use of chroot mode is
+    recommended (i.e. `./rootfs.sh chroot`).
 
 Furthermore, there is a special top-level dir `dev-utils`. In here are
 appropriate utilities that are often useful for development and not generally
