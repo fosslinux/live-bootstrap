@@ -148,6 +148,9 @@ get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar 1
 # patch 2.5.9
 get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz 1
 
+# sha-2 61555d
+get_file https://github.com/amosnier/sha-2/archive/61555d.tar.gz 1 sha-2-61555d.tar.gz
+
 # make 3.80
 get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz 1
 

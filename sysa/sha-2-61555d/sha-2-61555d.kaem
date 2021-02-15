@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+cd build
+
+# Extract
+gunzip ../src/${pkg}.tar.gz
+tar xf ../src/${pkg}.tar
+cd sha-2-61555d45676473e77c11f8da97301e2d2b865871
+
+# Patch
+patch -Np0 -i ../../patches/frontend.patch
+
+# Compile
+tcc -c -o sha-256.o sha-256.c
+
+# Link
+tcc -static -o ${bindir}/sha256sum sha-256.o
+
+# No test avaliable
+
+cd ../..
+
+# Checksums
+fletcher16 checksums
