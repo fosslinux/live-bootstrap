@@ -32,7 +32,8 @@ CFLAGS = -I vms \
          -DHAVE_STRING_H=1 \
          -DHAVE_STRTOD=1 \
          -DHAVE_SYS_PARAM_H=1 \
-         -DHAVE_UNISTD_H=1
+         -DHAVE_UNISTD_H=1 \
+         -DBITOPS=1
 
 .PHONY: all
 
