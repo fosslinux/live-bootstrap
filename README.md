@@ -350,3 +350,9 @@ pre-generated Configure script.
 
 At this first step we build `miniperl` which is `perl` without support for
 loading modules.
+
+#### Part 30: perl 5.003
+
+We now use `perl` from the previous stage to recreate pre-generated files that
+are shipped in perl 5.003. But for now we still need to use handwritten makefile
+instead of `./Configure` script.

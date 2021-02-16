@@ -44,4 +44,7 @@ build gawk-3.0.4
 # Part 29
 build perl5.000
 
+# Part 30
+build perl5.003
+
 echo "Bootstrapping completed."
