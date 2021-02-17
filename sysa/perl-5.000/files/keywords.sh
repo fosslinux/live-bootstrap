@@ -3,4 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# This file replaces keywords.pl
+
 sed -e '1,/__END__/ d' keywords.pl | sed '1d' | awk '{print "#define", "KEY_"$0, NR-1}' > keywords.h

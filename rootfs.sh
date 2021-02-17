@@ -191,11 +191,10 @@ get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 get_file https://ftp.gnu.org/gnu/gawk/gawk-3.0.4.tar.gz
 
 # perl 5.000
-get_file http://mirrors.develooper.com/perl/really-ancient-perls/oldperl/dist/leo/src/perl5/perl5.000.tar.gz
+get_file https://github.com/Perl/perl5/archive/perl-5.000.tar.gz
 
 # perl 5.003
-# Upstream tarball is a bit broken, slackware repackaged it
-get_file https://mirrors.slackware.com/slackware/slackware-3.1/source/d/perl-5.003/perl5.003.tar.gz
+get_file https://github.com/Perl/perl5/archive/perl-5.003.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;

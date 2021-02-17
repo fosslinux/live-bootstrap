@@ -3,6 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# This file replaces opcode.pl
 
 sed -e '1,/__END__/ d; s/[#].*$//g; /^$/d' opcode.pl | tr -s '\t' '\t' > data
 
