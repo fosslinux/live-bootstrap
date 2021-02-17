@@ -47,4 +47,7 @@ build perl-5.000
 # Part 30
 build perl-5.003
 
+# Part 31
+build perl5.004_05
+
 echo "Bootstrapping completed."
