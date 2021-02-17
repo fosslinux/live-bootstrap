@@ -16,3 +16,5 @@ miniperl: $(MINIPERL_OBJ)
 
 install: all
 	install miniperl $(PREFIX)/bin/perl
+	mkdir -p $(PREFIX)/lib/perl5/5.003
+	mv lib/* $(PREFIX)/lib/perl5/5.003/
