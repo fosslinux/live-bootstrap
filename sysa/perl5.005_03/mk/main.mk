@@ -6,7 +6,7 @@ CC      = tcc
 
 .PHONY: all
 
-MINIPERL_SRC = av deb doio doop dump globals gv hv mg miniperlmain op perl perly pp pp_ctl pp_hot pp_sys regcomp regexec run scope sv taint toke util
+MINIPERL_SRC = av deb doio doop dump globals gv hv mg miniperlmain op perl perlio perly pp pp_ctl pp_hot pp_sys regcomp regexec run scope sv taint toke universal util
 MINIPERL_OBJ = $(addsuffix .o, $(MINIPERL_SRC))
 
 all: miniperl
@@ -16,5 +16,5 @@ miniperl: $(MINIPERL_OBJ)
 
 install: all
 	install miniperl $(PREFIX)/bin/perl
-	mkdir -p $(PREFIX)/lib/perl5/5.003
-	cp -r lib/* $(PREFIX)/lib/perl5/5.003/
+	mkdir -p $(PREFIX)/lib/perl5/5.005_03
+	cp -R lib/* $(PREFIX)/lib/perl5/5.005_03/

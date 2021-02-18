@@ -16,11 +16,15 @@ src_prepare() {
         rm ${file}.h
         perl ${file}.pl
     done
+    rm regnodes.h
+    perl regcomp.pl
+    rm byterun.h byterun.c
+    perl bytecode.pl
 }
 
 src_install() {
     default_src_install
 
     # Remove old perl
-    rm -rf "${PREFIX}"/lib/perl5/5.003
+    rm -rf "${PREFIX}"/lib/perl5/5.004_05
 }
