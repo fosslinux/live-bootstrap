@@ -335,3 +335,27 @@ is required later for autotools.
 
 `gawk` is the GNU implementation of `awk`, yet another pattern matching and data
 extraction utility. It is also required for autotools.
+
+#### Part 29: perl 5.000
+
+Perl is a general purpose programming language that is especially suitable for
+text processing. It is essential for autotools build system because automake
+and some other tools are written in Perl.
+
+Perl itself is written in C but ships with some pre-generated files that need
+perl for processing. To bootstrap Perl we will start with the oldest Perl 5
+version which has the fewest number of pregenerated files. We reimplement two
+remaining perl scripts in awk and use our custom makefile instead of Perl's
+pre-generated Configure script.
+
+At this first step we build `miniperl` which is `perl` without support for
+loading modules.
+
+#### Part 30: perl 5.003
+
+We now use `perl` from the previous stage to recreate pre-generated files that
+are shipped in perl 5.003. But for now we still need to use handwritten makefile
+instead of `./Configure` script.
+
+### Part 31: perl 5.004_05
+Yet another version of perl.

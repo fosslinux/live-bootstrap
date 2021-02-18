@@ -190,6 +190,15 @@ get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 # gawk 3.0.4
 get_file https://ftp.gnu.org/gnu/gawk/gawk-3.0.4.tar.gz
 
+# perl 5.000
+get_file https://github.com/Perl/perl5/archive/perl-5.000.tar.gz
+
+# perl 5.003
+get_file https://github.com/Perl/perl5/archive/perl-5.003.tar.gz
+
+# perl 5.004_05
+get_file https://www.cpan.org/src/5.0/perl5.004_05.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
