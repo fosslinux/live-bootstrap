@@ -92,6 +92,9 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
+# Part 13: Check all up to this part as sha256sum
+sha256sum -c pre-sha.sha256sums
+
 # Part 13: mes-libc-patched
 cd tcc-0.9.27
 kaem --file mes-libc-patched.kaem

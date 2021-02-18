@@ -79,7 +79,7 @@ mkdir -p tmp/tmp
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
 cp mescc-tools-seed/checksums tmp/after/mescc-tools-seed-checksums
-cp helpers.sh run.sh tmp/after/
+cp helpers.sh run.sh pre-sha.sha256sums tmp/after/
 
 # mescc-tools-extra
 cp -r mescc-tools-extra tmp/after/
