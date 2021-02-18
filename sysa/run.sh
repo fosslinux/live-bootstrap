@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+#
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
@@ -25,9 +27,9 @@ build m4-1.4.7
 build flex-2.6.4
 
 # Part 25
-build bison-3.4.1 stage1.sh
-build bison-3.4.1 stage2.sh
-build bison-3.4.1 stage3.sh
+build bison-3.4.1 stage1.sh checksums/stage1
+build bison-3.4.1 stage2.sh checksums/stage2
+build bison-3.4.1 stage3.sh checksums/stage3
 
 # Part 26
 build grep-2.4
@@ -36,7 +38,7 @@ build grep-2.4
 build diffutils-2.7
 
 # Part 28
-build coreutils-5.0
+build coreutils-5.0 coreutils-5.0.sh checksums/pass2
 
 # Part 29
 build gawk-3.0.4
