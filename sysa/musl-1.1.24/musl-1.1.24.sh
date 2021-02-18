@@ -19,6 +19,9 @@ src_configure() {
       --prefix=/after \
       --libdir=/after/lib/musl/ \
       --includedir=/after/include/musl
+
+    # configure script creates this file
+    test -f /dev/null && rm /dev/null
 }
 
 src_compile() {
