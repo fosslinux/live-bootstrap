@@ -45,3 +45,6 @@ ln -s /after/bin/bash /bin/bash
 ln -s /after/bin/bash /bin/sh
 
 cd ../..
+
+# Checksums
+sha256sum -c checksums
