@@ -85,8 +85,6 @@
 
 #define OSNAME "linux"
 
-#define PRIVLIB_EXP "/after/lib/perl5/5.004_05"
-
 #undef __DATE__ /* want reproducible build */
 
 #define Malloc_t void *

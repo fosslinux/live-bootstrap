@@ -23,8 +23,8 @@ src_prepare() {
 }
 
 src_install() {
-    default_src_install
-
     # Remove old perl
-    rm -rf "${PREFIX}"/lib/perl5/5.004_05
+    rm -rf "${PREFIX}"/lib/perl5/
+
+    default_src_install
 }

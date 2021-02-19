@@ -2,7 +2,11 @@
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+VERSION=5.004_05
+PRIVLIB_EXP=$(PREFIX)/lib/perl5/$(VERSION)
+
 CC      = tcc
+CFLAGS  = -DPRIVLIB_EXP=\"$(PRIVLIB_EXP)\"
 
 .PHONY: all
 
@@ -16,5 +20,5 @@ miniperl: $(MINIPERL_OBJ)
 
 install: all
 	install miniperl $(PREFIX)/bin/perl
-	mkdir -p $(PREFIX)/lib/perl5/5.004_05
-	cp -R lib/* $(PREFIX)/lib/perl5/5.004_05/
+	mkdir -p "$(PRIVLIB_EXP)"
+	cp -r lib/* "$(PRIVLIB_EXP)"
