@@ -49,7 +49,7 @@ Permissable folders/files:
 - `mk`: makefiles.
 - `patches`: patches for the source.
 - `src`: the upstream unmodified source code. This may be either a submodule or
-  nonexistant.
+  nonexistent.
 - `checksums`: the checksums for the resulting binaries and libraries that
   are compiled and installed. This may be either a folder or a file. It should
   be a folder when there are multiple checksumming files required (normally

@@ -8,7 +8,7 @@ From: =?UTF-8?q?Andrius=20=C5=A0tikonas?= <andrius@stikonas.eu>
 Date: Wed, 27 Jan 2021 00:40:19 +0000
 Subject: [PATCH] Workaround for lex to work with mes libc.
 
-Similarily to yacc, remove wchar. See yacc patch for further
+Similarly to yacc, remove wchar. See yacc patch for further
 information.
 
 ---

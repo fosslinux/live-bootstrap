@@ -110,7 +110,7 @@ char* directory_dest(char* dest, char* source, int require_directory)
 		if(0 <= chdir(chdir_dest))
 		{ /* chdir returned successfully */
 			/*
-			 * But because of M2-Planet, that dosen't mean anything actually
+			 * But because of M2-Planet, that doesn't mean anything actually
 			 * happened, check that before we go any further.
 			 */
 			char* new_path = calloc(MAX_STRING, sizeof(char));
@@ -310,7 +310,7 @@ int main(int argc, char** argv)
 		else
 		{
 			this_dest = calloc(MAX_STRING, sizeof(char));
-			require(this_dest != NULL, "Memory initalization of this_dest failed\n");
+			require(this_dest != NULL, "Memory initialization of this_dest failed\n");
 			this_dest = directory_dest(dest, sources[i], TRUE);
 			copy_file(sources[i], this_dest);
 		}
