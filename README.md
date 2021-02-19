@@ -290,7 +290,8 @@ patch `tcc` in the next step to ignore duplicate symbols.
 We recompile `tcc` against musl. This is a two stage process. First we build
 tcc-0.9.27 that itself links to Mes C library but produces binaries linked to
 musl. Then we recompile newly produced tcc with itself. Interestingly,
-tcc-0.9.27 linked against musl is self hosting.
+tcc-0.9.27 linked against musl is self hosting.  Finally, we rebuild musl once more
+with the new `tcc`.
 
 #### Part 22: m4 1.4.7
 

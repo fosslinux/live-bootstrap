@@ -17,6 +17,7 @@ build musl-1.1.24
 
 # Part 21
 build tcc-0.9.27 tcc-musl.sh
+build musl-1.1.24
 
 # Part 22
 build m4-1.4.7
