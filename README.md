@@ -357,5 +357,6 @@ We now use `perl` from the previous stage to recreate pre-generated files that
 are shipped in perl 5.003. But for now we still need to use handwritten makefile
 instead of `./Configure` script.
 
-### Part 31: perl 5.004_05
+#### Part 31: perl 5.004_05
+
 Yet another version of perl.
