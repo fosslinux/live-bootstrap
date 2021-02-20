@@ -31,3 +31,6 @@ chmod 755 /after/bin/bunzip2
 bzip2 --help
 
 cd ../..
+
+# Checksums
+sha256sum -c checksums

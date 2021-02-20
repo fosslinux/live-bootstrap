@@ -1,0 +1,9 @@
+35075 /after/bin/tcc
+47832 /after/lib/libc.a
+47832 /after/lib/libc+gnu.a
+20204 /after/lib/libc+tcc.a
+54049 /after/lib/libgetopt.a
+23061 /after/lib/crt1.o
+16980 /after/lib/crti.o
+47705 /after/lib/crtn.o
+54138 /after/lib/tcc/libtcc1.a

@@ -55,3 +55,6 @@ tcc -o ${bindir}/make getopt.o getopt1.o ar.o arscan.o commands.o default.o dir.
 make --version
 
 cd ../..
+
+# Checksums
+sha256sum -c checksums

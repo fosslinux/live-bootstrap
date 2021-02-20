@@ -1,6 +1,8 @@
 #!/bin/bash -e
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+#
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 export PATH=/after/bin
@@ -8,12 +10,14 @@ export PATH=/after/bin
 # Common build steps
 # Build function provides a few common stages with default implementation
 # that can be overridden on per package basis in the build script.
-# build takes two arguments:
+# build takes three arguments:
 # 1) name-version of the package
 # 2) optionally specify build script. Default is name-version.sh
+# 3) optionally specify name of checksum file. Default is checksums
 build () {
     pkg=$1
     script_name=${2:-${pkg}.sh}
+    checksum_f=${3:-checksums}
 
     cd "$pkg" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
@@ -51,6 +55,9 @@ build () {
     call src_install
 
     cd ../..
+
+    echo "${pkg}: checksumming installed files."
+    sha256sum -c "${checksum_f}"
 
     echo "${pkg}: build successful"
     cd ..

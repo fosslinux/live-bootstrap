@@ -8,13 +8,13 @@
 
 set -ex
 
-QEMU_CMD="${1:-qemu-system-x86_64}"	# or 'chroot' or 'minikernel'
+QEMU_CMD="${1:-qemu-system-x86_64}"    # or 'chroot' or 'minikernel'
 QEMU_RAM="${2:-8G}"
 
 GITDIR="$PWD/$(dirname "$0")"
 if [ ! -f 'rootfs.sh' ]; then
-	echo 'must be run from base of repo'
-	exit 1
+    echo 'must be run from base of repo'
+    exit 1
 fi
 
 pushd sysa
@@ -27,33 +27,28 @@ sudo mount -t tmpfs -o size=8G tmpfs tmp
 
 LOGFILE="$PWD/tmp/bootstrap.log"
 
-wget()
-{
-	local url="$1"
-	local dir="${CACHEDIR:-$GITDIR/sources}"
-	local file
-
-	file=$(basename "$url")
-	mkdir -p "$dir"
-
-	test -s "$dir/$file" || command wget -O "$dir/$file" "$url"
-	cp -v "$dir/$file" .
-	checksum_do "$dir" "$file"
+_wget() {
+    local url="$1"
+    local dir="${CACHEDIR:-$GITDIR/sources}"
+    local file="${2:-$(basename "${url}")}"
+    mkdir -p "$dir"
+    test -s "$dir/$file" || command wget -O "$dir/$file" "$url"
+    cp -v "$dir/$file" .
+    checksum_do "$dir" "$file"
 }
 
-checksum_do()
-{
-	local dir="$1"
-	local file="$2"
-	local line
-	local store="$GITDIR/SHA256SUMS.sources"
+checksum_do() {
+    local dir="$1"
+    local file="$2"
+    local line
+    local store="$GITDIR/SHA256SUMS.sources"
 
-	if line=$(grep "[[:space:]][[:space:]]$file"$ "$store"); then
-		(cd "$dir" && echo "$line" | sha256sum -c)
-	else
-		echo 'Checksum mismatch or not found!'
-		exit 1
-	fi
+    if line=$(grep "[[:space:]][[:space:]]$file"$ "$store"); then
+        (cd "$dir" && echo "$line" | sha256sum -c)
+    else
+        echo 'Checksum mismatch or not found!'
+        exit 1
+    fi
 }
 
 # base: mescc-tools-seed
@@ -83,7 +78,8 @@ mkdir -p tmp/after/include/linux/{x86,x86_64}
 mkdir -p tmp/tmp
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
-cp helpers.sh run.sh tmp/after/
+cp mescc-tools-seed/checksums tmp/after/mescc-tools-seed-checksums
+cp helpers.sh run.sh pre-sha.sha256sums tmp/after/
 
 # mescc-tools-extra
 cp -r mescc-tools-extra tmp/after/
@@ -126,11 +122,12 @@ tar -C tmp/after/tar-1.12/src -xf "tmp/after/tar-1.12/src/$(basename $url)" --st
 get_file() {
     url=$1
     make_build=${2:-0}
+    output_filename=$3
     ext="${url##*.}"
     if [ "$ext" = "tar" ]; then
-        bname=$(basename "$url" ".tar")
+        bname=$(basename "${output_filename:-${url}}" ".tar")
     else
-        bname=$(basename "$url" ".tar.${ext}")
+        bname=$(basename "${output_filename:-${url}}" ".tar.${ext}")
     fi
     cp -r "${bname}" tmp/after/
     target="tmp/after/${bname}"
@@ -140,7 +137,7 @@ get_file() {
     fi
     pushd "tmp/after/${bname}/src"
     if [ ! -f "$(basename "$url")" ]; then
-        wget "$url"
+        _wget "$url" "${output_filename:-${url##*/}}"
     fi
     popd
 }
@@ -150,6 +147,9 @@ get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar 1
 
 # patch 2.5.9
 get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz 1
+
+# sha-2 61555d
+get_file https://github.com/amosnier/sha-2/archive/61555d.tar.gz 1 sha-2-61555d.tar.gz
 
 # make 3.80
 get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz 1
@@ -208,26 +208,26 @@ find . | cpio -H newc -o | gzip > initramfs.igz
 
 # Run
 case "${QEMU_CMD}" in
-	chroot)
-		sudo PATH="/after/bin:${PATH}" chroot . /init | tee "$LOGFILE"
-	;;
-	minikernel)
-		git clone --depth 1 --branch v0.4 https://github.com/bittorf/kritis-linux.git
+    chroot)
+        sudo PATH="/after/bin:${PATH}" chroot . /init | tee "$LOGFILE"
+    ;;
+    minikernel)
+        git clone --depth 1 --branch v0.4 https://github.com/bittorf/kritis-linux.git
 
-		kritis-linux/ci_helper.sh \
-			--arch x86_64 \
-			--ramsize 4G \
-			--kernel 5.10.8 \
-			--initrd initramfs.igz \
-			--log "$LOGFILE"
-	;;
-	*)
-		${QEMU_CMD} -enable-kvm \
-		    -m "${QEMU_RAM:-8G}" \
-		    -nographic \
-		    -no-reboot \
-		    -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0 | tee "$LOGFILE"
-	;;
+        kritis-linux/ci_helper.sh \
+            --arch x86_64 \
+            --ramsize 4G \
+            --kernel 5.10.8 \
+            --initrd initramfs.igz \
+            --log "$LOGFILE"
+    ;;
+    *)
+        ${QEMU_CMD} -enable-kvm \
+            -m "${QEMU_RAM:-8G}" \
+            -nographic \
+            -no-reboot \
+            -kernel ../../kernel -initrd initramfs.igz -append console=ttyS0 | tee "$LOGFILE"
+    ;;
 esac
 
 cd ../..

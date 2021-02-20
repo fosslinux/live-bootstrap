@@ -259,3 +259,6 @@ cp bin/precisely ${bindir}/precisely
 chmod 755 ${bindir}/precisely
 
 cd ..
+
+# Checksums
+fletcher16 checksums

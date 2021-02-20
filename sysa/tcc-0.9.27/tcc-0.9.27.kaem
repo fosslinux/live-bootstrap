@@ -40,3 +40,6 @@ tcc -version
 kaem --file ../../compile-libc.kaem
 
 cd ../..
+
+# Checksums
+fletcher16 checksums/tcc-0.9.27
