@@ -12,7 +12,7 @@ set -e
 
 export PREFIX=/after
 
-# Part 20 
+# Part 20
 build flex-2.5.11
 
 # Part 21
