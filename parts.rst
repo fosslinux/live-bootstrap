@@ -352,3 +352,12 @@ perl 5.6.2
 ==========
 
 Even more perl. 5.6.2 is the last version buildable with 5.004.
+
+autoconf 2.52
+==============
+
+GNU Autoconf is a tool for producing ``configure`` scripts for building, installing and
+packaging software on computer systems where a Bourne shell is available.
+
+At this stage we still do not have a working autotools system, so we manually install
+``autoconf`` script and replace a few placeholder variables with ``sed``.

@@ -68,4 +68,6 @@ build perl-5.6.2
 
 populate_device_nodes
 
+build autoconf-2.52
+
 echo "Bootstrapping completed."
