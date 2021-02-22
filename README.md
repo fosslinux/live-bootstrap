@@ -211,12 +211,14 @@ Going forward, we can now use `.tar.gz` for source code.
 more complex edits, including just changes to lines. Luckily, we are able to
 patch patch using sed only.
 
-#### Part 12: patched mes-libc
+#### Part 12: sha-2
+
+#### Part 13: patched mes-libc
 
 Since patch is available at this point, we can apply additional fixes to
 mes-libc that are not included in the wip-m2 branch and recompile libc.
 
-#### Part 13: patched tinycc
+#### Part 14: patched tinycc
 
 In Guix, tinycc is patched to force static linking. Prior to this step, we have
 been forced to manually specify static linking for each tool. Now that we have
@@ -225,18 +227,18 @@ patch, we can patch tinycc to force static linking and then recompile it.
 Note that we have to do this using tinycc 0.9.26, as tinycc 0.9.27 cannot
 recompile itself for unknown reasons.
 
-#### Part 14: make 3.80
+#### Part 15: make 3.80
 
 GNU `make` is now built so we have a more robust building system. `make` allows
 us to do things like define rules for files rather than writing complex kaem
 scripts.
 
-#### Part 15: bzip2 1.0.8
+#### Part 16: bzip2 1.0.8
 
 `bzip2` is a compression format that compresses more than `gzip`. It is
 preferred where we can use it, and makes source code sizes smaller.
 
-#### Part 16: coreutils 5.0.0
+#### Part 17: coreutils 5.0.0
 
 GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`,
 `chown`, `cp`, `install`, `ln`, `ls`, `mkdir`, `mknod`, `mv`, `rm`, `rmdir`,
@@ -245,14 +247,14 @@ GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`,
 A few of the utilities cannot be easily compiled with Mes C library, so we skip
 them.
 
-#### Part 17: heirloom devtools
+#### Part 18: heirloom devtools
 
 `lex` and `yacc` from the Heirloom project. The Heirloom project is a collection
 of standard UNIX utilities derived from code by Caldera and Sun. Differently
 from the analogous utilities from the GNU project, they can be compiled with a
 simple `Makefile`.
 
-#### Part 18: bash 2.05b
+#### Part 19: bash 2.05b
 
 GNU `bash` is the most well known shell and the most complex piece of software
 so far. However, it comes with a number of great benefits over kaem, including
@@ -262,7 +264,7 @@ Bash ships with a bison pre-generated file here which we delete. Unfortunately,
 we have not bootstrapped bison but fortunately for us, heirloom yacc is able to
 cope here.
 
-#### Part 19: flex 2.5.11
+#### Part 20: flex 2.5.11
 
 `flex` is a tool for generating lexers or scanners: programs that recognize
 lexical patters.
@@ -273,7 +275,7 @@ that it can be processed by lex for the Heirloom project (the required
 modifications are mostly syntactical, plus a few workarounds to avoid some flex
 advanced features).
 
-#### Part 20: musl 1.1.24
+#### Part 21: musl 1.1.24
 
 `musl` is a C standard library that is lightweight, fast, simple, free, and
 strives to be correct in the sense of standards-conformance and safety. `musl`
@@ -285,28 +287,28 @@ complex programs.
 patches. In particular, we replace all weak symbols with strong symbols and will
 patch `tcc` in the next step to ignore duplicate symbols.
 
-#### Part 21: tcc 0.9.27 (musl)
+#### Part 22: tcc 0.9.27 (musl)
 
 We recompile `tcc` against musl. This is a two stage process. First we build
 tcc-0.9.27 that itself links to Mes C library but produces binaries linked to
 musl. Then we recompile newly produced tcc with itself. Interestingly,
 tcc-0.9.27 linked against musl is self hosting.  Finally, we rebuild musl once more
-with the new `tcc`.
+with the new `tcc` and rebuild `tcc against new `musl`.
 
-#### Part 22: m4 1.4.7
+#### Part 23: m4 1.4.7
 
 `m4` is the first piece of software we need in the autotools suite, flex
 2.6.4 and bison.  It allows macros to be defined and files to be generated from those
 macros.
 
-#### Part 23: flex 2.6.14
+#### Part 24: flex 2.6.14
 
 We recompile unpatched GNU `flex` using older flex 2.5.11. This is again a two
 stage process, first compiling flex using `scan.c` (from `scan.l`) created by
 old flex, then recompile `scan.c` using the new version of flex to remove any
 buggy artifacts from the old flex.
 
-#### Part 24: bison 3.4.1
+#### Part 25: bison 3.4.1
 
 GNU `bison` is a parser generator. With `m4` and `flex` we can now bootstrap it
 following https://gitlab.com/giomasce/bison-bootstrap. It's a 3 stage process:
@@ -317,27 +319,27 @@ following https://gitlab.com/giomasce/bison-bootstrap. It's a 3 stage process:
 
 Finally we have a fully functional `bison` executable.
 
-#### Part 25: grep 2.4
+#### Part 26: grep 2.4
 
 GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
 
-#### Part 26: diffutils 2.7
+#### Part 27: diffutils 2.7
 
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
 
-#### Part 27: coreutils 5.0
+#### Part 28: coreutils 5.0
 
 `coreutils` is rebuilt against musl.  Additional utilities are built including
 `comm`, `expr`, `date`, `dd`, `sort`, `uname`, and `uniq`.
 
-#### Part 28: gawk 3.0.4
+#### Part 29: gawk 3.0.4
 
 `gawk` is the GNU implementation of `awk`, yet another pattern matching and data
 extraction utility. It is also required for autotools.
 
-#### Part 29: perl 5.000
+#### Part 30: perl 5.000
 
 Perl is a general purpose programming language that is especially suitable for
 text processing. It is essential for autotools build system because automake
@@ -352,12 +354,14 @@ pre-generated Configure script.
 At this first step we build `miniperl` which is `perl` without support for
 loading modules.
 
-#### Part 30: perl 5.003
+#### Part 31: perl 5.003
 
 We now use `perl` from the previous stage to recreate pre-generated files that
 are shipped in perl 5.003. But for now we still need to use handwritten makefile
 instead of `./Configure` script.
 
-#### Part 31: perl 5.004_05
+#### Part 32: perl 5.004_05
 
 Yet another version of perl.
+
+#### Part 33: perl 5.005_03

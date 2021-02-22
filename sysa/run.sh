@@ -12,7 +12,7 @@ set -e
 
 export PREFIX=/after
 
-# Part 20 
+# Part 20
 build flex-2.5.11
 
 # Part 21
@@ -58,5 +58,8 @@ build perl-5.003
 
 # Part 34
 build perl5.004_05
+
+# Part 35
+build perl5.005_03
 
 echo "Bootstrapping completed."

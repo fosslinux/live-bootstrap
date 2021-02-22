@@ -16,6 +16,10 @@ src_prepare() {
         rm ${file}.h
         perl ${file}.pl
     done
+    rm regnodes.h
+    perl regcomp.pl
+    rm byterun.h byterun.c
+    perl bytecode.pl
 }
 
 src_install() {
