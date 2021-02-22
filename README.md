@@ -133,7 +133,9 @@ From here, we can move on from the lowest level stuff.
 mescc-tools and mes-m2 are the projects bootstrapped by mescc-tools-seed.
 However, we have some currently unmerged additions to mescc-tools that we
 require for this project, namely filesystem utilities `cp` and `chown`. This
-allows us to have one unified directory for our binaries.
+allows us to have one unified directory for our binaries. Futhermore, we also
+build `fletcher16`, a preliminary checksumming tool, that we use to ensure
+reproducibility and authenticity of generated binaries.
 
 #### Part 3: `/after`
 
@@ -152,13 +154,13 @@ it is planned to be eventually used to bootstrap the next part.
 #### Part 5: mes
 
 `mes` is a scheme interpreter. It runs the sister project `mescc`, which is a C
-compiler written in scheme, which links against the Mes C Library. All 3 are 
+compiler written in scheme, which links against the Mes C Library. All 3 are
 included in this same repository. Note that we are using the experimental
 `wip-m2` branch to jump over the gap between `M2-Planet` and `mes`. There are
 two stages to this part:
 
-1. Compiling an initial mes using `M2-Planet`. Note that this is *only* the
-   Mes interpreter, not the libc or anything else.
+1. Compiling an initial mes using `M2-Planet`. Note that this is *only* the Mes
+   interpreter, not the libc or anything else.
 2. We then use this to recompile the Mes interpreter as well as building the
    libc. This second interpreter is faster and less buggy. We need the libc to
    compile all the programs until we get glibc.
@@ -168,16 +170,15 @@ two stages to this part:
 `tinycc` is a minimal C compiler that aims to be small and fast. It complies
 with all C89 and most of C99 standards. This is also a two-tiered process:
 
-1. First, we compile janneke's fork of tcc 0.9.26 using `mescc`, containing
-   27 patches to make it operate well in the bootstrap environment and make 
-   it compilable using `mescc`. This is a non-trivial process and as seen
-   within tcc.kaem has many different parts within it:
-   a. tcc 0.9.26 is first compiled using `mescc`.
-   b. The mes libc is recompiled using tcc (`mescc` has a non-standard `.a`
-   format), including some additions for later programs.
-   c. tcc 0.9.26 is recompiled 5(!) times to add new features that are required
-   for other features, namely `long long` and `float`. Each time, the libc is
-   also recompiled.
+1. First, we compile janneke's fork of tcc 0.9.26 using `mescc`, containing 27
+   patches to make it operate well in the bootstrap environment and make it
+   compilable using `mescc`. This is a non-trivial process and as seen within
+   tcc.kaem has many different parts within it: a. tcc 0.9.26 is first compiled
+   using `mescc`.  b. The mes libc is recompiled using tcc (`mescc` has a
+   non-standard `.a` format), including some additions for later programs.  c.
+   tcc 0.9.26 is recompiled 5(!) times to add new features that are required for
+   other features, namely `long long` and `float`. Each time, the libc is also
+   recompiled.
 2. Then we compile upstream tcc 0.9.27, the latest release of tinycc, using the
    final version of tcc 0.9.26. We then recompile the libc once more.
    
@@ -213,6 +214,16 @@ patch patch using sed only.
 
 #### Part 12: sha-2
 
+`sha-2` is a standalone external `sha256sum` implementation, originally as a
+library, but patched to have a command line interface. It is mostly
+output-compatible with `sha256sum` from coreutils. We use this in replacement of
+`fletcher16`.
+
+#### Part 12a: Redo checksums using `sha256sum`
+
+We have now just built `sha256sum`, which has a 16x lower collision rate than
+`fletcher16`, so we recheck all of the existing binaries using `sha256sum`.
+
 #### Part 13: patched mes-libc
 
 Since patch is available at this point, we can apply additional fixes to
@@ -246,6 +257,8 @@ GNU Coreutils is a collection of widely used utilities such as `cat`, `chmod`,
 
 A few of the utilities cannot be easily compiled with Mes C library, so we skip
 them.
+
+The `cp` in this stage replaces the `mescc-tools-extra` `cp`.
 
 #### Part 18: heirloom devtools
 
@@ -292,76 +305,89 @@ patch `tcc` in the next step to ignore duplicate symbols.
 We recompile `tcc` against musl. This is a two stage process. First we build
 tcc-0.9.27 that itself links to Mes C library but produces binaries linked to
 musl. Then we recompile newly produced tcc with itself. Interestingly,
-tcc-0.9.27 linked against musl is self hosting.  Finally, we rebuild musl once more
-with the new `tcc` and rebuild `tcc against new `musl`.
+tcc-0.9.27 linked against musl is self hosting.
 
-#### Part 23: m4 1.4.7
+#### Part 23: musl 1.1.24 (tcc-musl)
 
-`m4` is the first piece of software we need in the autotools suite, flex
-2.6.4 and bison.  It allows macros to be defined and files to be generated from those
+We now rebuild `musl` with `tcc-musl` of Part 22, which fixes a number of bugs,
+particularly regarding floats, in the first `musl`.
+
+#### Part 24: tcc 0.9.27 (musl v2)
+
+Now that we have a 'fixed' `musl`, we now recompile `tcc` as `tcc` uses floats
+extensively.
+
+#### Part 25: m4 1.4.7
+
+`m4` is the first piece of software we need in the autotools suite, flex 2.6.4
+and bison.  It allows macros to be defined and files to be generated from those
 macros.
 
-#### Part 24: flex 2.6.14
+#### Part 26: flex 2.6.14
 
 We recompile unpatched GNU `flex` using older flex 2.5.11. This is again a two
 stage process, first compiling flex using `scan.c` (from `scan.l`) created by
 old flex, then recompile `scan.c` using the new version of flex to remove any
 buggy artifacts from the old flex.
 
-#### Part 25: bison 3.4.1
+#### Part 27: bison 3.4.1
 
 GNU `bison` is a parser generator. With `m4` and `flex` we can now bootstrap it
 following https://gitlab.com/giomasce/bison-bootstrap. It's a 3 stage process:
 
-1) Build bison using a handwritten grammar parser in C.
-2) Use bison from previous stage on a simplified bison grammar file.
-3) Build bison using original grammar file.
+1. Build bison using a handwritten grammar parser in C.
+2. Use bison from previous stage on a simplified bison grammar file.
+3. Build bison using original grammar file.
 
 Finally we have a fully functional `bison` executable.
 
-#### Part 26: grep 2.4
+#### Part 28: grep 2.4
 
 GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
 
-#### Part 27: diffutils 2.7
+#### Part 29: diffutils 2.7
 
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
 
-#### Part 28: coreutils 5.0
+#### Part 30: coreutils 5.0
 
 `coreutils` is rebuilt against musl.  Additional utilities are built including
-`comm`, `expr`, `date`, `dd`, `sort`, `uname`, and `uniq`.
+`comm`, `expr`, `date`, `dd`, `sort`, `uname` and `uniq`. This fixes a variety
+of issues with existing `coreutils`.
 
-#### Part 29: gawk 3.0.4
+#### Part 31: gawk 3.0.4
 
 `gawk` is the GNU implementation of `awk`, yet another pattern matching and data
 extraction utility. It is also required for autotools.
 
-#### Part 30: perl 5.000
+#### Part 32: perl 5.000
 
 Perl is a general purpose programming language that is especially suitable for
-text processing. It is essential for autotools build system because automake
-and some other tools are written in Perl.
+text processing. It is essential for autotools build system because automake and
+some other tools are written in Perl.
 
 Perl itself is written in C but ships with some pre-generated files that need
-perl for processing. To bootstrap Perl we will start with the oldest Perl 5
-version which has the fewest number of pregenerated files. We reimplement two
-remaining perl scripts in awk and use our custom makefile instead of Perl's
-pre-generated Configure script.
+perl for processing, namely `embed.h` and `keywords.h`. To bootstrap Perl we
+will start with the oldest Perl 5 version which has the fewest number of
+pregenerated files. We reimplement two remaining perl scripts in awk and use our
+custom makefile instead of Perl's pre-generated Configure script.
 
 At this first step we build `miniperl` which is `perl` without support for
 loading modules.
 
-#### Part 31: perl 5.003
+#### Part 33: perl 5.003
 
 We now use `perl` from the previous stage to recreate pre-generated files that
 are shipped in perl 5.003. But for now we still need to use handwritten makefile
 instead of `./Configure` script.
 
-#### Part 32: perl 5.004_05
+#### Part 34: perl 5.004_05
 
-Yet another version of perl.
+Yet another version of perl; the last version buildable with 5.003.
 
-#### Part 33: perl 5.005_03
+#### Part 35: perl 5.005_03
+
+More perl! This is the last version buildable with 5.004. It also introduces the
+new pregenerated files `regnodes.h` and `byterun.{h,c}`.
