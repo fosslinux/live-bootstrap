@@ -28,38 +28,41 @@ build musl-1.1.24 musl-1.1.24.sh checksums/pass2
 build tcc-0.9.27 tcc-musl-pass2.sh checksums/tcc-musl-pass2
 
 # Part 25
-build m4-1.4.7
+build bzip2-1.0.8 bzip2-1.0.8.sh checksums/bzip2-pass2
 
 # Part 26
-build flex-2.6.4
+build m4-1.4.7
 
 # Part 27
+build flex-2.6.4
+
+# Part 28
 build bison-3.4.1 stage1.sh checksums/stage1
 build bison-3.4.1 stage2.sh checksums/stage2
 build bison-3.4.1 stage3.sh checksums/stage3
 
-# Part 28
+# Part 29
 build grep-2.4
 
-# Part 29
+# Part 30
 build diffutils-2.7
 
-# Part 30
+# Part 31
 build coreutils-5.0 coreutils-5.0.sh checksums/pass2
 
-# Part 31
+# Part 32
 build gawk-3.0.4
 
-# Part 32
+# Part 33
 build perl-5.000
 
-# Part 33
+# Part 34
 build perl-5.003
 
-# Part 34
+# Part 35
 build perl5.004_05
 
-# Part 35
+# Part 36
 build perl5.005_03
 
 echo "Bootstrapping completed."
