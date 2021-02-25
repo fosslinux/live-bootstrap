@@ -73,12 +73,10 @@ default_src_unpack() {
         source="${src_dir}/${pkg}.tar.${suf}"
         if test -e "${source}"; then
             case "${suf}" in
-                gz) xtr="z" ;;
-                bz2) xtr="j" ;;
-                xz) xtr="J" ;;
+                gz) tar -xzf "${source}" ;;
+                bz2) tar -xf "${source}" --use-compress-program=bzip2 ;;
+                xz) tar -xf "${source}" --use-compress-program=xz ;;
             esac
-            tar "-${xtr}" -xf "${source}"
-            break
         fi
     done
 }

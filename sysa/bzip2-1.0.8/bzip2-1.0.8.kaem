@@ -33,4 +33,4 @@ bzip2 --help
 cd ../..
 
 # Checksums
-sha256sum -c checksums
+sha256sum -c checksums/bzip2-pass1

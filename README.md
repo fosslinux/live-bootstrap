@@ -317,20 +317,25 @@ particularly regarding floats, in the first `musl`.
 Now that we have a 'fixed' `musl`, we now recompile `tcc` as `tcc` uses floats
 extensively.
 
-#### Part 25: m4 1.4.7
+#### Part 25: bzip2 1.0.8
+
+`bzip2` is rebuilt unpatched with the new tcc and musl fixing issues with reading
+files from stdin that existed in the previous build.
+
+#### Part 26: m4 1.4.7
 
 `m4` is the first piece of software we need in the autotools suite, flex 2.6.4
 and bison.  It allows macros to be defined and files to be generated from those
 macros.
 
-#### Part 26: flex 2.6.14
+#### Part 27: flex 2.6.14
 
 We recompile unpatched GNU `flex` using older flex 2.5.11. This is again a two
 stage process, first compiling flex using `scan.c` (from `scan.l`) created by
 old flex, then recompile `scan.c` using the new version of flex to remove any
 buggy artifacts from the old flex.
 
-#### Part 27: bison 3.4.1
+#### Part 28: bison 3.4.1
 
 GNU `bison` is a parser generator. With `m4` and `flex` we can now bootstrap it
 following https://gitlab.com/giomasce/bison-bootstrap. It's a 3 stage process:
@@ -341,28 +346,28 @@ following https://gitlab.com/giomasce/bison-bootstrap. It's a 3 stage process:
 
 Finally we have a fully functional `bison` executable.
 
-#### Part 28: grep 2.4
+#### Part 29: grep 2.4
 
 GNU `grep` is a pattern matching utility. Is is not immediately needed but will
 be useful later for autotools.
 
-#### Part 29: diffutils 2.7
+#### Part 30: diffutils 2.7
 
 `diffutils` is useful for comparing two files. It is not immediately needed but
 is required later for autotools.
 
-#### Part 30: coreutils 5.0
+#### Part 31: coreutils 5.0
 
 `coreutils` is rebuilt against musl.  Additional utilities are built including
 `comm`, `expr`, `date`, `dd`, `sort`, `uname` and `uniq`. This fixes a variety
 of issues with existing `coreutils`.
 
-#### Part 31: gawk 3.0.4
+#### Part 32: gawk 3.0.4
 
 `gawk` is the GNU implementation of `awk`, yet another pattern matching and data
 extraction utility. It is also required for autotools.
 
-#### Part 32: perl 5.000
+#### Part 33: perl 5.000
 
 Perl is a general purpose programming language that is especially suitable for
 text processing. It is essential for autotools build system because automake and
@@ -377,17 +382,17 @@ custom makefile instead of Perl's pre-generated Configure script.
 At this first step we build `miniperl` which is `perl` without support for
 loading modules.
 
-#### Part 33: perl 5.003
+#### Part 34: perl 5.003
 
 We now use `perl` from the previous stage to recreate pre-generated files that
 are shipped in perl 5.003. But for now we still need to use handwritten makefile
 instead of `./Configure` script.
 
-#### Part 34: perl 5.004_05
+#### Part 35: perl 5.004_05
 
 Yet another version of perl; the last version buildable with 5.003.
 
-#### Part 35: perl 5.005_03
+#### Part 36: perl 5.005_03
 
 More perl! This is the last version buildable with 5.004. It also introduces the
 new pregenerated files `regnodes.h` and `byterun.{h,c}`.
