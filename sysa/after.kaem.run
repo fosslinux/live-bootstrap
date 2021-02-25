@@ -18,13 +18,13 @@ incdir=${prefix}/include
 MES_PREFIX=${prefix}/mes/src/mes
 GUILE_LOAD_PATH=${prefix}/mes/src/nyacc/module:${prefix}/mes/src/mes/mes/module:${prefix}/mes/src/mes/module
 
-# Part 2: cp and chown (mescc-tools-extra)
+# cp and chown (mescc-tools-extra)
 pkg="mescc-tools-extra"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 3: Remove remaining dependencies on / (root of /after)
+# Remove remaining dependencies on / (root of /after)
 cp ../bin/hex2 bin/hex2
 cp ../bin/M1 bin/M1
 cp ../bin/M2-Planet bin/M2-Planet
@@ -38,92 +38,92 @@ chmod 755 bin/hex2 bin/M1 bin/M2-Planet bin/blood-elf \
 fletcher16 mescc-tools-seed-checksums
 PATH=/after/bin
 
-# Part 5: mes
+# mes
 pkg="mes"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 6: tcc 0.9.26
+# tcc 0.9.26
 pkg="tcc-0.9.26"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 7: tcc 0.9.27
+# tcc 0.9.27
 pkg="tcc-0.9.27"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 8: sed
+# sed
 pkg="sed-4.0.7"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 9: tar
+# tar
 pkg="tar-1.12"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 10: gzip
+# gzip
 pkg="gzip-1.2.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 11: patch
+# patch
 pkg="patch-2.5.9"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 12: sha-2
+# sha-2
 pkg="sha-2-61555d"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 12a: Check all up to this part as sha256sum
+# Check all up to this part as sha256sum
 sha256sum -c pre-sha.sha256sums
 
-# Part 13: mes-libc-patched
+# mes-libc-patched
 cd tcc-0.9.27
 kaem --file mes-libc-patched.kaem
 cd ..
 
-# Part 14: tcc-patched
+# tcc-patched
 cd tcc-0.9.27
 kaem --file tcc-patched.kaem
 cd ..
 
-# Part 15: make
+# make
 pkg="make-3.80"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 16: bzip2
+# bzip2
 pkg="bzip2-1.0.8"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 17: coreutils
+# coreutils
 pkg="coreutils-5.0"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 18: heirloom-devtools
+# heirloom-devtools
 pkg="heirloom-devtools-070527"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# Part 19: bash
+# bash
 pkg="bash-2.05b"
 cd ${pkg}
 kaem --file ${pkg}.kaem
