@@ -28,8 +28,9 @@ Get me started!
       some other device and boot from bare metal.
 
 5. Wait.
-6. If you can, observe the many binaries in ``/after/bin``! (Soon, you will
-   also have an interactive bash shell to play around in).
+6. If you can, observe the many binaries in ``/after/bin``! When the
+   bootstrap is completed ``bash`` is launched providing a shell to
+   explore the system.
 
 Background
 ----------

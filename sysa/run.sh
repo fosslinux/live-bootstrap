@@ -91,4 +91,6 @@ populate_device_nodes
 # Rebuild tcc-musl using new musl
 build tcc-0.9.27 tcc-musl-pass3.sh checksums/tcc-musl-pass3
 
+build bash-3.2.57
+
 echo "Bootstrapping completed."
