@@ -84,10 +84,6 @@ cp helpers.sh run.sh pre-sha.sha256sums tmp/after/
 # mescc-tools-extra
 cp -r mescc-tools-extra tmp/after/
 
-# blynn-compiler
-cp -r blynn-compiler tmp/after/
-mkdir -p tmp/after/blynn-compiler/src/{bin,generated}
-
 # mes
 cp -r mes tmp/after/
 #ln -s lib/x86-mes tmp/after/mes/src/mes/x86-mes
