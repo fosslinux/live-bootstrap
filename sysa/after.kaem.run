@@ -38,12 +38,6 @@ chmod 755 bin/hex2 bin/M1 bin/M2-Planet bin/blood-elf \
 fletcher16 mescc-tools-seed-checksums
 PATH=/after/bin
 
-# Part 4: blynn-compiler
-pkg="blynn-compiler"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
 # Part 5: mes
 pkg="mes"
 cd ${pkg}
