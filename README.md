@@ -396,3 +396,7 @@ Yet another version of perl; the last version buildable with 5.003.
 
 More perl! This is the last version buildable with 5.004. It also introduces the
 new pregenerated files `regnodes.h` and `byterun.{h,c}`.
+
+#### Part 37: perl 5.6.2
+
+Even more perl. 5.6.2 is the last version buildable with 5.004.
