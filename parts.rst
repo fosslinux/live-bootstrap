@@ -361,3 +361,24 @@ packaging software on computer systems where a Bourne shell is available.
 
 At this stage we still do not have a working autotools system, so we manually install
 ``autoconf`` script and replace a few placeholder variables with ``sed``.
+
+Version 2.52 is the newest version that runs on ``miniperl``.
+
+automake 1.4-p6
+===============
+
+GNU Automake is a tool for automatically generating Makefile.in files. Together with
+Autoconf they from GNU Autotools build system.
+
+``automake`` again needs both ``automake`` and ``autoconf``. In order to bootstrap it
+we patch ``configure.in`` file to produce ``automake`` and skip ``Makefile`` effectively
+removing dependency on ``automake`` at the cost of having to install ``automake`` manually.
+
+Then we rebuild both ``automake`` using already installed ``autoconf`` and ``automake``.
+
+Version 1.4-p6 is again the newest version that runs on ``miniperl``.
+
+autoconf 2.52
+=============
+
+We now properly rebuild ``autoconf`` using ``autoconf`` and ``automake``.
