@@ -351,7 +351,7 @@ introduces the new pregenerated files ``regnodes.h`` and
 perl 5.6.2
 ==========
 
-Even more perl. 5.6.2 is the last version buildable with 5.004.
+Even more perl. 5.6.2 is the last version buildable with 5.005.
 
 autoconf 2.52
 =============
