@@ -210,6 +210,9 @@ get_file https://ftp.gnu.org/gnu/automake/automake-1.4-p6.tar.gz
 # autoconf 2.13
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz
 
+# autoconf 2.12
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.12.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

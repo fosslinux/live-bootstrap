@@ -387,3 +387,8 @@ autoconf 2.13
 =============
 
 Different versions of autotools are not fully compatible, so build older ``autoconf`` too.
+
+autoconf 2.12
+=============
+
+Yet another old autoconf version that we will need for GNU Binutils.

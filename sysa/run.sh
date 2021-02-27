@@ -77,4 +77,6 @@ build autoconf-2.52 stage2.sh
 
 build autoconf-2.13
 
+build autoconf-2.12
+
 echo "Bootstrapping completed."
