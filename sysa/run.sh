@@ -10,6 +10,17 @@ set -e
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 
+populate_device_nodes() {
+    # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
+    test -c /dev/console || mknod -m 622 /dev/console c 5 1
+    test -c /dev/null || mknod -m 666 /dev/null c 1 3
+    test -c /dev/zero || mknod -m 666 /dev/zero c 1 5
+    test -c /dev/ptmx || mknod -m 666 /dev/ptmx c 5 2
+    test -c /dev/tty || mknod -m 666 /dev/tty c 5 0
+    test -c /dev/random || mknod -m 444 /dev/random c 1 8
+    test -c /dev/urandom || mknod -m 444 /dev/urandom c 1 9
+}
+
 export PREFIX=/after
 
 build flex-2.5.11
@@ -54,5 +65,7 @@ build perl5.004_05
 build perl5.005_03
 
 build perl-5.6.2
+
+populate_device_nodes
 
 echo "Bootstrapping completed."
