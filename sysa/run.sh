@@ -75,4 +75,6 @@ build automake-1.4-p6 stage2.sh
 
 build autoconf-2.52 stage2.sh
 
+build autoconf-2.13
+
 echo "Bootstrapping completed."

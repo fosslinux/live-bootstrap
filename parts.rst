@@ -382,3 +382,8 @@ autoconf 2.52
 =============
 
 We now properly rebuild ``autoconf`` using ``autoconf`` and ``automake``.
+
+autoconf 2.13
+=============
+
+Different versions of autotools are not fully compatible, so build older ``autoconf`` too.
