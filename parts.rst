@@ -392,3 +392,13 @@ autoconf 2.12
 =============
 
 Yet another old autoconf version that we will need for GNU Binutils.
+
+binutils 2.14
+=============
+
+The GNU Binary Utilities, or binutils, are a set of programming tools for creating and
+managing binary programs, object files, libraries, profile data, and assembly source code.
+
+In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
+the GNU linker ``ld``, which allows us building shared libraries,
+and the GNU assembler ``as``.

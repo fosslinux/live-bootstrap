@@ -21,7 +21,7 @@ src_prepare() {
 
     # automake errors out without this
     cd gas
-    mv config/m68k-parse.y
+    mv config/m68k-parse.y .
     sed -i 's#config/m68k-parse.y#m68k-parse.y#' Makefile.am
     cd ..
 
@@ -38,7 +38,7 @@ src_prepare() {
     touch */*.y
     rm ld/ldgram.c ld/ldgram.h
     rm gas/itbl-parse.c gas/itbl-parse.h
-    rm gas/m68k-parse.c gas/m68k-parse.h
+    rm gas/m68k-parse.c
     rm binutils/arparse.c binutils/arparse.h
     rm binutils/nlmheader.c binutils/nlmheader.h
     rm binutils/sysinfo.c binutils/sysinfo.h
