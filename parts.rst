@@ -351,4 +351,44 @@ introduces the new pregenerated files ``regnodes.h`` and
 perl 5.6.2
 ==========
 
-Even more perl. 5.6.2 is the last version buildable with 5.004.
+Even more perl. 5.6.2 is the last version buildable with 5.005.
+
+autoconf 2.52
+=============
+
+GNU Autoconf is a tool for producing ``configure`` scripts for building, installing and
+packaging software on computer systems where a Bourne shell is available.
+
+At this stage we still do not have a working autotools system, so we manually install
+``autoconf`` script and replace a few placeholder variables with ``sed``.
+
+Version 2.52 is the newest version that runs on ``miniperl``.
+
+automake 1.4-p6
+===============
+
+GNU Automake is a tool for automatically generating Makefile.in files. Together with
+Autoconf they from GNU Autotools build system.
+
+``automake`` again needs both ``automake`` and ``autoconf``. In order to bootstrap it
+we patch ``configure.in`` file to produce ``automake`` and skip ``Makefile`` effectively
+removing dependency on ``automake`` at the cost of having to install ``automake`` manually.
+
+Then we rebuild both ``automake`` using already installed ``autoconf`` and ``automake``.
+
+Version 1.4-p6 is again the newest version that runs on ``miniperl``.
+
+autoconf 2.52
+=============
+
+We now properly rebuild ``autoconf`` using ``autoconf`` and ``automake``.
+
+autoconf 2.13
+=============
+
+Different versions of autotools are not fully compatible, so build older ``autoconf`` too.
+
+autoconf 2.12
+=============
+
+Yet another old autoconf version that we will need for GNU Binutils.

@@ -201,6 +201,18 @@ get_file https://www.cpan.org/src/5.0/perl5.005_03.tar.gz
 # perl 5.6.2
 get_file https://www.cpan.org/src/5.0/perl-5.6.2.tar.gz
 
+# autoconf 2.52
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.52.tar.gz
+
+# automake 1.4-p6
+get_file https://ftp.gnu.org/gnu/automake/automake-1.4-p6.tar.gz
+
+# autoconf 2.13
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz
+
+# autoconf 2.12
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.12.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
