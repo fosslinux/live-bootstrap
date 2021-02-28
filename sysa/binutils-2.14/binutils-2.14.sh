@@ -44,6 +44,12 @@ src_prepare() {
     rm binutils/sysinfo.c binutils/sysinfo.h
     rm binutils/defparse.c binutils/defparse.h
     rm binutils/rcparse.c binutils/rcparse.h
+
+    # Rebuild flex generated files
+    touch */*.l
+    rm ld/ldlex.c
+    rm gas/itbl-lex.c
+    rm binutils/syslex.c binutils/rclex.c binutils/deflex.c binutils/arlex.c
 }
 
 src_configure() {
