@@ -110,7 +110,7 @@ cp -r tar-1.12 tmp/after
 mkdir tmp/after/tar-1.12/{src,build}
 pushd tmp/after/tar-1.12/src
 if [ ! -f "$(basename $url)" ]; then
-    wget "$url"
+    _wget "$url"
 fi
 popd
 tar -C tmp/after/tar-1.12/src -xf "tmp/after/tar-1.12/src/$(basename $url)" --strip-components=1
