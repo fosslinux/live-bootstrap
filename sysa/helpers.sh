@@ -57,7 +57,7 @@ build () {
     cd ../..
 
     echo "${pkg}: checksumming installed files."
-    sha256sum -c "${checksum_f}"
+    test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
 
     echo "${pkg}: build successful"
     cd ..
