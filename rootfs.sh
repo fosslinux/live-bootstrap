@@ -156,6 +156,9 @@ get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz 1
 # coreutils 5.0
 get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2 1
 
+# coreutils 6.3
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.3.tar.bz2
+
 # heirloom-devtools
 get_file http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2
 

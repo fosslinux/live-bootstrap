@@ -306,6 +306,11 @@ coreutils 5.0
 including ``comm``, ``expr``, ``date``, ``dd``, ``sort``, ``uname`` and
 ``uniq``. This fixes a variety of issues with existing ``coreutils``.
 
+coreutils 6.3
+=============
+We build ``sha256sum`` from coreutils 6.3 since it is absent in 5.0.
+Other utils are not build at this stage.
+
 gawk 3.0.4
 ==========
 
