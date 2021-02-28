@@ -57,7 +57,8 @@ src_configure() {
         --target=i386-unknown-linux \
         --with-sysroot=/after \
         --disable-64-bit-bfd \
-        --prefix=/after
+        --prefix="${PREFIX}" \
+        --libdir="${PREFIX}/lib/musl"
 
     # TODO: Find a way to avoid these hacks
     sed -i '/#undef pid_t/d' libiberty/config.in
