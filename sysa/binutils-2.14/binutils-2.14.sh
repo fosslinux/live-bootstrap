@@ -72,3 +72,12 @@ src_configure() {
     sed -i 's/C_alloca/alloca/g' libiberty/alloca.c
     sed -i 's/C_alloca/alloca/g' include/libiberty.h
 }
+
+src_compile() {
+    # Rebuild generated header files. bfd/Makefile does not exists at this stage,
+    # so we need to create it first.
+    make configure-bfd
+    make -C bfd headers
+
+    default_src_compile
+}
