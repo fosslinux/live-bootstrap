@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    default_src_prepare
+
     rm configure
     autoconf-2.13
     for dir in binutils bfd gas ld gprof libiberty opcodes; do
