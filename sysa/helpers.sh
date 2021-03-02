@@ -87,6 +87,7 @@ default_src_unpack() {
 default_src_prepare() {
     if test -d "${patch_dir}"; then
         for p in "${patch_dir}"/*.patch; do
+            echo "Applying patch: ${p}"
             patch -Np0 < "${p}"
         done
     fi
