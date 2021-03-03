@@ -84,4 +84,8 @@ build autoconf-2.12
 
 build binutils-2.14
 
+# Build musl with fewer patches
+build musl-1.1.24 binutils-rebuild.sh checksums/pass3 patches-pass3
+populate_device_nodes
+
 echo "Bootstrapping completed."
