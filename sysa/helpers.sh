@@ -57,7 +57,7 @@ build () {
     cd ../..
 
     echo "${pkg}: checksumming installed files."
-    sha256sum -c "${checksum_f}"
+    test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
 
     echo "${pkg}: build successful"
     cd ..
@@ -87,6 +87,7 @@ default_src_unpack() {
 default_src_prepare() {
     if test -d "${patch_dir}"; then
         for p in "${patch_dir}"/*.patch; do
+            echo "Applying patch: ${p}"
             patch -Np0 < "${p}"
         done
     fi

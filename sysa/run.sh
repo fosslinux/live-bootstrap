@@ -54,6 +54,9 @@ build diffutils-2.7
 # Rebuild coreutils using musl
 build coreutils-5.0 coreutils-5.0.sh checksums/pass2
 
+# Build only sha256sum
+build coreutils-6.3
+
 build gawk-3.0.4
 
 build perl-5.000
@@ -78,5 +81,7 @@ build autoconf-2.52 stage2.sh
 build autoconf-2.13
 
 build autoconf-2.12
+
+build binutils-2.14
 
 echo "Bootstrapping completed."

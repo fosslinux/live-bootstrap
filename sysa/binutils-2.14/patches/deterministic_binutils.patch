@@ -1,0 +1,68 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2009 Chris Demetriou  <cgd@google.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Old binutils do not have support for creating deterministic archives.
+Backported from upstream commit 36e4dce69dd23bea9ea2258dea35f034b6d6351c
+
+--- bfd/archive.c	2021-03-01 00:05:54.888301655 +0000
++++ bfd/archive.c	2021-03-02 21:53:51.001617689 +0000
+@@ -1396,10 +1396,6 @@
+     {
+       /* Assume we just "made" the member, and fake it.  */
+       struct bfd_in_memory *bim = (struct bfd_in_memory *) member->iostream;
+-      time (&status.st_mtime);
+-      status.st_uid = getuid ();
+-      status.st_gid = getgid ();
+-      status.st_mode = 0644;
+       status.st_size = bim->size;
+     }
+   else if (stat (filename, &status) != 0)
+@@ -1408,6 +1404,11 @@
+       return NULL;
+     }
+ 
++  status.st_mtime = 0;
++  status.st_uid = 0;
++  status.st_gid = 0;
++  status.st_mode = 0644;
++
+   amt = sizeof (struct ar_hdr) + sizeof (struct areltdata);
+   ared = (struct areltdata *) bfd_zalloc (abfd, amt);
+   if (ared == NULL)
+@@ -2003,13 +2004,11 @@
+   stat (arch->filename, &statbuf);
+   memset ((char *) (&hdr), 0, sizeof (struct ar_hdr));
+   sprintf (hdr.ar_name, RANLIBMAG);
+-  /* Remember the timestamp, to keep it holy.  But fudge it a little.  */
+-  bfd_ardata (arch)->armap_timestamp = statbuf.st_mtime + ARMAP_TIME_OFFSET;
+   bfd_ardata (arch)->armap_datepos = (SARMAG
+ 				      + offsetof (struct ar_hdr, ar_date[0]));
+-  sprintf (hdr.ar_date, "%ld", bfd_ardata (arch)->armap_timestamp);
+-  sprintf (hdr.ar_uid, "%ld", (long) getuid ());
+-  sprintf (hdr.ar_gid, "%ld", (long) getgid ());
++  sprintf (hdr.ar_date, "%ld", 0);
++  sprintf (hdr.ar_uid, "%ld", 0);
++  sprintf (hdr.ar_gid, "%ld", 0);
+   sprintf (hdr.ar_size, "%-10d", (int) mapsize);
+   strncpy (hdr.ar_fmag, ARFMAG, 2);
+   for (i = 0; i < sizeof (struct ar_hdr); i++)
+@@ -2082,6 +2081,8 @@
+   struct ar_hdr hdr;
+   unsigned int i;
+ 
++  return TRUE;
++
+   /* Flush writes, get last-write timestamp from file, and compare it
+      to the timestamp IN the file.  */
+   bfd_flush (arch);
+@@ -2169,7 +2170,7 @@
+   memset ((char *) (&hdr), 0, sizeof (struct ar_hdr));
+   hdr.ar_name[0] = '/';
+   sprintf (hdr.ar_size, "%-10d", (int) mapsize);
+-  sprintf (hdr.ar_date, "%ld", (long) time (NULL));
++  sprintf (hdr.ar_date, "%ld", 0);
+   /* This, at least, is what Intel coff sets the values to.  */
+   sprintf ((hdr.ar_uid), "%d", 0);
+   sprintf ((hdr.ar_gid), "%d", 0);

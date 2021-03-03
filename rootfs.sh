@@ -110,7 +110,7 @@ cp -r tar-1.12 tmp/after
 mkdir tmp/after/tar-1.12/{src,build}
 pushd tmp/after/tar-1.12/src
 if [ ! -f "$(basename $url)" ]; then
-    wget "$url"
+    _wget "$url"
 fi
 popd
 tar -C tmp/after/tar-1.12/src -xf "tmp/after/tar-1.12/src/$(basename $url)" --strip-components=1
@@ -155,6 +155,9 @@ get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz 1
 
 # coreutils 5.0
 get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2 1
+
+# coreutils 6.3
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.3.tar.bz2
 
 # heirloom-devtools
 get_file http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2
@@ -212,6 +215,9 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz
 
 # autoconf 2.12
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.12.tar.gz
+
+# binutils 2.14
+get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
