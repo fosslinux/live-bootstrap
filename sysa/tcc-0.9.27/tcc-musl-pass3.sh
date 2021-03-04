@@ -8,7 +8,7 @@ src_unpack() {
 }
 
 src_prepare() {
-    patch -Np0 -i ../../patches/ignore-duplicate-symbols.patch
+    :
 }
 
 src_compile() {
@@ -38,7 +38,7 @@ src_compile() {
 
     # libtcc1.a
     tcc-musl -c -D HAVE_CONFIG_H=1 lib/libtcc1.c
-    tcc-musl -ar cr libtcc1.a libtcc1.o
+    ar cr libtcc1.a libtcc1.o
 }
 
 src_install() {

@@ -407,3 +407,15 @@ managing binary programs, object files, libraries, profile data, and assembly so
 In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
 the GNU linker ``ld``, which allows us building shared libraries,
 and the GNU assembler ``as``.
+
+musl 1.1.24 (v3)
+================
+
+We rebuild musl for the third time. This time we use GNU ar rather than ``tcc -ar``,
+so we can drop weak symbols patch. Also, we can use GNU as to build assembly source files,
+so those assembly files that tcc failed to compile no longer have to be patched.
+
+tcc 0.9.27 (musl v3)
+====================
+
+We rebuild tcc against new musl and without a patch to ignore duplicate symbols.

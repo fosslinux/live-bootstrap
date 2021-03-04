@@ -22,7 +22,7 @@ build () {
     cd "$pkg" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
     base_dir="${PWD}"
-    patch_dir="${base_dir}/patches"
+    patch_dir="${base_dir}/${4:-patches}"
     mk_dir="${base_dir}/mk"
     files_dir="${base_dir}/files"
 
