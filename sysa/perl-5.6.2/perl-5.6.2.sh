@@ -23,6 +23,14 @@ src_prepare() {
     perl bytecode.pl
     rm warnings.h lib/warnings.pm
     perl warnings.pl
+
+    # Workaround for some linking problems, remove if possible
+    sed -i 's/perl_call_method/Perl_call_method/' ext/Data/Dumper/Dumper.xs
+    sed -i 's/perl_call_sv/Perl_call_sv/' ext/Data/Dumper/Dumper.xs
+    sed -i 's/sv_setptrobj/Perl_sv_setref_iv/' ext/POSIX/POSIX.xs
+
+    # We are using non-standard locations
+    sed -i 's#/usr/include/errno.h#/after/include/musl/bits/errno.h#' ext/Errno/Errno_pm.PL
 }
 
 src_install() {
