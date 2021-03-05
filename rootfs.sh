@@ -79,7 +79,7 @@ mkdir -p tmp/tmp
 cp after.kaem tmp/
 cp after.kaem.run tmp/after/kaem.run
 cp mescc-tools-seed/checksums tmp/after/mescc-tools-seed-checksums
-cp helpers.sh run.sh pre-sha.sha256sums tmp/after/
+cp helpers.sh run.sh run2.sh pre-sha.sha256sums tmp/after/
 
 # mescc-tools-extra
 cp -r mescc-tools-extra tmp/after/
@@ -218,6 +218,9 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.12.tar.gz
 
 # binutils 2.14
 get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
+
+# bash 3.2.57
+get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
