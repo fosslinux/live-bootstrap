@@ -24,4 +24,4 @@ BUILTINS_OBJS = $(BUILTINS_DEF_OBJS) $(BUILTINS_STATIC_OBJS)
 	$(CC) -c $(CFLAGS) -o $@ $*.c
 
 libbuiltins.a: $(BUILTINS_OBJS) builtins.o
-	$(AR) cr $@ $(BUILTINS_OBJS) builtins.o
+	$(AR) cr $@ $^

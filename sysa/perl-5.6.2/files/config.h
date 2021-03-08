@@ -19,6 +19,8 @@
 
 #define HAS_SYSCALL
 #define HAS_TIMES
+#define HAS_FLOCK
+#define HAS_TRUNCATE
 
 #define HAS_VPRINTF
 #define Gid_t gid_t
@@ -69,6 +71,7 @@
 #define ARCHLIB "/after/lib/perl5/"
 
 #define CAT2(a,b) a##b
+#define STRINGIFY(a) "a"
 #define Gconvert(x,n,t,b) gcvt((x),(n),(b))
 
 #define Time_t time_t
@@ -96,6 +99,7 @@
 #define NVSIZE 8 /* sizeof(double) */
 #define UVSIZE 4 /* sizeof(long) on i386 */
 #define IVSIZE 4
+#define PTRSIZE 4
 
 #define IVTYPE long
 #define UVTYPE unsigned long
