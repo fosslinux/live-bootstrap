@@ -9,6 +9,7 @@
 #define CPPMINUS "-"
 #define HAS_ALARM
 #define HAS_FORK
+#define HAS_FCNTL
 #define HAS_MKDIR
 #define HAS_PAUSE
 #define HAS_READDIR
