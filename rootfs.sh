@@ -222,6 +222,9 @@ get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 
+# sed 4.0.9
+get_file ftp://ftp.gnu.org/gnu/sed/sed-4.0.9.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

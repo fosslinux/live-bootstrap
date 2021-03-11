@@ -251,6 +251,11 @@ tcc 0.9.27 (musl v2)
 Now that we have a ‘fixed’ ``musl``, we now recompile ``tcc`` as ``tcc``
 uses floats extensively.
 
+sed 4.0.9
+=========
+
+A slightly newer ``sed`` is built against musl.
+
 .. _bzip2-1.0.8-1:
 
 bzip2 1.0.8
