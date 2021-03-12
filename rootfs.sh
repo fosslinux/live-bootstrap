@@ -216,6 +216,9 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz
 # autoconf 2.12
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.12.tar.gz
 
+# libtool 1.4
+get_file https://ftp.gnu.org/gnu/libtool/libtool-1.4.tar.gz
+
 # binutils 2.14
 get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 

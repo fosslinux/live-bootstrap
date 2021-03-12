@@ -377,8 +377,8 @@ Version 2.52 is the newest version that runs on ``miniperl``.
 automake 1.4-p6
 ===============
 
-GNU Automake is a tool for automatically generating Makefile.in files. Together with
-Autoconf they from GNU Autotools build system.
+GNU Automake is a tool for automatically generating Makefile.in files. It is another
+major part of GNU Autotools build system.
 
 ``automake`` again needs both ``automake`` and ``autoconf``. In order to bootstrap it
 we patch ``configure.in`` file to produce ``automake`` and skip ``Makefile`` effectively
@@ -402,6 +402,12 @@ autoconf 2.12
 =============
 
 Yet another old autoconf version that we will need for GNU Binutils.
+
+libtool 1.4
+===========
+
+GNU Libtool is the final part of GNU Autotools. It is a script used to hide away differences
+when compiling shared libraries on different platforms.
 
 binutils 2.14
 =============

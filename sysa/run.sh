@@ -85,6 +85,8 @@ build autoconf-2.13
 
 build autoconf-2.12
 
+build libtool-1.4 pass1.sh checksums/pass1
+
 build binutils-2.14
 
 # Build musl with fewer patches
