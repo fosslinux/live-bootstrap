@@ -419,6 +419,11 @@ In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
 the GNU linker ``ld``, which allows us building shared libraries,
 and the GNU assembler ``as``.
 
+libtool 1.4
+===========
+
+Rebuild libtool, so that it uses GNU binutils when creating shared libraries.
+
 musl 1.1.24 (v3)
 ================
 

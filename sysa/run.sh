@@ -89,6 +89,8 @@ build libtool-1.4 pass1.sh checksums/pass1
 
 build binutils-2.14
 
+build libtool-1.4 pass2.sh checksums/pass2
+
 # Build musl with fewer patches
 build musl-1.1.24 binutils-rebuild.sh checksums/pass3 patches-pass3
 populate_device_nodes
