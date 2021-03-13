@@ -36,6 +36,9 @@ build musl-1.1.24 musl-1.1.24.sh checksums/pass2
 # Rebuild tcc-musl using new musl
 build tcc-0.9.27 tcc-musl-pass2.sh checksums/tcc-musl-pass2
 
+# Rebuild sed using musl
+build sed-4.0.9
+
 # Rebuild bzip2 using musl
 build bzip2-1.0.8 bzip2-1.0.8.sh checksums/bzip2-pass2
 
@@ -82,7 +85,11 @@ build autoconf-2.13
 
 build autoconf-2.12
 
+build libtool-1.4 pass1.sh checksums/pass1
+
 build binutils-2.14
+
+build libtool-1.4 pass2.sh checksums/pass2
 
 # Build musl with fewer patches
 build musl-1.1.24 binutils-rebuild.sh checksums/pass3 patches-pass3
