@@ -10,3 +10,5 @@ set -e
 . helpers.sh
 
 echo "Bootstrapping completed."
+
+exec env - PATH=/after/bin bash -i
