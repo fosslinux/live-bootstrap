@@ -74,13 +74,14 @@ CFLAGS  = -I . -I lib \
           -Dmajor_t=unsigned \
           -Dminor_t=unsigned \
           -DHAVE_GETTIMEOFDAY=1 \
+          -DHAVE_TIME_R_POSIX=1 \
           -DHASH_ALGO_SHA256
 
 .PHONY: all install
 
 SRC_DIR=src
 
-COREUTILS =
+COREUTILS = date
 
 BINARIES = $(addprefix $(SRC_DIR)/, $(COREUTILS))
 
@@ -88,7 +89,7 @@ ALL=$(BINARIES) $(SRC_DIR)/sha256sum
 all: $(BINARIES) $(SRC_DIR)/sha256sum
 
 LIB_DIR = lib
-LIB_SRC = acl alloca getdate posixtm posixver strftime getopt hash hash-pjw argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode __fpending file-type fnmatch fopen-safer full-read full-write getline gettime hard-locale human idcache imaxtostr linebuffer localcharset long-options mbswidth md5 memcasecmp memcoll modechange offtostr physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha256 stpcpy stripslash umaxtostr unicodeio userspec version-etc version-etc-fsf xgetcwd xgethostname xmalloc xmemcoll xnanosleep xreadlink xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist canonicalize mkstemp memrchr euidaccess obstack strverscmp strftime xalloc-die close-stream
+LIB_SRC = acl alloca getdate fprintftime posixtm posixver strftime getopt hash hash-pjw argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode __fpending file-type fnmatch fopen-safer full-read full-write getline gettime hard-locale human idcache imaxtostr linebuffer localcharset long-options mbswidth md5 memcasecmp memcoll modechange offtostr physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha256 stpcpy stripslash umaxtostr unicodeio userspec version-etc version-etc-fsf xgetcwd xgethostname xmalloc xmemcoll xnanosleep xreadlink xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist canonicalize mkstemp memrchr euidaccess obstack strverscmp strftime xalloc-die close-stream
 
 LIB_OBJECTS = $(addprefix $(LIB_DIR)/, $(addsuffix .o, $(LIB_SRC)))
 
