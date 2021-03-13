@@ -1,0 +1,19 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+getdate.c is pre-compiled from getdate.y
+At this point we don't have bison yet and in any case getdate.y does not
+compile when generated with modern bison.
+
+--- src/touch.c.orig	2021-03-13 18:16:05.344355958 +0000
++++ src/touch.c	2021-03-13 18:16:26.204891355 +0000
+@@ -306,7 +306,7 @@
+ 
+ 	case 'd':
+ 	  flexible_date++;
+-	  newtime = get_date (optarg, NULL);
++	  newtime = 0;
+ 	  if (newtime == (time_t) -1)
+ 	    error (EXIT_FAILURE, 0, _("invalid date format %s"), quote (optarg));
+ 	  date_set++;

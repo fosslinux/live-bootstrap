@@ -13,6 +13,9 @@ src_prepare() {
     cp lib/search_.h lib/search.h
     touch config.h
 
+    # Bison pre-generated file
+    rm lib/getdate.c
+
     cp "${mk_dir}/pass2.mk" Makefile
 }
 
