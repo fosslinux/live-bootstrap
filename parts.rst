@@ -372,8 +372,6 @@ packaging software on computer systems where a Bourne shell is available.
 At this stage we still do not have a working autotools system, so we manually install
 ``autoconf`` script and replace a few placeholder variables with ``sed``.
 
-Version 2.52 is the newest version that runs on ``miniperl``.
-
 automake 1.4-p6
 ===============
 
@@ -385,8 +383,6 @@ we patch ``configure.in`` file to produce ``automake`` and skip ``Makefile`` eff
 removing dependency on ``automake`` at the cost of having to install ``automake`` manually.
 
 Then we rebuild both ``automake`` using already installed ``autoconf`` and ``automake``.
-
-Version 1.4-p6 is again the newest version that runs on ``miniperl``.
 
 autoconf 2.52
 =============
@@ -444,3 +440,9 @@ interactively.  This newer version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
 as an interactive shell. autoconf 2.52 is used to regenerate the configure
 script and bison is used to recreate some included generated files.
+
+automake 1.5
+============
+
+We build a newer version of GNU Automake. We first build a slightly patched
+version with ``automake-1.4`` and then use it to rebuild ``automake 1.5``.

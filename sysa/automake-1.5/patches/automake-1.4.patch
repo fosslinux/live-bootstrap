@@ -1,0 +1,60 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Remove parts that automake 1.4 does not understand.
+This breaks installation but builds a functional automake 1.5
+that can then rebuild itself.
+
+diff -U3 -r automake-1.5.orig/lib/am/Makefile.am automake-1.5/lib/am/Makefile.am
+--- lib/am/Makefile.am	2001-05-14 05:48:45.000000000 +0100
++++ lib/am/Makefile.am	2021-03-14 00:34:52.204432782 +0000
+@@ -2,10 +2,4 @@
+ 
+ amdir = $(pkgdatadir)/am
+ 
+-dist_am_DATA = ansi2knr.am check.am clean-hdr.am clean.am compile.am \
+-configure.am data.am dejagnu.am depend.am depend2.am distdir.am \
+-footer.am header-vars.am header.am install.am java.am lang-compile.am \
+-lex.am library.am libs.am libtool.am lisp.am ltlib.am ltlibrary.am \
+-mans-vars.am mans.am multilib.am program.am progs.am python.am \
+-remake-hdr.am scripts.am subdirs.am tags.am texi-vers.am texibuild.am \
+-texinfos.am yacc.am
++
+diff -U3 -r automake-1.5.orig/lib/Automake/Makefile.am automake-1.5/lib/Automake/Makefile.am
+--- lib/Automake/Makefile.am	2001-05-03 09:32:37.000000000 +0100
++++ lib/Automake/Makefile.am	2021-03-14 00:35:01.164658975 +0000
+@@ -1,4 +1,3 @@
+ ## Process this file with automake to create Makefile.in
+ 
+ perllibdir = $(pkgdatadir)/Automake
+-dist_perllib_DATA = Struct.pm
+diff -U3 -r automake-1.5.orig/lib/Makefile.am automake-1.5/lib/Makefile.am
+--- lib/Makefile.am	2001-05-14 05:48:45.000000000 +0100
++++ lib/Makefile.am	2021-03-14 00:34:38.234080302 +0000
+@@ -2,14 +2,10 @@
+ 
+ SUBDIRS = Automake am
+ 
+-dist_pkgdata_DATA = COPYING INSTALL texinfo.tex ansi2knr.c ansi2knr.1
+-
+ ## These must all be executable when installed.  However, if we use
+ ## _SCRIPTS, then the program transform will be applied, which is not
+ ## what we want.  So we make them executable by hand.
+ scriptdir = $(pkgdatadir)
+-dist_script_DATA = config.guess config.sub install-sh mdate-sh missing \
+-mkinstalldirs elisp-comp ylwrap acinstall depcomp compile py-compile
+ 
+ install-data-hook:
+ 	@$(POST_INSTALL)
+diff -U3 -r automake-1.5.orig/Makefile.am automake-1.5/Makefile.am
+--- Makefile.am	2001-06-09 01:34:28.000000000 +0100
++++ Makefile.am	2021-03-14 00:33:52.742934180 +0000
+@@ -1,6 +1,6 @@
+ ## Process this file with automake to create Makefile.in
+ 
+-AUTOMAKE_OPTIONS = 1.4 dist-bzip2
++AUTOMAKE_OPTIONS = 1.4
+ 
+ ## We need `.' in SUBDIRS because we want `check' to build `.' before
+ ## tests.

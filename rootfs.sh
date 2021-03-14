@@ -171,6 +171,9 @@ get_file http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.
 # musl 1.1.24
 get_file https://musl.libc.org/releases/musl-1.1.24.tar.gz
 
+# sed 4.0.9
+get_file https://ftp.gnu.org/gnu/sed/sed-4.0.9.tar.gz
+
 # m4 1.4.7
 get_file https://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.gz
 
@@ -225,8 +228,8 @@ get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 
-# sed 4.0.9
-get_file ftp://ftp.gnu.org/gnu/sed/sed-4.0.9.tar.gz
+# automake 1.5
+get_file https://ftp.gnu.org/gnu/automake/automake-1.5.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;
