@@ -5,6 +5,7 @@
 src_prepare() {
     rm configure Makefile.in */Makefile.in
     autoconf-2.52
+    aclocal-1.4
     automake-1.4
 }
 
@@ -14,8 +15,9 @@ src_configure() {
 
 src_install() {
     # cleanup old manual install
-    rm ${PREFIX}/bin/automake-1.4
-    rm -rf ${PREFIX}/share/automake-1.4
+    rm "${PREFIX}"/bin/automake-1.4
+    rm -rf "${PREFIX}"/share/automake-1.4
+    rm -rf "${PREFIX}"/share/aclocal-1.4
 
     default_src_install
 }

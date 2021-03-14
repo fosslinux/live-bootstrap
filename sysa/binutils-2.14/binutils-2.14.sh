@@ -7,7 +7,24 @@ src_prepare() {
     default_src_prepare
 
     rm configure
-    autoconf-2.13
+
+    # Rebuild aclocal.m4 files
+    # aclocal.m4 in libiberty seems to be hand-written
+    # FIXME intl, needs gettext.m4
+    for dir in binutils bfd gas gprof ld opcodes; do
+	cd $dir
+	rm aclocal.m4
+	aclocal-1.4
+	cd ..
+    done
+
+    for dir in binutils bfd gas intl libiberty ld opcodes; do
+	cd $dir
+	rm config.in
+        autoheader-2.13
+	cd ..
+    done
+
     for dir in binutils bfd gas ld gprof libiberty opcodes; do
         cd $dir
         rm configure
@@ -25,6 +42,8 @@ src_prepare() {
     rm config.guess config.sub ltmain.sh
     libtoolize
     cp ${PREFIX}/share/aclocal/libtool.m4 aclocal.m4
+
+    autoconf-2.13
 
     # automake errors out without this
     cd gas
