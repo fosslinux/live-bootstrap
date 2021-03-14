@@ -14,11 +14,17 @@ src_configure() {
 }
 
 src_compile() {
-    :
+    cp m4/amversion.in m4/amversion.m4
+    sed -i 's/@VERSION@/1.4-p6/' m4/amversion.m4
+    sed -i 's/@APIVERSION@/1.4/' m4/amversion.m4
 }
 
 src_install() {
-    install automake ${PREFIX}/bin/automake-1.4
-    mkdir -p ${PREFIX}/share/automake-1.4
-    cp -r *.am ${PREFIX}/share/automake-1.4/
+    install automake "${PREFIX}"/bin/automake-1.4
+    mkdir -p "${PREFIX}"/share/automake-1.4
+    cp -r *.am "${PREFIX}"/share/automake-1.4/
+
+    install aclocal "${PREFIX}"/bin/aclocal-1.4
+    mkdir -p "${PREFIX}"/share/aclocal-1.4
+    cp -r m4/*.m4 "${PREFIX}"/share/aclocal-1.4/
 }
