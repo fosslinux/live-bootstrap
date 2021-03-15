@@ -98,11 +98,6 @@ old GNU software, using older versions compilable by tinycc. Prior to
 this point, all tools have been adapted significantly for the bootstrap;
 now, we will be using old tooling instead.
 
-sed 4.0.7
-=========
-
-You are most likely aware of GNU ``sed``, a line editor.
-
 tar 1.12
 ========
 
@@ -116,10 +111,14 @@ gzip 1.2.4
 
 ``gzip`` is the most common compression format used for software source
 code. It is luckily distributed as a barebones uncompressed ``.tar``,
-which we extract and then build. We do require deletion of a few lines
-unsupported by mes libc.
+which we extract and then build.
 
 Going forward, we can now use ``.tar.gz`` for source code.
+
+sed 4.0.7
+=========
+
+You are most likely aware of GNU ``sed``, a line editor.
 
 patch 2.5.9
 ===========
