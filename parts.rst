@@ -103,8 +103,7 @@ tar 1.12
 
 GNU ``tar`` is the most common archive format used by software source
 code, often compressed also. To avoid continuing using submodules, we
-build GNU tar 1.12, the last version compilable by tinycc without
-significant patching.
+build GNU tar 1.12, the last version compilable with mes libc.
 
 gzip 1.2.4
 ==========
@@ -440,8 +439,10 @@ provides new features, and is built with GNU readline support so it can be used
 as an interactive shell. autoconf 2.52 is used to regenerate the configure
 script and bison is used to recreate some included generated files.
 
-automake 1.5
-============
+automake 1.6.3
+==============
 
-We build a newer version of GNU Automake. We first build a slightly patched
-version with ``automake-1.4`` and then use it to rebuild ``automake 1.5``.
+This is a newer version of GNU Automake that is required to build newer
+versions of ``autoconf``. We again use two stage approach like we did
+with ``automake-1.4`` because previous versions of ``automake`` are too old
+to properly build ``automake-1.6``.

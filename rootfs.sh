@@ -228,8 +228,8 @@ get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 
-# automake 1.5
-get_file https://ftp.gnu.org/gnu/automake/automake-1.5.tar.gz
+# automake 1.6.3
+get_file https://ftp.gnu.org/gnu/automake/automake-1.6.3.tar.bz2
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;

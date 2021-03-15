@@ -9,8 +9,8 @@
 set -e
 . helpers.sh
 
-build automake-1.5 stage1.sh
-build automake-1.5 stage2.sh
+build automake-1.6.3 stage1.sh
+build automake-1.6.3 stage2.sh
 
 echo "Bootstrapping completed."
 
