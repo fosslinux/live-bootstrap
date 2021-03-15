@@ -254,8 +254,6 @@ sed 4.0.9
 
 A slightly newer ``sed`` is built against musl.
 
-.. _bzip2-1.0.8-1:
-
 bzip2 1.0.8
 ===========
 
