@@ -24,9 +24,6 @@
 [submodule "sysa/tcc-0.9.27/src/tcc-0.9.27"]
 	path = sysa/tcc-0.9.27/src/tcc-0.9.27
 	url = git://repo.or.cz/tinycc.git
-[submodule "sysa/sed-4.0.7/src"]
-	path = sysa/sed-4.0.7/src
-	url = https://git.savannah.gnu.org/git/sed/sed-history.git
 [submodule "sysa/tcc-0.9.26/src/mes-libc"]
 	path = sysa/tcc-0.9.26/src/mes-libc
 	url = https://gitlab.com/janneke/mes
