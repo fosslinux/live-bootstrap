@@ -56,12 +56,6 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# sed
-pkg="sed-4.0.7"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
 # tar
 pkg="tar-1.12"
 cd ${pkg}
@@ -70,6 +64,12 @@ cd ..
 
 # gzip
 pkg="gzip-1.2.4"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# sed
+pkg="sed-4.0.7"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..

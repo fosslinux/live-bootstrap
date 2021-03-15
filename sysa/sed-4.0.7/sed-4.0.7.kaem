@@ -2,12 +2,18 @@
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -ex
 
-cd src
+cd build
+
+# Extract
+gunzip ../src/${pkg}.tar.gz
+tar xf ../src/${pkg}.tar
+cd ${pkg}
 
 # Create config.h
 catm config.h
@@ -43,7 +49,7 @@ tcc -static -o ${bindir}/sed -L lib lib/libsed.a compile.o execute.o regex.o fmt
 # Test
 sed --version
 
-cd ..
+cd ../..
 
 # Checksums
 fletcher16 checksums

@@ -101,9 +101,6 @@ popd
 # tcc 0.9.27
 cp -r tcc-0.9.27 tmp/after/
 
-# sed 4.0.7
-cp -r sed-4.0.7 tmp/after/
-
 # tar 1.12
 url=https://ftp.gnu.org/gnu/tar/tar-1.12.tar.gz
 cp -r tar-1.12 tmp/after
@@ -140,6 +137,9 @@ get_file() {
 
 # gzip 1.2.4
 get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar 1
+
+# sed 4.0.7
+get_file https://ftp.gnu.org/gnu/sed/sed-4.0.7.tar.gz 1
 
 # patch 2.5.9
 get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz 1

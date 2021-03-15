@@ -2,6 +2,7 @@
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -12,11 +13,6 @@ cd build
 # Extract
 tar xf ../src/${pkg}.tar
 cd ${pkg}
-
-# Patch
-# Remove strlwr, it does not build with mes libc
-cp util.c util_patched.c
-sed -i 165,174d util_patched.c
 
 # Compile
 tcc -c -DNO_UTIME gzip.c
@@ -31,11 +27,12 @@ tcc -c unlzh.c
 tcc -c unlzw.c
 tcc -c unpack.c
 tcc -c unzip.c
-tcc -c util_patched.c
+# strlwr is already defined in mes libc
+tcc -c -Dstrlwr=unused util.c
 tcc -c zip.c
 
 # Link
-tcc -static -o ${bindir}/gzip gzip.o zip.o deflate.o trees.o bits.o unzip.o inflate.o util_patched.o crypt.o lzw.o unlzw.o unpack.o unlzh.o getopt.o
+tcc -static -o ${bindir}/gzip gzip.o zip.o deflate.o trees.o bits.o unzip.o inflate.o util.o crypt.o lzw.o unlzw.o unpack.o unlzh.o getopt.o
 
 # Install
 cp ${bindir}/gzip ${bindir}/gunzip
