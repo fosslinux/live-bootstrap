@@ -11,10 +11,10 @@ src_prepare() {
     # Rebuild aclocal.m4 files
     # aclocal.m4 in libiberty seems to be hand-written
     for dir in binutils bfd gas gprof ld opcodes; do
-	cd $dir
-	rm aclocal.m4
-	aclocal-1.4
-	cd ..
+        cd $dir
+        rm aclocal.m4
+        aclocal-1.4
+        cd ..
     done
 
     # intl/aclocal.m4 consists of two parts.
@@ -32,10 +32,10 @@ src_prepare() {
     cd ..
 
     for dir in binutils bfd gas intl libiberty ld opcodes; do
-	cd $dir
-	rm config.in
+        cd $dir
+        rm config.in
         autoheader-2.13
-	cd ..
+        cd ..
     done
 
     for dir in binutils bfd gas ld gprof libiberty opcodes; do
