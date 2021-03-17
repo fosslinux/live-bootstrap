@@ -4,12 +4,9 @@
 
 src_compile() {
     cp autoconf.in autoconf
-    sed -i "s# @SHELL@#/bin/sh#" autoconf
-    sed -i 's/@M4@/m4/' autoconf
-    sed -i 's/@AWK@/awk/' autoconf
-    sed -i 's/@PACKAGE_NAME@/Autoconf/' autoconf
-    sed -i 's/@VERSION@/2.52/' autoconf
-    sed -i "s#@datadir@#${PREFIX}/share/autoconf-2.52#" autoconf
+    sed -i -e "s# @SHELL@#/bin/sh#" -e 's/@M4@/m4/' -e 's/@AWK@/awk/' \
+	-e  's/@PACKAGE_NAME@/Autoconf/' -e 's/@VERSION@/2.52/' \
+	-e "s#@datadir@#${PREFIX}/share/autoconf-2.52#" autoconf
     chmod +x autoconf
 
     m4 autoconf.m4 --freeze-state=autoconf.m4f

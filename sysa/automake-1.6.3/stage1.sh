@@ -3,27 +3,22 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    sed -i '/Makefile/d' configure.in
-
     rm configure Makefile.in */Makefile.in */*/Makefile.in aclocal.m4
-    autoconf-2.52
-}
-
-src_configure() {
-    ./configure --prefix=/after
+    cp aclocal.in aclocal
+    cp m4/amversion.in m4/amversion.m4
 }
 
 src_compile() {
-    cp m4/amversion.in m4/amversion.m4
-    sed -i 's/@VERSION@/1.6.3/' m4/amversion.m4
-    sed -i 's/@APIVERSION@/1.6/' m4/amversion.m4
+    sed -i -e 's/@VERSION@/1.6.3/' -e 's/@APIVERSION@/1.6/' m4/amversion.m4
+
+    sed -i -e 's#@PERL@#/after/bin/perl#' -e 's/@PACKAGE@/automake/' \
+	-e 's/@APIVERSION@/1.6/' -e 's/@VERSION@/1.6.3/' \
+	-e 's#@prefix@#/after#' -e 's#@datadir@#/after/share#' aclocal
 }
 
 src_install() {
-    install automake "${PREFIX}"/bin/automake-1.6
-    mkdir -p "${PREFIX}"/share/automake-1.6/{Automake,am}
+    mkdir -p "${PREFIX}"/share/automake-1.6/Automake
     cp lib/Automake/*.pm "${PREFIX}"/share/automake-1.6/Automake/
-    cp -r lib/am/*.am "${PREFIX}"/share/automake-1.6/am/
 
     install aclocal "${PREFIX}"/bin/aclocal-1.6
     mkdir -p "${PREFIX}"/share/aclocal-1.6
