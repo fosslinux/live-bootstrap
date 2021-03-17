@@ -114,7 +114,7 @@ which we extract and then build.
 
 Going forward, we can now use ``.tar.gz`` for source code.
 
-sed 4.0.7
+sed 4.0.9
 =========
 
 You are most likely aware of GNU ``sed``, a line editor.
@@ -252,7 +252,7 @@ uses floats extensively.
 sed 4.0.9
 =========
 
-A slightly newer ``sed`` is built against musl.
+``sed`` is rebuilt against musl.
 
 bzip2 1.0.8
 ===========
