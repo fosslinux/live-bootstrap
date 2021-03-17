@@ -69,7 +69,7 @@ kaem --file ${pkg}.kaem
 cd ..
 
 # sed
-pkg="sed-4.0.7"
+pkg="sed-4.0.9"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..

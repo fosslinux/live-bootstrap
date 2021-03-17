@@ -138,8 +138,8 @@ get_file() {
 # gzip 1.2.4
 get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar 1
 
-# sed 4.0.7
-get_file https://ftp.gnu.org/gnu/sed/sed-4.0.7.tar.gz 1
+# sed 4.0.9
+get_file https://ftp.gnu.org/gnu/sed/sed-4.0.9.tar.gz 1
 
 # patch 2.5.9
 get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz 1
@@ -167,9 +167,6 @@ get_file http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.
 
 # musl 1.1.24
 get_file https://musl.libc.org/releases/musl-1.1.24.tar.gz
-
-# sed 4.0.9
-get_file https://ftp.gnu.org/gnu/sed/sed-4.0.9.tar.gz
 
 # m4 1.4.7
 get_file https://ftp.gnu.org/gnu/m4/m4-1.4.7.tar.gz

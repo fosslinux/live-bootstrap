@@ -27,7 +27,7 @@ tcc -c getopt1.c
 tcc -c -I .. getopt.c
 tcc -c -I .. -DENABLE_NLS=0 utils.c
 cp regex_.h regex.h
-tcc -c -I . regex.c
+tcc -c -DHAVE_ALLOCA_H -I . regex.c
 tcc -c obstack.c
 tcc -c strverscmp.c
 tcc -c getline.c
@@ -39,12 +39,12 @@ cd ..
 ## sed
 tcc -c -I . -I lib -DSED_FEATURE_VERSION=\"4.0\" sed/compile.c
 tcc -c -I . -I lib sed/execute.c
-tcc -c -I . -I lib sed/regex.c
+tcc -c -I . -I lib sed/regexp.c
 tcc -c -I . -I lib sed/fmt.c
-tcc -c -I . -I lib -DPACKAGE=\"sed\" -DVERSION=\"4.0.7\" sed/sed.c
+tcc -c -I . -I lib -DPACKAGE=\"sed\" -DVERSION=\"4.0.9\" sed/sed.c
 
 # Link
-tcc -static -o ${bindir}/sed -L lib lib/libsed.a compile.o execute.o regex.o fmt.o sed.o -lsed
+tcc -static -o ${bindir}/sed -L lib lib/libsed.a compile.o execute.o regexp.o fmt.o sed.o -lsed
 
 # Test
 sed --version
@@ -52,4 +52,4 @@ sed --version
 cd ../..
 
 # Checksums
-fletcher16 checksums
+fletcher16 checksums/pass1
