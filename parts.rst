@@ -103,8 +103,7 @@ tar 1.12
 
 GNU ``tar`` is the most common archive format used by software source
 code, often compressed also. To avoid continuing using submodules, we
-build GNU tar 1.12, the last version compilable by tinycc without
-significant patching.
+build GNU tar 1.12, the last version compilable with mes libc.
 
 gzip 1.2.4
 ==========
@@ -172,7 +171,7 @@ bzip2 1.0.8
 ``bzip2`` is a compression format that compresses more than ``gzip``. It
 is preferred where we can use it, and makes source code sizes smaller.
 
-coreutils 5.0.0
+coreutils 5.0
 ===============
 
 GNU Coreutils is a collection of widely used utilities such as ``cat``,
@@ -371,32 +370,43 @@ packaging software on computer systems where a Bourne shell is available.
 At this stage we still do not have a working autotools system, so we manually install
 ``autoconf`` script and replace a few placeholder variables with ``sed``.
 
+Autoconf 2.52 is the newest version of ``autoconf`` that does not need ``perl``, and hence
+a bit easier to install.
+
+automake 1.6.3
+==============
+
+GNU Automake is a tool for automatically generating Makefile.in files. It is another major
+part of GNU Autotools build system and consists of ``aclocal`` and ``automake`` scripts.
+
+We bootstrap it using a 3 stage process:
+
+1. Use ``sed`` to replace a few placeholder variables in ``aclocal.in`` script.
+   Then we manually install ``aclocal`` script and its dependencies.
+2. Patch ``configure.in`` to create ``automake`` file but skip ``Makefile.in`` processing.
+   Again we manually install ``automake`` script and its dependencies.
+3. We now use ``aclocal``, ``autoconf``, and ``automake`` to do a proper build and install.
+
 automake 1.4-p6
 ===============
 
-GNU Automake is a tool for automatically generating Makefile.in files. It is another
-major part of GNU Autotools build system.
-
-``automake`` again needs both ``automake`` and ``autoconf``. In order to bootstrap it
-we patch ``configure.in`` file to produce ``automake`` and skip ``Makefile`` effectively
-removing dependency on ``automake`` at the cost of having to install ``automake`` manually.
-
-Then we rebuild both ``automake`` using already installed ``autoconf`` and ``automake``.
+This is an older version of GNU Automake. Various versions of GNU Autotools are not fully
+compatible, and we will need older ``automake`` to build some older software.
 
 autoconf 2.52
 =============
 
-We now properly rebuild ``autoconf`` using ``autoconf`` and ``automake``.
+We now properly rebuild ``autoconf`` using ``automake-1.4`` and manually installed ``autoconf``.
 
 autoconf 2.13
 =============
 
-Different versions of autotools are not fully compatible, so build older ``autoconf`` too.
+An older ``autoconf`` will be necessary to build GNU Binutils.
 
 autoconf 2.12
 =============
 
-Yet another old autoconf version that we will need for GNU Binutils.
+Yet another old autoconf version that we will need for some parts of GNU Binutils.
 
 libtool 1.4
 ===========
@@ -439,9 +449,3 @@ interactively.  This newer version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
 as an interactive shell. autoconf 2.52 is used to regenerate the configure
 script and bison is used to recreate some included generated files.
-
-automake 1.5
-============
-
-We build a newer version of GNU Automake. We first build a slightly patched
-version with ``automake-1.4`` and then use it to rebuild ``automake 1.5``.

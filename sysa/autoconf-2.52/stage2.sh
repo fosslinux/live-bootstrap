@@ -10,7 +10,7 @@ src_prepare() {
 
     # Install autoconf data files into versioned directory
     for file in */Makefile.in  Makefile.in; do
-	sed -i '/^pkgdatadir/s:$:-@VERSION@:' $file
+        sed -i '/^pkgdatadir/s:$:-@VERSION@:' $file
     done
 }
 

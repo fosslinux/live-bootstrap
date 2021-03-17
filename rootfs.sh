@@ -156,9 +156,6 @@ get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz 1
 # coreutils 5.0
 get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2 1
 
-# coreutils 6.3
-get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.3.tar.bz2
-
 # heirloom-devtools
 get_file http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2
 
@@ -189,6 +186,9 @@ get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
 # diffutils 2.7
 get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
+# coreutils 6.3
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.3.tar.bz2
+
 # gawk 3.0.4
 get_file https://ftp.gnu.org/gnu/gawk/gawk-3.0.4.tar.gz
 
@@ -210,6 +210,9 @@ get_file https://www.cpan.org/src/5.0/perl-5.6.2.tar.gz
 # autoconf 2.52
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.52.tar.gz
 
+# automake 1.6.3
+get_file https://ftp.gnu.org/gnu/automake/automake-1.6.3.tar.bz2
+
 # automake 1.4-p6
 get_file https://ftp.gnu.org/gnu/automake/automake-1.4-p6.tar.gz
 
@@ -227,9 +230,6 @@ get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
-
-# automake 1.5
-get_file https://ftp.gnu.org/gnu/automake/automake-1.5.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;

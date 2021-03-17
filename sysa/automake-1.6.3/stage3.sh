@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    rm configure Makefile.in */Makefile.in
+    rm configure Makefile.in */Makefile.in */*/Makefile.in aclocal.m4
+    aclocal-1.6
     autoconf-2.52
-    aclocal-1.4
-    automake-1.4
+    automake-1.6
 }
 
 src_configure() {
@@ -15,9 +15,10 @@ src_configure() {
 
 src_install() {
     # cleanup old manual install
-    rm "${PREFIX}"/bin/automake-1.4
-    rm -rf "${PREFIX}"/share/automake-1.4
-    rm -rf "${PREFIX}"/share/aclocal-1.4
+    rm "${PREFIX}"/bin/automake-1.6
+    rm "${PREFIX}"/bin/aclocal-1.6
+    rm -rf "${PREFIX}"/share/automake-1.6
+    rm -rf "${PREFIX}"/share/aclocal-1.6
 
     default_src_install
 }

@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+src_prepare() {
+    rm configure Makefile.in */Makefile.in */*/Makefile.in aclocal.m4
+    cp aclocal.in aclocal
+    cp m4/amversion.in m4/amversion.m4
+}
+
+src_compile() {
+    sed -i -e 's/@VERSION@/1.6.3/' -e 's/@APIVERSION@/1.6/' m4/amversion.m4
+
+    sed -i -e 's#@PERL@#/after/bin/perl#' -e 's/@PACKAGE@/automake/' \
+	-e 's/@APIVERSION@/1.6/' -e 's/@VERSION@/1.6.3/' \
+	-e 's#@prefix@#/after#' -e 's#@datadir@#/after/share#' aclocal
+}
+
+src_install() {
+    mkdir -p "${PREFIX}"/share/automake-1.6/Automake
+    cp lib/Automake/*.pm "${PREFIX}"/share/automake-1.6/Automake/
+
+    install aclocal "${PREFIX}"/bin/aclocal-1.6
+    mkdir -p "${PREFIX}"/share/aclocal-1.6
+    cp -r m4/*.m4 "${PREFIX}"/share/aclocal-1.6/
+}
