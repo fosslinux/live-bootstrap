@@ -69,13 +69,14 @@ build () {
 default_src_unpack() {
     src_dir="${base_dir}/src"
 
-    for suf in gz bz2 xz; do
-        source="${src_dir}/${pkg}.tar.${suf}"
+    for suf in .gz .bz2 .xz ""; do
+        source="${src_dir}/${pkg}.tar${suf}"
         if test -e "${source}"; then
             case "${suf}" in
-                gz) tar -xzf "${source}" ;;
-                bz2) tar -xf "${source}" --use-compress-program=bzip2 ;;
-                xz) tar -xf "${source}" --use-compress-program=xz ;;
+                .gz) tar -xzf "${source}" ;;
+                .bz2) tar -xf "${source}" --use-compress-program=bzip2 ;;
+                .xz) tar -xf "${source}" --use-compress-program=xz ;;
+                "") tar -xf "${source}" ;;
             esac
         fi
     done
