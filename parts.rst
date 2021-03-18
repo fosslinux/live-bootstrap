@@ -172,7 +172,7 @@ bzip2 1.0.8
 is preferred where we can use it, and makes source code sizes smaller.
 
 coreutils 5.0
-===============
+=============
 
 GNU Coreutils is a collection of widely used utilities such as ``cat``,
 ``chmod``, ``chown``, ``cp``, ``install``, ``ln``, ``ls``, ``mkdir``,
@@ -438,6 +438,13 @@ tcc 0.9.27 (musl v3)
 ====================
 
 We rebuild tcc against new musl and without a patch to ignore duplicate symbols.
+
+autoconf 2.53
+=============
+
+We now start bootstrapping newer versions of autoconf. Version 2.53 now uses ``perl``.
+In order to build it with ``autoconf-2.52`` we have to patch it a bit and then do
+a second unpatched build with newly built ``autoconf-2.53``.
 
 bash 3.2.57
 ===========

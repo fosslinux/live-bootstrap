@@ -205,7 +205,7 @@ get_file https://www.cpan.org/src/5.0/perl5.005_03.tar.gz
 get_file https://www.cpan.org/src/5.0/perl-5.6.2.tar.gz
 
 # autoconf 2.52
-get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.52.tar.gz
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.52.tar.bz2
 
 # automake 1.6.3
 get_file https://ftp.gnu.org/gnu/automake/automake-1.6.3.tar.bz2
@@ -224,6 +224,9 @@ get_file https://ftp.gnu.org/gnu/libtool/libtool-1.4.tar.gz
 
 # binutils 2.14
 get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
+
+# autoconf 2.53
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.53.tar.bz2
 
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz

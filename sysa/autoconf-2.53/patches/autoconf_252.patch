@@ -1,0 +1,42 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Disable features unsupported by Autoconf 2.52
+
+--- configure.ac	Wed Mar 17 19:53:06 2021
++++ configure.ac.new	Wed Mar 17 19:52:53 2021
+@@ -19,8 +19,7 @@
+ # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ # 02111-1307, USA.
+ 
+-# We need AC_CONFIG_TESTDIR.
+-AC_PREREQ([2.53])
++AC_PREREQ([2.52])
+ 
+ AC_INIT([GNU Autoconf], [2.53], [bug-autoconf@gnu.org])
+ AC_SUBST([PACKAGE_NAME])dnl
+@@ -32,7 +31,6 @@
+ AM_INIT_AUTOMAKE
+ 
+ # Initialize the test suite and build position independent wrappers.
+-AC_CONFIG_TESTDIR([tests])
+ AC_CONFIG_FILES([tests/Makefile tests/atlocal])
+ AC_CONFIG_FILES([tests/autoconf:tests/wrapsh.in],
+                 [chmod +x tests/autoconf])
+@@ -85,16 +73,4 @@
+                  bin/Makefile])
+ 
+ AC_OUTPUT
+-# Report the state of this version of Autoconf if this is a beta.
+-m4_bmatch(m4_defn([AC_PACKAGE_VERSION]),  [[a-z]],
+-[    cat <<EOF
+-
+-You are about to use an experimental version of Autoconf.  Be sure to
+-read the relevant mailing lists, most importantly <autoconf@gnu.org>.
+-
+-Below you will find information on the status of this version of Autoconf.
+-
+ 
+-EOF
+-    sed -n '/^\* Status/,$p' $srcdir/BUGS
+-])
