@@ -473,6 +473,12 @@ automake 1.7.8
 
 Newer ``automake``. This is the latest ``automake`` that is buildable with ``autoconf-2.55``.
 
+autoconf 2.57
+=============
+
+Newer ``autoconf``. This time we were able to skip version 2.56.
+
+
 bash 3.2.57
 ===========
 
