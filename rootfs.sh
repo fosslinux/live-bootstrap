@@ -228,6 +228,12 @@ get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 # autoconf 2.53
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.53.tar.bz2
 
+# automake 1.7
+get_file https://ftp.gnu.org/gnu/automake/automake-1.7.tar.bz2
+
+# autoconf 2.54
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.54.tar.bz2
+
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 

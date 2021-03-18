@@ -446,6 +446,22 @@ We now start bootstrapping newer versions of autoconf. Version 2.53 now uses ``p
 In order to build it with ``autoconf-2.52`` we have to patch it a bit and then do
 a second unpatched build with newly built ``autoconf-2.53``.
 
+automake 1.7
+============
+
+Automake 1.7 and Autoconf 2.54 depend on each other, so we patch out two offending
+autoconf macros to make it build with ``autoconf-2.53``.
+
+autoconf 2.54
+=============
+
+More ``autoconf``.
+
+automake 1.7
+============
+
+Rebuild ``automake`` with ``autoconf-2.54``.
+
 bash 3.2.57
 ===========
 
