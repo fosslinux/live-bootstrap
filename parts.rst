@@ -462,6 +462,11 @@ automake 1.7
 
 Rebuild ``automake`` with ``autoconf-2.54``.
 
+autoconf 2.55
+=============
+
+Even newer ``autoconf``.
+
 bash 3.2.57
 ===========
 
