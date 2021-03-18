@@ -113,6 +113,8 @@ build automake-1.7 stage2.sh
 
 build autoconf-2.55
 
+build automake-1.7.8
+
 build bash-3.2.57
 
 exec bash run2.sh
