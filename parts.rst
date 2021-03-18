@@ -495,5 +495,5 @@ bash 3.2.57
 Up to this point, our build of ``bash`` could run scripts but could not be used
 interactively.  This newer version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
-as an interactive shell. autoconf 2.52 is used to regenerate the configure
+as an interactive shell. ``autoconf-2.57`` is used to regenerate the configure
 script and bison is used to recreate some included generated files.
