@@ -478,6 +478,11 @@ autoconf 2.57
 
 Newer ``autoconf``. This time we were able to skip version 2.56.
 
+autoconf 2.59
+=============
+
+Again, we managed to skip one version.
+
 
 bash 3.2.57
 ===========
