@@ -483,6 +483,11 @@ autoconf 2.59
 
 Again, we managed to skip one version.
 
+automake 1.8.5
+==============
+
+We need newer ``automake`` to proceed to newer ``autoconf`` versions. This is the latest
+automake version from 1.8 release series.
 
 bash 3.2.57
 ===========

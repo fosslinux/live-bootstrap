@@ -246,6 +246,9 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.57.tar.bz2
 # autoconf 2.59
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.59.tar.bz2
 
+# automake 1.8.5
+get_file https://ftp.gnu.org/gnu/automake/automake-1.8.5.tar.bz2
+
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 
