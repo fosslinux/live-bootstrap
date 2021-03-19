@@ -19,3 +19,7 @@ src_configure() {
 src_compile() {
     make MAKEINFO=true
 }
+
+src_install() {
+    make install MAKEINFO=true
+}
