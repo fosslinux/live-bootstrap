@@ -446,11 +446,73 @@ We now start bootstrapping newer versions of autoconf. Version 2.53 now uses ``p
 In order to build it with ``autoconf-2.52`` we have to patch it a bit and then do
 a second unpatched build with newly built ``autoconf-2.53``.
 
+automake 1.7
+============
+
+Automake 1.7 and Autoconf 2.54 depend on each other, so we patch out two offending
+autoconf macros to make it build with ``autoconf-2.53``.
+
+autoconf 2.54
+=============
+
+More ``autoconf``.
+
+automake 1.7
+============
+
+Rebuild ``automake`` with ``autoconf-2.54``.
+
+autoconf 2.55
+=============
+
+Even newer ``autoconf``. This is the last version of ``autoconf`` that is buildable
+with ``automake-1.7``.
+
+automake 1.7.8
+==============
+
+Newer ``automake``. This is the latest ``automake`` that is buildable with ``autoconf-2.55``.
+
+autoconf 2.57
+=============
+
+Newer ``autoconf``. This time we were able to skip version 2.56.
+
+autoconf 2.59
+=============
+
+Again, we managed to skip one version.
+
+automake 1.8.5
+==============
+
+We need newer ``automake`` to proceed to newer ``autoconf`` versions. This is the latest
+automake version from 1.8 release series.
+
+help2man 1.36.4
+===============
+
+``help2man`` automatically generates manpages from programs ``--help`` and ``--version``
+outputs. This is not strictly required for bootstrapping but will help us to avoid patching
+build process to skip generation of manpages. This is the newest version of ``help2man`` that
+does not require Perl 5.8.
+
+autoconf 2.61
+=============
+
+Yet another version of ``autoconf``.
+
+automake 1.9.6
+==============
+
+Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
+to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
+
 bash 3.2.57
 ===========
 
 Up to this point, our build of ``bash`` could run scripts but could not be used
 interactively.  This newer version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
-as an interactive shell. autoconf 2.52 is used to regenerate the configure
+as an interactive shell. ``autoconf-2.57`` is used to regenerate the configure
 script and bison is used to recreate some included generated files.

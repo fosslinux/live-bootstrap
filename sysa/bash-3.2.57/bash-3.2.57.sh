@@ -9,7 +9,7 @@ src_prepare() {
     # Rebuild configure script
     # Ignore harmless error from autoconf for now
     rm configure
-    autoconf-2.52 || true
+    autoconf-2.57
 }
 
 src_configure() {

@@ -9,6 +9,9 @@
 set -e
 . helpers.sh
 
+build automake-1.9.6 stage1.sh
+build automake-1.9.6 stage2.sh
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i

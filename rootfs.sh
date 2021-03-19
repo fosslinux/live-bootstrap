@@ -228,8 +228,38 @@ get_file https://ftp.gnu.org/gnu/binutils/binutils-2.14.tar.bz2
 # autoconf 2.53
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.53.tar.bz2
 
+# automake 1.7
+get_file https://ftp.gnu.org/gnu/automake/automake-1.7.tar.bz2
+
+# autoconf 2.54
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.54.tar.bz2
+
+# autoconf 2.55
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.55.tar.bz2
+
+# automake 1.7.8
+get_file https://ftp.gnu.org/gnu/automake/automake-1.7.8.tar.bz2
+
+# autoconf 2.57
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.57.tar.bz2
+
+# autoconf 2.59
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.59.tar.bz2
+
+# automake 1.8.5
+get_file https://ftp.gnu.org/gnu/automake/automake-1.8.5.tar.bz2
+
+# help2man 1.36.4
+get_file https://ftp.gnu.org/gnu/help2man/help2man-1.36.4.tar.gz
+
+# autoconf 2.61
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2
+
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
+
+# automake 1.9.6
+get_file https://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.bz2
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;

@@ -104,6 +104,28 @@ build tcc-0.9.27 tcc-musl-pass3.sh checksums/tcc-musl-pass3
 build autoconf-2.53 stage1.sh
 build autoconf-2.53 stage2.sh
 
+build automake-1.7 stage1.sh
+
+build autoconf-2.54 stage1.sh
+build autoconf-2.54 stage2.sh
+
+build automake-1.7 stage2.sh
+
+build autoconf-2.55
+
+build automake-1.7.8
+
+build autoconf-2.57
+
+build autoconf-2.59
+
+build automake-1.8.5
+
+build help2man-1.36.4
+
+build autoconf-2.61 stage1.sh
+build autoconf-2.61 stage2.sh
+
 build bash-3.2.57
 
 exec bash run2.sh

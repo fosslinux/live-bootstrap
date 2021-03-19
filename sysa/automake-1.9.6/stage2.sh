@@ -3,14 +3,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    rm configure
-    autoconf-2.52
-
-    sed -i '/^acdatadir/s:$:-2.13:' Makefile.in
+    autoreconf-2.61 -f
 }
 
 src_configure() {
-    ./configure --prefix=${PREFIX} --program-suffix=-2.13
+    ./configure --prefix=/after
 }
 
 src_compile() {
