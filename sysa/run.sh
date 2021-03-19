@@ -121,6 +121,8 @@ build autoconf-2.59
 
 build automake-1.8.5
 
+build help2man-1.36.4
+
 build bash-3.2.57
 
 exec bash run2.sh

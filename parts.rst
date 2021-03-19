@@ -489,6 +489,14 @@ automake 1.8.5
 We need newer ``automake`` to proceed to newer ``autoconf`` versions. This is the latest
 automake version from 1.8 release series.
 
+help2man 1.36.4
+===============
+
+``help2man`` automatically generates manpages from programs ``--help`` and ``--version``
+outputs. This is not strictly required for bootstrapping but will help us to avoid patching
+build process to skip generation of manpages. This is the newest version of ``help2man`` that
+does not require Perl 5.8.
+
 bash 3.2.57
 ===========
 
