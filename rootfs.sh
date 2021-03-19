@@ -258,6 +258,9 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 
+# automake 1.9.6
+get_file https://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.bz2
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
