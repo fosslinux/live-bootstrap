@@ -123,6 +123,9 @@ build automake-1.8.5
 
 build help2man-1.36.4
 
+build autoconf-2.61 stage1.sh
+build autoconf-2.61 stage2.sh
+
 build bash-3.2.57
 
 exec bash run2.sh

@@ -252,6 +252,9 @@ get_file https://ftp.gnu.org/gnu/automake/automake-1.8.5.tar.bz2
 # help2man 1.36.4
 get_file https://ftp.gnu.org/gnu/help2man/help2man-1.36.4.tar.gz
 
+# autoconf 2.61
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2
+
 # bash 3.2.57
 get_file https://ftp.gnu.org/gnu/bash/bash-3.2.57.tar.gz
 

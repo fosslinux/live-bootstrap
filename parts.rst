@@ -497,6 +497,12 @@ outputs. This is not strictly required for bootstrapping but will help us to avo
 build process to skip generation of manpages. This is the newest version of ``help2man`` that
 does not require Perl 5.8.
 
+autoconf 2.61
+=============
+
+Yet another version of ``autoconf``.
+
+
 bash 3.2.57
 ===========
 
