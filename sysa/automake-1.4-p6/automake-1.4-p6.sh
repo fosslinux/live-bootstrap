@@ -15,3 +15,7 @@ src_prepare() {
 src_configure() {
     ./configure --prefix=/after
 }
+
+src_compile() {
+    make MAKEINFO=true
+}
