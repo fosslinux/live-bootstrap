@@ -14,8 +14,8 @@ src_configure() {
       --host=i386 \
       --disable-shared \
       --prefix=/after \
-      --libdir=/after/lib/musl/ \
-      --includedir=/after/include/musl
+      --libdir=/after/lib/musl \
+      --includedir=/after/include/
 
     # configure script creates this file
     test -f /dev/null && rm /dev/null
@@ -23,4 +23,9 @@ src_configure() {
 
 src_compile() {
     make CROSS_COMPILE= CFLAGS="-DSYSCALL_NO_TLS" AS_CMD='as -o $@ $<'
+}
+
+src_install() {
+    rm -rf /after/include
+    make install
 }

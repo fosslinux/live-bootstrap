@@ -14,7 +14,7 @@ src_prepare() {
 src_compile() {
     export prefix=/after
     export libdir=${prefix}/lib/musl
-    export incdir=${prefix}/include/musl
+    export incdir=${prefix}/include
     export bindir=${prefix}/bin
 
     mkdir -p ${libdir}/tcc
@@ -34,6 +34,7 @@ src_compile() {
         -D CONFIG_USE_LIBGCC=1 \
         -D TCC_VERSION=\"0.9.27\" \
         -D ONE_SOURCE=1 \
+        -I ${incdir} \
         tcc.c
 
     # libtcc1.a
