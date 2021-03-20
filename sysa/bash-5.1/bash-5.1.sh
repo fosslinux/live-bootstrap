@@ -7,16 +7,17 @@ src_prepare() {
     rm y.tab.c y.tab.h
 
     # Rebuild configure script
-    # Ignore harmless error from autoconf for now
     rm configure
-    autoconf-2.57
+    autoconf-2.61
 }
 
 src_configure() {
     CC=tcc CPPFLAGS="-D HAVE_ALLOCA_H" \
-        ./configure --prefix=/after \
+        ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
-        --build=i386-unknown-linux
+        --disable-nls \
+        --build=i386-unknown-linux-gnu \
+        --enable-static-link
 }
 
 src_install() {
