@@ -508,11 +508,11 @@ automake 1.9.6
 Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
 to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
 
-bash 3.2.57
-===========
+bash 5.1
+========
 
 Up to this point, our build of ``bash`` could run scripts but could not be used
-interactively.  This newer version of ``bash`` compiles without any patches,
+interactively.  This new version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
-as an interactive shell. ``autoconf-2.57`` is used to regenerate the configure
-script and bison is used to recreate some included generated files.
+as an interactive shell. ``autoconf-2.61`` is used to regenerate the configure
+script and ``bison`` is used to recreate some included generated files.
