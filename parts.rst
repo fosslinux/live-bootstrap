@@ -502,12 +502,6 @@ autoconf 2.61
 
 Yet another version of ``autoconf``.
 
-automake 1.9.6
-==============
-
-Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
-to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
-
 bash 5.1
 ========
 
@@ -516,3 +510,17 @@ interactively.  This new version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
 as an interactive shell. ``autoconf-2.61`` is used to regenerate the configure
 script and ``bison`` is used to recreate some included generated files.
+
+automake 1.9.6
+==============
+
+Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
+to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
+
+gcc 4.0.4
+=========
+
+The GNU Compiler Collection (GCC) is an optimizing compiler produced by the GNU Project.
+GCC is a key component of the GNU toolchain and the standard compiler for most projects related to GNU and the Linux kernel.
+
+Only C frontend is built at this stage.

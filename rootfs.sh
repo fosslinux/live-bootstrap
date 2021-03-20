@@ -261,6 +261,9 @@ get_file https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
 # automake 1.9.6
 get_file https://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.bz2
 
+# gcc 4.0.4
+get_file https://ftp.gnu.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2 0 gcc-4.0.4.tar.bz2
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
