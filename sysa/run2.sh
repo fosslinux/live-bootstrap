@@ -14,6 +14,10 @@ build automake-1.9.6 stage2.sh
 
 build gcc-4.0.4 stage1.sh
 
+build musl-1.2.2
+
+build musl-1.2.2
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i

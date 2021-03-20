@@ -524,3 +524,8 @@ The GNU Compiler Collection (GCC) is an optimizing compiler produced by the GNU 
 GCC is a key component of the GNU toolchain and the standard compiler for most projects related to GNU and the Linux kernel.
 
 Only C frontend is built at this stage.
+
+musl 1.2.2
+==========
+
+This is the latest musl version as of the time of writing.

@@ -264,6 +264,9 @@ get_file https://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.bz2
 # gcc 4.0.4
 get_file https://ftp.gnu.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2 0 gcc-4.0.4.tar.bz2
 
+# musl 1.2.2
+get_file https://musl.libc.org/releases/musl-1.2.2.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
