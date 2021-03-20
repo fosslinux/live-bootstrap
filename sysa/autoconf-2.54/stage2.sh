@@ -16,3 +16,11 @@ src_prepare() {
 src_configure() {
     ./configure --prefix="${PREFIX}" --program-suffix=-2.54
 }
+
+src_compile() {
+    make MAKEINFO=true
+}
+
+src_install() {
+    make install MAKEINFO=true
+}
