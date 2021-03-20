@@ -23,8 +23,12 @@ src_configure() {
     ./configure --prefix="${PREFIX}" --program-suffix=-2.54
 }
 
+src_compile() {
+    make MAKEINFO=true
+}
+
 src_install() {
-    default_src_install
+    make install MAKEINFO=true
 
     ln -sf "${PREFIX}"/bin/autoconf-2.54 "${PREFIX}"/bin/autoconf
 }

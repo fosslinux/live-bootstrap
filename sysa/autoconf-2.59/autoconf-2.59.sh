@@ -15,9 +15,15 @@ src_configure() {
     ./configure --prefix="${PREFIX}" --program-suffix=-2.59
 }
 
+src_compile() {
+    make MAKEINFO=true
+}
+
 src_install() {
-    default_src_install
+    make install MAKEINFO=true
 
     ln -sf "${PREFIX}/bin/autoconf-2.59" "${PREFIX}/bin/autoconf"
+    ln -sf "${PREFIX}/bin/autoheader-2.59" "${PREFIX}/bin/autoheader"
     ln -sf "${PREFIX}/bin/autom4te-2.59" "${PREFIX}/bin/autom4te"
+    ln -sf "${PREFIX}/bin/autoreconf-2.59" "${PREFIX}/bin/autoreconf"
 }

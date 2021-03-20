@@ -13,6 +13,10 @@ src_configure() {
     ./configure --prefix=/after
 }
 
+src_compile() {
+    make MAKEINFO=true
+}
+
 src_install() {
     # cleanup old manual install
     rm "${PREFIX}"/bin/automake-1.6
@@ -20,5 +24,5 @@ src_install() {
     rm -rf "${PREFIX}"/share/automake-1.6
     rm -rf "${PREFIX}"/share/aclocal-1.6
 
-    default_src_install
+    make install MAKEINFO=true
 }

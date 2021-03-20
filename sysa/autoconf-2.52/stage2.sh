@@ -18,10 +18,14 @@ src_configure() {
     ./configure --prefix=${PREFIX} --program-suffix=-2.52
 }
 
+src_compile() {
+    make MAKEINFO=true
+}
+
 src_install() {
     # Remove manually installed autoconf
     rm ${PREFIX}/bin/autoconf-2.52
     rm -rf ${PREFIX}/share/autoconf-2.52
 
-    default_src_install
+    make install MAKEINFO=true
 }
