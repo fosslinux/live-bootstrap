@@ -9,7 +9,8 @@ src_unpack() {
 
 src_prepare() {
     default_src_prepare
-    sed -i 's/ix86_attribute_table\[\]/ix86_attribute_table\[10\]/' gcc/config/i386/i386.c
+
+    # Needed for musl
     sed -i 's/struct siginfo/siginfo_t/' gcc/config/i386/linux-unwind.h
 
     rm configure
@@ -45,7 +46,7 @@ src_prepare() {
     # Workaround for bison being too new
     sed -i 's/YYLEX/yylex()/' gcc/c-parse.y
     rm gcc/c-parse.c
-    rm gcc/gengtype-yacc.{c,h}
+    rm gcc/gengtype-yacc.c gcc/gengtype-yacc.h
     rm intl/plural.c
 
     # Rebuild flex generated files
@@ -58,18 +59,15 @@ src_prepare() {
 src_configure() {
     mkdir build
     cd build
-    CC=tcc CFLAGS="-D HAVE_ALLOCA_H" ../configure \
-      --prefix="${PREFIX}" \
-      --libdir="${PREFIX}"/lib/musl \
-      --build=i386-unknown-linux-gnu \
-      --host=i386-unknown-linux-gnu \
-      --disable-shared \
-      --disable-nls \
-      --disable-libmudflap
+    ../configure \
+        --prefix="${PREFIX}" \
+        --libdir="${PREFIX}"/lib/musl \
+        --build=i386-unknown-linux-gnu \
+        --host=i386-unknown-linux-gnu \
+        --disable-shared \
+        --disable-nls \
+        --disable-libmudflap
     cd ..
-
-    sed -i 's/C_alloca/alloca/g' libiberty/alloca.c
-    sed -i 's/C_alloca/alloca/g' include/libiberty.h
 }
 
 src_compile() {

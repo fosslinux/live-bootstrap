@@ -12,11 +12,13 @@ set -e
 build automake-1.9.6 stage1.sh
 build automake-1.9.6 stage2.sh
 
-build gcc-4.0.4 stage1.sh
+build gcc-4.0.4 pass1.sh checksums/pass1
 
 build bash-5.1 pass2.sh checksums/pass2
 
 build musl-1.2.2
+
+build gcc-4.0.4 pass2.sh checksums/pass2
 
 echo "Bootstrapping completed."
 
