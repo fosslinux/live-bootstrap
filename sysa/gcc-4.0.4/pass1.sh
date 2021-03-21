@@ -9,7 +9,9 @@ src_unpack() {
 
 src_prepare() {
     default_src_prepare
+    # This is needed for building with TCC
     sed -i 's/ix86_attribute_table\[\]/ix86_attribute_table\[10\]/' gcc/config/i386/i386.c
+    # Needed for musl
     sed -i 's/struct siginfo/siginfo_t/' gcc/config/i386/linux-unwind.h
 
     rm configure
@@ -45,7 +47,7 @@ src_prepare() {
     # Workaround for bison being too new
     sed -i 's/YYLEX/yylex()/' gcc/c-parse.y
     rm gcc/c-parse.c
-    rm gcc/gengtype-yacc.{c,h}
+    rm gcc/gengtype-yacc.c gcc/gengtype-yacc.h
     rm intl/plural.c
 
     # Rebuild flex generated files

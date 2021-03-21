@@ -502,15 +502,6 @@ autoconf 2.61
 
 Yet another version of ``autoconf``.
 
-bash 5.1
-========
-
-Up to this point, our build of ``bash`` could run scripts but could not be used
-interactively.  This new version of ``bash`` compiles without any patches,
-provides new features, and is built with GNU readline support so it can be used
-as an interactive shell. ``autoconf-2.61`` is used to regenerate the configure
-script and ``bison`` is used to recreate some included generated files.
-
 automake 1.9.6
 ==============
 
@@ -526,11 +517,6 @@ compiler for most projects related to GNU and the Linux kernel.
 
 Only the C frontend is built at this stage.
 
-bash 5.1 (gcc)
-==============
-
-Rebuild bash with GCC.
-
 musl 1.2.2
 ==========
 
@@ -542,3 +528,12 @@ gcc 4.0.4
 =========
 
 Rebuild GCC with GCC and also against the latest musl.
+
+bash 5.1
+========
+
+Up to this point, our build of ``bash`` could run scripts but could not be used
+interactively.  This new version of ``bash`` compiles without any patches,
+provides new features, and is built with GNU readline support so it can be used
+as an interactive shell. ``autoconf-2.61`` is used to regenerate the configure
+script and ``bison`` is used to recreate some included generated files.

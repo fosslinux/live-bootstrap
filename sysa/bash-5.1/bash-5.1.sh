@@ -10,11 +10,12 @@ src_prepare() {
     # Rebuild configure script
     rm configure
     autoconf-2.61
+
+    sed -i 's/sleep 3/sleep 3; sync/' builtins/psize.sh
 }
 
 src_configure() {
-    CC=tcc CPPFLAGS="-D HAVE_ALLOCA_H" \
-        ./configure --prefix="${PREFIX}" \
+    ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
         --disable-nls \
         --build=i386-unknown-linux-gnu \
@@ -22,5 +23,5 @@ src_configure() {
 }
 
 src_install() {
-    install bash ${bindir}
+    install bash "${PREFIX}/bin"
 }

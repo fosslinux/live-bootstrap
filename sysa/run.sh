@@ -126,6 +126,15 @@ build help2man-1.36.4
 build autoconf-2.61 stage1.sh
 build autoconf-2.61 stage2.sh
 
-build bash-5.1 pass1.sh checksums/pass1
+build automake-1.9.6 stage1.sh
+build automake-1.9.6 stage2.sh
 
-exec bash run2.sh
+build gcc-4.0.4 pass1.sh checksums/pass1
+
+build musl-1.2.2
+
+build gcc-4.0.4 pass2.sh checksums/pass2
+
+build bash-5.1
+
+exec env -i PATH=/after/bin PREFIX=/after bash run2.sh
