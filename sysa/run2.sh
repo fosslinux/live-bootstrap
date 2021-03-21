@@ -14,7 +14,7 @@ build automake-1.9.6 stage2.sh
 
 build gcc-4.0.4 stage1.sh
 
-build musl-1.2.2
+build bash-5.1 pass2.sh checksums/pass2
 
 build musl-1.2.2
 

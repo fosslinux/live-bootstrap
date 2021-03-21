@@ -525,6 +525,11 @@ GCC is a key component of the GNU toolchain and the standard compiler for most p
 
 Only C frontend is built at this stage.
 
+bash 5.1 (gcc)
+==============
+
+Rebuild bash with GCC.
+
 musl 1.2.2
 ==========
 

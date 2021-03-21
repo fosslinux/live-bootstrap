@@ -126,6 +126,6 @@ build help2man-1.36.4
 build autoconf-2.61 stage1.sh
 build autoconf-2.61 stage2.sh
 
-build bash-5.1
+build bash-5.1 pass1.sh checksums/pass1
 
 exec bash run2.sh
