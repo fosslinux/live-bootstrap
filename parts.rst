@@ -304,13 +304,14 @@ coreutils 5.0
 =============
 
 ``coreutils`` is rebuilt against musl. Additional utilities are built
-including ``comm``, ``expr``, ``date``, ``dd``, ``sort``, ``uname`` and
+including ``comm``, ``expr``, ``dd``, ``sort``, ``sync``, ``uname`` and
 ``uniq``. This fixes a variety of issues with existing ``coreutils``.
 
-coreutils 6.3
+coreutils 6.10
 =============
-We build ``sha256sum`` from coreutils 6.3 since it is absent in 5.0.
-Other utils are not build at this stage.
+We build ``date``, ``mktemp`` and ``sha256sum`` from coreutils 6.10 which are
+either missing or don't build correctly in 5.0. Other utils are not built at
+this stage.
 
 gawk 3.0.4
 ==========

@@ -183,8 +183,8 @@ get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
 # diffutils 2.7
 get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
-# coreutils 6.3
-get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.3.tar.bz2
+# coreutils 6.10
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.10.tar.gz
 
 # gawk 3.0.4
 get_file https://ftp.gnu.org/gnu/gawk/gawk-3.0.4.tar.gz

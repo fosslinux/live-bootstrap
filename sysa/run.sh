@@ -57,8 +57,8 @@ build diffutils-2.7
 # Rebuild coreutils using musl
 build coreutils-5.0 coreutils-5.0.sh checksums/pass2
 
-# Build only sha256sum
-build coreutils-6.3
+# Build only date, mktemp and sha256sum
+build coreutils-6.10
 
 build gawk-3.0.4
 
