@@ -11,6 +11,8 @@ src_prepare() {
     rm configure
     autoconf-2.61
 
+    # Without this bash build can be non-deterministic when using
+    # our old bash 2.05b which was built with Mes C library.
     sed -i 's/sleep 3/sleep 3; sync/' builtins/psize.sh
 }
 
