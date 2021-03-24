@@ -304,7 +304,7 @@ coreutils 5.0
 =============
 
 ``coreutils`` is rebuilt against musl. Additional utilities are built
-including ``comm``, ``expr``, ``date``, ``dd``, ``sort``, ``uname`` and
+including ``comm``, ``expr``, ``dd``, ``sort``, ``sync``, ``uname`` and
 ``uniq``. This fixes a variety of issues with existing ``coreutils``.
 
 coreutils 6.3
