@@ -276,6 +276,9 @@ get_file https://ftp.gnu.org/gnu/libtool/libtool-2.2.4.tar.bz2
 # automake 1.10.3
 get_file https://ftp.gnu.org/gnu/automake/automake-1.10.3.tar.bz2
 
+# autoconf 2.65
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.65.tar.bz2
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

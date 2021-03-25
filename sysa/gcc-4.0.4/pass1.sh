@@ -29,7 +29,7 @@ src_prepare() {
         cd ..
     done
     cd libmudflap
-    autoreconf-2.61 -f
+    AUTOM4TE=autom4te-2.61 autoreconf-2.61 -f
     cd ..
 
     for dir in fixincludes intl libmudflap; do
