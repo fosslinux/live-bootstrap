@@ -45,8 +45,8 @@ src_compile() {
 }
 
 src_install() {
-    # Remove old tcc binaries, keep one for tcc-0.9.27 with mes C library
-    mv ${bindir}/tcc ${bindir}/tcc-mes
+    # Remove old tcc binaries
+    rm ${bindir}/tcc
     rm ${bindir}/boot*-tcc ${bindir}/tcc-0.9.26 ${bindir}/mes-tcc
     ln -s ${bindir}/tcc-musl ${bindir}/tcc
 }

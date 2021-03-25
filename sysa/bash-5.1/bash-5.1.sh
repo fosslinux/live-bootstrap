@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -9,11 +10,14 @@ src_prepare() {
     # Rebuild configure script
     rm configure
     autoconf-2.61
+
+    # Without this bash build can be non-deterministic when using
+    # our old bash 2.05b which was built with Mes C library.
+    sed -i 's/sleep 3/sleep 3; sync/' builtins/psize.sh
 }
 
 src_configure() {
-    CC=tcc CPPFLAGS="-D HAVE_ALLOCA_H" \
-        ./configure --prefix="${PREFIX}" \
+    ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
         --disable-nls \
         --build=i386-unknown-linux-gnu \
@@ -21,5 +25,5 @@ src_configure() {
 }
 
 src_install() {
-    install bash ${bindir}
+    install bash "${PREFIX}/bin"
 }

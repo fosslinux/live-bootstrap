@@ -26,7 +26,7 @@ reuse_lint_task:
     - reuse lint
 
 run_task:
-  timeout_in: 90m
+  timeout_in: 180m
   container:
     image: potyarkin/molecule:host-kvm
     kvm: true

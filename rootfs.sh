@@ -183,8 +183,8 @@ get_file https://ftp.gnu.org/gnu/grep/grep-2.4.tar.gz
 # diffutils 2.7
 get_file https://ftp.gnu.org/gnu/diffutils/diffutils-2.7.tar.gz
 
-# coreutils 6.3
-get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.3.tar.bz2
+# coreutils 6.10
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-6.10.tar.gz
 
 # gawk 3.0.4
 get_file https://ftp.gnu.org/gnu/gawk/gawk-3.0.4.tar.gz
@@ -255,11 +255,17 @@ get_file https://ftp.gnu.org/gnu/help2man/help2man-1.36.4.tar.gz
 # autoconf 2.61
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2
 
-# bash 5.1
-get_file https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
-
 # automake 1.9.6
 get_file https://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.bz2
+
+# gcc 4.0.4
+get_file https://ftp.gnu.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2 0 gcc-4.0.4.tar.bz2
+
+# musl 1.2.2
+get_file https://musl.libc.org/releases/musl-1.2.2.tar.gz
+
+# bash 5.1
+get_file https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;

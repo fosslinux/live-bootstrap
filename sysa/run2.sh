@@ -7,10 +7,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
-. helpers.sh
 
-build automake-1.9.6 stage1.sh
-build automake-1.9.6 stage2.sh
+. helpers.sh
 
 echo "Bootstrapping completed."
 

@@ -304,13 +304,14 @@ coreutils 5.0
 =============
 
 ``coreutils`` is rebuilt against musl. Additional utilities are built
-including ``comm``, ``expr``, ``date``, ``dd``, ``sort``, ``uname`` and
+including ``comm``, ``expr``, ``dd``, ``sort``, ``sync``, ``uname`` and
 ``uniq``. This fixes a variety of issues with existing ``coreutils``.
 
-coreutils 6.3
+coreutils 6.10
 =============
-We build ``sha256sum`` from coreutils 6.3 since it is absent in 5.0.
-Other utils are not build at this stage.
+We build ``date``, ``mktemp`` and ``sha256sum`` from coreutils 6.10 which are
+either missing or don't build correctly in 5.0. Other utils are not built at
+this stage.
 
 gawk 3.0.4
 ==========
@@ -507,6 +508,27 @@ automake 1.9.6
 
 Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
 to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
+
+gcc 4.0.4
+=========
+
+The GNU Compiler Collection (GCC) is an optimizing compiler produced by the
+GNU Project. GCC is a key component of the GNU toolchain and the standard
+compiler for most projects related to GNU and the Linux kernel.
+
+Only the C frontend is built at this stage.
+
+musl 1.2.2
+==========
+
+GCC can build the latest as of the time of writing musl version.
+
+We also don't need any of the TCC patches that we used before.
+
+gcc 4.0.4
+=========
+
+Rebuild GCC with GCC and also against the latest musl.
 
 bash 5.1
 ========

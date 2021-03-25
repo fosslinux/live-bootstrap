@@ -6,8 +6,8 @@
 PACKAGE=coreutils
 PACKAGE_NAME=GNU\ coreutils
 PACKAGE_BUGREPORT=bug-coreutils@gnu.org
-PACKAGE_VERSION=6.3
-VERSION=6.3
+PACKAGE_VERSION=6.10
+VERSION=6.10
 
 CC      = tcc
 LD      = tcc
@@ -75,7 +75,11 @@ CFLAGS  = -I . -I lib \
           -Dminor_t=unsigned \
           -DHAVE_GETTIMEOFDAY=1 \
           -DHAVE_TIME_R_POSIX=1 \
-          -DHASH_ALGO_SHA256
+          -DHASH_ALGO_SHA256 \
+          -DFLEXIBLE_ARRAY_MEMBER \
+          -DS_IRWXUGO='(S_IRWXU | S_IRWXG | S_IRWXO)' \
+          -DGNULIB_CANONICALIZE \
+          -DO_BINARY=0
 
 .PHONY: all install
 
@@ -85,11 +89,11 @@ COREUTILS = date
 
 BINARIES = $(addprefix $(SRC_DIR)/, $(COREUTILS))
 
-ALL=$(BINARIES) $(SRC_DIR)/sha256sum
-all: $(BINARIES) $(SRC_DIR)/sha256sum
+ALL=$(BINARIES) $(SRC_DIR)/sha256sum $(SRC_DIR)/mktemp
+all: $(BINARIES) $(SRC_DIR)/sha256sum $(SRC_DIR)/mktemp
 
 LIB_DIR = lib
-LIB_SRC = acl alloca getdate fprintftime posixtm posixver strftime getopt hash hash-pjw argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode __fpending file-type fnmatch fopen-safer full-read full-write getline gettime hard-locale human idcache imaxtostr linebuffer localcharset long-options mbswidth md5 memcasecmp memcoll modechange offtostr physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha256 stpcpy stripslash umaxtostr unicodeio userspec version-etc version-etc-fsf xgetcwd xgethostname xmalloc xmemcoll xnanosleep xreadlink xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist canonicalize mkstemp memrchr euidaccess obstack strverscmp strftime xalloc-die close-stream
+LIB_SRC = acl alloca getdate fprintftime posixtm posixver strftime getopt hash hash-pjw argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode fpending file-type fnmatch fopen-safer full-read full-write getline gettime hard-locale human idcache imaxtostr linebuffer localcharset long-options mbswidth md5 memcasecmp memcoll modechange offtostr physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha256 stpcpy stripslash umaxtostr unicodeio userspec version-etc version-etc-fsf xgetcwd xgethostname xmalloc xmemcoll xnanosleep readlink xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist canonicalize mkstemp memrchr euidaccess obstack strverscmp strftime xalloc-die close-stream tempname filenamecat xstrndup randint randread rand-isaac gethrxtime
 
 LIB_OBJECTS = $(addprefix $(LIB_DIR)/, $(addsuffix .o, $(LIB_SRC)))
 
@@ -100,6 +104,9 @@ $(BINARIES) : % : %.o $(LIB_DIR)/libfettish.a
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 $(SRC_DIR)/sha256sum: $(SRC_DIR)/md5sum.o $(LIB_DIR)/libfettish.a
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+$(SRC_DIR)/mktemp: $(SRC_DIR)/mktemp.o $(LIB_DIR)/libfettish.a
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: $(ALL)
