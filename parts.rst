@@ -509,6 +509,12 @@ automake 1.9.6
 Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
 to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
 
+findutils 4.2.33
+================
+
+GNU Find Utilities can be used to search for files. We are mainly interested
+in ``find`` and ``xargs`` that are often used in scripts.
+
 gcc 4.0.4
 =========
 

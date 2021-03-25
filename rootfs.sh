@@ -267,6 +267,9 @@ get_file https://musl.libc.org/releases/musl-1.2.2.tar.gz
 # bash 5.1
 get_file https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
 
+# findutils 4.2.33
+get_file https://ftp.gnu.org/gnu/findutils/findutils-4.2.33.tar.gz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

@@ -128,6 +128,8 @@ build autoconf-2.61 stage2.sh
 build automake-1.9.6 stage1.sh
 build automake-1.9.6 stage2.sh
 
+build findutils-4.2.33
+
 build gcc-4.0.4 pass1.sh checksums/pass1
 
 build musl-1.2.2
