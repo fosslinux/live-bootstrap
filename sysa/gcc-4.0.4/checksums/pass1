@@ -5,10 +5,10 @@
 903b1dae32b217048b1a35a934836496027e6947b77f5711cb8714cd5241dda0  /after/libexec/gcc/i386-unknown-linux-gnu/4.0.4/cc1
 711689a618e34a0cff2c6061e554f9a2f9d447a7623bd46ba11c2eb816932883  /after/libexec/gcc/i386-unknown-linux-gnu/4.0.4/collect2
 a3fbed284b1efaf6fccfc81eddd9bad8c4cf07673b16e8885ad6f31a1569c9b4  /after/libexec/gcc/i386-unknown-linux-gnu/4.0.4/install-tools/fixincl
-de4566c661258fa626ea7076e6c57af95c01d0786bcdadb12af23852cc421a2a  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtbegin.o
-c7eea5e845fe2ee5538704d59c6e777d4f72b7100e78d5f86f8d95d96ab2ec20  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtbeginS.o
-de4566c661258fa626ea7076e6c57af95c01d0786bcdadb12af23852cc421a2a  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtbeginT.o
+f2c7e7bf5377e10927c5d243eaa9eb3ae9bed7aab393621831673b368ebae00f  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtbegin.o
+c76e19409c9344a10213e0abb18481aae6416342db4971fb99a116a91fb164da  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtbeginS.o
+f2c7e7bf5377e10927c5d243eaa9eb3ae9bed7aab393621831673b368ebae00f  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtbeginT.o
 342276a6ad25e3d064bba9c5d50fbeaae15d0aefdc5c72b1e796366189af1b1b  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtend.o
 2bf001e0be96ea7c53adf35b1bf0a677eee02008e3aee6c30166d100b720687c  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/crtendS.o
-7b416e87b8e5998c042b64b4b87499720895c17deeffc0bc1b79f6fac502d51b  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/libgcc.a
-efc9783c7386519ef7d5bfe7fadf16d4b6b717deb18dd04e09d810354f015942  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/libgcov.a
+e3c2b3754058829d79b42a4968f3a3dda6e289b51b4b3580f4ccbc64ff473a26  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/libgcc.a
+fc093c2bcf6473237c1187fc93b60e5d353bf710958d7151283c96074af0a899  /after/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/libgcov.a

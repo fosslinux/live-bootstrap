@@ -270,6 +270,9 @@ get_file https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
 # findutils 4.2.33
 get_file https://ftp.gnu.org/gnu/findutils/findutils-4.2.33.tar.gz
 
+# libtool 2.2.4
+get_file https://ftp.gnu.org/gnu/libtool/libtool-2.2.4.tar.bz2
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
