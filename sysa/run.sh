@@ -130,6 +130,8 @@ build findutils-4.2.33
 
 build libtool-2.2.4
 
+build automake-1.10.3
+
 build gcc-4.0.4 pass1.sh checksums/pass1
 
 build musl-1.2.2

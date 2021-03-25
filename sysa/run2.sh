@@ -10,6 +10,10 @@ set -e
 
 . helpers.sh
 
+build autoconf-2.65
+
+build xz-5.0.5
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i
