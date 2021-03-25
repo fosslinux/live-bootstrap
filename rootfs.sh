@@ -277,7 +277,7 @@ find . | cpio -H newc -o | gzip > initramfs.igz
 # Run
 case "${QEMU_CMD}" in
     chroot)
-        sudo PATH="/after/bin:${PATH}" chroot . /init | tee "$LOGFILE"
+        sudo PATH="/after/bin:${PATH}" chroot . /init 2>&1 | tee "$LOGFILE"
     ;;
     minikernel)
         git clone --depth 1 --branch v0.4 https://github.com/bittorf/kritis-linux.git
