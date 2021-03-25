@@ -41,6 +41,7 @@ src_prepare() {
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
+    cp "${PREFIX}/"/share/automake-1.9/config.sub .
 
     # Rebuild bison files
     # Workaround for bison being too new

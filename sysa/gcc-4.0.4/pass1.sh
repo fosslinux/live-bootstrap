@@ -42,6 +42,7 @@ src_prepare() {
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
+    cp "${PREFIX}/"/share/automake-1.9/config.sub .
 
     # Rebuild bison files
     # Workaround for bison being too new
@@ -77,6 +78,8 @@ src_configure() {
 src_compile() {
     mkdir -p /usr/
     ln -sf "${PREFIX}"/include /usr/include
+    ln -sf /usr/include/limits.h /usr/include/sys/limits.h
+
     make -C build LIBGCC2_INCLUDES=-I"${PREFIX}/include/musl"
 }
 

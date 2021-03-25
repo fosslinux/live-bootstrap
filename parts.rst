@@ -423,11 +423,6 @@ In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
 the GNU linker ``ld``, which allows us building shared libraries,
 and the GNU assembler ``as``.
 
-libtool 1.4
-===========
-
-Rebuild libtool, so that it uses GNU binutils when creating shared libraries.
-
 musl 1.1.24 (v3)
 ================
 
@@ -514,6 +509,11 @@ findutils 4.2.33
 
 GNU Find Utilities can be used to search for files. We are mainly interested
 in ``find`` and ``xargs`` that are often used in scripts.
+
+libtool 2.2.4
+=============
+
+Newer version of libtool which is more compatible with modern Autotools.
 
 gcc 4.0.4
 =========
