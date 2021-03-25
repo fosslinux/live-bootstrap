@@ -560,3 +560,10 @@ interactively.  This new version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
 as an interactive shell. ``autoconf-2.61`` is used to regenerate the configure
 script and ``bison`` is used to recreate some included generated files.
+
+xz 5.0.5
+========
+
+XZ Utils is a set of free software command-line lossless data compressors,
+including lzma and xz. In most cases, xz achieves higher compression rates
+than alternatives like gzip and bzip2.
