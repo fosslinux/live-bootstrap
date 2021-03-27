@@ -14,8 +14,8 @@ src_prepare() {
     mv getdate.tab.c getdate.c
     cd ..
 
-    catm config.h
-    catm lib/configmake.h
+    touch config.h
+    touch lib/configmake.h
 }
 
 src_compile() {
