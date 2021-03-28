@@ -573,3 +573,9 @@ automake 1.11.2
 
 GNU Automake from 1.11 series. This is not the latest point release as newer ones
 need Autoconf 2.68.
+
+autoconf 2.69
+=============
+
+This the final version of GNU Autoconf that we will require. There are some newer
+versions but we won't need them.

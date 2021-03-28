@@ -285,6 +285,9 @@ get_file https://tukaani.org/xz/xz-5.0.5.tar.bz2
 # automake 1.11.2
 get_file https://ftp.gnu.org/gnu/automake/automake-1.11.2.tar.bz2
 
+# autoconf 2.69
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.xz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
