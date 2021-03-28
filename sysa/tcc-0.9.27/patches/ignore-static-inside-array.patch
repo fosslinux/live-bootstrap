@@ -1,0 +1,59 @@
+SPDX-FileCopyrightText: 2018 Petr Skocik <pskocik@gmail.com>
+
+SPDX-License-Identifier: LGPL-2.0-or-later
+
+From ef668aae1ee2b8bc904c50a13bf58df613b2f0b0 Mon Sep 17 00:00:00 2001
+From: Petr Skocik <pskocik@gmail.com>
+Date: Fri, 23 Mar 2018 13:19:58 +0100
+Subject: [PATCH 1/1] Don't fail on const/restrict/static/* inside []
+
+This patch makes tcc ignore them.
+
+Normally (as per the C standard), They should
+be only applicable inside parameter arrays
+and affect (const/restrict) the pointer the
+array gets converted to.
+
+[matz: fix formatting, add volatile handling, add testcase,
+add comment about above deficiency]
+---
+ tccgen.c                               | 19 +++++++++++++++++--
+ tests/tests2/100_c99array-decls.c      | 34 ++++++++++++++++++++++++++++++++++
+ tests/tests2/100_c99array-decls.expect |  0
+ 3 files changed, 51 insertions(+), 2 deletions(-)
+ create mode 100644 tests/tests2/100_c99array-decls.c
+ create mode 100644 tests/tests2/100_c99array-decls.expect
+
+diff --git tccgen.c tccgen.c
+index 7ed89ac..6ef40e4 100644
+--- tccgen.c
++++ tccgen.c
+@@ -4335,8 +4335,23 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
+ 	int saved_nocode_wanted = nocode_wanted;
+         /* array definition */
+         next();
+-        if (tok == TOK_RESTRICT1)
+-            next();
++	while (1) {
++	    /* XXX The optional type-quals and static should only be accepted
++	       in parameter decls.  The '*' as well, and then even only
++	       in prototypes (not function defs).  */
++	    switch (tok) {
++	    case TOK_RESTRICT1: case TOK_RESTRICT2: case TOK_RESTRICT3:
++	    case TOK_CONST1:
++	    case TOK_VOLATILE1:
++	    case TOK_STATIC:
++	    case '*':
++		next();
++		continue;
++	    default:
++		break;
++	    }
++	    break;
++	}
+         n = -1;
+         t1 = 0;
+         if (tok != ']') {
+-- 
+2.11.4.GIT
+
