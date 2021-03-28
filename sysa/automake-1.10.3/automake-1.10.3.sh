@@ -13,7 +13,7 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true
+    make MAKEINFO=true CC=tcc
 }
 
 src_install() {
