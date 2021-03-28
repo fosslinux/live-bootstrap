@@ -31,7 +31,7 @@ src_prepare() {
         cd ..
     done
     cd libmudflap
-    AUTOM4TE=autom4te-2.61 autoreconf-2.61 -f
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.61 autoreconf-2.61 -f
     cd ..
 
     for dir in fixincludes intl libmudflap; do

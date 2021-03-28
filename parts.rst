@@ -567,3 +567,9 @@ xz 5.0.5
 XZ Utils is a set of free software command-line lossless data compressors,
 including lzma and xz. In most cases, xz achieves higher compression rates
 than alternatives like gzip and bzip2.
+
+automake 1.11.2
+===============
+
+GNU Automake from 1.11 series. This is not the latest point release as newer ones
+need Autoconf 2.68.

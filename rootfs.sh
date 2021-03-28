@@ -282,6 +282,9 @@ get_file https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
 # xz 5.0.5
 get_file https://tukaani.org/xz/xz-5.0.5.tar.bz2
 
+# automake 1.11.2
+get_file https://ftp.gnu.org/gnu/automake/automake-1.11.2.tar.bz2
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 

@@ -12,6 +12,8 @@ set -e
 
 build xz-5.0.5
 
+build automake-1.11.2
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i
