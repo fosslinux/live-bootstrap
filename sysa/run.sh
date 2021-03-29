@@ -12,7 +12,6 @@ set -e
 
 populate_device_nodes() {
     # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
-    test -c /dev/console || mknod -m 622 /dev/console c 5 1
     test -c /dev/null || mknod -m 666 /dev/null c 1 3
     test -c /dev/zero || mknod -m 666 /dev/zero c 1 5
     test -c /dev/ptmx || mknod -m 666 /dev/ptmx c 5 2

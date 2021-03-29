@@ -21,7 +21,9 @@ src_configure() {
       --includedir=/after/include/musl
 
     # configure script creates this file
-    test -f /dev/null && rm /dev/null
+    if test -f /dev/null; then
+        rm /dev/null
+    fi
 }
 
 src_compile() {
