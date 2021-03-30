@@ -536,6 +536,10 @@ compiler for most projects related to GNU and the Linux kernel.
 
 Only the C frontend is built at this stage.
 
+At this stage we are not yet able to regenerate top-level ``Makefile.in``
+which needs GNU Autogen and hence Guile. Luckily, building GCC without
+top-level ``Makefile`` is fairly easy.
+
 musl 1.2.2
 ==========
 
