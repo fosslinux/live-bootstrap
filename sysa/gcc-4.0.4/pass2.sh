@@ -13,8 +13,10 @@ src_prepare() {
     # Needed for musl
     sed -i 's/struct siginfo/siginfo_t/' gcc/config/i386/linux-unwind.h
 
-    rm configure
-    autoconf-2.13
+    # Regenerating top level Makefile requires GNU Autogen and hence Guile,
+    # but it is not essential for building gcc.
+    rm configure Makefile.in fixincludes/fixincl.x
+
     for dir in intl libcpp; do
         cd $dir
         rm aclocal.m4
@@ -60,23 +62,30 @@ src_prepare() {
 src_configure() {
     mkdir build
     cd build
-    ../configure \
-        --prefix="${PREFIX}" \
-        --libdir="${PREFIX}"/lib/musl \
-        --build=i386-unknown-linux-gnu \
-        --host=i386-unknown-linux-gnu \
-        --disable-shared \
-        --disable-nls \
-        --disable-libmudflap
+
+    for dir in libiberty libcpp gcc; do
+        mkdir $dir
+        cd $dir
+        ../../$dir/configure \
+            --prefix="${PREFIX}" \
+            --libdir="${PREFIX}"/lib/musl \
+            --build=i386-unknown-linux-gnu \
+            --target=i386-unknown-linux-gnu \
+            --host=i386-unknown-linux-gnu \
+            --disable-shared \
+            --program-transform-name=
+        cd ..
+    done
     cd ..
 }
 
 src_compile() {
-    mkdir -p /usr/
-    ln -sf "${PREFIX}"/include /usr/include
-    make -C build LIBGCC2_INCLUDES=-I"${PREFIX}/include/musl"
+    ln -s . build/build-i386-unknown-linux-gnu
+    for dir in libiberty libcpp gcc; do
+        make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include/musl" STMP_FIXINC=
+    done
 }
 
 src_install() {
-    make -C build install
+    make -C build/gcc install STMP_FIXINC=
 }
