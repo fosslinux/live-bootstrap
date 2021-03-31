@@ -1,0 +1,17 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Fixes dependency of bootstrapping script
+
+--- gen-testsuite-part  2017-06-16 21:46:16.000000000 +0100
++++ gen-testsuite-part  2021-04-01 00:02:46.801098617 +0100
+@@ -64,8 +64,6 @@
+   $func->($fh);
+   close $fh
+     or die "$me: closing '$tmpfile': $!\n";
+-  chmod ($perms & ~umask, $tmpfile)
+-    or die "$me: cannot change perms for '$tmpfile': $!\n";
+   rename ($tmpfile, $outfile)
+     or die "$me: renaming '$tmpfile' -> '$outfile: $!\n'";
+ }
