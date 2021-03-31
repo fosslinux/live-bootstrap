@@ -16,6 +16,8 @@ build automake-1.11.2
 
 build autoconf-2.69
 
+build automake-1.12.6
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i
