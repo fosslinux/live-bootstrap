@@ -584,3 +584,8 @@ automake 1.12.6
 ===============
 
 GNU Automake from 1.12 series.
+
+automake 1.13.4
+===============
+
+GNU Automake from 1.13 series.

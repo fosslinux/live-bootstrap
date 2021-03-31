@@ -291,6 +291,9 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.xz
 # automake 1.12.6
 get_file https://ftp.gnu.org/gnu/automake/automake-1.12.6.tar.xz
 
+# automake 1.13.4
+get_file https://ftp.gnu.org/gnu/automake/automake-1.13.4.tar.xz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
