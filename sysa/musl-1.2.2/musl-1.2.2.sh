@@ -11,7 +11,10 @@ src_configure() {
         --includedir=/after/include/
 
     # configure script creates this file
-    test -f /dev/null && rm /dev/null && mknod -m 666 /dev/null c 1 3
+    if test -f /dev/null; then
+        rm /dev/null
+        mknod -m 666 /dev/null c 1 3
+    fi
 }
 
 src_compile() {
