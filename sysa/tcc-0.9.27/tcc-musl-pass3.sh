@@ -8,6 +8,9 @@ src_unpack() {
 }
 
 src_prepare() {
+    # Note that tcc includes static-link and ignore-static-inside-array patches
+    # since we do not build from clean checkout.
+
     :
 }
 

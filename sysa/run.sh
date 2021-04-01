@@ -87,11 +87,9 @@ build autoconf-2.13
 
 build autoconf-2.12
 
-build libtool-1.4 pass1.sh checksums/pass1
+build libtool-1.4
 
 build binutils-2.14
-
-build libtool-1.4 pass2.sh checksums/pass2
 
 # Build musl with fewer patches
 build musl-1.1.24 binutils-rebuild.sh checksums/pass3 patches-pass3
@@ -127,6 +125,14 @@ build autoconf-2.61 stage2.sh
 
 build automake-1.9.6 stage1.sh
 build automake-1.9.6 stage2.sh
+
+build findutils-4.2.33
+
+build libtool-2.2.4
+
+build automake-1.10.3
+
+build autoconf-2.65
 
 build gcc-4.0.4 pass1.sh checksums/pass1
 

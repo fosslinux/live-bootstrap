@@ -423,11 +423,6 @@ In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
 the GNU linker ``ld``, which allows us building shared libraries,
 and the GNU assembler ``as``.
 
-libtool 1.4
-===========
-
-Rebuild libtool, so that it uses GNU binutils when creating shared libraries.
-
 musl 1.1.24 (v3)
 ================
 
@@ -509,6 +504,29 @@ automake 1.9.6
 Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
 to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
 
+findutils 4.2.33
+================
+
+GNU Find Utilities can be used to search for files. We are mainly interested
+in ``find`` and ``xargs`` that are often used in scripts.
+
+libtool 2.2.4
+=============
+
+Newer version of libtool which is more compatible with modern Autotools.
+
+automake 1.10.3
+===============
+
+GNU Automake from 1.10 series. ``aclocal`` is slightly patched to work
+with our ``perl``.
+
+autoconf 2.65
+=============
+
+Slightly newer version of GNU Autoconf. At this stage Autoconf is mostly
+backwards compatible but newer versions need newer ``automake``.
+
 gcc 4.0.4
 =========
 
@@ -517,6 +535,10 @@ GNU Project. GCC is a key component of the GNU toolchain and the standard
 compiler for most projects related to GNU and the Linux kernel.
 
 Only the C frontend is built at this stage.
+
+At this stage we are not yet able to regenerate top-level ``Makefile.in``
+which needs GNU Autogen and hence Guile. Luckily, building GCC without
+top-level ``Makefile`` is fairly easy.
 
 musl 1.2.2
 ==========
@@ -538,3 +560,37 @@ interactively.  This new version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
 as an interactive shell. ``autoconf-2.61`` is used to regenerate the configure
 script and ``bison`` is used to recreate some included generated files.
+
+xz 5.0.5
+========
+
+XZ Utils is a set of free software command-line lossless data compressors,
+including lzma and xz. In most cases, xz achieves higher compression rates
+than alternatives like gzip and bzip2.
+
+automake 1.11.2
+===============
+
+GNU Automake from 1.11 series. This is not the latest point release as newer ones
+need Autoconf 2.68.
+
+autoconf 2.69
+=============
+
+This the final version of GNU Autoconf that we will require. There are some newer
+versions but we won't need them.
+
+automake 1.12.6
+===============
+
+GNU Automake from 1.12 series.
+
+automake 1.13.4
+===============
+
+GNU Automake from 1.13 series.
+
+automake 1.15.1
+===============
+
+GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.

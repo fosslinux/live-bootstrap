@@ -258,6 +258,18 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2
 # automake 1.9.6
 get_file https://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.bz2
 
+# findutils 4.2.33
+get_file https://ftp.gnu.org/gnu/findutils/findutils-4.2.33.tar.gz
+
+# libtool 2.2.4
+get_file https://ftp.gnu.org/gnu/libtool/libtool-2.2.4.tar.bz2
+
+# automake 1.10.3
+get_file https://ftp.gnu.org/gnu/automake/automake-1.10.3.tar.bz2
+
+# autoconf 2.65
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.65.tar.bz2
+
 # gcc 4.0.4
 get_file https://ftp.gnu.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2 0 gcc-4.0.4.tar.bz2
 
@@ -266,6 +278,24 @@ get_file https://musl.libc.org/releases/musl-1.2.2.tar.gz
 
 # bash 5.1
 get_file https://ftp.gnu.org/gnu/bash/bash-5.1.tar.gz
+
+# xz 5.0.5
+get_file https://tukaani.org/xz/xz-5.0.5.tar.bz2
+
+# automake 1.11.2
+get_file https://ftp.gnu.org/gnu/automake/automake-1.11.2.tar.bz2
+
+# autoconf 2.69
+get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.xz
+
+# automake 1.12.6
+get_file https://ftp.gnu.org/gnu/automake/automake-1.12.6.tar.xz
+
+# automake 1.13.4
+get_file https://ftp.gnu.org/gnu/automake/automake-1.13.4.tar.xz
+
+# automake 1.15.1
+get_file https://ftp.gnu.org/gnu/automake/automake-1.15.1.tar.xz
 
 # General cleanup
 find tmp -name .git -exec rm -rf \;

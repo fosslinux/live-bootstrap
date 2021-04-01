@@ -11,6 +11,7 @@ cd src/tcc-0.9.27
 
 # Patch
 patch -Np0 -i ../../patches/static-link.patch
+patch -Np0 -i ../../patches/ignore-static-inside-array.patch
 
 # Compile
 ## We have to use 0.9.26 to recompile 0.9.27, 0.9.27 is not self-hosting for

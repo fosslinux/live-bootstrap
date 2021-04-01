@@ -7,6 +7,8 @@ src_unpack() {
 }
 
 src_prepare() {
+    # Note that tcc includes static-link and ignore-static-inside-array patches
+    # since we do not build from clean checkout.
     patch -Np0 -i ../../patches/ignore-duplicate-symbols.patch
 }
 
