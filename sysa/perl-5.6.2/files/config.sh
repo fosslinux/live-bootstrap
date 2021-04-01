@@ -7,5 +7,7 @@ cc='tcc'
 ldlibpthname='LD_LIBRARY_PATH'
 libpth='/after/lib'
 path_sep=':'
+archname=''
+osvers=''
 
 CONFIGDOTSH=true
