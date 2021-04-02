@@ -9,6 +9,7 @@
 
 set -e
 
+# shellcheck source=sysa/helpers.sh
 . helpers.sh
 
 . bootstrap.cfg
