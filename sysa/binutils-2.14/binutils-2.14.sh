@@ -6,7 +6,7 @@
 src_prepare() {
     default_src_prepare
 
-    rm configure
+    rm configure Makefile.in
 
     # Rebuild aclocal.m4 files
     # aclocal.m4 in libiberty seems to be hand-written
@@ -56,8 +56,6 @@ src_prepare() {
     libtoolize
     cp ${PREFIX}/share/aclocal/libtool.m4 aclocal.m4
 
-    autoconf-2.13
-
     # automake errors out without this
     cd gas
     mv config/m68k-parse.y .
@@ -92,31 +90,46 @@ src_prepare() {
 }
 
 src_configure() {
-    AR="tcc -ar" RANLIB="true" CC="tcc -D __GLIBC_MINOR__=6" \
-        ./configure \
-        --disable-nls \
-        --disable-shared \
-        --disable-werror \
-        --build=i386-unknown-linux \
-        --host=i386-unknown-linux \
-        --target=i386-unknown-linux \
-        --with-sysroot=/after \
-        --disable-64-bit-bfd \
-        --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl"
-
     # TODO: Find a way to avoid these hacks
     sed -i '/#undef pid_t/d' libiberty/config.in
     sed -i '/#undef uintptr_t/d' libiberty/config.in
+    sed -i '/NEED_DECLARATION_SBRK/d' binutils/config.in
+    for dir in bfd opcodes binutils gas ld; do    
+        sed -i '/#undef size_t/d' ${dir}/config.in
+        sed -i '/#undef off_t/d' ${dir}/config.in
+    done
     sed -i 's/C_alloca/alloca/g' libiberty/alloca.c
     sed -i 's/C_alloca/alloca/g' include/libiberty.h
+
+    for dir in intl libiberty opcodes bfd binutils gas gprof ld; do
+        cd $dir
+
+        LD="true" AR="tcc -ar" RANLIB="true" CC="tcc -D __GLIBC_MINOR__=6 -DHAVE_SBRK=1" \
+            ./configure \
+            --disable-nls \
+            --disable-shared \
+            --disable-werror \
+            --build=i386-unknown-linux-gnu \
+            --host=i386-unknown-linux-gnu \
+            --target=i386-unknown-linux-gnu \
+            --with-sysroot="${PREFIX}" \
+            --disable-64-bit-bfd \
+            --prefix="${PREFIX}" \
+            --libdir="${PREFIX}/lib/musl" \
+	    --srcdir=.
+        cd ..
+    done
 }
 
 src_compile() {
-    # Rebuild generated header files. bfd/Makefile does not exists at this stage,
-    # so we need to create it first.
-    make configure-bfd
     make -C bfd headers
+    for dir in libiberty bfd opcodes binutils gas gprof ld; do
+	make -C $dir
+    done
+}
 
-    default_src_compile
+src_install() {
+    for dir in libiberty bfd opcodes binutils gas gprof ld; do
+	make -C $dir install
+    done
 }
