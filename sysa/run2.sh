@@ -22,6 +22,8 @@ build automake-1.13.4
 
 build automake-1.15.1
 
+build tar-1.34
+
 build gmp-6.2.1
 
 echo "Bootstrapping completed."

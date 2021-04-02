@@ -348,6 +348,10 @@ get_file https://ftp.gnu.org/gnu/automake/automake-1.13.4.tar.xz
 # automake 1.15.1
 get_file https://ftp.gnu.org/gnu/automake/automake-1.15.1.tar.xz
 
+# tar 1.34
+get_file https://ftp.gnu.org/gnu/tar/tar-1.34.tar.xz \
+         https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-30820c.tar.gz
+
 # gmp 6.2.1
 get_file https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
 

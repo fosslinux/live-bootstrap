@@ -595,6 +595,12 @@ automake 1.15.1
 
 GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
 
+tar 1.34
+========
+
+Newer tar has better support for decompressing .tar.bz2 and .tar.xz archives.
+It also deals better with modern tar archives with extra metadata.
+
 gmp 6.2.1
 =========
 
