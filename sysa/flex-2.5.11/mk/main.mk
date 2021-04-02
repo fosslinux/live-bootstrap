@@ -38,5 +38,5 @@ skel.c: mkskel.sh flex.skl
 	/bin/sh ./mkskel.sh ./flex.skl > skel.c
 
 install: all
-	install flex $(PREFIX)/bin
-	ln -sf $(PREFIX)/bin/flex $(PREFIX)/bin/lex
+	install flex $(DESTDIR)$(PREFIX)/bin
+	ln -sf $(PREFIX)/bin/flex $(DESTDIR)$(PREFIX)/bin/lex

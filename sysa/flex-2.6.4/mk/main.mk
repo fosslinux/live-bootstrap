@@ -41,5 +41,5 @@ skel.c: mkskel.sh flex.skl
 	/bin/sh ./mkskel.sh . m4 2.6.4 > skel.c
 
 install: all
-	install flex $(PREFIX)/bin
-	ln -sf $(PREFIX)/bin/flex $(PREFIX)/bin/lex
+	install flex $(DESTDIR)$(PREFIX)/bin
+	ln -sf $(PREFIX)/bin/flex $(DESTDIR)$(PREFIX)/bin/lex

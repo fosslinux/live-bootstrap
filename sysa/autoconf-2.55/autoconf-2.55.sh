@@ -22,10 +22,10 @@ src_compile() {
 }
 
 src_install() {
-    make install MAKEINFO=true
+    make install MAKEINFO=true DESTDIR="${DESTDIR}"
 
-    ln -sf "${PREFIX}/bin/autoconf-2.55" "${PREFIX}/bin/autoconf"
-    ln -sf "${PREFIX}/bin/autoheader-2.55" "${PREFIX}/bin/autoheader"
-    ln -sf "${PREFIX}/bin/autom4te-2.55" "${PREFIX}/bin/autom4te"
-    ln -sf "${PREFIX}/bin/autoreconf-2.55" "${PREFIX}/bin/autoreconf"
+    ln -sf "${PREFIX}/bin/autoconf-2.55" "${DESTDIR}${PREFIX}/bin/autoconf"
+    ln -sf "${PREFIX}/bin/autoheader-2.55" "${DESTDIR}${PREFIX}/bin/autoheader"
+    ln -sf "${PREFIX}/bin/autom4te-2.55" "${DESTDIR}${PREFIX}/bin/autom4te"
+    ln -sf "${PREFIX}/bin/autoreconf-2.55" "${DESTDIR}${PREFIX}/bin/autoreconf"
 }

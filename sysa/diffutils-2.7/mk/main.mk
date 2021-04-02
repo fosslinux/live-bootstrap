@@ -29,5 +29,5 @@ diff: $(DIFF_OBJECTS)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: all
-	install cmp $(PREFIX)/bin
-	install diff $(PREFIX)/bin
+	install cmp $(DESTDIR)$(PREFIX)/bin
+	install diff $(DESTDIR)$(PREFIX)/bin

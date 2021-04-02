@@ -24,5 +24,5 @@ src_install() {
     rm -rf "${PREFIX}"/share/automake-1.6
     rm -rf "${PREFIX}"/share/aclocal-1.6
 
-    make install MAKEINFO=true
+    make install MAKEINFO=true DESTDIR="${DESTDIR}"
 }

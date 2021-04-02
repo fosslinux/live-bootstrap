@@ -130,6 +130,6 @@ src_compile() {
 
 src_install() {
     for dir in libiberty bfd opcodes binutils gas gprof ld; do
-	make -C $dir install
+	make -C $dir install DESTDIR=$(DESTDIR)
     done
 }

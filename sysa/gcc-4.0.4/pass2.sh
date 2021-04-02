@@ -87,5 +87,5 @@ src_compile() {
 }
 
 src_install() {
-    make -C build/gcc install STMP_FIXINC=
+    make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
 }

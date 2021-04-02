@@ -18,10 +18,3 @@ src_prepare() {
     touch lib/configmake.h
 }
 
-src_compile() {
-    make -f Makefile
-}
-
-src_install() {
-    make -f Makefile install PREFIX="${PREFIX}"
-}

@@ -92,5 +92,5 @@ src_compile() {
 
 src_install() {
     mkdir -p "${PREFIX}/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/install-tools/include"
-    make -C build/gcc install STMP_FIXINC=
+    make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
 }

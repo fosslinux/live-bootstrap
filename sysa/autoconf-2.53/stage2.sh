@@ -20,9 +20,9 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true
+    make MAKEINFO=true DESTDIR="${DESTDIR}"
 }
 
 src_install() {
-    make install MAKEINFO=true
+    make install MAKEINFO=true DESTDIR="${DESTDIR}"
 }

@@ -19,5 +19,5 @@ src_configure() {
 }
 
 src_compile() {
-    AR="tcc -ar" AR_FLAGS="cr" make
+    AR="tcc -ar" AR_FLAGS="cr" make DESTDIR="${DESTDIR}"
 }

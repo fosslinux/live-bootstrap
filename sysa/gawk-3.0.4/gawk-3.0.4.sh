@@ -11,8 +11,8 @@ src_install() {
     default_src_install
 
     # Install data files
-    install -d "${PREFIX}/share/awk/"
+    install -d "${DESTDIR}${PREFIX}/share/awk/"
     for file in awklib/eg/lib/*.awk; do
-        install -m 644 "$file" "${PREFIX}/share/awk/"
+        install -m 644 "$file" "${DESTDIR}${PREFIX}/share/awk/"
     done
 }

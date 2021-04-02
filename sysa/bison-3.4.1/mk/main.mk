@@ -20,8 +20,8 @@ bison: src.a lib.a
 FORCE:
 
 install:
-	install bison $(PREFIX)/bin
+	install bison $(DESTDIR)$(PREFIX)/bin
 	rm -rf $(PREFIX)/share/bison
-	install -d $(PREFIX)/share/bison
-	mv data/skeletons/ $(PREFIX)/share/bison
-	mv data/m4sugar/ $(PREFIX)/share/bison
+	install -d $(DESTDIR)$(PREFIX)/share/bison
+	mv data/skeletons/ $(DESTDIR)$(PREFIX)/share/bison
+	mv data/m4sugar/ $(DESTDIR)$(PREFIX)/share/bison
