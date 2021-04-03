@@ -22,7 +22,7 @@ build () {
     script_name=${2:-${pkg}.sh}
     checksum_f=${3:-checksums}
 
-    cd "$pkg" || (echo "Cannot cd into ${pkg}!"; kill $$)
+    cd "${PREFIX}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
     base_dir="${PWD}"
     patch_dir="${base_dir}/${4:-patches}"
@@ -62,13 +62,13 @@ build () {
     build_stage=src_install
     call $build_stage
 
-    cd ../..
+    cd "${PREFIX}/${pkg}"
 
     echo "${pkg}: checksumming installed files."
     test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
 
     echo "${pkg}: build successful"
-    cd ..
+    cd "${PREFIX}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install
 }
