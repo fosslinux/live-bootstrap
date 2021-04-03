@@ -115,21 +115,21 @@ perl: perlmain.o lib/auto/DynaLoader/DynaLoader.a $(EXTENSIONS_A) lib/auto/POSIX
 	$(CC) $(CFLAGS) perlmain.o lib/auto/DynaLoader/DynaLoader.a $(EXTENSIONS_A) lib/auto/POSIX/POSIX.a libperl.a -o $@
 
 install: all
-	install perl $(PREFIX)/bin/perl
-	mkdir -p "$(PRIVLIB_EXP)"
-	cp -r lib/* "$(PRIVLIB_EXP)"
+	install perl $(DESTDIR)$(PREFIX)/bin/perl
+	mkdir -p "$(DESTDIR)$(PRIVLIB_EXP)"
+	cp -r lib/* "$(DESTDIR)$(PRIVLIB_EXP)"
 
-	install -m 644 ext/DynaLoader/XSLoader.pm "$(PRIVLIB_EXP)"
-	install -m 644 ext/DynaLoader/DynaLoader.pm "$(PRIVLIB_EXP)"
+	install -m 644 ext/DynaLoader/XSLoader.pm "$(DESTDIR)$(PRIVLIB_EXP)"
+	install -m 644 ext/DynaLoader/DynaLoader.pm "$(DESTDIR)$(PRIVLIB_EXP)"
 
-	install -m 644 ext/ByteLoader/ByteLoader.pm "$(PRIVLIB_EXP)"
-	mkdir "$(PRIVLIB_EXP)/Data/"
-	install -m 644 ext/Data/Dumper/Dumper.pm "$(PRIVLIB_EXP)/Data/"
-	install -m 644 ext/Fcntl/Fcntl.pm "$(PRIVLIB_EXP)"
-	install -m 644 ext/File/Glob/Glob.pm "$(PRIVLIB_EXP)/File/"
-	install -m 644 ext/IO/IO.pm "$(PRIVLIB_EXP)"
-	mkdir "$(PRIVLIB_EXP)/IO/"
-	cp ext/IO/lib/IO/*.pm "$(PRIVLIB_EXP)/IO/"
-	install -m 644 ext/POSIX/POSIX.pm "$(PRIVLIB_EXP)/"
-	install -m 644 ext/POSIX/POSIX.pod "$(PRIVLIB_EXP)/"
-	cp lib/auto/POSIX/* "$(PRIVLIB_EXP)/auto/POSIX/"
+	install -m 644 ext/ByteLoader/ByteLoader.pm "$(DESTDIR)$(PRIVLIB_EXP)"
+	mkdir "$(DESTDIR)$(PRIVLIB_EXP)/Data/"
+	install -m 644 ext/Data/Dumper/Dumper.pm "$(DESTDIR)$(PRIVLIB_EXP)/Data/"
+	install -m 644 ext/Fcntl/Fcntl.pm "$(DESTDIR)$(PRIVLIB_EXP)"
+	install -m 644 ext/File/Glob/Glob.pm "$(DESTDIR)$(PRIVLIB_EXP)/File/"
+	install -m 644 ext/IO/IO.pm "$(DESTDIR)$(PRIVLIB_EXP)"
+	mkdir "$(DESTDIR)$(PRIVLIB_EXP)/IO/"
+	cp ext/IO/lib/IO/*.pm "$(DESTDIR)$(PRIVLIB_EXP)/IO/"
+	install -m 644 ext/POSIX/POSIX.pm "$(DESTDIR)$(PRIVLIB_EXP)/"
+	install -m 644 ext/POSIX/POSIX.pod "$(DESTDIR)$(PRIVLIB_EXP)/"
+	cp lib/auto/POSIX/* "$(DESTDIR)$(PRIVLIB_EXP)/auto/POSIX/"

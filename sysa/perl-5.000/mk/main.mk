@@ -15,4 +15,4 @@ miniperl: $(MINIPERL_OBJ)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: all
-	install miniperl $(PREFIX)/bin/perl
+	install miniperl $(DESTDIR)$(PREFIX)/bin/perl

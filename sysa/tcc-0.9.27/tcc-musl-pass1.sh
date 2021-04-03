@@ -13,10 +13,9 @@ src_prepare() {
 }
 
 src_compile() {
-    export prefix=/after
-    export libdir=${prefix}/lib/musl
-    export incdir=${prefix}/include/musl
-    export bindir=${prefix}/bin
+    export libdir=${PREFIX}/lib/musl
+    export incdir=${PREFIX}/include/musl
+    export bindir=${PREFIX}/bin
 
     mkdir -p ${libdir}/tcc
 
@@ -50,5 +49,5 @@ src_install() {
     # Remove old tcc binaries
     rm ${bindir}/tcc
     rm ${bindir}/boot*-tcc ${bindir}/tcc-0.9.26 ${bindir}/mes-tcc
-    ln -s ${bindir}/tcc-musl ${bindir}/tcc
+    ln -s ${bindir}/tcc-musl ${DESTDIR}${bindir}/tcc
 }

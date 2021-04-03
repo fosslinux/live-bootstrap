@@ -13,7 +13,7 @@ CC      = tcc
 LD      = tcc
 AR      = tcc -ar
 
-bindir=/after/bin
+bindir=$(DESTDIR)$(PREFIX)/bin
 
 CFLAGS  = -I . -I lib \
           -DPACKAGE=\"$(PACKAGE)\" \

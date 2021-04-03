@@ -18,11 +18,3 @@ src_prepare() {
 
     cp "${mk_dir}/pass2.mk" Makefile
 }
-
-src_compile() {
-    make -f Makefile
-}
-
-src_install() {
-    make -f Makefile install PREFIX="${PREFIX}"
-}

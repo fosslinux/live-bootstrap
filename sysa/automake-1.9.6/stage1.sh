@@ -16,5 +16,5 @@ src_compile() {
 }
 
 src_install() {
-    make install MAKEINFO=true
+    make install MAKEINFO=true DESTDIR="${DESTDIR}"
 }

@@ -15,10 +15,9 @@ src_prepare() {
 }
 
 src_compile() {
-    export prefix=/after
-    export libdir=${prefix}/lib/musl
-    export incdir=${prefix}/include/musl
-    export bindir=${prefix}/bin
+    export libdir=${PREFIX}/lib/musl
+    export incdir=${PREFIX}/include/musl
+    export bindir=${PREFIX}/bin
 
     mkdir -p ${libdir}/tcc
 
@@ -45,6 +44,6 @@ src_compile() {
 }
 
 src_install() {
-    install tcc-musl ${bindir}
-    install -m 644 libtcc1.a ${libdir}
+    install tcc-musl ${DESTDIR}${bindir}
+    install -m 644 libtcc1.a ${DESTDIR}${libdir}
 }

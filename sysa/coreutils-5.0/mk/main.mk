@@ -13,7 +13,8 @@ CC      = tcc
 LD      = tcc
 AR      = tcc -ar
 
-bindir=/after/bin
+PREFIX=/after
+bindir=$(PREFIX)/bin
 
 CFLAGS  = -I . -I lib \
           -DPACKAGE=\"$(PACKAGE)\" \
@@ -40,7 +41,7 @@ CFLAGS  = -I . -I lib \
           -DTIME_WITH_SYS_TIME=1 \
           -DHAVE_STDINT_H=1 \
           -DMB_LEN_MAX=16 \
-          -DLIBDIR=\"/after/lib\" \
+          -DLIBDIR=\"$(PREFIX)/lib\" \
           -DHAVE_DECL_WCWIDTH=0 \
           -DHAVE_SYS_STAT_H=1 \
           -DHAVE_INTTYPES_H=1 \
