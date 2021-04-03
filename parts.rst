@@ -594,3 +594,12 @@ automake 1.15.1
 ===============
 
 GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
+
+gmp 6.2.1
+=========
+
+GNU Multiple Precision Arithmetic Library (GMP) is a free library for
+arbitrary-precision arithmetic, operating on signed integers, rational numbers,
+and floating-point numbers.
+
+GMP is required by newer versions of GCC and Guile.

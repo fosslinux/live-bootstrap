@@ -297,6 +297,9 @@ get_file https://ftp.gnu.org/gnu/automake/automake-1.13.4.tar.xz
 # automake 1.15.1
 get_file https://ftp.gnu.org/gnu/automake/automake-1.15.1.tar.xz
 
+# gmp 6.2.1
+get_file https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
+
 # General cleanup
 find tmp -name .git -exec rm -rf \;
 
