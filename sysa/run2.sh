@@ -22,6 +22,8 @@ build automake-1.13.4
 
 build automake-1.15.1
 
+build gmp-6.2.1
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i
