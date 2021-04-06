@@ -111,50 +111,101 @@ if [ ! -f "$(basename $url)" ]; then
 fi
 popd
 tar -C tmp/after/tar-1.12/src -xf "tmp/after/tar-1.12/src/$(basename $url)" --strip-components=1
+unset url
 
-get_file() {
-    url=$1
-    make_build=${2:-0}
-    output_filename=$3
-    ext="${url##*.}"
-    if [ "$ext" = "tar" ]; then
-        bname=$(basename "${output_filename:-${url}}" ".tar")
-    else
-        bname=$(basename "${output_filename:-${url}}" ".tar.${ext}")
-    fi
-    cp -r "${bname}" tmp/after/
-    target="tmp/after/${bname}"
-    mkdir -p "${target}/src"
-    if [ "${make_build}" -ne 0 ]; then
-        mkdir "${target}/build"
-    fi
-    pushd "tmp/after/${bname}/src"
-    if [ ! -f "$(basename "$url")" ]; then
-        _wget "$url" "${output_filename:-${url##*/}}"
-    fi
+_get_file() {
+    local url="$1"
+    local output="$2"
+    local target="$3"
+    # Get the actual file
+    pushd "${target}/src"
+        if [ ! -f "$(basename "$url")" ]; then
+            _wget "$url" "${output:-${url##*/}}"
+        fi
     popd
 }
 
+_get_target() {
+    local url="$1"
+    local output="$2"
+    local ext="${url##*.}"
+    if [ "$ext" = "tar" ]; then
+        bname=$(basename "${output:-${url}}" ".tar")
+    else
+        bname=$(basename "${output:-${url}}" ".tar.${ext}")
+    fi
+    # this is the target
+    echo "tmp/after/${bname}"
+}
+
+_get_main() {
+    local url="$1"
+    local output="$2"
+    local make_build="$3"
+    local target="$4"
+    # Copy main files
+    cp -r "$(basename "${target}")" tmp/after/
+    # Make directories
+    mkdir -p "${target}/src"
+    if [ "${make_build}" -eq 1 ]; then
+        mkdir -p "${target}/build"
+    fi
+    # Also get this file
+    _get_file "${url}" "${output}" "${target}"
+}
+
+get_file() {
+    # A mapping of URL to output filenames based on index (position-dependent)
+    local outputs=()
+    local urls=()
+    # Argument parsing
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --mkbuild=*) local make_build="${1#*=}" ;;
+            --output=*) outputs+=("${1#*=}") ;;
+            # It's just another URL to download
+            *) urls+=("$1") ;;
+        esac
+        shift
+    done
+    if [ -z "${make_build}" ]; then
+        make_build=0
+    fi
+    # Actual work
+    # Loop over urls
+    local url_length="${#urls[@]}"
+    local target
+    target="$(_get_target "${urls[0]}" "${outputs[0]}")"
+    _get_main "${urls[0]}" "${outputs[0]}" "${make_build}" "${target}"
+    if [ "${url_length}" -gt 1 ]; then
+        url_length="$((url_length-1))"
+        echo "${url_length}"
+        for i in $(seq 1 "${url_length}"); do
+            _get_file "${urls[${i}]}" "${outputs[${i}]}" "${target}"
+        done
+    fi
+}
+
 # gzip 1.2.4
-get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar 1
+get_file https://ftp.gnu.org/gnu/gzip/gzip-1.2.4.tar --mkbuild=1
 
 # sed 4.0.9
-get_file https://ftp.gnu.org/gnu/sed/sed-4.0.9.tar.gz 1
+get_file https://ftp.gnu.org/gnu/sed/sed-4.0.9.tar.gz --mkbuild=1
 
 # patch 2.5.9
-get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz 1
+get_file https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz --mkbuild=1
 
 # sha-2 61555d
-get_file https://github.com/amosnier/sha-2/archive/61555d.tar.gz 1 sha-2-61555d.tar.gz
+get_file https://github.com/amosnier/sha-2/archive/61555d.tar.gz --mkbuild=1 --output=sha-2-61555d.tar.gz
 
 # make 3.80
-get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz 1
+get_file https://ftp.gnu.org/gnu/make/make-3.80.tar.gz --mkbuild=1
 
 # bzip2 1.0.8
-get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz 1
+get_file ftp://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz --mkbuild=1
 
 # coreutils 5.0
-get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2 1
+get_file https://ftp.gnu.org/gnu/coreutils/coreutils-5.0.tar.bz2 --mkbuild=1
 
 # heirloom-devtools
 get_file http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2
@@ -271,7 +322,7 @@ get_file https://ftp.gnu.org/gnu/automake/automake-1.10.3.tar.bz2
 get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.65.tar.bz2
 
 # gcc 4.0.4
-get_file https://ftp.gnu.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2 0 gcc-4.0.4.tar.bz2
+get_file https://ftp.gnu.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2 --output=gcc-4.0.4.tar.bz2
 
 # musl 1.2.2
 get_file https://musl.libc.org/releases/musl-1.2.2.tar.gz

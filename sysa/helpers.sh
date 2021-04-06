@@ -15,6 +15,7 @@ export PATH=/after/bin
 # 1) name-version of the package
 # 2) optionally specify build script. Default is name-version.sh
 # 3) optionally specify name of checksum file. Default is checksums
+# 4) directory of patches. Default is patches
 build () {
     pkg=$1
     script_name=${2:-${pkg}.sh}
@@ -66,20 +67,25 @@ build () {
     unset -f src_unpack src_prepare src_configure src_compile src_install
 }
 
-# Default unpacking function that unpacks a single source tarball.
+# Default unpacking function that unpacks all source tarballs.
 default_src_unpack() {
     src_dir="${base_dir}/src"
 
-    for suf in .gz .bz2 .xz ""; do
-        source="${src_dir}/${pkg}.tar${suf}"
-        if test -e "${source}"; then
-            case "${suf}" in
-                .gz) tar -xzf "${source}" ;;
-                .bz2) tar -xf "${source}" --use-compress-program=bzip2 ;;
-                .xz) tar -xf "${source}" --use-compress-program=xz ;;
-                "") tar -xf "${source}" ;;
-            esac
-        fi
+    for i in "${src_dir}"/*.tar.gz; do
+        [ -e "${i}" ] || continue
+        tar -xzf "${i}"
+    done
+    for i in "${src_dir}"/*.tar.bz2; do
+        [ -e "${i}" ] || continue
+        tar -xf "${i}" --use-compress-program=bzip2
+    done
+    for i in "${src_dir}"/*.tar.xz; do
+        [ -e "${i}" ] || continue
+        tar -xf "${i}" --use-compress-program=xz
+    done
+    for i in "${src_dir}"/*.tar; do
+        [ -e "${i}" ] || continue
+        tar -xf "${i}"
     done
 }
 
