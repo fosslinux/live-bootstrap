@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    rm configure
+    rm configure standards.info
     autoconf-2.52
 
     sed -i '/^acdatadir/s:$:-2.13:' Makefile.in

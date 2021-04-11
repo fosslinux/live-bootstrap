@@ -4,6 +4,7 @@
 
 src_prepare() {
     rm bin/autoconf.in
+    rm doc/standards.info
 
     autoreconf-2.55 -f
 
