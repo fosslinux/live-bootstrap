@@ -19,12 +19,12 @@ Get me started!
 2. ``git submodule update --init --recursive``
 3. Provide a kernel (vmlinuz file) as the name kernel in the root of the
    repository.
-4. ``./rootfs.sh`` - ensure your account has kvm privileges and qemu
+4. ``./rootfs.py`` - ensure your account has kvm privileges and qemu
    installed.
 
-   a. Alternatively, run ``./rootfs.sh chroot`` to run it in a chroot.
-   b. Alternatively, run ``./rootfs.sh`` but don’t run the actual
-      virtualization and instead copy sysa/tmp/initramfs.igz to a USB or
+   a. Alternatively, run ``./rootfs.py --chroot`` to run it in a chroot.
+   b. Alternatively, run ``./rootfs.py`` but don’t run the actual
+      virtualization and instead copy sysa/tmp/initramfs to a USB or
       some other device and boot from bare metal.
 
 5. Wait.

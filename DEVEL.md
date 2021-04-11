@@ -59,7 +59,7 @@ Permissable folders/files:
   - After `patch`, `sha-2` is built which contains an external implementation of
     `sha256sum`. We then use that currently for all remaining software.
   - To extract the binaries to get their checksums, use of chroot mode is
-    recommended (i.e. `./rootfs.sh chroot`).
+    recommended (i.e. `./rootfs.py --chroot`).
 
 Furthermore, there is a special top-level dir `dev-utils`. In here are
 appropriate utilities that are often useful for development and not generally

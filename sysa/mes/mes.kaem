@@ -212,17 +212,17 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -L ${libdir} -nostdlib -
 cp ${bindir}/mes-new ${bindir}/mes
 
 # Install libraries
-cp ${libdir}/x86-mes/libc.a ${prefix}/lib/
-cp ${libdir}/x86-mes/libc+tcc.a ${prefix}/lib/
-cp ${libdir}/x86-mes/libmescc.a ${prefix}/lib/
-cp ${libdir}/x86-mes/libc.s ${prefix}/lib/
-cp ${libdir}/x86-mes/libc+tcc.s ${prefix}/lib/
-cp ${libdir}/x86-mes/libmescc.s ${prefix}/lib/
-cp ${libdir}/x86-mes/x86.M1 ${prefix}/lib/
-cp crt1.o ${prefix}/lib/
-cp crt1.s ${prefix}/lib/
-cp ${libdir}/linux/x86-mes/elf32-footer-single-main.hex2 ${prefix}/lib/linux/
-cp ${libdir}/linux/x86-mes/elf32-header.hex2 ${prefix}/lib/linux/
+cp ${libdir}/x86-mes/libc.a ${prefix}/lib/x86-mes/
+cp ${libdir}/x86-mes/libc+tcc.a ${prefix}/lib/x86-mes/
+cp ${libdir}/x86-mes/libmescc.a ${prefix}/lib/x86-mes/
+cp ${libdir}/x86-mes/libc.s ${prefix}/lib/x86-mes/
+cp ${libdir}/x86-mes/libc+tcc.s ${prefix}/lib/x86-mes/
+cp ${libdir}/x86-mes/libmescc.s ${prefix}/lib/x86-mes/
+cp ${libdir}/x86-mes/x86.M1 ${prefix}/lib/x86-mes/
+cp crt1.o ${prefix}/lib/x86-mes/
+cp crt1.s ${prefix}/lib/x86-mes/
+cp ${libdir}/linux/x86-mes/elf32-footer-single-main.hex2 ${prefix}/lib/linux/x86-mes/
+cp ${libdir}/linux/x86-mes/elf32-header.hex2 ${prefix}/lib/linux/x86-mes/
 
 # Install header files
 cp include/alloca.h ${incdir}/alloca.h

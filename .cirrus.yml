@@ -1,6 +1,18 @@
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+
+pylint_task:
+  container:
+    image: debian:bullseye
+  deps_script:
+    - apt-get -y update
+    - apt-get -y dist-upgrade
+    - apt-get -y install python3-requests pylint
+    - apt-get -y clean
+  check_script:
+    - pylint rootfs.py sysa.py lib/utils.py
 
 shell_lint_task:
   container:
@@ -11,7 +23,7 @@ shell_lint_task:
     - apt-get -y install shellcheck
     - apt-get -y clean
   check_script:
-    - shellcheck rootfs.sh sysa/run.sh sysa/helpers.sh
+    - shellcheck sysa/run.sh sysa/helpers.sh
 
 reuse_lint_task:
   container:
