@@ -310,7 +310,8 @@ get_file https://ftp.gnu.org/gnu/autoconf/autoconf-2.61.tar.bz2
 get_file https://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.bz2
 
 # findutils 4.2.33
-get_file https://ftp.gnu.org/gnu/findutils/findutils-4.2.33.tar.gz
+get_file https://ftp.gnu.org/gnu/findutils/findutils-4.2.33.tar.gz \
+         https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-8e128e.tar.gz
 
 # libtool 2.2.4
 get_file https://ftp.gnu.org/gnu/libtool/libtool-2.2.4.tar.bz2
