@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    rm bin/autoconf.in
     rm Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 configure
     aclocal-1.7
     sed -i 's/2.54/2.53/' aclocal.m4
@@ -24,6 +25,9 @@ src_configure() {
 }
 
 src_compile() {
+    # Workaround for racy make dependencies
+    make -C bin autom4te
+    make -C lib
     make MAKEINFO=true
 }
 

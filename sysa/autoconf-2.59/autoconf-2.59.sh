@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    rm bin/autoconf.in
+
     autoreconf-2.57 -f
 
     # Install autoconf data files into versioned directory
@@ -16,6 +18,9 @@ src_configure() {
 }
 
 src_compile() {
+    # Workaround for racy make dependencies
+    make -C bin autom4te
+    make -C lib
     make MAKEINFO=true
 }
 
