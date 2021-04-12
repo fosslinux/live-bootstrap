@@ -645,3 +645,11 @@ bison 2.3
 This is an older version of bison required for the bison files in perl 5.10.1.
 We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
 in 2.3. This parser works sufficiently well for perl 5.10.5.
+
+perl 5.10.1
+===========
+
+Perl 5.10.1 is an intermediate version used before Perl 5.32. We require this
+version as it adds a couple of modules into lib/ required to regenerate files in
+Perl 5.32. We still use the Makefile instead of the metaconfig strategy, as
+metaconfig history becomes poor more than a few years back.

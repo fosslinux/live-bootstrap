@@ -1,0 +1,124 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0-Perl
+
+There are a bunch of aliases that perl's build system somehow makes but
+I'm not sure how to appropriately do them, so just patch them.
+
+--- lib/ExtUtils/Constant.pm	2021-04-20 21:06:43.272663878 +1000
++++ lib/ExtUtils/Constant.pm	2021-04-20 21:07:11.116805426 +1000
+@@ -253,11 +253,11 @@
+         switch (type) {
+         case PERL_constant_NOTFOUND:
+           sv =
+-	    sv_2mortal(newSVpvf("%s is not a valid $package_sprintf_safe macro", s));
++	    sv_2mortal(Perl_newSVpvf("%s is not a valid $package_sprintf_safe macro", s));
+           PUSHs(sv);
+           break;
+         case PERL_constant_NOTDEF:
+-          sv = sv_2mortal(newSVpvf(
++          sv = sv_2mortal(Perl_newSVpvf(
+ 	    "Your vendor has not defined $package_sprintf_safe macro %s, used",
+ 				   s));
+           PUSHs(sv);
+@@ -288,7 +288,7 @@
+   }
+   $xs .= << "EOT";
+         default:
+-          sv = sv_2mortal(newSVpvf(
++          sv = sv_2mortal(Perl_newSVpvf(
+ 	    "Unexpected return type %d while processing $package_sprintf_safe macro %s, used",
+                type, s));
+           PUSHs(sv);
+--- ext/Data-Dumper/Dumper.xs	2009-06-11 02:42:23.000000000 +1000
++++ ext/Data-Dumper/Dumper.xs	2021-04-21 18:19:32.548468344 +1000
+@@ -312,7 +312,7 @@
+ 	{
+ 	    dSP; ENTER; SAVETMPS; PUSHMARK(sp);
+ 	    XPUSHs(val); PUTBACK;
+-	    i = perl_call_method(SvPVX_const(freezer), G_EVAL|G_VOID);
++	    i = call_method(SvPVX_const(freezer), G_EVAL|G_VOID);
+ 	    SPAGAIN;
+ 	    if (SvTRUE(ERRSV))
+ 		warn("WARNING(Freezer method call failed): %"SVf"", ERRSV);
+@@ -515,7 +515,7 @@
+ 	
+ 	    SV * const ixsv = newSViv(0);
+ 	    /* allowing for a 24 char wide array index */
+-	    New(0, iname, namelen+28, char);
++	    Newx(iname, namelen+28, char);
+ 	    (void)strcpy(iname, name);
+ 	    inamelen = namelen;
+ 	    if (name[0] == '@') {
+@@ -660,7 +660,7 @@
+ 		if (sortkeys != &PL_sv_yes) {
+ 		    dSP; ENTER; SAVETMPS; PUSHMARK(sp);
+ 		    XPUSHs(sv_2mortal(newRV_inc(ival))); PUTBACK;
+-		    i = perl_call_sv(sortkeys, G_SCALAR | G_EVAL);
++		    i = call_sv(sortkeys, G_SCALAR | G_EVAL);
+ 		    SPAGAIN;
+ 		    if (i) {
+ 			sv = POPs;
+@@ -745,7 +745,7 @@
+                     }
+                     else {
+ 		        nticks = num_q(key, klen);
+-			New(0, nkey_buffer, klen+nticks+3, char);
++			Newx(nkey_buffer, klen+nticks+3, char);
+                         nkey = nkey_buffer;
+ 			nkey[0] = '\'';
+ 			if (nticks)
+@@ -772,7 +772,7 @@
+ 		    char *extra;
+ 		    I32 elen = 0;
+ 		    newapad = newSVsv(apad);
+-		    New(0, extra, klen+4+1, char);
++		    Newx(extra, klen+4+1, char);
+ 		    while (elen < (klen+4))
+ 			extra[elen++] = ' ';
+ 		    extra[elen] = '\0';
+@@ -829,7 +829,7 @@
+ 	        char *npack;
+ 	        char *npack_buffer = NULL;
+ 
+-	        New(0, npack_buffer, plen+pticks+1, char);
++	        Newx(npack_buffer, plen+pticks+1, char);
+ 	        npack = npack_buffer;
+ 	        plen += esc_q(npack, realpack, plen);
+ 	        npack[plen] = '\0';
+@@ -903,7 +903,7 @@
+             if (len > 10) {
+               /* Looks like we're on a 64 bit system.  Make it a string so that
+                  if a 32 bit system reads the number it will cope better.  */
+-              sv_catpvf(retval, "'%s'", tmpbuf);
++              Perl_sv_catpvf(retval, "'%s'", tmpbuf);
+             } else
+               sv_catpvn(retval, tmpbuf, len);
+ 	}
+@@ -1036,7 +1036,7 @@
+ 
+ 	    if (!SvROK(href)) {		/* call new to get an object first */
+ 		if (items < 2)
+-		    croak("Usage: Data::Dumper::Dumpxs(PACKAGE, VAL_ARY_REF, [NAME_ARY_REF])");
++		    Perl_croak_nocontext("Usage: Data::Dumper::Dumpxs(PACKAGE, VAL_ARY_REF, [NAME_ARY_REF])");
+ 		
+ 		ENTER;
+ 		SAVETMPS;
+@@ -1047,7 +1047,7 @@
+ 		if (items >= 3)
+ 		    XPUSHs(sv_2mortal(newSVsv(ST(2))));
+ 		PUTBACK;
+-		i = perl_call_method("new", G_SCALAR);
++		i = call_method("new", G_SCALAR);
+ 		SPAGAIN;
+ 		if (i)
+ 		    href = newSVsv(POPs);
+@@ -1234,7 +1234,7 @@
+ 		SvREFCNT_dec(valstr);
+ 	    }
+ 	    else
+-		croak("Call to new() method failed to return HASH ref");
++		Perl_croak_nocontext("Call to new() method failed to return HASH ref");
+ 	    if (gimme == G_SCALAR)
+ 		XPUSHs(sv_2mortal(retval));
+ 	}

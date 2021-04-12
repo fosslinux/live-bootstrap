@@ -467,3 +467,6 @@ class SysA:
         # bison 2.3
         self.get_file(["https://mirrors.kernel.org/gnu/bison/bison-2.3.tar.bz2",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b28236b.tar.gz"])
+
+        # perl 5.10.5
+        self.get_file("https://www.cpan.org/src/5.0/perl-5.10.1.tar.bz2")
