@@ -470,3 +470,8 @@ class SysA:
 
         # perl 5.10.5
         self.get_file("https://www.cpan.org/src/5.0/perl-5.10.1.tar.bz2")
+
+        # dist 3.5-236
+        # Debian's version is used because upstream is not to be found (dead?)
+        self.get_file("https://salsa.debian.org/perl-team/interpreter/dist/-/archive/d1de81f/dist-d1de81f.tar.gz",
+                      output="dist-3.5-236.tar.gz")

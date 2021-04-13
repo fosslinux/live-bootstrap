@@ -653,3 +653,10 @@ Perl 5.10.1 is an intermediate version used before Perl 5.32. We require this
 version as it adds a couple of modules into lib/ required to regenerate files in
 Perl 5.32. We still use the Makefile instead of the metaconfig strategy, as
 metaconfig history becomes poor more than a few years back.
+
+dist 3.5-236
+============
+
+dist is perl's package used for generating Perl's Configure (which is written in
+Perl itself). We 'compile' (aka generate) metaconfig and manifake only from dist.
+We do not use dist's build system because it itself uses dist.
