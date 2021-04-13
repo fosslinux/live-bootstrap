@@ -638,3 +638,10 @@ flex 2.5.33
 An older version of flex is required for bison 2.3. We cannot use 2.5.11 that
 was compiled much earlier, as it does not produce reproducible output when
 building bison 2.3.
+
+bison 2.3
+=========
+
+This is an older version of bison required for the bison files in perl 5.10.1.
+We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
+in 2.3. This parser works sufficiently well for perl 5.10.5.

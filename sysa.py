@@ -446,6 +446,9 @@ class SysA:
         self.get_file(["https://mirrors.kernel.org/gnu/tar/tar-1.34.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-30820c.tar.gz"])
 
+        # make 4.2.1
+        self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
+
         # gmp 6.2.1
         self.get_file("https://mirrors.kernel.org/gnu/gmp/gmp-6.2.1.tar.xz")
 
@@ -460,3 +463,7 @@ class SysA:
 
         # flex 2.5.33
         self.get_file("http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.33.tar.gz")
+
+        # bison 2.3
+        self.get_file(["https://mirrors.kernel.org/gnu/bison/bison-2.3.tar.bz2",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b28236b.tar.gz"])
