@@ -26,7 +26,7 @@ kaem --verbose --file kaem.run
 cp bin/mes-m2 ${MES}
 chmod 755 ${MES}
 
-# Recompile Mes and Mes C library using mes-m2 bootstrapped Mes
+# Build Mes C library using mes-m2 bootstrapped Mes
 
 # Start with crt1.o
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/linux/x86-mes-mescc/crt1.c

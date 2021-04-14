@@ -65,9 +65,8 @@ using the experimental ``wip-m2`` branch to jump over the gap between
 
 1. Compiling an initial mes using ``M2-Planet``. Note that this is
    *only* the Mes interpreter, not the libc or anything else.
-2. We then use this to recompile the Mes interpreter as well as building
-   the libc. This second interpreter is faster and less buggy. We need
-   the libc to compile all the programs until we get glibc.
+2. We then use this to compile the Mes libc. We need the libc to compile
+   all the programs until we get musl.
 
 tinycc 0.9.26
 =============
