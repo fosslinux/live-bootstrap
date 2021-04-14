@@ -4,7 +4,7 @@
 
 src_prepare() {
     rm bin/autoconf.in
-    rm Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 configure
+    rm Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 configure doc/standards.info
 
     autoreconf-2.54
 

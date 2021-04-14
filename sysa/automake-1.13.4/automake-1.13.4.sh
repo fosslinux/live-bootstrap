@@ -6,6 +6,8 @@ src_prepare() {
     default_src_prepare
 
     autoreconf-2.69 -f
+
+    rm doc/automake-history.info
 }
 
 src_configure() {

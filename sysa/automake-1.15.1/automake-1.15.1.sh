@@ -6,6 +6,8 @@ src_prepare() {
     default_src_prepare
 
     ./bootstrap
+
+    rm doc/automake-history.info
 }
 
 src_configure() {

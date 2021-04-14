@@ -57,7 +57,10 @@ src_prepare() {
     rm gcc/gengtype-lex.c
 
     # Remove translation catalogs
-    rm gcc/po/*.gmo
+    find . -name '*.gmo' -delete
+
+    # Pre-build texinfo files
+    find . -name '*.info' -delete
 }
 
 src_configure() {

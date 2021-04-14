@@ -9,6 +9,9 @@ src_prepare() {
     rm demos/calc/calc.{c,h} demos/calc/calclex.c
 
     autoreconf -f -i
+
+    # Pre-build texinfo files
+    find . -name '*.info*' -delete
 }
 
 src_configure() {
@@ -18,4 +21,12 @@ src_configure() {
 	--host=i386-unknown-linux-gnu \
 	--target=i386-unknown-linux-gnu \
 	--libdir="${PREFIX}/lib/musl"
+}
+
+src_compile() {
+    make MAKEINFO=true DESTDIR="${DESTDIR}"
+}
+
+src_install() {
+    make MAKEINFO=true DESTDIR="${DESTDIR}" install
 }
