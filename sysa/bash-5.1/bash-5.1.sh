@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -11,9 +12,10 @@ src_prepare() {
     rm configure
     autoconf-2.61
 
-    # Without this bash build can be non-deterministic when using
-    # our old bash 2.05b which was built with Mes C library.
-    sed -i 's/sleep 3/sleep 3; sync/' builtins/psize.sh
+    # avoid non-deterministic build:
+    printf '%s\n%s\n' \
+	   '#!/bin/sh' \
+	   'echo "#define PIPESIZE 65536"' >builtins/psize.sh
 }
 
 src_configure() {
