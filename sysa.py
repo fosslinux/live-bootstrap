@@ -10,7 +10,7 @@ import shutil
 
 import requests
 
-from lib.utils import mount, umount, copytree, run, get_target
+from lib.utils import mount, umount, copytree, get_target
 
 
 class SysA:
@@ -191,7 +191,6 @@ class SysA:
         self.mes()
         self.tcc_0_9_26()
         self.tcc_0_9_27()
-        self.tar_1_12()
         self.get_packages()
 
     def create_after_dirs(self):
@@ -257,23 +256,17 @@ class SysA:
         """TinyCC 0.9.27"""
         copytree(os.path.join(self.sysa_dir, 'tcc-0.9.27'), self.after_dir)
 
-    def tar_1_12(self):
-        """GNU Tar 1.12"""
-        # We have to pre-unpack tar sources.
-        # Possible alternative is to build a single C file implementation of untar.
-        tar_url = "https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz"
-        self.get_file(tar_url)
-        tar_src_dir = os.path.join(self.after_dir, 'tar-1.12', 'src')
-        tar_tarball = os.path.join(tar_src_dir, os.path.basename(tar_url))
-
-        run('tar', '-C', tar_src_dir, '-xf', tar_tarball, '--strip-components=1')
-
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
         """Prepare remaining sources"""
+        # untar from libarchive 3.4
+        self.get_file("https://raw.githubusercontent.com/libarchive/libarchive/3.4/contrib/untar.c", mkbuild=True)
 
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar", mkbuild=True)
+
+        # tar 1.12
+        self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz", mkbuild=True)
 
         # sed 4.0.9
         self.get_file("https://mirrors.kernel.org/gnu/sed/sed-4.0.9.tar.gz", mkbuild=True)

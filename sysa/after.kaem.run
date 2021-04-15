@@ -50,20 +50,26 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
+# untar
+pkg="untar"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
 # tcc 0.9.27
 pkg="tcc-0.9.27"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# tar
-pkg="tar-1.12"
+# gzip
+pkg="gzip-1.2.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# gzip
-pkg="gzip-1.2.4"
+# tar
+pkg="tar-1.12"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..

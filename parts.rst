@@ -85,6 +85,14 @@ recompiled 5(!) times to add new features that are required for other
 features, namely ``long long`` and ``float``. Each time, the libc is
 also recompiled.
 
+untar
+=====
+
+``tar`` is the most common archive format used by software source
+code, often compressed also. To avoid continuing using submodules we
+switch to software distribution using tar tarchives. ``untar.c`` is
+a single file implementation of tar format and is part of libarchive 3.4.
+
 tinycc 0.9.27
 =============
 
@@ -97,13 +105,6 @@ old GNU software, using older versions compilable by tinycc. Prior to
 this point, all tools have been adapted significantly for the bootstrap;
 now, we will be using old tooling instead.
 
-tar 1.12
-========
-
-GNU ``tar`` is the most common archive format used by software source
-code, often compressed also. To avoid continuing using submodules, we
-build GNU tar 1.12, the last version compilable with mes libc.
-
 gzip 1.2.4
 ==========
 
@@ -112,6 +113,11 @@ code. It is luckily distributed as a barebones uncompressed ``.tar``,
 which we extract and then build.
 
 Going forward, we can now use ``.tar.gz`` for source code.
+
+tar 1.12
+========
+
+We build GNU tar 1.12, the last version compilable with mes libc.
 
 sed 4.0.9
 =========

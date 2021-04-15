@@ -8,9 +8,15 @@
 
 set -ex
 
-cp files/getdate_stub.c src/lib/getdate_stub.c
+cd build
 
-cd src
+# Extract
+gunzip ../src/${pkg}.tar.gz
+untar ../src/${pkg}.tar
+
+cd ${pkg}
+
+cp ../../files/getdate_stub.c lib/getdate_stub.c
 
 # Compile
 
@@ -57,7 +63,7 @@ tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/update.c
 # Link
 tcc -static -o ${bindir}/tar -L lib lib/libtar.a arith.o buffer.o compare.o create.o delete.o extract.o incremen.o list.o mangle.o misc.o names.o open3.o rtapelib.o tar.o update.o -ltar
 
-cd ..
+cd ../..
 
 # Checksums
 fletcher16 checksums

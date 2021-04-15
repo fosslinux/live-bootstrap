@@ -11,7 +11,7 @@ set -ex
 cd build
 
 # Extract
-tar xf ../src/${pkg}.tar
+untar ../src/${pkg}.tar
 cd ${pkg}
 
 # Compile
