@@ -96,7 +96,7 @@ build musl-1.1.24 binutils-rebuild.sh checksums/pass3 patches-pass3
 populate_device_nodes
 
 # Rebuild tcc-musl using new musl
-build tcc-0.9.27 tcc-musl-pass3.sh checksums/tcc-musl-pass3
+build tcc-0.9.27 tcc-musl-pass3.sh checksums/tcc-musl-pass3 patches-musl-pass3
 
 build autoconf-2.53 stage1.sh
 build autoconf-2.53 stage2.sh

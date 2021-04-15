@@ -116,7 +116,8 @@ class SysA:
         # Install base files
         src_tree = os.path.join(self.sysa_dir, target_name)
         copytree(src_tree, self.after_dir)
-        os.mkdir(target_src_dir)
+        if not os.path.isdir(target_src_dir):
+            os.mkdir(target_src_dir)
 
         for i, _ in enumerate(urls):
             # Download files into cache directory
@@ -190,7 +191,6 @@ class SysA:
         self.mescc_tools_extra()
         self.mes()
         self.tcc_0_9_26()
-        self.tcc_0_9_27()
         self.get_packages()
 
     def create_after_dirs(self):
@@ -252,15 +252,11 @@ class SysA:
         """TinyCC 0.9.26 (patched by janneke)"""
         copytree(os.path.join(self.sysa_dir, 'tcc-0.9.26'), self.after_dir)
 
-    def tcc_0_9_27(self):
-        """TinyCC 0.9.27"""
-        copytree(os.path.join(self.sysa_dir, 'tcc-0.9.27'), self.after_dir)
-
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
         """Prepare remaining sources"""
         # untar from libarchive 3.4
-        self.get_file("https://raw.githubusercontent.com/libarchive/libarchive/3.4/contrib/untar.c", mkbuild=True)
+        self.get_file("https://raw.githubusercontent.com/libarchive/libarchive/3.4/contrib/untar.c")
 
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar", mkbuild=True)
@@ -283,6 +279,9 @@ class SysA:
 
         # bzip2 1.0.8
         self.get_file("https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz", mkbuild=True)
+
+        # tcc 0.9.27
+        self.get_file("https://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27.tar.bz2", mkbuild=True)
 
         # coreutils 5.0
         self.get_file("https://mirrors.kernel.org/gnu/coreutils/coreutils-5.0.tar.bz2", mkbuild=True)

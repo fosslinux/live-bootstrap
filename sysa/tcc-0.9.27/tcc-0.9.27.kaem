@@ -1,21 +1,31 @@
 #!/bin/sh
 
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -ex
 
-cd src/tcc-0.9.27
+cd build
+
+# Extract
+bunzip2 ../src/${pkg}.tar.bz2
+tar xf ../src/${pkg}.tar
+cd ${pkg}
 
 # Create config.h
 catm config.h
 
-# Compile the binary
-tcc \
+# Patch
+patch -Np0 -i ../../patches/static-link.patch
+patch -Np0 -i ../../patches/ignore-static-inside-array.patch
+
+# Compile
+tcc-0.9.26 \
     -v \
     -static \
-    -o tcc \
+    -o ${bindir}/tcc \
     -D TCC_TARGET_I386=1 \
     -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
     -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
@@ -29,17 +39,14 @@ tcc \
     -D ONE_SOURCE=1 \
     tcc.c
 
-# Install the binary
-cp tcc ${bindir}/tcc
-chmod 755 ${bindir}/tcc
-
 # Test
 tcc -version
 
 # Recompile libc
+cd ../../src/mes-libc/
 kaem --file ../../compile-libc.kaem
 
 cd ../..
 
 # Checksums
-fletcher16 checksums/tcc-0.9.27
+sha256sum -c checksums/tcc-0.9.27

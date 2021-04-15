@@ -2,14 +2,10 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-src_unpack() {
-    cp -r ../src/tcc-0.9.27 .
-}
-
 src_prepare() {
-    # Note that tcc includes static-link and ignore-static-inside-array patches
-    # since we do not build from clean checkout.
-    patch -Np0 -i ../../patches/ignore-duplicate-symbols.patch
+    default_src_prepare
+
+    touch config.h
 }
 
 src_compile() {

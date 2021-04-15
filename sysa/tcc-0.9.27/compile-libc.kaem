@@ -6,10 +6,6 @@
 
 set -ex
 
-# libtcc1.a
-tcc -c -D HAVE_CONFIG_H=1 lib/libtcc1.c
-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-cd ../mes-libc
 # crt{1,n,i}.o
 tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c

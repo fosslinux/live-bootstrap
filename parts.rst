@@ -85,6 +85,11 @@ recompiled 5(!) times to add new features that are required for other
 features, namely ``long long`` and ``float``. Each time, the libc is
 also recompiled.
 
+Note that now we begin to delve into the realm of old GNU software,
+using older versions compilable by tinycc. Prior to this point, all tools
+have been adapted significantly for the bootstrap; now, we will be using
+old tooling instead.
+
 untar
 =====
 
@@ -92,18 +97,6 @@ untar
 code, often compressed also. To avoid continuing using submodules we
 switch to software distribution using tar tarchives. ``untar.c`` is
 a single file implementation of tar format and is part of libarchive 3.4.
-
-tinycc 0.9.27
-=============
-
-Now, we compile upstream tcc 0.9.27, the latest release of tinycc, using
-the final version of tcc 0.9.26. We then recompile the libc once more.
-
-From this point onwards, until further notice, all programs are compiled
-using tinycc 0.9.27. Note that now we begin to delve into the realm of
-old GNU software, using older versions compilable by tinycc. Prior to
-this point, all tools have been adapted significantly for the bootstrap;
-now, we will be using old tooling instead.
 
 gzip 1.2.4
 ==========
@@ -117,7 +110,7 @@ Going forward, we can now use ``.tar.gz`` for source code.
 tar 1.12
 ========
 
-We build GNU tar 1.12, the last version compilable with mes libc.
+We build GNU Tar 1.12, the last version compilable with mes libc.
 
 sed 4.0.9
 =========
@@ -129,7 +122,7 @@ patch 2.5.9
 
 ``patch`` is a very useful tool at this stage, allowing us to make
 significantly more complex edits, including just changes to lines.
-Luckily, we are able to patch patch using sed only.
+Luckily, we are able to patch ``patch`` using ``sed`` only.
 
 sha-2
 =====
@@ -146,23 +139,6 @@ We have now just built ``sha256sum``, which has a significantly (many orders
 of magnitude) lower collision rate than ``fletcher16``, so we recheck all of
 the existing binaries using ``sha256sum``.
 
-patched mes-libc
-================
-
-Since patch is available at this point, we can apply additional fixes to
-mes-libc that are not included in the wip-m2 branch and recompile libc.
-
-patched tinycc
-==============
-
-In Guix, tinycc is patched to force static linking. Prior to this step,
-we have been forced to manually specify static linking for each tool.
-Now that we have patch, we can patch tinycc to force static linking and
-then recompile it.
-
-Note that we have to do this using tinycc 0.9.26, as tinycc 0.9.27
-cannot recompile itself for unknown reasons.
-
 make 3.80
 =========
 
@@ -175,6 +151,23 @@ bzip2 1.0.8
 
 ``bzip2`` is a compression format that compresses more than ``gzip``. It
 is preferred where we can use it, and makes source code sizes smaller.
+
+patched mes-libc
+================
+
+Since patch is available at this point, we can apply additional fixes to
+mes-libc that are not included in the wip-m2 branch and recompile libc.
+
+tinycc 0.9.27
+=============
+
+Now, we compile upstream tcc 0.9.27, the latest release of tinycc, using
+the final version of tcc 0.9.26. We then recompile the libc once more.
+
+From this point onwards, until further notice, all programs are compiled
+using tinycc 0.9.27.
+
+We patch tinycc to force static linking.
 
 coreutils 5.0
 =============
@@ -238,8 +231,9 @@ tcc 0.9.27 (musl)
 =================
 
 We recompile ``tcc`` against musl. This is a two stage process. First we
-build tcc-0.9.27 that itself links to Mes C library but produces
-binaries linked to musl. Then we recompile newly produced tcc with
+build tcc-0.9.27 using tcc-0.9.26  that itself links to Mes C library but produces
+binaries linked to musl (we have to do it using older `tcc` because
+tcc-0.9.27 is not self hosting). Then we recompile newly produced tcc with
 itself. Interestingly, tcc-0.9.27 linked against musl is self hosting.
 
 musl 1.1.24 (tcc-musl)
