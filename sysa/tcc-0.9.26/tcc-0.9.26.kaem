@@ -124,6 +124,7 @@ boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG_STUB=1 -I include -I include/linux/x86 lib/libtcc1.c
+boot0-tcc -c -D TCC_TARGET_I386=1 ../tcc-0.9.26/lib/libtcc1.c
 boot0-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
@@ -170,6 +171,7 @@ boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
+boot1-tcc -c -D TCC_TARGET_I386=1 ../tcc-0.9.26/lib/libtcc1.c
 boot1-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
@@ -217,6 +219,7 @@ boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT_STUB=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
+boot2-tcc -c -D TCC_TARGET_I386=1 ../tcc-0.9.26/lib/libtcc1.c
 boot2-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
@@ -264,6 +267,7 @@ boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
+boot3-tcc -c -D TCC_TARGET_I386=1 ../tcc-0.9.26/lib/libtcc1.c
 boot3-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
@@ -311,6 +315,7 @@ boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
+boot4-tcc -c -D TCC_TARGET_I386=1 ../tcc-0.9.26/lib/libtcc1.c
 boot4-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
@@ -358,6 +363,7 @@ boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
+boot5-tcc -c -D TCC_TARGET_I386=1 ../tcc-0.9.26/lib/libtcc1.c
 boot5-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
