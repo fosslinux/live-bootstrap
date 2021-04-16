@@ -42,10 +42,6 @@ tcc-0.9.26 \
 # Test
 tcc -version
 
-# Recompile libc
-cd ../../src/mes-libc/
-kaem --file ../../compile-libc.kaem
-
 cd ../..
 
 # Checksums

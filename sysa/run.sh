@@ -24,6 +24,11 @@ export PREFIX=/after
 
 build flex-2.5.11
 
+# Patch meslibc to support > 255 command line arguments
+build mes-0.23 mes-libc-0.23.sh
+
+build tcc-0.9.27 tcc-meslibc-rebuild.sh checksums/tcc-meslibc-rebuild
+
 build musl-1.1.24 musl-1.1.24.sh checksums/pass1
 
 # Rebuild tcc using musl

@@ -1,5 +1,4 @@
-a1313f0a2aef2e63a3d03b2c8de98e6c022f0999e4d7e039bd140c250be4a4da  /after/lib/libc.a
-a1313f0a2aef2e63a3d03b2c8de98e6c022f0999e4d7e039bd140c250be4a4da  /after/lib/libc+gnu.a
+920b35eb5ae2fda55348a30aafed7f006a5b86cbe05093df2c75e5d169bd9cb0  /after/lib/libc.a
 12c07ae103e7e3b390150a79e5c600d88de14e9bb73a066f6342582729ef5a3f  /after/lib/libgetopt.a
 d1168ee9b528e39f0b40e8d51fb7fa3619c4a5ee928137f7faf6d0879b0916b0  /after/lib/crt1.o
 461ca1494737fab86fe1c1d3addeaf9d0ece413e353abcdea8674db3f700cda3  /after/lib/crtn.o

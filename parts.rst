@@ -152,17 +152,11 @@ bzip2 1.0.8
 ``bzip2`` is a compression format that compresses more than ``gzip``. It
 is preferred where we can use it, and makes source code sizes smaller.
 
-patched mes-libc
-================
-
-Since patch is available at this point, we can apply additional fixes to
-mes-libc that are not included in the wip-m2 branch and recompile libc.
-
 tinycc 0.9.27
 =============
 
 Now, we compile upstream tcc 0.9.27, the latest release of tinycc, using
-the final version of tcc 0.9.26. We then recompile the libc once more.
+the final version of tcc 0.9.26.
 
 From this point onwards, until further notice, all programs are compiled
 using tinycc 0.9.27.
@@ -213,6 +207,19 @@ manually modified so that it can be processed by lex for the Heirloom
 project (the required modifications are mostly syntactical, plus a few
 workarounds to avoid some flex advanced features).
 
+mes 0.23 (libc)
+===============
+
+In order to build musl we need tcc to support more than 255 command line
+arguments. Due to the bug in older mes libc this was not possible. Hence,
+we patch mes libc.
+
+tcc 0.9.27
+==========
+
+Rebuild tcc 0.9.27 to get the fix from patches mes libc. We have to do
+it using older ``tcc`` because tcc-0.9.27 is not self hosting.
+
 musl 1.1.24
 ===========
 
@@ -232,8 +239,7 @@ tcc 0.9.27 (musl)
 
 We recompile ``tcc`` against musl. This is a two stage process. First we
 build tcc-0.9.27 using tcc-0.9.26  that itself links to Mes C library but produces
-binaries linked to musl (we have to do it using older `tcc` because
-tcc-0.9.27 is not self hosting). Then we recompile newly produced tcc with
+binaries linked to musl. Then we recompile newly produced tcc with
 itself. Interestingly, tcc-0.9.27 linked against musl is self hosting.
 
 musl 1.1.24 (tcc-musl)

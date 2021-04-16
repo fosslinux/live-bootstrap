@@ -101,11 +101,6 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# mes-libc-patched
-cd tcc-0.9.27
-kaem --file mes-libc-patched.kaem
-cd ..
-
 # tcc 0.9.27
 pkg="tcc-0.9.27"
 cd ${pkg}
