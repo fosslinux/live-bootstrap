@@ -8,11 +8,13 @@ you can run bootstap inside chroot.
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 
 import argparse
 import glob
 import os
 import subprocess
+import shutil
 
 from sysa import SysA
 from lib.utils import run
@@ -72,7 +74,7 @@ def make_initramfs(tmp_dir, initramfs_path):
 
     with open(initramfs_path, "w") as initramfs:
         cpio = subprocess.Popen(["cpio", "--format", "newc", "--create", "--directory", tmp_dir],
-                             stdin=subprocess.PIPE, stdout=initramfs)
+                                stdin=subprocess.PIPE, stdout=initramfs)
         cpio.communicate(input='\n'.join(file_list).encode())
 
 def bootstrap(args, tmp_dir, initramfs_path):
@@ -84,10 +86,23 @@ def bootstrap(args, tmp_dir, initramfs_path):
         return
 
     if args.minikernel:
-        run('git', 'clone', '--depth', '1', '--branch', 'v0.4',
+        if os.path.isdir('kritis-linux'):
+            shutil.rmtree('kritis-linux')
+
+        run('git', 'clone',
+            '--depth', '1', '--branch', 'v0.7',
             'https://github.com/bittorf/kritis-linux.git')
-        run('kritis-linux/ci_helper.sh', '--arch', 'x86_64', '--ramsize',
-            '-m', str(args.qemu_ram) + 'M', '--kernel', '5.10.8', '--initrd', initramfs_path)
+        run('kritis-linux/ci_helper.sh',
+            '--private',
+            '--multi', '1',
+            '--repeat', '1',
+            '--arch', args.arch,
+            '--qemucpu', '486',
+            '--kernel', '3.18.140',
+            '--features', 'kflock,highrestimers',
+            '--ramsize', str(args.qemu_ram) + 'M',
+            '--initrd', initramfs_path,
+            '--log', '/tmp/bootstrap.log')
         return
 
     run(args.qemu_cmd,
@@ -99,5 +114,5 @@ def bootstrap(args, tmp_dir, initramfs_path):
         '-initrd', initramfs_path,
         '-append', "console=ttyS0")
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
