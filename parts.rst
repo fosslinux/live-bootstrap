@@ -617,3 +617,9 @@ mpfr 4.1.0
 The GNU Multiple Precision Floating-Point Reliable Library (GNU MPFR) is a library
 for arbitrary-precision binary floating-point computation with correct rounding,
 based on GNU Multi-Precision Library.
+
+mpc 3.2.1
+=========
+
+GNU MPC is a library for multiprecision complex arithmetic with exact rounding based
+on GNU MPFR.

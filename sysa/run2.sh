@@ -26,6 +26,8 @@ build autoconf-archive-2021.02.19
 
 build mpfr-4.1.0
 
+build mpc-1.2.1
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i

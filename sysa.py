@@ -438,3 +438,6 @@ class SysA:
 
         # mpfr 4.1.0
         self.get_file("https://mirrors.kernel.org/gnu/mpfr/mpfr-4.1.0.tar.xz")
+
+        # mpc 1.2.1
+        self.get_file("https://mirrors.kernel.org/gnu/mpc/mpc-1.2.1.tar.gz")
