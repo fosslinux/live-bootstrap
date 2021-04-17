@@ -435,3 +435,6 @@ class SysA:
 
         # autoconf archive 2021.02.19
         self.get_file("https://mirrors.kernel.org/gnu/autoconf-archive/autoconf-archive-2021.02.19.tar.xz")
+
+        # mpfr 4.1.0
+        self.get_file("https://mirrors.kernel.org/gnu/mpfr/mpfr-4.1.0.tar.xz")

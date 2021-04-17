@@ -609,4 +609,11 @@ autoconf-archive 2021.02.19
 ===========================
 
 The GNU Autoconf Archive is a collection of Autoconf macros that are used by
-various projects.
+various projects and in particular GNU MPFR.
+
+mpfr 4.1.0
+==========
+
+The GNU Multiple Precision Floating-Point Reliable Library (GNU MPFR) is a library
+for arbitrary-precision binary floating-point computation with correct rounding,
+based on GNU Multi-Precision Library.

@@ -24,6 +24,8 @@ build gmp-6.2.1
 
 build autoconf-archive-2021.02.19
 
+build mpfr-4.1.0
+
 echo "Bootstrapping completed."
 
 exec env - PATH=/after/bin PS1="\w # " bash -i
