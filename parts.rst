@@ -585,16 +585,6 @@ autoconf 2.69
 This the final version of GNU Autoconf that we will require. There are some newer
 versions but we won't need them.
 
-automake 1.12.6
-===============
-
-GNU Automake from 1.12 series.
-
-automake 1.13.4
-===============
-
-GNU Automake from 1.13 series.
-
 automake 1.15.1
 ===============
 

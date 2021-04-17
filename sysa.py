@@ -423,12 +423,6 @@ class SysA:
         # autoconf 2.69
         self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.69.tar.xz")
 
-        # automake 1.12.6
-        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.12.6.tar.xz")
-
-        # automake 1.13.4
-        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.13.4.tar.xz")
-
         # automake 1.15.1
         self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.15.1.tar.xz")
 
