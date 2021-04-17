@@ -5,7 +5,7 @@
 src_prepare() {
     default_src_prepare
 
-    autoreconf-2.61 -f
+    ./bootstrap
 }
 
 src_configure() {
