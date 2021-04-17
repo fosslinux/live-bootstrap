@@ -604,3 +604,9 @@ arbitrary-precision arithmetic, operating on signed integers, rational numbers,
 and floating-point numbers.
 
 GMP is required by newer versions of GCC and Guile.
+
+autoconf-archive 2021.02.19
+===========================
+
+The GNU Autoconf Archive is a collection of Autoconf macros that are used by
+various projects.

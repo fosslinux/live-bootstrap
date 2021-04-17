@@ -432,3 +432,6 @@ class SysA:
 
         # gmp 6.2.1
         self.get_file("https://mirrors.kernel.org/gnu/gmp/gmp-6.2.1.tar.xz")
+
+        # autoconf archive 2021.02.19
+        self.get_file("https://mirrors.kernel.org/gnu/autoconf-archive/autoconf-archive-2021.02.19.tar.xz")
