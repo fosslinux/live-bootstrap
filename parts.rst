@@ -85,18 +85,18 @@ recompiled 5(!) times to add new features that are required for other
 features, namely ``long long`` and ``float``. Each time, the libc is
 also recompiled.
 
-Note that now we begin to delve into the realm of old GNU software,
-using older versions compilable by tinycc. Prior to this point, all tools
-have been adapted significantly for the bootstrap; now, we will be using
-old tooling instead.
-
 untar
 =====
 
 ``tar`` is the most common archive format used by software source
 code, often compressed also. To avoid continuing using submodules we
-switch to software distribution using tar tarchives. ``untar.c`` is
+switch to software distribution using tar archives. ``untar.c`` is
 a single file implementation of tar format and is part of libarchive 3.4.
+
+Note that now we begin to delve into the realm of old GNU software,
+using older versions compilable by tinycc. Prior to this point, all tools
+have been adapted significantly for the bootstrap; now, we will be using
+old tooling instead.
 
 gzip 1.2.4
 ==========
