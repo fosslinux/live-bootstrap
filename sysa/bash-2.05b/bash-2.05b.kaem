@@ -43,6 +43,7 @@ make
 install bash /after/bin/
 ln -s /after/bin/bash /bin/bash
 ln -s /after/bin/bash /bin/sh
+ln -s /after/bin/bash /after/bin/sh
 
 cd ../..
 
