@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    rm doc/standards.info
+    rm doc/standards.info doc/autoconf.info
     rm Makefile.in */Makefile.in
     rm configure
     autoconf-2.52

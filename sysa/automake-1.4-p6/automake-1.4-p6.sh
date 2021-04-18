@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    rm configure Makefile.in */Makefile.in aclocal.m4
+    rm configure Makefile.in */Makefile.in aclocal.m4 automake.info*
     aclocal-1.6
     autoconf-2.52
     # When building with newer automake we get the following error

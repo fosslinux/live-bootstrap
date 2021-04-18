@@ -4,6 +4,9 @@
 
 src_prepare() {
     autoreconf-2.59 -f
+
+    rm help2man.info
+    touch help2man.info
 }
 
 src_configure() {
@@ -11,11 +14,15 @@ src_configure() {
 }
 
 src_compile() {
-    make
+    make MAKEINFO=true
 
     # fix a broken shebang
     tail -n +6 help2man > help2man.tmp
     echo "#!/${PREFIX}/bin/perl" > help2man
     cat help2man.tmp >> help2man
     rm help2man.tmp
+}
+
+src_install() {
+    make MAKEINFO=true DESTDIR="${DESTDIR}" install
 }
