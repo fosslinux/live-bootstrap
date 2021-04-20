@@ -6,6 +6,8 @@ src_prepare() {
     default_src_prepare
 
     AUTOCONF=autoconf-2.13 AUTOHEADER=autoheader-2.13 ACLOCAL=aclocal-1.4 AUTOMAKE=automake-1.4 ./bootstrap
+
+    rm doc/libtool.info*
 }
 
 src_configure() {
@@ -19,5 +21,9 @@ src_configure() {
 }
 
 src_compile() {
-    AR="tcc -ar" AR_FLAGS="cr" make DESTDIR="${DESTDIR}"
+    AR="tcc -ar" AR_FLAGS="cr" make MAKEINFO=true
+}
+
+src_install() {
+    make install MAKEINFO=true DESTDIR="${DESTDIR}"
 }

@@ -87,6 +87,9 @@ src_prepare() {
     rm ld/ldlex.c
     rm gas/itbl-lex.c
     rm binutils/syslex.c binutils/rclex.c binutils/deflex.c binutils/arlex.c
+
+    # Remove prebuilt texinfo files
+    rm */*.info* */*/*.info*
 }
 
 src_configure() {
@@ -124,12 +127,12 @@ src_configure() {
 src_compile() {
     make -C bfd headers
     for dir in libiberty bfd opcodes binutils gas gprof ld; do
-	make -C $dir
+	make -C $dir MAKEINFO=true
     done
 }
 
 src_install() {
     for dir in libiberty bfd opcodes binutils gas gprof ld; do
-	make -C $dir install DESTDIR=$(DESTDIR)
+	make -C $dir install MAKEINFO=true DESTDIR="${DESTDIR}"
     done
 }

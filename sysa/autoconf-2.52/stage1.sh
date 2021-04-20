@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_compile() {
+    rm doc/standards.info doc/autoconf.info
     cp autoconf.in autoconf
     sed -i -e "s# @SHELL@#/bin/sh#" -e 's/@M4@/m4/' -e 's/@AWK@/awk/' \
 	-e  's/@PACKAGE_NAME@/Autoconf/' -e 's/@VERSION@/2.52/' \
