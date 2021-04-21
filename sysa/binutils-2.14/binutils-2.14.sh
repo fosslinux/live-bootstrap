@@ -119,7 +119,7 @@ src_configure() {
             --disable-64-bit-bfd \
             --prefix="${PREFIX}" \
             --libdir="${PREFIX}/lib/musl" \
-	    --srcdir=.
+            --srcdir=.
         cd ..
     done
 }
@@ -127,12 +127,12 @@ src_configure() {
 src_compile() {
     make -C bfd headers
     for dir in libiberty bfd opcodes binutils gas gprof ld; do
-	make -C $dir MAKEINFO=true
+        make -C $dir MAKEINFO=true
     done
 }
 
 src_install() {
     for dir in libiberty bfd opcodes binutils gas gprof ld; do
-	make -C $dir install MAKEINFO=true DESTDIR="${DESTDIR}"
+        make -C $dir install MAKEINFO=true DESTDIR="${DESTDIR}"
     done
 }
