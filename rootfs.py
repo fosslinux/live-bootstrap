@@ -81,8 +81,14 @@ def bootstrap(args, tmp_dir, initramfs_path):
     """Kick off bootstrap process."""
     print("Bootstrapping %s" % (args.arch))
     if args.chroot:
+        find_chroot = """
+import shutil
+print(shutil.which('chroot'))
+"""
+        chroot_binary = run('sudo', 'python3', '-c', find_chroot,
+                            capture_output=True).stdout.decode().strip()
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', args.arch, 'kaem-optional-seed')
-        run('sudo', 'env', '-i', 'PATH=/bin', 'chroot', tmp_dir, init)
+        run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, tmp_dir, init)
         return
 
     if args.minikernel:
