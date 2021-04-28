@@ -26,6 +26,8 @@ build coreutils-8.32
 
 build tar-1.34
 
+build make-4.2.1
+
 build gmp-6.2.1
 
 build autoconf-archive-2021.02.19

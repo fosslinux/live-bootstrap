@@ -604,6 +604,15 @@ tar 1.34
 Newer tar has better support for decompressing .tar.bz2 and .tar.xz archives.
 It also deals better with modern tar archives with extra metadata.
 
+make 4.2.1
+==========
+
+A newer version of make built using autotools is much more reliable and is
+compiled using a modern C compiler and C library. This removes a couple of
+segfaults encountered later in the process and allows more modern make features
+to be used. We do not go for the latest because of the use of automake 1.16
+which we do not have yet.
+
 gmp 6.2.1
 =========
 
