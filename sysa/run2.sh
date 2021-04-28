@@ -46,6 +46,8 @@ build perl-5.10.1
 
 build dist-3.5-236 '' '' '' dist-d1de81f
 
+build perl-5.32.1
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp

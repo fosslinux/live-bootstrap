@@ -676,3 +676,10 @@ dist 3.5-236
 dist is perl's package used for generating Perl's Configure (which is written in
 Perl itself). We 'compile' (aka generate) metaconfig and manifake only from dist.
 We do not use dist's build system because it itself uses dist.
+
+perl 5.32.1
+===========
+
+We finally compile a full version of Perl using Configure. This includes all base
+extensions required and is the latest version of Perl. We are now basically able
+to run any Perl application we want.
