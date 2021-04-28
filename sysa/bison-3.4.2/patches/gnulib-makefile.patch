@@ -1,0 +1,17 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Again, same as bison 2.3. I cannot figure out what gnulib/bison are doing
+that makes this required...
+
+--- Makefile.am	2021-04-15 12:18:34.371818904 +1000
++++ Makefile.am	2021-04-15 12:18:39.055851647 +1000
+@@ -63,6 +63,7 @@
+ check_SCRIPTS =
+ dist_TESTS =
+ noinst_LIBRARIES =
++lib_libbison_a_SOURCES =
+ 
+ include build-aux/local.mk
+ include data/local.mk

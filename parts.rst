@@ -655,6 +655,13 @@ This is an older version of bison required for the bison files in perl 5.10.1.
 We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
 in 2.3. This parser works sufficiently well for perl 5.10.5.
 
+bison 3.4.2
+===========
+
+Bison 3.4.1 is buggy and segfaults when perl 5.32.1 is built. This is probably
+because it was built with a hand-written makefile. We do not build the latest
+bison because perl 5.32.1 requires bison <= 3.4.2.
+
 perl 5.10.1
 ===========
 

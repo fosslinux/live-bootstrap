@@ -1,0 +1,25 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+We don't have network access at this stage to "Fetch PO files".
+
+--- ../gnulib-672663a/gnulib-tool	2021-04-15 21:07:04.538055553 +1000
++++ ../gnulib-672663a/gnulib-tool	2021-04-15 21:07:16.424135984 +1000
+@@ -5564,16 +5564,6 @@
+       fi
+       func_append added_files "$pobase/POTFILES.in$nl"
+     fi
+-    # Fetch PO files.
+-    TP_URL="https://translationproject.org/latest/"
+-    if $doit; then
+-      echo "Fetching gnulib PO files from $TP_URL"
+-      (cd "$destdir"/$pobase \
+-       && wget --no-verbose --mirror --level=1 -nd -A.po -P . "${TP_URL}gnulib/"
+-      )
+-    else
+-      echo "Fetch gnulib PO files from $TP_URL"
+-    fi
+     # Create po/LINGUAS.
+     if $doit; then
+       func_dest_tmpfilename $pobase/LINGUAS
