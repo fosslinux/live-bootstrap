@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    default_src_prepare
+    default
 
     AUTOCONF=autoconf-2.13 AUTOHEADER=autoheader-2.13 ACLOCAL=aclocal-1.4 AUTOMAKE=automake-1.4 ./bootstrap
 

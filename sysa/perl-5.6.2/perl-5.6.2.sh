@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    default_src_prepare
+    default
 
     # Regenerate bison files
     sed -i '/yydestruct/d' perly.y
@@ -37,5 +37,5 @@ src_install() {
     # Remove old perl
     rm -rf "${PREFIX}"/lib/perl5/
 
-    default_src_install
+    default
 }

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    default_src_prepare
+    default
 
     mv Makefile src/
     touch src/config.h
@@ -12,13 +12,13 @@ src_prepare() {
 
 src_compile() {
     cd src
-    default_src_compile
+    default
     cd ..
 }
 
 src_install() {
     cd src
-    default_src_install
+    default
     cd ..
 
     # Remove yacc, we won't need it any longer

@@ -40,21 +40,26 @@ build () {
     fi
 
     echo "${pkg}: unpacking source."
-    call src_unpack
+    build_stage=src_unpack
+    call $build_stage
 
     cd "${pkg}" || (echo "Cannot cd into build/${pkg}!"; kill $$)
 
     echo "${pkg}: preparing source."
-    call src_prepare
+    build_stage=src_prepare
+    call $build_stage
 
     echo "${pkg}: configuring source."
-    call src_configure
+    build_stage=src_configure
+    call $build_stage
 
     echo "${pkg}: compiling source."
-    call src_compile
+    build_stage=src_compile
+    call $build_stage
 
     echo "${pkg}: installing."
-    call src_install
+    build_stage=src_install
+    call $build_stage
 
     cd ../..
 
@@ -138,4 +143,9 @@ call() {
     else
         default_"${1}"
     fi
+}
+
+# Call default build stage function
+default() {
+    "default_${build_stage}"
 }

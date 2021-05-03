@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    default_src_prepare
+    default
     rm awktab.c
 }
 
 src_install() {
-    default_src_install
+    default
 
     # Install data files
     install -d "${DESTDIR}${PREFIX}/share/awk/"

@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_unpack() {
-    default_src_unpack
+    default
 }
 
 src_prepare() {
-    default_src_prepare
+    default
     # This is needed for building with TCC
     sed -i 's/ix86_attribute_table\[\]/ix86_attribute_table\[10\]/' gcc/config/i386/i386.c
     # Needed for musl
