@@ -20,7 +20,7 @@ def run(*args, **kwargs):
         print(arguments)
 
     try:
-        subprocess.run(arguments, check=True, **kwargs)
+        return subprocess.run(arguments, check=True, **kwargs)
     except subprocess.CalledProcessError:
         print("Bootstrapping failed")
         sys.exit(1)
