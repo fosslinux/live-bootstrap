@@ -83,7 +83,7 @@ class SysA:
 
     def get_file(self, url, mkbuild=False, output=None):
         """
-        Download and prepares source packages
+        Download and prepare source packages
 
         url can be either:
           1. a single URL
@@ -131,7 +131,7 @@ class SysA:
 
     def prepare(self):
         """
-        Prepare directory structore for System A.
+        Prepare directory structure for System A.
         We create an empty tmpfs, unpack stage0-posix.
         Rest of the files are unpacked into more structured directory /after
         """
