@@ -5,7 +5,7 @@
 # When we rebuild flex it no longer needs patching
 # and can use simplified makefile
 src_prepare() {
-    default_src_prepare
+    default
 
     touch config.h
     rm parse.c parse.h scan.c skel.c
@@ -19,5 +19,5 @@ src_install() {
         rm -f "${PREFIX}/lib/libl.a"
     fi
     
-    default_src_install
+    default
 }

@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_unpack() {
-    default_src_unpack
+    default
 
     mv perl5-perl-5.003 perl-5.003
 }
 
 src_prepare() {
-    default_src_prepare
+    default
 
     # Regenerate bison files
     rm perly.c perly.h

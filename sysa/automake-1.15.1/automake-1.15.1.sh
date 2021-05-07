@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    default_src_prepare
+    default
 
     ./bootstrap
 

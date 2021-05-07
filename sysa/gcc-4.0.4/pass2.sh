@@ -4,11 +4,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_unpack() {
-    default_src_unpack
+    default
 }
 
 src_prepare() {
-    default_src_prepare
+    default
 
     # Needed for musl
     sed -i 's/struct siginfo/siginfo_t/' gcc/config/i386/linux-unwind.h
