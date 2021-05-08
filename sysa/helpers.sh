@@ -76,22 +76,29 @@ build () {
 default_src_unpack() {
     src_dir="${base_dir}/src"
 
-    for i in "${src_dir}"/*.tar.gz; do
-        [ -e "${i}" ] || continue
-        tar -xzf "${i}"
-    done
-    for i in "${src_dir}"/*.tar.bz2; do
-        [ -e "${i}" ] || continue
-        tar -xf "${i}" --use-compress-program=bzip2
-    done
-    for i in "${src_dir}"/*.tar.xz; do
-        [ -e "${i}" ] || continue
-        tar -xf "${i}" --use-compress-program=xz
-    done
-    for i in "${src_dir}"/*.tar; do
-        [ -e "${i}" ] || continue
-        tar -xf "${i}"
-    done
+    # Check for new tar
+    if test -e "${PREFIX}/libexec/rmt"; then
+        for i in "${src_dir}"/*; do
+            tar --no-same-owner -xf "${i}"
+        done
+    else
+        for i in "${src_dir}"/*.tar.gz; do
+            [ -e "${i}" ] || continue
+            tar -xzf "${i}"
+        done
+        for i in "${src_dir}"/*.tar.bz2; do
+            [ -e "${i}" ] || continue
+            tar -xf "${i}" --use-compress-program=bzip2
+        done
+        for i in "${src_dir}"/*.tar.xz; do
+            [ -e "${i}" ] || continue
+            tar -xf "${i}" --use-compress-program=xz
+        done
+        for i in "${src_dir}"/*.tar; do
+            [ -e "${i}" ] || continue
+            tar -xf "${i}"
+        done
+    fi
 }
 
 # Default function to prepare source code.
