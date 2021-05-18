@@ -1,0 +1,38 @@
+SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Replace test for support of correct values produced by nanosleep.
+We always assume that kernel doesn't have correct implementation and
+instead use function from gnulib with fix. That fixes reproducibility
+problem across different kernels.
+
+--- ../gnulib-d279bc/m4/nanosleep.m4
++++ ../gnulib-d279bc/m4/nanosleep.m4
+@@ -85,23 +85,9 @@ AC_DEFUN([gl_FUNC_NANOSLEEP],
+             ts_sleep.tv_nsec = 1;
+             #if HAVE_DECL_ALARM
+             {
+-              static struct sigaction act;
+-              act.sa_handler = check_for_SIGALRM;
+-              sigemptyset (&act.sa_mask);
+-              sigaction (SIGALRM, &act, NULL);
+-              alarm (1);
+-              if (nanosleep (&ts_sleep, NULL) != 0)
+-                return 3;
+-              /* Test for a minor problem: the handling of large arguments.  */
+-              ts_sleep.tv_sec = TYPE_MAXIMUM (time_t);
+-              ts_sleep.tv_nsec = 999999999;
+-              alarm (1);
+-              if (nanosleep (&ts_sleep, &ts_remaining) != -1)
+-                return 4;
+-              if (errno != EINTR)
+-                return 5;
+-              if (ts_remaining.tv_sec <= TYPE_MAXIMUM (time_t) - 10)
+-                return 6;
++              /* Force to use HAVE_BUG_BIG_NANOSLEEP 1 across kernels even
++                 if it correctly handles big nanosleeps. */
++              return 6;
+             }
+             #else /* A simpler test for native Windows.  */
+             if (nanosleep (&ts_sleep, &ts_remaining) < 0)
