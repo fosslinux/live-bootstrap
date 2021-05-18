@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -148,4 +149,12 @@ call() {
 # Call default build stage function
 default() {
     "default_${build_stage}"
+}
+
+# Set all files modified dates to be 0 unix time.
+# Should be called at the end of bootstrapping process.
+# This function needs `touch` that supports --no-dereference
+# (at least coreutils 8.1).
+canonicalise_all_files_timestamp() {
+    find / -exec touch --no-dereference -t 197001010000.00 {} +
 }

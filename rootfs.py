@@ -9,6 +9,7 @@ you can run bootstap inside chroot.
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
+# SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 
 import argparse
 import glob
@@ -33,6 +34,9 @@ def main():
     parser.add_argument("-p", "--preserve", help="Do not unmount temporary dir",
                         action="store_true")
     parser.add_argument("-t", "--tmpdir", help="Temporary directory")
+    parser.add_argument("--force_timestamps",
+                        help="Force all files timestamps to be 0 unix time",
+                        action="store_true")
 
     # QEMU arguments
     parser.add_argument("-q", "--qemu-cmd", help="QEMU command",
@@ -52,7 +56,8 @@ def main():
     if args.arch != "x86":
         raise ValueError("Only x86 is supported at the moment.")
 
-    system_a = SysA(arch=args.arch, preserve_tmp=args.preserve, tmpdir=args.tmpdir)
+    system_a = SysA(arch=args.arch, preserve_tmp=args.preserve, tmpdir=args.tmpdir,
+                    force_timestamps=args.force_timestamps)
     initramfs_path = os.path.join(system_a.tmp_dir, "initramfs")
 
     if not args.chroot:

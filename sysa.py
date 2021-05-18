@@ -18,7 +18,7 @@ class SysA:
     """
     Class responsible for preparing sources for System A.
     """
-    def __init__(self, arch, preserve_tmp, tmpdir):
+    def __init__(self, arch, preserve_tmp, tmpdir, force_timestamps):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -29,6 +29,7 @@ class SysA:
             self.tmp_dir = tmpdir
         self.sysa_dir = os.path.join(self.git_dir, 'sysa')
         self.after_dir = os.path.join(self.tmp_dir, 'after')
+        self.force_timestamps = force_timestamps
 
         self.prepare()
 
@@ -187,12 +188,22 @@ class SysA:
         """
 
         self.create_after_dirs()
+        self.create_configuration_file()
         self.mescc_tools_checksum()
         self.deploy_extra_files()
         self.mescc_tools_extra()
         self.mes()
         self.tcc_0_9_26()
         self.get_packages()
+
+    def create_configuration_file(self):
+        """
+        Creates bootstrap.cfg file which would contain options used to
+        customize bootstrap.
+        """
+        config_path = os.path.join(self.after_dir, "bootstrap.cfg")
+        with open(config_path, "w") as config:
+            config.write("FORCE_TIMESTAMPS=" + str(self.force_timestamps))
 
     def create_after_dirs(self):
         """

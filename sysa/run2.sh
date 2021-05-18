@@ -11,6 +11,8 @@ set -e
 
 . helpers.sh
 
+. bootstrap.cfg
+
 build xz-5.0.5
 
 build automake-1.11.2
@@ -30,6 +32,11 @@ build autoconf-archive-2021.02.19
 build mpfr-4.1.0
 
 build mpc-1.2.1
+
+if [ "$FORCE_TIMESTAMPS" = True ] ; then
+    echo 'Forcing all files timestamps to be 0 unix time.'
+    canonicalise_all_files_timestamp
+fi
 
 echo "Bootstrapping completed."
 
