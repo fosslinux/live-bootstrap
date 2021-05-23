@@ -631,3 +631,10 @@ mpc 3.2.1
 
 GNU MPC is a library for multiprecision complex arithmetic with exact rounding based
 on GNU MPFR.
+
+flex 2.5.33
+===========
+
+An older version of flex is required for bison 2.3. We cannot use 2.5.11 that
+was compiled much earlier, as it does not produce reproducible output when
+building bison 2.3.

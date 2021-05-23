@@ -34,6 +34,8 @@ build mpfr-4.1.0
 
 build mpc-1.2.1
 
+build flex-2.5.33
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp

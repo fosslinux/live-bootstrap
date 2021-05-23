@@ -457,3 +457,6 @@ class SysA:
 
         # mpc 1.2.1
         self.get_file("https://mirrors.kernel.org/gnu/mpc/mpc-1.2.1.tar.gz")
+
+        # flex 2.5.33
+        self.get_file("http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.33.tar.gz")
