@@ -1,0 +1,20 @@
+SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Remove dependency on gettext, because we don't have it at this stage
+of the build.
+
+--- ./configure.ac
++++ ./configure.ac
+@@ -624,8 +624,8 @@ AM_CONDITIONAL([CROSS_COMPILING], [test "$cross_compiling" = yes])
+ 
+ # As long as "grep 'PRI[diouxX]' po/*.pot" reports matches in
+ # translatable strings, we must use need-formatstring-macros here.
+-AM_GNU_GETTEXT([external], [need-formatstring-macros])
+-AM_GNU_GETTEXT_VERSION([0.19.2])
++# AM_GNU_GETTEXT([external], [need-formatstring-macros])
++# AM_GNU_GETTEXT_VERSION([0.19.2])
+ 
+ # For a test of uniq: it uses the $LOCALE_FR envvar.
+ gt_LOCALE_FR

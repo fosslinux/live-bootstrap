@@ -2,6 +2,7 @@
 .. SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 .. SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 .. SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+.. SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 
 .. SPDX-License-Identifier: CC-BY-SA-4.0
 
@@ -589,6 +590,13 @@ automake 1.15.1
 ===============
 
 GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
+
+coreutils 8.32
+=============
+
+We build the latest available coreutils 8.32 which adds needed options to make
+results of build metadata reproducible. For example, timestamps are changed with
+``touch --no-dereference``.
 
 tar 1.34
 ========
