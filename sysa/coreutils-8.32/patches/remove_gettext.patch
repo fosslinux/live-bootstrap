@@ -18,3 +18,14 @@ of the build.
  
  # For a test of uniq: it uses the $LOCALE_FR envvar.
  gt_LOCALE_FR
+--- ./Makefile.am
++++ ./Makefile.am
+@@ -17,7 +17,7 @@
+ 
+ ALL_RECURSIVE_TARGETS =
+ 
+-SUBDIRS = po . gnulib-tests
++SUBDIRS = . gnulib-tests
+ 
+ EXTRA_DIST =				\
+   .mailmap				\
