@@ -17,12 +17,14 @@ export PATH=/after/bin
 # 2) optionally specify build script. Default is name-version.sh
 # 3) optionally specify name of checksum file. Default is checksums
 # 4) directory of patches. Default is patches
+# 5) directory to cd into. Default is ${pkg}
 build () {
     pkg=$1
     script_name=${2:-${pkg}.sh}
     checksum_f=${3:-checksums}
+    dirname=${5:-${pkg}}
 
-    cd "$pkg" || (echo "Cannot cd into ${pkg}!"; kill $$)
+    cd "${PREFIX}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
     base_dir="${PWD}"
     patch_dir="${base_dir}/${4:-patches}"
@@ -44,7 +46,7 @@ build () {
     build_stage=src_unpack
     call $build_stage
 
-    cd "${pkg}" || (echo "Cannot cd into build/${pkg}!"; kill $$)
+    cd "${dirname}" || (echo "Cannot cd into build/${dirname}!"; kill $$)
 
     echo "${pkg}: preparing source."
     build_stage=src_prepare
@@ -62,13 +64,13 @@ build () {
     build_stage=src_install
     call $build_stage
 
-    cd ../..
+    cd "${PREFIX}/${pkg}"
 
     echo "${pkg}: checksumming installed files."
     test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
 
     echo "${pkg}: build successful"
-    cd ..
+    cd "${PREFIX}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install
 }

@@ -9,6 +9,7 @@
 
 set -e
 
+# shellcheck source=sysa/helpers.sh
 . helpers.sh
 
 . bootstrap.cfg
@@ -25,6 +26,8 @@ build coreutils-8.32
 
 build tar-1.34
 
+build make-4.2.1
+
 build gmp-6.2.1
 
 build autoconf-archive-2021.02.19
@@ -32,6 +35,18 @@ build autoconf-archive-2021.02.19
 build mpfr-4.1.0
 
 build mpc-1.2.1
+
+build flex-2.5.33
+
+build bison-2.3
+
+build bison-3.4.2
+
+build perl-5.10.1
+
+build dist-3.5-236 '' '' '' dist-d1de81f
+
+build perl-5.32.1
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'

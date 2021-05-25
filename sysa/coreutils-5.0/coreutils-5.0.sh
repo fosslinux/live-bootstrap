@@ -18,3 +18,10 @@ src_prepare() {
 
     cp "${mk_dir}/pass2.mk" Makefile
 }
+
+src_install() {
+    default
+
+    # perl later requires /bin/pwd
+    ln -s /after/bin/pwd /bin/pwd
+}

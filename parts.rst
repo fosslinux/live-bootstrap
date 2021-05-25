@@ -604,6 +604,15 @@ tar 1.34
 Newer tar has better support for decompressing .tar.bz2 and .tar.xz archives.
 It also deals better with modern tar archives with extra metadata.
 
+make 4.2.1
+==========
+
+A newer version of make built using autotools is much more reliable and is
+compiled using a modern C compiler and C library. This removes a couple of
+segfaults encountered later in the process and allows more modern make features
+to be used. We do not go for the latest because of the use of automake 1.16
+which we do not have yet.
+
 gmp 6.2.1
 =========
 
@@ -631,3 +640,46 @@ mpc 3.2.1
 
 GNU MPC is a library for multiprecision complex arithmetic with exact rounding based
 on GNU MPFR.
+
+flex 2.5.33
+===========
+
+An older version of flex is required for bison 2.3. We cannot use 2.5.11 that
+was compiled much earlier, as it does not produce reproducible output when
+building bison 2.3.
+
+bison 2.3
+=========
+
+This is an older version of bison required for the bison files in perl 5.10.1.
+We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
+in 2.3. This parser works sufficiently well for perl 5.10.5.
+
+bison 3.4.2
+===========
+
+Bison 3.4.1 is buggy and segfaults when perl 5.32.1 is built. This is probably
+because it was built with a hand-written makefile. We do not build the latest
+bison because perl 5.32.1 requires bison <= 3.4.2.
+
+perl 5.10.1
+===========
+
+Perl 5.10.1 is an intermediate version used before Perl 5.32. We require this
+version as it adds a couple of modules into lib/ required to regenerate files in
+Perl 5.32. We still use the Makefile instead of the metaconfig strategy, as
+metaconfig history becomes poor more than a few years back.
+
+dist 3.5-236
+============
+
+dist is perl's package used for generating Perl's Configure (which is written in
+Perl itself). We 'compile' (aka generate) metaconfig and manifake only from dist.
+We do not use dist's build system because it itself uses dist.
+
+perl 5.32.1
+===========
+
+We finally compile a full version of Perl using Configure. This includes all base
+extensions required and is the latest version of Perl. We are now basically able
+to run any Perl application we want.

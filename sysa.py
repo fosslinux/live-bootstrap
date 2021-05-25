@@ -446,6 +446,9 @@ class SysA:
         self.get_file(["https://mirrors.kernel.org/gnu/tar/tar-1.34.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-30820c.tar.gz"])
 
+        # make 4.2.1
+        self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
+
         # gmp 6.2.1
         self.get_file("https://mirrors.kernel.org/gnu/gmp/gmp-6.2.1.tar.xz")
 
@@ -457,3 +460,26 @@ class SysA:
 
         # mpc 1.2.1
         self.get_file("https://mirrors.kernel.org/gnu/mpc/mpc-1.2.1.tar.gz")
+
+        # flex 2.5.33
+        self.get_file("http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.33.tar.gz")
+
+        # bison 2.3
+        self.get_file(["https://mirrors.kernel.org/gnu/bison/bison-2.3.tar.bz2",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b28236b.tar.gz"])
+
+        # bison 3.4.2
+        self.get_file(["https://mirrors.kernel.org/gnu/bison/bison-3.4.2.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-672663a.tar.gz"])
+
+        # perl 5.10.5
+        self.get_file("https://www.cpan.org/src/5.0/perl-5.10.1.tar.bz2")
+
+        # dist 3.5-236
+        # Debian's version is used because upstream is not to be found (dead?)
+        self.get_file("https://salsa.debian.org/perl-team/interpreter/dist/-/archive/d1de81f/dist-d1de81f.tar.gz",
+                      output="dist-3.5-236.tar.gz")
+
+        # perl 5.32.1
+        self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
+                       "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
