@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    rm doc/automake.info*
+
     sed -i 's/1.8a/1.8.5/; s/ filename-length-max=99//' configure.ac
     autoreconf-2.61 -f
 }

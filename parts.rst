@@ -683,3 +683,8 @@ perl 5.32.1
 We finally compile a full version of Perl using Configure. This includes all base
 extensions required and is the latest version of Perl. We are now basically able
 to run any Perl application we want.
+
+automake 1.16.3
+===============
+
+GNU Automake from 1.16 series that required newer Perl.

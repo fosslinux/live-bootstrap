@@ -9,7 +9,7 @@ src_prepare() {
 
     ./bootstrap
 
-    rm doc/automake-history.info
+    rm doc/automake-history.info doc/automake.info*
 }
 
 src_configure() {

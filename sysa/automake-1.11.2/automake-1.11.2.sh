@@ -5,7 +5,7 @@
 src_prepare() {
     default
 
-    rm doc/amhello-1.0.tar.gz
+    rm doc/amhello-1.0.tar.gz doc/automake.info*
 
     ./bootstrap
 }

@@ -3,6 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    rm doc/automake.info*
+
     autoreconf-2.59 -f
 }
 

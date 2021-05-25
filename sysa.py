@@ -483,3 +483,6 @@ class SysA:
         # perl 5.32.1
         self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
                        "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
+
+        # automake 1.16.3
+        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.16.3.tar.xz")
