@@ -694,3 +694,9 @@ patch 2.7.6
 
 Our old patch was built with manual makefile and used mes libc.
 This is a newer version of which we need in order to import gnulib into gettext.
+
+gettext 0.21
+============
+
+GNU Gettext is an internationalization and localization system used for writing
+multilingual programs.

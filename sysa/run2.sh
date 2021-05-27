@@ -52,6 +52,8 @@ build automake-1.16.3
 
 build patch-2.7.6
 
+build gettext-0.21
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp
