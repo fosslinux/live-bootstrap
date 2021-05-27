@@ -688,3 +688,9 @@ automake 1.16.3
 ===============
 
 GNU Automake from 1.16 series that required newer Perl.
+
+patch 2.7.6
+===========
+
+Our old patch was built with manual makefile and used mes libc.
+This is a newer version of which we need in order to import gnulib into gettext.
