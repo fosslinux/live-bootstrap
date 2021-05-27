@@ -5,6 +5,8 @@
 src_prepare() {
     default
 
+    rm doc/amhello-1.0.tar.gz
+
     ./bootstrap
 
     rm doc/automake-history.info
@@ -15,7 +17,7 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true CC=tcc
+    make MAKEINFO=true
 }
 
 src_install() {
