@@ -494,3 +494,6 @@ class SysA:
         # gettext 0.21
         self.get_file(["https://mirrors.kernel.org/gnu/gettext/gettext-0.21.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-7daa86f.tar.gz"])
+
+        self.get_file(["https://mirrors.kernel.org/gnu/texinfo/texinfo-6.7.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b81ec69.tar.gz"])

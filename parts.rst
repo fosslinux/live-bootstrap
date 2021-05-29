@@ -700,3 +700,9 @@ gettext 0.21
 
 GNU Gettext is an internationalization and localization system used for writing
 multilingual programs.
+
+texinfo 6.7
+===========
+
+Texinfo is a typesetting syntax used for generating documentation. We can now use
+``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
