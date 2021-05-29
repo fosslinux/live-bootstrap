@@ -438,13 +438,13 @@ class SysA:
         # automake 1.15.1
         self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.15.1.tar.xz")
 
-        # coreutils 8.32
-        self.get_file(["https://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-8.32.tar.gz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
-
         # tar 1.34
         self.get_file(["https://mirrors.kernel.org/gnu/tar/tar-1.34.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-30820c.tar.gz"])
+
+        # coreutils 8.32
+        self.get_file(["https://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-8.32.tar.gz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
 
         # make 4.2.1
         self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
