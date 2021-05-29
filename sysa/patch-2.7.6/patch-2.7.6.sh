@@ -3,17 +3,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    default
+    ../../import-gnulib.sh
 
-    rm doc/amhello-1.0.tar.gz
+    # bison
+    rm lib/parse-datetime.c
 
-    ./bootstrap
-
-    rm doc/automake-history.info doc/automake.info*
+    autoreconf -fi
 }
 
 src_configure() {
-    ./configure --prefix=/after
+    ./configure --prefix="${PREFIX}"
 }
 
 src_compile() {
@@ -21,5 +20,5 @@ src_compile() {
 }
 
 src_install() {
-    make install MAKEINFO=true DESTDIR="${DESTDIR}"
+    make MAKEINFO=true DESTDIR="${DESTDIR}" install
 }

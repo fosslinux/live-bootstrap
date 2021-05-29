@@ -483,3 +483,17 @@ class SysA:
         # perl 5.32.1
         self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
                        "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
+
+        # automake 1.16.3
+        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.16.3.tar.xz")
+
+        # patch 2.7.6
+        self.get_file(["https://mirrors.kernel.org/gnu/patch/patch-2.7.6.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-e017871.tar.gz"])
+
+        # gettext 0.21
+        self.get_file(["https://mirrors.kernel.org/gnu/gettext/gettext-0.21.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-7daa86f.tar.gz"])
+
+        self.get_file(["https://mirrors.kernel.org/gnu/texinfo/texinfo-6.7.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b81ec69.tar.gz"])

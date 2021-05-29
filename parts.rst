@@ -683,3 +683,26 @@ perl 5.32.1
 We finally compile a full version of Perl using Configure. This includes all base
 extensions required and is the latest version of Perl. We are now basically able
 to run any Perl application we want.
+
+automake 1.16.3
+===============
+
+GNU Automake from 1.16 series that required newer Perl.
+
+patch 2.7.6
+===========
+
+Our old patch was built with manual makefile and used mes libc.
+This is a newer version of which we need in order to import gnulib into gettext.
+
+gettext 0.21
+============
+
+GNU Gettext is an internationalization and localization system used for writing
+multilingual programs.
+
+texinfo 6.7
+===========
+
+Texinfo is a typesetting syntax used for generating documentation. We can now use
+``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.

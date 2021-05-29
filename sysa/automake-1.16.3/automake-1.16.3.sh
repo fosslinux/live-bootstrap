@@ -3,19 +3,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    default
-
-    rm doc/amhello-1.0.tar.gz doc/automake.info*
-
     ./bootstrap
+
+    rm doc/automake-history.info doc/automake.info*
 }
 
 src_configure() {
-    ./configure CC=tcc --prefix=/after
+    ./configure --prefix=/after
 }
 
 src_compile() {
-    make MAKEINFO=true CC=tcc
+    make MAKEINFO=true
 }
 
 src_install() {
