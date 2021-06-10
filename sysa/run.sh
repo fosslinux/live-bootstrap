@@ -143,6 +143,8 @@ build autoconf-2.64
 
 build gcc-4.0.4 pass1.sh checksums/pass1
 
+build linux-headers-5.10.41 '' '' '' linux-5.10.41
+
 build musl-1.2.2
 
 build gcc-4.0.4 pass2.sh checksums/pass2

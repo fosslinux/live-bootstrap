@@ -370,6 +370,10 @@ class SysA:
         self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2",
                       output="gcc-4.0.4.tar.bz2")
 
+        # linux api headers 5.10.41
+        self.get_file("https://mirrors.kernel.org/pub/linux/kernel/v5.x/linux-5.10.41.tar.gz",
+                output="linux-headers-5.10.41.tar.gz")
+
         # musl 1.2.2
         self.get_file("https://musl.libc.org/releases/musl-1.2.2.tar.gz")
 
