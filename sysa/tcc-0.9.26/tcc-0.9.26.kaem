@@ -12,7 +12,7 @@ MES_ARENA=30000000
 MES_MAX_ARENA=30000000
 MES_LIB=${MES_PREFIX}/lib
 MES_SOURCE=${MES_PREFIX}
-MES=${bindir}/mes
+MES=${bindir}/mes-m2
 
 cd src/tcc-0.9.26
 
@@ -73,8 +73,7 @@ mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-mes-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
-cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+mes-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 
 # libtcc1.a
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/libtcc1.c
@@ -129,8 +128,7 @@ boot0-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot0-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
-cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+boot0-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cd ../tcc-0.9.26
 
 # Test boot0
@@ -176,8 +174,7 @@ boot1-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot1-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
-cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+boot1-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cd ../tcc-0.9.26
 
 # Test boot1
@@ -224,8 +221,7 @@ boot2-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot2-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
-cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+boot2-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cd ../tcc-0.9.26
 
 # Test boot2
@@ -272,8 +268,7 @@ boot3-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot3-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
-cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+boot3-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cd ../tcc-0.9.26
 
 # Test boot3
@@ -320,8 +315,7 @@ boot4-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot4-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
-cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+boot4-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 cd ../tcc-0.9.26
 
 # Test boot4
@@ -368,8 +362,7 @@ boot5-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot5-tcc -ar cr ${libdir}/libc+gnu.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
-cp ${libdir}/libc+gnu.a ${libdir}/libc.a
+boot5-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 
 # Test boot5
 boot5-tcc -version
@@ -388,4 +381,4 @@ tcc -ar cr ${libdir}/libgetopt.a getopt.o
 cd ../..
 
 # Checksums
-fletcher16 checksums
+sha256sum -c checksums

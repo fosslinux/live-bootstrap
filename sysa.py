@@ -146,36 +146,41 @@ class SysA:
         self.after()
 
     def stage0_posix(self):
-        """Copy in all the stage0-posix (formerly known as mescc-tools-seed)"""
-        mescc_tools_seed_base_dir = os.path.join(self.sysa_dir, 'mescc-tools-seed',
-                                                 'src', 'mescc-tools-seed')
-        mescc_tools_seed_dir = os.path.join(mescc_tools_seed_base_dir, self.arch)
-        copy_tree(mescc_tools_seed_dir, self.tmp_dir)
+        """Copy in all of the stage0-posix"""
+        stage0_posix_base_dir = os.path.join(self.sysa_dir, 'stage0-posix', 'src')
+        stage0_posix_arch_dir = os.path.join(stage0_posix_base_dir, self.arch)
+        copy_tree(stage0_posix_arch_dir, self.tmp_dir)
 
-        m2_planet_dir = os.path.join(mescc_tools_seed_base_dir, 'M2-Planet')
+        m2_planet_dir = os.path.join(stage0_posix_base_dir, 'M2-Planet')
         copytree(m2_planet_dir, self.tmp_dir)
 
+        # M2libc
+        m2libc_dir = os.path.join(stage0_posix_base_dir, 'M2libc')
+        copytree(m2libc_dir, self.tmp_dir)
+
+        # mescc-tools
+        mescc_tools_dir = os.path.join(stage0_posix_base_dir, 'mescc-tools')
+        copytree(mescc_tools_dir, self.tmp_dir)
+
+        # mescc-tools-extra
+        # Some additional tools such as cp, chmod, untar and ungz
+        mescc_tools_extra_dir = os.path.join(stage0_posix_base_dir, 'mescc-tools-extra')
+        copytree(mescc_tools_extra_dir, self.tmp_dir)
+
         # At the moment not useful for bootstrap but easier to keep it
-        mes_m2_dir = os.path.join(mescc_tools_seed_base_dir, 'mes-m2')
+        mes_m2_dir = os.path.join(stage0_posix_base_dir, 'mes-m2')
         copytree(mes_m2_dir, self.tmp_dir)
 
-        mescc_tools_patched_dir = os.path.join(self.sysa_dir, 'mescc-tools-seed',
-                                               'src', 'mescc-tools-patched')
-        shutil.copytree(mescc_tools_patched_dir,
-                        os.path.join(self.tmp_dir, 'mescc-tools'), shutil.ignore_patterns('*.git*'))
-
         # bootstrap seeds
-        bootstrap_seeds_dir = os.path.join(self.sysa_dir, 'bootstrap-seeds')
+        bootstrap_seeds_dir = os.path.join(self.sysa_dir, 'stage0-posix', 'src', 'bootstrap-seeds')
         copytree(bootstrap_seeds_dir, self.tmp_dir)
         kaem_optional_seed = os.path.join(bootstrap_seeds_dir, 'POSIX',
                                           self.arch, 'kaem-optional-seed')
         shutil.copy2(kaem_optional_seed, os.path.join(self.tmp_dir, 'init'))
 
-        # replace the init kaem with our own custom one
-        shutil.move(os.path.join(self.tmp_dir, 'kaem.run'),
-                    os.path.join(self.tmp_dir, 'mescc-tools-seed.kaem.run'))
-        shutil.copy2(os.path.join(self.sysa_dir, 'base.kaem.run'),
-                     os.path.join(self.tmp_dir, 'kaem.run'))
+        # stage0-posix hook to continue running live-bootstrap
+        shutil.copy2(os.path.join(self.sysa_dir, 'after.kaem'),
+                     os.path.join(self.tmp_dir, 'after.kaem'))
 
         # create directories needed
         os.mkdir(os.path.join(self.tmp_dir, 'bin'))
@@ -183,15 +188,14 @@ class SysA:
     def after(self):
         """
         Prepare sources in /after directory.
-        After mescc-tools-seed we get into our own directory because
-        the mescc-tools-seed one is hella messy.
+        After stage0-posix we get into our own directory because
+        the stage0-posix one is hella messy.
         """
 
         self.create_after_dirs()
         self.create_configuration_file()
-        self.mescc_tools_checksum()
+        self.stage0_posix_checksum()
         self.deploy_extra_files()
-        self.mescc_tools_extra()
         self.mes()
         self.tcc_0_9_26()
         self.get_packages()
@@ -233,25 +237,18 @@ class SysA:
         # Needed for patch to work, although can be fixed with TMPDIR
         os.mkdir(os.path.join(self.tmp_dir, 'tmp'))
 
-    def mescc_tools_checksum(self):
-        """Early fletcher16 checksum files"""
-        shutil.copy2(os.path.join(self.sysa_dir, 'mescc-tools-seed', 'checksums'),
-                     os.path.join(self.after_dir, 'mescc-tools-seed-checksums'))
+    def stage0_posix_checksum(self):
+        """Early checksum files"""
+        shutil.copy2(os.path.join(self.sysa_dir, 'stage0-posix', 'checksums'),
+                     os.path.join(self.after_dir, 'stage0-posix-checksums'))
 
     def deploy_extra_files(self):
         """Deploy misc files"""
-        extra_files = ['helpers.sh', 'run.sh', 'run2.sh', 'pre-sha.sha256sums']
+        extra_files = ['helpers.sh', 'run.sh', 'run2.sh']
         for extra_file in extra_files:
             shutil.copy2(os.path.join(self.sysa_dir, extra_file), self.after_dir)
 
-        shutil.copy2(os.path.join(self.sysa_dir, 'after.kaem'), self.tmp_dir)
-        shutil.copy2(os.path.join(self.sysa_dir, 'after.kaem.run'),
-                     os.path.join(self.after_dir, 'kaem.run'))
         shutil.copy2(os.path.join(self.git_dir, 'SHA256SUMS.sources'), self.after_dir)
-
-    def mescc_tools_extra(self):
-        """Some additional tools such as cp and chmod (for M2-Planet)"""
-        copytree(os.path.join(self.sysa_dir, 'mescc-tools-extra'), self.after_dir)
 
     def mes(self):
         """GNU Mes"""
@@ -267,8 +264,6 @@ class SysA:
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
         """Prepare remaining sources"""
-        # untar from libarchive 3.4
-        self.get_file("https://raw.githubusercontent.com/libarchive/libarchive/3.4/contrib/untar.c")
 
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar", mkbuild=True)
@@ -281,10 +276,6 @@ class SysA:
 
         # patch 2.5.9
         self.get_file("https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz", mkbuild=True)
-
-        # sha-2 61555d
-        self.get_file("https://github.com/amosnier/sha-2/archive/61555d.tar.gz", mkbuild=True,
-                      output="sha-2-61555d.tar.gz")
 
         # make 3.80
         self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz", mkbuild=True)

@@ -66,4 +66,4 @@ tcc -static -o ${bindir}/tar -L lib lib/libtar.a arith.o buffer.o compare.o crea
 cd ../..
 
 # Checksums
-fletcher16 checksums
+sha256sum -c checksums

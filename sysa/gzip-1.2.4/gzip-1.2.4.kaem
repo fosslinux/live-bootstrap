@@ -43,4 +43,4 @@ chmod 755 ${bindir}/zcat
 cd ../..
 
 # Checksums
-fletcher16 checksums
+sha256sum -c checksums

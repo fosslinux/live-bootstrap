@@ -51,4 +51,4 @@ patch --version
 cd ../..
 
 # Checksums
-fletcher16 checksums
+sha256sum -c checksums
