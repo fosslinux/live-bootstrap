@@ -29,9 +29,7 @@ build () {
     mk_dir="${base_dir}/mk"
     files_dir="${base_dir}/files"
 
-    rm -rf "build"
     mkdir -p "build"
-
     cd "build"
 
     build_script="${base_dir}/${script_name}"
@@ -66,6 +64,9 @@ build () {
 
     echo "${pkg}: checksumming installed files."
     test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
+
+    echo "${pkg}: cleaning up."
+    rm -rf "build"
 
     echo "${pkg}: build successful"
     cd "${SOURCES}"
