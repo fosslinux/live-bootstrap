@@ -535,6 +535,37 @@ gcc 4.0.4
 
 Rebuild GCC with GCC and also against the latest musl.
 
+util-linux 2.19.1
+=================
+
+``util-linux`` contains a number of general system administration utilities.
+Most pressingly, we need these for being able to mount disks (for non-chroot
+mode, but it is built it in chroot mode anyway because it will likely be useful
+later). The latest version is not used because of autotools/GCC
+incompatibilities.
+
+kbd-1.15
+========
+
+``kbd`` contains ``loadkeys`` which is required for building the Linux kernel.
+The 2.x series is not used because it requires particular features of autotools
+that we do not have avaliable.
+
+make 3.82
+=========
+
+GNU Make is updated by .02. The most notable thing is this is now built properly
+using the build system and GCC, which means that it does not randomly segfault
+while building the Linux kernel.
+
+kexec-tools 2.0.22
+==================
+
+``kexec`` is a utility for the Linux kernel that allows the re-execution of the
+Linux kernel without a manual restart from within a running system. It is a
+kind of soft-restart. It is only built for non-chroot mode, as we only use it
+in non-chroot mode. It is used to go into sysb/sysc.
+
 bash 5.1
 ========
 

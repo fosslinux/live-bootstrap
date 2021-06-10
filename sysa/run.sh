@@ -149,6 +149,8 @@ build musl-1.2.2
 
 build gcc-4.0.4 pass2.sh checksums/pass2
 
+build kexec-tools-2.0.22
+
 build bash-5.1
 
 exec env -i PATH=${PREFIX}/bin PREFIX=${PREFIX} SOURCES=${SOURCES} bash run2.sh

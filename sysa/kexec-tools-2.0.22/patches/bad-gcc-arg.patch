@@ -1,0 +1,17 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+GCC 4 does not recognise -fno-stack-protector.
+
+--- purgatory/Makefile	2021-06-03 17:03:41.534638295 +1000
++++ purgatory/Makefile	2021-06-03 17:03:50.489716136 +1000
+@@ -49,7 +49,7 @@
+ 		      $($(ARCH)_PURGATORY_EXTRA_CFLAGS) \
+ 		      -Os -fno-builtin -ffreestanding \
+ 		      -fno-zero-initialized-in-bss \
+-		      -fno-PIC -fno-PIE -fno-stack-protector
++		      -fno-PIC -fno-PIE
+ 
+ $(PURGATORY): CPPFLAGS=$($(ARCH)_PURGATORY_EXTRA_CFLAGS) \
+ 			-I$(srcdir)/purgatory/include \
