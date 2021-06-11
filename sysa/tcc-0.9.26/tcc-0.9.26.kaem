@@ -76,6 +76,7 @@ mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.
 mes-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
 
 # libtcc1.a
+mkdir ${libdir}/tcc
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/libtcc1.c
 mes-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
 

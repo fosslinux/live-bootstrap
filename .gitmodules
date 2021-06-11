@@ -6,21 +6,9 @@
 [submodule "sysa/mescc-tools-seed/src/mescc-tools-seed"]
 	path = sysa/stage0-posix/src
 	url = https://github.com/oriansj/mescc-tools-seed/
-[submodule "sysa/mes/src/mes"]
-	path = sysa/mes/src/mes
-	url = https://gitlab.com/janneke/mes.git
-[submodule "sysa/mes/src/nyacc"]
-	path = sysa/mes/src/nyacc
-	url = https://git.savannah.gnu.org/git/nyacc.git
 [submodule "sysa/tcc-0.9.26/src/tcc-0.9.26"]
 	path = sysa/tcc-0.9.26/src/tcc-0.9.26
 	url = https://gitlab.com/janneke/tinycc
-[submodule "sysa/tcc-0.9.27/src/tcc-0.9.27"]
-	path = sysa/tcc-0.9.27/src/tcc-0.9.27
-	url = git://repo.or.cz/tinycc.git
 [submodule "sysa/tcc-0.9.26/src/mes-libc"]
 	path = sysa/tcc-0.9.26/src/mes-libc
-	url = https://gitlab.com/janneke/mes
-[submodule "sysa/tcc-0.9.27/src/mes-libc"]
-	path = sysa/tcc-0.9.27/src/mes-libc
 	url = https://gitlab.com/janneke/mes
