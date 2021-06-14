@@ -6,10 +6,8 @@
 
 set timeout -1
 
-spawn python3 rootfs.py --qemu-cmd qemu-system-x86_64 --qemu-ram 3500
+spawn python3 rootfs.py --chroot
 expect {
     "not syncing: Attempted to kill init" {}
     "Bootstrapping completed." {}
 }
-send -- "\x01"
-send -- "x"

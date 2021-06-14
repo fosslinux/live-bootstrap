@@ -38,26 +38,14 @@ reuse_lint_task:
     - reuse lint
 
 run_task:
-  timeout_in: 180m
+  timeout_in: 120m
   container:
-    image: potyarkin/molecule:host-kvm
-    kvm: true
-    cpu: 2
-    memory: 4G
-  # Required background services
-  dbus_background_script:
-    - mkdir -p /var/run/dbus
-    - /usr/bin/dbus-daemon --system --nofork --nopidfile
-  virtlogd_background_script:
-    - /usr/sbin/virtlogd
-  libvirtd_background_script:
-    - sleep 2 && /usr/sbin/libvirtd
-  iptables_legacy_script:
-    - update-alternatives --set iptables /usr/sbin/iptables-legacy
+    image: debian:stable
+    use_in_memory_disk: true
   deps_script:
     - apt-get -y update
     - apt-get -y dist-upgrade
-    - apt-get -y install sudo git cpio linux-image-4.19.0-16-amd64 expect wget
+    - apt-get -y install sudo git cpio linux-image-4.19.0-16-amd64 expect wget python3-distutils python3-requests
     - apt-get -y clean
   submodule_script:
     - git submodule update --init --recursive
