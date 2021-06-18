@@ -6,8 +6,8 @@
 
 .. SPDX-License-Identifier: CC-BY-SA-4.0
 
-mescc-tools-seed
-================
+stage0-posix
+============
 
 This is where all the magic begins. We start with our hex0 and kaem
 seeds and bootstrap our way up to M2-Planet, a subset of C, and mes-m2,
@@ -28,9 +28,10 @@ taken here:
 -  M2-Planet (v1) compiles blood-elf (final)
 -  M2-Planet (v1) compiles get_machine
 -  M2-Planet (v1) compiles M2-Planet (final)
+-  M2-Planet (final) compiles mescc-tools-extra (see next step)
 
 This seems very intimidating, but becomes clearer when reading the
-source: https://github.com/oriansj/mescc-tools-seed/blob/master/x86/
+source: https://github.com/oriansj/stage0-posix/blob/master/x86/
 (start at mescc-tools-seed-kaem.kaem).
 
 From here, we can move on from the lowest level stuff.
@@ -38,19 +39,18 @@ From here, we can move on from the lowest level stuff.
 mescc-tools-extra
 =================
 
-mescc-tools and mes-m2 are the projects bootstrapped by
-mescc-tools-seed. However, we have some currently unmerged additions to
-mescc-tools that we require for this project, namely filesystem
+mescc-tools-extra contains some additional programs, namely filesystem
 utilities ``cp`` and ``chown``. This allows us to have one unified
-directory for our binaries. Futhermore, we also build ``fletcher16``, a
-preliminary checksumming tool, that we use to ensure reproducibility and
-authenticity of generated binaries.
+directory for our binaries. Futhermore, we also build ``sha256sum``, a
+checksumming tool, that we use to ensure reproducibility and authenticity
+of generated binaries. We also build initial ``untar`` and ``ungz``
+utilities to deal with compressed archives.
 
 ``/after``
 ==========
 
-We now move into the ``/after`` directory. As mescc-tools-seed has no
-concept of ``chdir()`` (not added until very late in mescc-tools-seed),
+We now move into the ``/after`` directory. As stage0-posix has no
+concept of ``chdir()`` (not added until very late in stage0-posix),
 we have to copy a lot of files into the root of the initramfs, making it
 very messy. We get into the move ordered directory ``/after`` here,
 copying over all of the required binaries from ``/``.
@@ -86,14 +86,6 @@ recompiled 5(!) times to add new features that are required for other
 features, namely ``long long`` and ``float``. Each time, the libc is
 also recompiled.
 
-untar
-=====
-
-``tar`` is the most common archive format used by software source
-code, often compressed also. To avoid continuing using submodules we
-switch to software distribution using tar archives. ``untar.c`` is
-a single file implementation of tar format and is part of libarchive 3.4.
-
 Note that now we begin to delve into the realm of old GNU software,
 using older versions compilable by tinycc. Prior to this point, all tools
 have been adapted significantly for the bootstrap; now, we will be using
@@ -124,21 +116,6 @@ patch 2.5.9
 ``patch`` is a very useful tool at this stage, allowing us to make
 significantly more complex edits, including just changes to lines.
 Luckily, we are able to patch ``patch`` using ``sed`` only.
-
-sha-2
-=====
-
-``sha-2`` is a standalone external ``sha256sum`` implementation,
-originally as a library, but patched to have a command line interface.
-It is mostly output-compatible with ``sha256sum`` from coreutils. We use
-this in replacement of ``fletcher16``.
-
-Redo checksums using ``sha256sum``
-==================================
-
-We have now just built ``sha256sum``, which has a significantly (many orders
-of magnitude) lower collision rate than ``fletcher16``, so we recheck all of
-the existing binaries using ``sha256sum``.
 
 make 3.80
 =========

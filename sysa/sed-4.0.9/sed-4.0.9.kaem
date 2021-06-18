@@ -52,4 +52,4 @@ sed --version
 cd ../..
 
 # Checksums
-fletcher16 checksums/pass1
+sha256sum -c checksums/pass1

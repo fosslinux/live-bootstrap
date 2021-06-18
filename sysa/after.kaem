@@ -1,12 +1,138 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2020-2021 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-cd after
+set -ex
 
 PATH=/after/bin:/bin
 
-# Finally, reinvoke kaem in this directory
-../bin/kaem --file kaem.run
+# Set commonly used variables
+prefix=/after
+bindir=${prefix}/bin
+libdir=${prefix}/lib
+incdir=${prefix}/include
+MES_PREFIX=${prefix}/mes/src/mes
+GUILE_LOAD_PATH=${prefix}/mes/src/nyacc/module:${prefix}/mes/src/mes/mes/module:${prefix}/mes/src/mes/module
+
+cd ${prefix}
+
+# Remove remaining dependencies on / (root of /after)
+cp ../bin/blood-elf bin/blood-elf
+cp ../bin/catm bin/catm
+cp ../bin/chmod bin/chmod
+cp ../bin/get_machine bin/get_machine
+cp ../bin/hex2 bin/hex2
+cp ../bin/kaem bin/kaem
+cp ../bin/M1 bin/M1
+cp ../bin/M2-Planet bin/M2-Planet
+cp ../bin/mes-m2 bin/mes-m2
+cp ../bin/sha256sum bin/sha256sum
+cp ../bin/ungz bin/ungz
+cp ../bin/untar bin/untar
+
+/bin/cp /bin/cp /after/bin/cp
+
+/bin/chmod 755 bin/blood-elf
+/bin/chmod 755 bin/catm
+/bin/chmod 755 bin/chmod
+/bin/chmod 755 bin/cp
+/bin/chmod 755 bin/get_machine
+/bin/chmod 755 bin/hex2
+/bin/chmod 755 bin/kaem
+/bin/chmod 755 bin/M1
+/bin/chmod 755 bin/M2-Planet
+/bin/chmod 755 bin/mes-m2
+/bin/chmod 755 bin/sha256sum
+/bin/chmod 755 bin/ungz
+/bin/chmod 755 bin/untar
+
+sha256sum -c stage0-posix-checksums
+
+PATH=/after/bin
+
+# mes
+pkg="mes"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# tcc 0.9.26
+pkg="tcc-0.9.26"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# gzip
+pkg="gzip-1.2.4"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# tar
+pkg="tar-1.12"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# sed
+pkg="sed-4.0.9"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# patch
+pkg="patch-2.5.9"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# sha-2
+#pkg="sha-2-61555d"
+#cd ${pkg}
+#kaem --file ${pkg}.kaem
+#cd ..
+
+# Check all up to this part as sha256sum
+#sha256sum -c pre-sha.sha256sums
+
+# make
+pkg="make-3.80"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# bzip2
+pkg="bzip2-1.0.8"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# tcc 0.9.27
+pkg="tcc-0.9.27"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# coreutils
+pkg="coreutils-5.0"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# heirloom-devtools
+pkg="heirloom-devtools-070527"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# bash
+pkg="bash-2.05b"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+bash run.sh

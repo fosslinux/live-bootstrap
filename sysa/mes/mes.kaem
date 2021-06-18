@@ -11,7 +11,7 @@ set -ex
 MES_ARENA=20000000
 MES_MAX_ARENA=20000000
 MES_STACK=6000000
-MES=${bindir}/mes
+MES=${bindir}/mes-m2
 libdir=${prefix}/mes/src/mes/lib
 
 cp files/mescc.scm ${bindir}/
@@ -23,7 +23,6 @@ cd src/mes
 
 # Bootstrap Mes using M2-Planet
 kaem --verbose --file kaem.run
-cp bin/mes-m2 ${MES}
 chmod 755 ${MES}
 
 # Build Mes C library using mes-m2 bootstrapped Mes
@@ -265,11 +264,7 @@ cp include/sys/ucontext.h ${incdir}/sys/ucontext.h
 cp include/sys/user.h ${incdir}/sys/user.h
 cp include/sys/wait.h ${incdir}/sys/wait.h
 
-# Test mes
-libdir=${prefix}/lib
-${MES} -c "(display 'Hello,Mes!) (newline)"
-
 cd ../..
 
 # Checksums
-fletcher16 checksums
+sha256sum -c checksums
