@@ -83,7 +83,7 @@ class SysA:
         self.check_file(abs_file_name)
         return abs_file_name
 
-    def get_file(self, url, mkbuild=False, output=None):
+    def get_file(self, url, output=None):
         """
         Download and prepare source packages
 
@@ -92,9 +92,6 @@ class SysA:
           2. list of URLs to download. In this case the first URL is the primary URL
              from which we derive the name of package directory
         output can be used to override file name of the downloaded file(s).
-
-        mkbuild=True can be used to pre-create build directories before
-        mkdir is available.
         """
         # Single URL
         if isinstance(url, str):
@@ -127,9 +124,6 @@ class SysA:
 
             # Install sources into target directory
             shutil.copy2(tarball, target_src_dir)
-
-        if mkbuild:
-            os.mkdir(os.path.join(self.after_dir, target_name, 'build'))
 
     def prepare(self):
         """
@@ -227,28 +221,28 @@ class SysA:
         self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
 
         # gzip 1.2.4
-        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar")
 
         # tar 1.12
-        self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz")
 
         # sed 4.0.9
-        self.get_file("https://mirrors.kernel.org/gnu/sed/sed-4.0.9.tar.gz", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/sed/sed-4.0.9.tar.gz")
 
         # patch 2.5.9
-        self.get_file("https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz", mkbuild=True)
+        self.get_file("https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz")
 
         # make 3.80
-        self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz")
 
         # bzip2 1.0.8
-        self.get_file("https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz", mkbuild=True)
+        self.get_file("https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz")
 
         # tcc 0.9.27
-        self.get_file("https://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27.tar.bz2", mkbuild=True)
+        self.get_file("https://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27.tar.bz2")
 
         # coreutils 5.0
-        self.get_file("https://mirrors.kernel.org/gnu/coreutils/coreutils-5.0.tar.bz2", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/coreutils/coreutils-5.0.tar.bz2")
 
         # heirloom-devtools
         self.get_file("http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2")
