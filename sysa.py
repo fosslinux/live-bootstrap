@@ -220,6 +220,9 @@ class SysA:
         # tcc 0.9.26 patched by janneke
         self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
 
+        # mes 0.23 (meslibc)
+        self.get_file("https://mirrors.kernel.org/gnu/mes/mes-0.23.tar.gz")
+
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar")
 
@@ -252,9 +255,6 @@ class SysA:
 
         # flex 2.5.11
         self.get_file("http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.gz")
-
-        # mes 0.23 (meslibc)
-        self.get_file("https://mirrors.kernel.org/gnu/mes/mes-0.23.tar.gz")
 
         # musl 1.1.24
         self.get_file("https://musl.libc.org/releases/musl-1.1.24.tar.gz")

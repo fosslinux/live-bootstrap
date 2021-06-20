@@ -17,13 +17,19 @@ MES=${bindir}/mes-m2
 TCC_TAR=tcc-0.9.26
 TCC_PKG=tcc-0.9.26-1136-g5bba73cc
 
+MES_PKG=mes-0.23
+
 # Unpack
 cd src
 ungz ${TCC_TAR}.tar.gz
 untar ${TCC_TAR}.tar
-cd ${TCC_PKG}
+
+cp ../../mes-0.23/src/mes-0.23.tar.gz mes-0.23.tar.gz
+ungz mes-0.23.tar.gz
+untar mes-0.23.tar
 
 # Create config.h
+cd ${TCC_PKG}
 catm config.h
 
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
@@ -60,12 +66,12 @@ chmod 755 ${bindir}/mes-tcc
 mes-tcc -version
 
 # Recompile the mes C library
-cd ../mes-libc
+cd ../${MES_PKG}
 
-# Create unified libc files
-catm unified-libc-1.c lib/mes/eputs.c lib/mes/oputs.c lib/mes/globals.c lib/stdlib/exit.c lib/linux/x86-mes-gcc/_exit.c lib/linux/x86-mes-gcc/_write.c lib/stdlib/puts.c lib/string/strlen.c lib/ctype/isnumber.c lib/mes/abtol.c lib/mes/cast.c lib/mes/eputc.c lib/mes/fdgetc.c lib/mes/fdputc.c lib/mes/fdputs.c lib/mes/fdungetc.c lib/mes/itoa.c lib/mes/ltoa.c lib/mes/ltoab.c lib/mes/mes_open.c lib/mes/ntoab.c lib/mes/oputc.c lib/mes/ultoa.c lib/mes/utoa.c lib/ctype/isdigit.c lib/ctype/isspace.c lib/ctype/isxdigit.c lib/mes/assert_msg.c lib/posix/write.c lib/stdlib/atoi.c lib/linux/lseek.c lib/mes/__assert_fail.c lib/mes/__buffered_read.c lib/mes/__mes_debug.c lib/posix/execv.c lib/posix/getcwd.c lib/posix/getenv.c lib/posix/isatty.c lib/posix/open.c lib/posix/buffered-read.c lib/posix/setenv.c lib/posix/wait.c lib/stdio/fgetc.c lib/stdio/fputc.c lib/stdio/fputs.c lib/stdio/getc.c lib/stdio/getchar.c lib/stdio/putc.c lib/stdio/putchar.c lib/stdio/ungetc.c lib/stdlib/free.c lib/stdlib/malloc.c lib/stdlib/realloc.c lib/string/memchr.c lib/string/memcmp.c lib/string/memcpy.c lib/string/memmove.c lib/string/memset.c lib/string/strcmp.c lib/string/strcpy.c lib/string/strncmp.c lib/posix/raise.c lib/linux/access.c lib/linux/brk.c lib/linux/chmod.c lib/linux/clock_gettime.c lib/linux/dup.c lib/linux/dup2.c lib/linux/execve.c lib/linux/fork.c lib/linux/fsync.c lib/linux/_getcwd.c lib/linux/gettimeofday.c lib/linux/ioctl3.c lib/linux/_open3.c lib/linux/_read.c lib/linux/time.c lib/linux/unlink.c lib/linux/waitpid.c lib/linux/x86-mes-gcc/syscall.c lib/linux/getpid.c lib/linux/kill.c lib/ctype/islower.c lib/ctype/isupper.c lib/ctype/tolower.c lib/ctype/toupper.c lib/mes/abtod.c lib/mes/dtoab.c lib/mes/search-path.c lib/posix/execvp.c lib/stdio/fclose.c lib/stdio/fdopen.c lib/stdio/ferror.c lib/stdio/fflush.c lib/stdio/fopen.c lib/stdio/fprintf.c lib/stdio/fread.c lib/stdio/fseek.c lib/stdio/ftell.c lib/stdio/fwrite.c
-catm unified-libc-2.c lib/stdio/printf.c lib/stdio/remove.c lib/stdio/snprintf.c lib/stdio/sprintf.c lib/stdio/sscanf.c lib/stdio/vfprintf.c lib/stdio/vprintf.c lib/stdio/vsnprintf.c lib/stdio/vsprintf.c lib/stdio/vsscanf.c lib/stdlib/calloc.c lib/stdlib/qsort.c lib/stdlib/strtod.c lib/stdlib/strtof.c lib/stdlib/strtol.c lib/stdlib/strtold.c lib/stdlib/strtoll.c lib/stdlib/strtoul.c lib/stdlib/strtoull.c lib/string/memmem.c lib/string/strcat.c lib/string/strchr.c lib/string/strlwr.c lib/string/strncpy.c lib/string/strrchr.c lib/string/strstr.c lib/string/strupr.c lib/stub/sigaction.c lib/stub/ldexp.c lib/stub/mprotect.c lib/stub/localtime.c lib/stub/sigemptyset.c lib/x86-mes-gcc/setjmp.c lib/linux/close.c lib/linux/rmdir.c lib/linux/stat.c lib/ctype/isalnum.c lib/ctype/isalpha.c lib/ctype/isascii.c lib/ctype/iscntrl.c lib/ctype/isgraph.c lib/ctype/isprint.c lib/ctype/ispunct.c lib/dirent/__getdirentries.c lib/dirent/closedir.c lib/dirent/opendir.c lib/dirent/readdir.c lib/math/ceil.c lib/math/fabs.c lib/math/floor.c lib/mes/fdgets.c lib/posix/alarm.c lib/posix/execl.c lib/posix/execlp.c lib/posix/mktemp.c lib/posix/sbrk.c lib/posix/sleep.c lib/posix/unsetenv.c lib/stdio/clearerr.c lib/stdio/feof.c lib/stdio/fgets.c lib/stdio/fileno.c lib/stdio/freopen.c lib/stdio/fscanf.c lib/stdio/perror.c lib/stdio/vfscanf.c lib/stdlib/__exit.c lib/stdlib/abort.c lib/stdlib/abs.c lib/stdlib/alloca.c lib/stdlib/atexit.c lib/stdlib/atof.c lib/stdlib/atol.c lib/stdlib/mbstowcs.c lib/string/bcmp.c lib/string/bcopy.c lib/string/bzero.c lib/string/index.c lib/string/rindex.c lib/string/strcspn.c lib/string/strdup.c lib/string/strerror.c lib/string/strncat.c lib/string/strpbrk.c lib/string/strspn.c lib/stub/__cleanup.c lib/stub/atan2.c lib/stub/bsearch.c lib/stub/chown.c lib/stub/cos.c lib/stub/ctime.c lib/stub/exp.c lib/stub/fpurge.c lib/stub/freadahead.c lib/stub/frexp.c lib/stub/getgrgid.c lib/stub/getgrnam.c lib/stub/getlogin.c lib/stub/getpgid.c lib/stub/getpgrp.c lib/stub/getpwnam.c
-catm unified-libc-3.c lib/stub/getpwuid.c lib/stub/gmtime.c lib/stub/log.c lib/stub/mktime.c lib/stub/modf.c lib/stub/pclose.c lib/stub/popen.c lib/stub/pow.c lib/stub/rand.c lib/stub/rewind.c lib/stub/setbuf.c lib/stub/setgrent.c lib/stub/setlocale.c lib/stub/setvbuf.c lib/stub/sigaddset.c lib/stub/sigblock.c lib/stub/sigdelset.c lib/stub/sigsetmask.c lib/stub/sin.c lib/stub/sqrt.c lib/stub/strftime.c lib/stub/sys_siglist.c lib/stub/system.c lib/stub/times.c lib/stub/ttyname.c lib/stub/umask.c lib/stub/utime.c lib/linux/chdir.c lib/linux/fcntl.c lib/linux/fstat.c lib/linux/getdents.c lib/linux/getegid.c lib/linux/geteuid.c lib/linux/getgid.c lib/linux/getppid.c lib/linux/getrusage.c lib/linux/getuid.c lib/linux/ioctl.c lib/linux/link.c lib/linux/lstat.c lib/linux/mkdir.c lib/linux/mknod.c lib/linux/nanosleep.c lib/linux/pipe.c lib/linux/readlink.c lib/linux/rename.c lib/linux/setgid.c lib/linux/settimer.c lib/linux/setuid.c lib/linux/signal.c lib/linux/sigprogmask.c lib/linux/symlink.c
+# Create unified libc file
+cd lib
+catm ../unified-libc.c ctype/isalnum.c ctype/isalpha.c ctype/isascii.c ctype/iscntrl.c ctype/isdigit.c ctype/isgraph.c ctype/islower.c ctype/isnumber.c ctype/isprint.c ctype/ispunct.c ctype/isspace.c ctype/isupper.c ctype/isxdigit.c ctype/tolower.c ctype/toupper.c dirent/closedir.c dirent/__getdirentries.c dirent/opendir.c dirent/readdir.c linux/access.c linux/brk.c linux/chdir.c linux/chmod.c linux/clock_gettime.c linux/close.c linux/dup2.c linux/dup.c linux/execve.c linux/fcntl.c linux/fork.c linux/fsync.c linux/fstat.c linux/_getcwd.c linux/getdents.c linux/getegid.c linux/geteuid.c linux/getgid.c linux/getpid.c linux/getppid.c linux/getrusage.c linux/gettimeofday.c linux/getuid.c linux/ioctl.c linux/kill.c linux/link.c linux/lseek.c linux/lstat.c linux/mkdir.c linux/mknod.c linux/nanosleep.c linux/_open3.c linux/pipe.c linux/_read.c linux/readlink.c linux/rename.c linux/rmdir.c linux/setgid.c linux/settimer.c linux/setuid.c linux/signal.c linux/sigprogmask.c linux/symlink.c linux/stat.c linux/time.c linux/unlink.c linux/waitpid.c linux/x86-mes-gcc/_exit.c linux/x86-mes-gcc/syscall.c linux/x86-mes-gcc/_write.c math/ceil.c math/fabs.c math/floor.c mes/abtod.c mes/abtol.c mes/__assert_fail.c mes/__buffered_read.c mes/dtoab.c mes/eputc.c mes/eputs.c mes/fdgetc.c mes/fdgets.c mes/fdputc.c mes/fdputs.c mes/fdungetc.c mes/globals.c mes/itoa.c mes/ltoab.c mes/ltoa.c mes/__mes_debug.c mes/mes_open.c mes/ntoab.c mes/oputc.c mes/oputs.c mes/search-path.c mes/ultoa.c mes/utoa.c posix/alarm.c posix/buffered-read.c posix/execl.c posix/execlp.c posix/execv.c posix/execvp.c posix/getcwd.c posix/getenv.c posix/isatty.c posix/mktemp.c posix/open.c posix/raise.c posix/sbrk.c posix/setenv.c posix/sleep.c posix/unsetenv.c posix/wait.c posix/write.c stdio/clearerr.c stdio/fclose.c stdio/fdopen.c stdio/feof.c stdio/ferror.c stdio/fflush.c stdio/fgetc.c stdio/fgets.c stdio/fileno.c stdio/fopen.c stdio/fprintf.c stdio/fputc.c stdio/fputs.c stdio/fread.c stdio/freopen.c stdio/fscanf.c stdio/fseek.c stdio/ftell.c stdio/fwrite.c stdio/getc.c stdio/getchar.c stdio/perror.c stdio/printf.c stdio/putc.c stdio/putchar.c stdio/remove.c stdio/snprintf.c stdio/sprintf.c stdio/sscanf.c stdio/ungetc.c stdio/vfprintf.c stdio/vfscanf.c stdio/vprintf.c stdio/vsnprintf.c stdio/vsprintf.c stdio/vsscanf.c stdlib/abort.c stdlib/abs.c stdlib/alloca.c stdlib/atexit.c stdlib/atof.c stdlib/atoi.c stdlib/atol.c stdlib/calloc.c stdlib/__exit.c stdlib/exit.c stdlib/free.c stdlib/malloc.c stdlib/mbstowcs.c stdlib/puts.c stdlib/qsort.c stdlib/realloc.c stdlib/strtod.c stdlib/strtof.c stdlib/strtol.c stdlib/strtold.c stdlib/strtoll.c stdlib/strtoul.c stdlib/strtoull.c string/bcmp.c string/bcopy.c string/bzero.c string/index.c string/memchr.c string/memcmp.c string/memcpy.c string/memmem.c string/memmove.c string/memset.c string/rindex.c string/strcat.c string/strchr.c string/strcmp.c string/strcpy.c string/strcspn.c string/strdup.c string/strerror.c string/strlen.c string/strlwr.c string/strncat.c string/strncmp.c string/strncpy.c string/strpbrk.c string/strrchr.c string/strspn.c string/strstr.c string/strupr.c stub/atan2.c stub/bsearch.c stub/chown.c stub/__cleanup.c stub/cos.c stub/ctime.c stub/exp.c stub/fpurge.c stub/freadahead.c stub/frexp.c stub/getgrgid.c stub/getgrnam.c stub/getlogin.c stub/getpgid.c stub/getpgrp.c stub/getpwnam.c stub/getpwuid.c stub/gmtime.c stub/ldexp.c stub/localtime.c stub/log.c stub/mktime.c stub/modf.c stub/mprotect.c stub/pclose.c stub/popen.c stub/pow.c stub/rand.c stub/rewind.c stub/setbuf.c stub/setgrent.c stub/setlocale.c stub/setvbuf.c stub/sigaction.c stub/sigaddset.c stub/sigblock.c stub/sigdelset.c stub/sigemptyset.c stub/sigsetmask.c stub/sin.c stub/sys_siglist.c stub/system.c stub/sqrt.c stub/strftime.c stub/times.c stub/ttyname.c stub/umask.c stub/utime.c x86-mes-gcc/setjmp.c
+cd ..
 
 # crt1.o
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
@@ -77,10 +83,8 @@ mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.
 mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 
 # libc+gcc.a
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-mes-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
+mes-tcc -ar cr ${libdir}/libc.a unified-libc.o
 
 # libtcc1.a
 mkdir ${libdir}/tcc
@@ -125,7 +129,7 @@ mes-tcc \
 # Install
 cp boot0-tcc ${bindir}/
 chmod 755 ${bindir}/boot0-tcc
-cd ../mes-libc
+cd ../${MES_PKG}
 # Recompile libc: crt{1,n,i}, libtcc.a, libc.a
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
@@ -133,10 +137,8 @@ boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt
 boot0-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG_STUB=1 -I include -I include/linux/x86 lib/libtcc1.c
 boot0-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
 boot0-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
-boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
-boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot0-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
+boot0-tcc -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot0
@@ -172,17 +174,15 @@ boot0-tcc \
     tcc.c
 cp boot1-tcc ${bindir}
 chmod 755 ${bindir}/boot1-tcc
-cd ../mes-libc
+cd ../${MES_PKG}
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
 boot1-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
 boot1-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
-boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
-boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot1-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
+boot1-tcc -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot1
@@ -219,17 +219,15 @@ boot1-tcc \
     tcc.c
 cp boot2-tcc ${bindir}
 chmod 755 ${bindir}/boot2-tcc
-cd ../mes-libc
+cd ../${MES_PKG}
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT_STUB=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
 boot2-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
 boot2-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
-boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
-boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot2-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
+boot2-tcc -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot2
@@ -266,17 +264,15 @@ boot2-tcc \
     tcc.c
 cp boot3-tcc ${bindir}
 chmod 755 ${bindir}/boot3-tcc
-cd ../mes-libc
+cd ../${MES_PKG}
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
 boot3-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
 boot3-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
-boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
-boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot3-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
+boot3-tcc -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot3
@@ -313,17 +309,15 @@ boot3-tcc \
     tcc.c
 cp boot4-tcc ${bindir}
 chmod 755 ${bindir}/boot4-tcc
-cd ../mes-libc
+cd ../${MES_PKG}
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
 boot4-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
 boot4-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
-boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
-boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot4-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
+boot4-tcc -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot4
@@ -360,17 +354,15 @@ boot4-tcc \
     tcc.c
 cp boot5-tcc ${bindir}
 chmod 755 ${bindir}/boot5-tcc
-cd ../mes-libc
+cd ../${MES_PKG}
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
 boot5-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
 boot5-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-1.o unified-libc-1.c
-boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-2.o unified-libc-2.c
-boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc-3.o unified-libc-3.c
-boot5-tcc -ar cr ${libdir}/libc.a unified-libc-1.o unified-libc-2.o unified-libc-3.o
+boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
+boot5-tcc -ar cr ${libdir}/libc.a unified-libc.o
 
 # Test boot5
 boot5-tcc -version
