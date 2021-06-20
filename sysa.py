@@ -194,7 +194,6 @@ class SysA:
 
         self.create_configuration_file()
         self.deploy_extra_files()
-        self.tcc_0_9_26()
         self.get_packages()
 
     def create_configuration_file(self):
@@ -215,10 +214,6 @@ class SysA:
 
         shutil.copy2(os.path.join(self.git_dir, 'SHA256SUMS.sources'), self.after_dir)
 
-    def tcc_0_9_26(self):
-        """TinyCC 0.9.26 (patched by janneke)"""
-        copytree(os.path.join(self.sysa_dir, 'tcc-0.9.26'), self.after_dir)
-
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
         """Prepare remaining sources"""
@@ -227,6 +222,9 @@ class SysA:
         self.get_file(["https://github.com/oriansj/mes-m2/archive/a7522f26ee020dc498219d0122ea1b7d345bcdd5.tar.gz",
                        "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
                       output=["mes.tar.gz", "nyacc-1.00.2.tar.gz"])
+
+        # tcc 0.9.26 patched by janneke
+        self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
 
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar", mkbuild=True)

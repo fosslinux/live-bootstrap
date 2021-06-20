@@ -95,15 +95,6 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# sha-2
-#pkg="sha-2-61555d"
-#cd ${pkg}
-#kaem --file ${pkg}.kaem
-#cd ..
-
-# Check all up to this part as sha256sum
-#sha256sum -c pre-sha.sha256sums
-
 # make
 pkg="make-3.80"
 cd ${pkg}

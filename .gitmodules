@@ -6,9 +6,6 @@
 [submodule "sysa/mescc-tools-seed/src/mescc-tools-seed"]
 	path = sysa/stage0-posix/src
 	url = https://github.com/oriansj/mescc-tools-seed/
-[submodule "sysa/tcc-0.9.26/src/tcc-0.9.26"]
-	path = sysa/tcc-0.9.26/src/tcc-0.9.26
-	url = https://gitlab.com/janneke/tinycc
 [submodule "sysa/tcc-0.9.26/src/mes-libc"]
 	path = sysa/tcc-0.9.26/src/mes-libc
 	url = https://gitlab.com/janneke/mes
