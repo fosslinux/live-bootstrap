@@ -224,7 +224,7 @@ class SysA:
         self.get_file("https://mirrors.kernel.org/gnu/mes/mes-0.23.tar.gz")
 
         # gzip 1.2.4
-        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar")
+        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar.gz")
 
         # tar 1.12
         self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz")

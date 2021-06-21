@@ -12,6 +12,7 @@ mkdir build
 cd build
 
 # Extract
+ungz ../src/${pkg}.tar.gz
 untar ../src/${pkg}.tar
 cd ${pkg}
 
