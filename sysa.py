@@ -83,7 +83,7 @@ class SysA:
         self.check_file(abs_file_name)
         return abs_file_name
 
-    def get_file(self, url, mkbuild=False, output=None):
+    def get_file(self, url, output=None):
         """
         Download and prepare source packages
 
@@ -92,9 +92,6 @@ class SysA:
           2. list of URLs to download. In this case the first URL is the primary URL
              from which we derive the name of package directory
         output can be used to override file name of the downloaded file(s).
-
-        mkbuild=True can be used to pre-create build directories before
-        mkdir is available.
         """
         # Single URL
         if isinstance(url, str):
@@ -127,9 +124,6 @@ class SysA:
 
             # Install sources into target directory
             shutil.copy2(tarball, target_src_dir)
-
-        if mkbuild:
-            os.mkdir(os.path.join(self.after_dir, target_name, 'build'))
 
     def prepare(self):
         """
@@ -167,10 +161,6 @@ class SysA:
         mescc_tools_extra_dir = os.path.join(stage0_posix_base_dir, 'mescc-tools-extra')
         copytree(mescc_tools_extra_dir, self.tmp_dir)
 
-        # At the moment not useful for bootstrap but easier to keep it
-        mes_m2_dir = os.path.join(stage0_posix_base_dir, 'mes-m2')
-        copytree(mes_m2_dir, self.tmp_dir)
-
         # bootstrap seeds
         bootstrap_seeds_dir = os.path.join(self.sysa_dir, 'stage0-posix', 'src', 'bootstrap-seeds')
         copytree(bootstrap_seeds_dir, self.tmp_dir)
@@ -185,6 +175,10 @@ class SysA:
         # create directories needed
         os.mkdir(os.path.join(self.tmp_dir, 'bin'))
 
+        # stage0-posix checksums
+        shutil.copy2(os.path.join(stage0_posix_base_dir, self.arch + '.answers'),
+                     os.path.join(self.tmp_dir, self.arch + '.answers'))
+
     def after(self):
         """
         Prepare sources in /after directory.
@@ -192,12 +186,8 @@ class SysA:
         the stage0-posix one is hella messy.
         """
 
-        self.create_after_dirs()
         self.create_configuration_file()
-        self.stage0_posix_checksum()
         self.deploy_extra_files()
-        self.mes()
-        self.tcc_0_9_26()
         self.get_packages()
 
     def create_configuration_file(self):
@@ -205,42 +195,10 @@ class SysA:
         Creates bootstrap.cfg file which would contain options used to
         customize bootstrap.
         """
+        os.mkdir(self.after_dir)
         config_path = os.path.join(self.after_dir, "bootstrap.cfg")
         with open(config_path, "w") as config:
             config.write("FORCE_TIMESTAMPS=" + str(self.force_timestamps))
-
-    def create_after_dirs(self):
-        """
-        Create some empty directories for early bootstrap
-        This list can be eventually reduced if we include a small
-        mkdir implementation written for M2-Planet.
-        """
-        bin_dir = os.path.join(self.after_dir, 'bin')
-        lib_dir = os.path.join(self.after_dir, 'lib')
-        include_dir = os.path.join(self.after_dir, 'include')
-
-        os.mkdir(self.after_dir)
-        os.mkdir(bin_dir)
-        os.mkdir(lib_dir)
-        os.mkdir(include_dir)
-        os.mkdir(os.path.join(lib_dir, self.arch+'-mes'))
-        os.mkdir(os.path.join(lib_dir, 'tcc'))
-        os.mkdir(os.path.join(lib_dir, 'linux'))
-        os.mkdir(os.path.join(lib_dir, 'linux', self.arch+'-mes'))
-        os.mkdir(os.path.join(include_dir, 'mes'))
-        os.mkdir(os.path.join(include_dir, 'gnu'))
-        os.mkdir(os.path.join(include_dir, 'linux'))
-        os.mkdir(os.path.join(include_dir, 'linux', self.arch))
-        os.mkdir(os.path.join(include_dir, 'sys'))
-        os.mkdir(os.path.join(include_dir, 'mach'))
-
-        # Needed for patch to work, although can be fixed with TMPDIR
-        os.mkdir(os.path.join(self.tmp_dir, 'tmp'))
-
-    def stage0_posix_checksum(self):
-        """Early checksum files"""
-        shutil.copy2(os.path.join(self.sysa_dir, 'stage0-posix', 'checksums'),
-                     os.path.join(self.after_dir, 'stage0-posix-checksums'))
 
     def deploy_extra_files(self):
         """Deploy misc files"""
@@ -250,44 +208,44 @@ class SysA:
 
         shutil.copy2(os.path.join(self.git_dir, 'SHA256SUMS.sources'), self.after_dir)
 
-    def mes(self):
-        """GNU Mes"""
-        copytree(os.path.join(self.sysa_dir, 'mes'), self.after_dir)
-        mes_dir = os.path.join(self.after_dir, 'mes', 'src', 'mes')
-        os.mkdir(os.path.join(mes_dir, 'bin'))
-        os.mkdir(os.path.join(mes_dir, 'm2'))
-
-    def tcc_0_9_26(self):
-        """TinyCC 0.9.26 (patched by janneke)"""
-        copytree(os.path.join(self.sysa_dir, 'tcc-0.9.26'), self.after_dir)
-
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
         """Prepare remaining sources"""
 
+        # mes-0.22 snapshot with m2 fixes
+        self.get_file(["https://github.com/oriansj/mes-m2/archive/a7522f26ee020dc498219d0122ea1b7d345bcdd5.tar.gz",
+                       "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
+                      output=["mes.tar.gz", "nyacc-1.00.2.tar.gz"])
+
+        # tcc 0.9.26 patched by janneke
+        self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
+
+        # mes 0.23 (meslibc)
+        self.get_file("https://mirrors.kernel.org/gnu/mes/mes-0.23.tar.gz")
+
         # gzip 1.2.4
-        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar.gz")
 
         # tar 1.12
-        self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz")
 
         # sed 4.0.9
-        self.get_file("https://mirrors.kernel.org/gnu/sed/sed-4.0.9.tar.gz", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/sed/sed-4.0.9.tar.gz")
 
         # patch 2.5.9
-        self.get_file("https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz", mkbuild=True)
+        self.get_file("https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz")
 
         # make 3.80
-        self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz")
 
         # bzip2 1.0.8
-        self.get_file("https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz", mkbuild=True)
+        self.get_file("https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz")
 
         # tcc 0.9.27
-        self.get_file("https://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27.tar.bz2", mkbuild=True)
+        self.get_file("https://download.savannah.gnu.org/releases/tinycc/tcc-0.9.27.tar.bz2")
 
         # coreutils 5.0
-        self.get_file("https://mirrors.kernel.org/gnu/coreutils/coreutils-5.0.tar.bz2", mkbuild=True)
+        self.get_file("https://mirrors.kernel.org/gnu/coreutils/coreutils-5.0.tar.bz2")
 
         # heirloom-devtools
         self.get_file("http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2")
@@ -297,9 +255,6 @@ class SysA:
 
         # flex 2.5.11
         self.get_file("http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.gz")
-
-        # mes 0.23 (meslibc)
-        self.get_file("https://mirrors.kernel.org/gnu/mes/mes-0.23.tar.gz")
 
         # musl 1.1.24
         self.get_file("https://musl.libc.org/releases/musl-1.1.24.tar.gz")
