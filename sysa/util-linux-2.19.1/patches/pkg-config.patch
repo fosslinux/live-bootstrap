@@ -1,0 +1,109 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+We don't have pkg-config, hence:
+a) disable gtk-doc (uses pkg-config exclusively)
+b) disable pkg-config type checks
+
+--- configure.ac	2021-06-12 11:23:41.719074631 +1000
++++ configure.ac	2021-06-12 11:26:17.748153926 +1000
+@@ -84,9 +84,6 @@
+ dnl libtool-2
+ LT_INIT
+ 
+-PKG_PROG_PKG_CONFIG
+-
+-GTK_DOC_CHECK([1.10])
+ AC_PATH_PROG([XSLTPROC], [xsltproc])
+ 
+ linux_os=no
+@@ -360,17 +360,8 @@
+ have_uuid=yes
+ 
+ if test "x$enable_libuuid" = xno; then
+-  # Check for external (e2fsprogs) libuuid
+-  PKG_CHECK_MODULES(UUID, uuid, [have_uuid=yes], [have_uuid=no])
+-  if test "x$have_uuid" = xno; then
+-    # system without pkg-config or so, try classic check
+-    AC_CHECK_LIB(uuid, uuid_is_null, [have_uuid=yes], [have_uuid=no])
+-  fi
+-  if test "x$have_uuid" = xyes; then
+-    UTIL_SET_FLAGS($UUID_CFLAGS, $UUID_CFLAGS, $UUID_LIBS)
+-    AC_CHECK_HEADERS([uuid.h uuid/uuid.h], [break], [])
+-    UTIL_RESTORE_FLAGS
+-  fi
++  # system without pkg-config or so, try classic check
++  AC_CHECK_LIB(uuid, uuid_is_null, [have_uuid=yes], [have_uuid=no])
+ else
+   # internal library
+   AC_DEFINE(HAVE_UUID_H, 1, [Define to 1 if you have the <uuid.h> header file.])
+@@ -408,21 +408,8 @@
+ 
+ if test "x$enable_libblkid" = xno; then
+   if test "x$build_mount" = xyes || test "x$enable_fsck" = xyes; then
+-    # Check for external (e2fsprogs) libblkid
+-    PKG_CHECK_MODULES(BLKID, blkid, [have_blkid=yes], [have_blkid=no])
+-    if test "x$have_blkid" = xno; then
+-      # system without pkg-config or so, try classic check
+-      AC_CHECK_LIB(blkid, blkid_get_cache, [have_blkid=yes], [have_blkid=no])
+-    fi
+-    if test "x$have_blkid" = xyes; then
+-      UTIL_SET_FLAGS($BLKID_CFLAGS, $BLKID_CFLAGS, $BLKID_LIBS)
+-      AC_CHECK_HEADERS([blkid.h blkid/blkid.h], [break], [])
+-      UTIL_RESTORE_FLAGS
+-    fi
+-    if test -n "$enable_static_programs"; then
+-      # TODO check only when mount of fsck are requested
+-      UTIL_PKG_STATIC([BLKID_LIBS_STATIC], [blkid])
+-    fi
++    # system without pkg-config or so, try classic check
++    AC_CHECK_LIB(blkid, blkid_get_cache, [have_blkid=yes], [have_blkid=no])
+   fi
+ else
+   # internal library
+@@ -1251,8 +1251,6 @@
+ schedutils/Makefile
+ shlibs/blkid/blkid.pc
+ shlibs/blkid/Makefile
+-shlibs/blkid/docs/Makefile
+-shlibs/blkid/docs/version.xml
+ shlibs/blkid/src/Makefile
+ shlibs/blkid/src/blkid.h
+ shlibs/blkid/src/superblocks/Makefile
+@@ -1263,8 +1261,6 @@
+ shlibs/mount/Makefile
+ shlibs/mount/src/Makefile
+ shlibs/mount/src/libmount.h
+-shlibs/mount/docs/Makefile
+-shlibs/mount/docs/version.xml
+ shlibs/mount/samples/Makefile
+ shlibs/uuid/uuid.pc
+ shlibs/uuid/Makefile
+--- shlibs/mount/Makefile.am.bak	2021-06-12 11:32:07.578612839 +1000
++++ shlibs/mount/Makefile.am	2021-06-12 11:32:20.247701887 +1000
+@@ -2,11 +2,6 @@
+ 
+ SUBDIRS = src samples
+ 
+-if ENABLE_GTK_DOC
+-SUBDIRS += docs
+-endif
+-
+-# pkg-config stuff
+ pkgconfigdir = $(usrlib_execdir)/pkgconfig
+ pkgconfig_DATA = mount.pc
+ 
+--- shlibs/blkid/Makefile.am.bak	2021-06-12 11:32:03.546584499 +1000
++++ shlibs/blkid/Makefile.am	2021-06-12 11:32:10.790635416 +1000
+@@ -2,10 +2,6 @@
+ 
+ SUBDIRS = src samples
+ 
+-if ENABLE_GTK_DOC
+-SUBDIRS += docs
+-endif
+-
+ # pkg-config stuff
+ pkgconfigdir = $(usrlib_execdir)/pkgconfig
+ pkgconfig_DATA = blkid.pc

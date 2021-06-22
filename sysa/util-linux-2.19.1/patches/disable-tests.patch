@@ -1,0 +1,19 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+The tests/ subfolder is broken and useless unless we run `make test' which we
+don't.
+
+--- Makefile.am	2021-06-13 09:50:21.775597435 +1000
++++ Makefile.am	2021-06-13 09:50:10.900501284 +1000
+@@ -29,8 +29,7 @@
+ 	po \
+ 	schedutils \
+ 	sys-utils \
+-	text-utils \
+-	tests
++	text-utils
+ 
+ 
+ RCS_FIND_IGNORE := \( -name SCCS -o -name BitKeeper -o -name .svn -o \

@@ -377,6 +377,9 @@ class SysA:
         # musl 1.2.2
         self.get_file("https://musl.libc.org/releases/musl-1.2.2.tar.gz")
 
+        # util-linux 2.19.1
+        self.get_file("https://mirrors.kernel.org/pub/linux/utils/util-linux/v2.19/util-linux-2.19.1.tar.gz")
+
         # kexec-tools 2.0.22
         self.get_file("https://github.com/horms/kexec-tools/archive/refs/tags/v2.0.22.tar.gz",
                 output="kexec-tools-2.0.22.tar.gz")
