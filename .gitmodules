@@ -3,6 +3,6 @@
 #
 # SPDX-License-Identifier: MIT 
 
-[submodule "sysa/mescc-tools-seed/src/mescc-tools-seed"]
+[submodule "sysa/stage0-posix/src"]
 	path = sysa/stage0-posix/src
-	url = https://github.com/oriansj/mescc-tools-seed/
+	url = https://github.com/oriansj/stage0-posix/
