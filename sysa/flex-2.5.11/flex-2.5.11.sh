@@ -16,7 +16,7 @@ src_install() {
         # Remove lex, later  make install will symlink lex to flex
         rm -rf /lex
         rm -f "${PREFIX}/bin/lex"
-        rm -f "${PREFIX}/lib/libl.a"
+        rm -f "${PREFIX}/lib/mes/libl.a"
     fi
     
     default

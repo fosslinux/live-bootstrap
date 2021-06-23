@@ -10,7 +10,7 @@ src_prepare() {
 }
 
 src_compile() {
-    export libdir=${PREFIX}/lib
+    export libdir=${PREFIX}/lib/mes
     export incdir=${PREFIX}/include
     export bindir=${PREFIX}/bin
 

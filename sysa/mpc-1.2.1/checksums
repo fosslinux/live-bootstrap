@@ -1,3 +1,3 @@
-c2c288f7a58cb409b253ff9288e09e11c998722ff34f2308083bad868cdcaf26  /after/lib/musl/libmpc.a
-b512a0555d1a6207df00849fc9140c9de2286abdec05debf66313058dfa7cb90  /after/lib/musl/libmpc.la
-6b6f58a6030ab502f6e483f931746ad0c6403c5618fb8850af1bc0fd6d13beb6  /after/lib/musl/libmpc.so.3.2.1
+c2c288f7a58cb409b253ff9288e09e11c998722ff34f2308083bad868cdcaf26  /image/lib/musl/libmpc.a
+193c4cf258c8c2eea8ab87d12c441cfe8b51a44d5e81519f190f8ce9f67a035d  /image/lib/musl/libmpc.la
+b2b8e91b72368570ed5b2fb0dd7ff516173ee893437c73fa648bb8d79ff6f52e  /image/lib/musl/libmpc.so.3.2.1

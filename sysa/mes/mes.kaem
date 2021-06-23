@@ -282,5 +282,5 @@ cp include/sys/user.h ${incdir}/sys/user.h
 cp include/sys/wait.h ${incdir}/sys/wait.h
 
 # Checksums
-cd ${prefix}/${MES_PKG}
+cd ${sources}/${MES_PKG}
 sha256sum -c checksums

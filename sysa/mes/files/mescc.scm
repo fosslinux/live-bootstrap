@@ -12,9 +12,9 @@
                         (cdr (string-split %host-type #\-)))))))
 
 (define %prefix (or (getenv "MES_PREFIX")
-                      (if (string-prefix? "@prefix" "/after")
+                      (if (string-prefix? "@prefix" "/image")
                           ""
-                          "/after")))
+                          "/image")))
 
 (define %includedir (or (getenv "includedir")
                         (string-append %prefix "/include")))

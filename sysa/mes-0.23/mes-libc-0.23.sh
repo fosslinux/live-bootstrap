@@ -63,9 +63,9 @@ src_compile() {
 }
 
 src_install() {
-    install -m 644 libc.a "${DESTDIR}${PREFIX}/lib/"
-    install -m 644 libgetopt.a "${DESTDIR}${PREFIX}/lib/"
-    install -m 644 crt1.o "${DESTDIR}${PREFIX}/lib/"
-    install -m 644 crtn.o "${DESTDIR}${PREFIX}/lib/"
-    install -m 644 crti.o "${DESTDIR}${PREFIX}/lib/"
+    install -m 644 libc.a "${DESTDIR}${PREFIX}/lib/mes"
+    install -m 644 libgetopt.a "${DESTDIR}${PREFIX}/lib/mes"
+    install -m 644 crt1.o "${DESTDIR}${PREFIX}/lib/mes"
+    install -m 644 crtn.o "${DESTDIR}${PREFIX}/lib/mes"
+    install -m 644 crti.o "${DESTDIR}${PREFIX}/lib/mes"
 }

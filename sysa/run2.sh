@@ -63,4 +63,5 @@ fi
 
 echo "Bootstrapping completed."
 
-exec env - PATH=/after/bin PS1="\w # " bash -i
+cd "${PREFIX}"
+exec env - PATH=${PREFIX}/bin PS1="\w # " bash -i

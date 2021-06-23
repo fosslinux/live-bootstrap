@@ -10,8 +10,6 @@ set -ex
 mkdir build
 cd build
 
-bindir=/after/bin
-libdir=/after/lib
 lexdir=/lex
 
 # Extract

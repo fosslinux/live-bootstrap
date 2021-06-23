@@ -7,8 +7,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-export PATH=/after/bin
-
 # Common build steps
 # Build function provides a few common stages with default implementation
 # that can be overridden on per package basis in the build script.
@@ -24,7 +22,7 @@ build () {
     checksum_f=${3:-checksums}
     dirname=${5:-${pkg}}
 
-    cd "${PREFIX}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
+    cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
     base_dir="${PWD}"
     patch_dir="${base_dir}/${4:-patches}"
@@ -64,13 +62,13 @@ build () {
     build_stage=src_install
     call $build_stage
 
-    cd "${PREFIX}/${pkg}"
+    cd "${SOURCES}/${pkg}"
 
     echo "${pkg}: checksumming installed files."
     test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
 
     echo "${pkg}: build successful"
-    cd "${PREFIX}"
+    cd "${SOURCES}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install
 }
@@ -160,7 +158,7 @@ default() {
     "default_${build_stage}"
 }
 
-# Set all files modified dates to be 0 unix time.
+# Set modified dates of all files to be 0 unix time.
 # Should be called at the end of bootstrapping process.
 # This function needs `touch` that supports --no-dereference
 # (at least coreutils 8.1).

@@ -10,7 +10,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix=/after
+    ./configure --prefix="${PREFIX}"
 }
 
 src_compile() {

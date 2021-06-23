@@ -3,10 +3,6 @@
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-src_unpack() {
-    default
-}
-
 src_prepare() {
     default
 
@@ -85,7 +81,7 @@ src_configure() {
 src_compile() {
     ln -s . build/build-i386-unknown-linux-gnu
     for dir in libiberty libcpp gcc; do
-        make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include/musl" STMP_FIXINC=
+        make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" STMP_FIXINC=
     done
 }
 

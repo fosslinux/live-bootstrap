@@ -16,7 +16,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix=${PREFIX} --program-suffix=-2.52
+    ./configure --prefix="${PREFIX}" --program-suffix=-2.52
 }
 
 src_compile() {

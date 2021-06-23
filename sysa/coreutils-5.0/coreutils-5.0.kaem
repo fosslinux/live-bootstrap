@@ -29,8 +29,8 @@ patch -Np0 -i ../../patches/ls-strcmp.patch
 patch -Np0 -i ../../patches/touch-getdate.patch
 
 # Build and install
-/after/bin/make -f Makefile
-/after/bin/make -f Makefile install
+make -f Makefile PREFIX=${prefix}
+make -f Makefile PREFIX=${prefix} install
 
 cd ../..
 

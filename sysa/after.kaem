@@ -11,20 +11,23 @@ set -ex
 PATH=/bin
 
 # Set commonly used variables
-prefix=/after
+sources=/after
+prefix=/image
 bindir=${prefix}/bin
 libdir=${prefix}/lib
 incdir=${prefix}/include
+tmpdir=/tmp # tmpdir is needed for patch to work
+
+# Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
 MES_PKG=mes
-MES_PREFIX=${prefix}/${MES_PKG}/src/mes-m2-a7522f26ee020dc498219d0122ea1b7d345bcdd5
-GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${prefix}/${MES_PKG}/src/${NYACC_PKG}/module
+MES_PREFIX=${sources}/${MES_PKG}/src/mes-m2-a7522f26ee020dc498219d0122ea1b7d345bcdd5
+GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sources}/${MES_PKG}/src/${NYACC_PKG}/module
 
+mkdir ${bindir} ${libdir} ${incdir} ${tmpdir}
 cd ${prefix}
 
-mkdir ${bindir}
-
-# Remove remaining dependencies on / (root of /after)
+# Remove remaining dependencies on /bin (stage0-posix directory)
 cp /bin/blood-elf bin/blood-elf
 cp /bin/catm bin/catm
 cp /bin/chmod bin/chmod
@@ -38,7 +41,7 @@ cp /bin/sha256sum bin/sha256sum
 cp /bin/ungz bin/ungz
 cp /bin/untar bin/untar
 
-cp /bin/cp /after/bin/cp
+cp /bin/cp ${prefix}/bin/cp
 
 chmod 755 bin/blood-elf
 chmod 755 bin/catm
@@ -54,22 +57,23 @@ chmod 755 bin/sha256sum
 chmod 755 bin/ungz
 chmod 755 bin/untar
 
-PATH=/after/bin
+PATH=${prefix}/bin
 
-# Needed for patch to work
-mkdir /tmp
+cd ${sources}
 
 # mes
 pkg=${MES_PKG}
 cd ${pkg}
 kaem --file ${pkg}.kaem
-cd ${prefix}
+cd ${sources}
 
 # tcc 0.9.26
 pkg="tcc-0.9.26"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
+
+libdir=${libdir}/mes
 
 # gzip
 pkg="gzip-1.2.4"

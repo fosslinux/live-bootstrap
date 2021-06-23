@@ -20,7 +20,9 @@ populate_device_nodes() {
     test -c /dev/urandom || mknod -m 444 /dev/urandom c 1 9
 }
 
-export PREFIX=/after
+export PREFIX=/image
+export PATH="${PREFIX}/bin"
+export SOURCES=/after
 
 build flex-2.5.11
 
@@ -147,4 +149,4 @@ build gcc-4.0.4 pass2.sh checksums/pass2
 
 build bash-5.1
 
-exec env -i PATH=/after/bin PREFIX=/after bash run2.sh
+exec env -i PATH=${PREFIX}/bin PREFIX=${PREFIX} SOURCES=${SOURCES} bash run2.sh
