@@ -2,7 +2,7 @@ SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Why do they insist on using themselves to bootstrap themselves? It dosen't
+Why do they insist on using themselves to bootstrap themselves? It doesn't
 exist...
 
 --- Makefile.am	2021-04-15 21:29:36.596205032 +1000
@@ -12,7 +12,7 @@ exist...
  ## but also to run the tests.  Of course, you ought to keep a sane
  ## version of Bison nearby...
 -BISON = $(top_builddir)/tests/bison
-+BISON = /after/bin/bison
++BISON = /image/bin/bison
  BISON_IN = $(top_srcdir)/tests/bison.in
  YACC = $(BISON) -o y.tab.c
  AM_YFLAGS_WITH_LINES = --defines -Werror -Wall --report=all

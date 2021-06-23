@@ -11,7 +11,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure CC=tcc --prefix=/after
+    ./configure CC=tcc --prefix="${PREFIX}"
 }
 
 src_compile() {

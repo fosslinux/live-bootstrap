@@ -40,12 +40,12 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -I . \
     -D TCC_TARGET_I386=1 \
     -D inline= \
-    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
+    -D CONFIG_TCCDIR=\"${libdir}/mes/tcc\" \
     -D CONFIG_SYSROOT=\"/\" \
-    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${libdir}/mes\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/mes/include:${prefix}/include\" \
-    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
+    -D TCC_LIBGCC=\"${libdir}/mes/libc.a\" \
     -D CONFIG_TCC_LIBTCC1_MES=0 \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -61,6 +61,10 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -l c+tcc
 cp mes-tcc ${bindir}/
 chmod 755 ${bindir}/mes-tcc
+
+# Install libc into a subdirectory
+libdir=${libdir}/mes
+mkdir ${libdir}
 
 # test mes-tcc
 mes-tcc -version

@@ -291,7 +291,7 @@ including ``comm``, ``expr``, ``dd``, ``sort``, ``sync``, ``uname`` and
 ``uniq``. This fixes a variety of issues with existing ``coreutils``.
 
 coreutils 6.10
-=============
+==============
 We build ``date``, ``mktemp`` and ``sha256sum`` from coreutils 6.10 which are
 either missing or don't build correctly in 5.0. Other utils are not built at
 this stage.
@@ -670,7 +670,7 @@ patch 2.7.6
 ===========
 
 Our old patch was built with manual makefile and used mes libc.
-This is a newer version of which we need in order to import gnulib into gettext.
+This is a newer version which we need in order to import gnulib into gettext.
 
 gettext 0.21
 ============

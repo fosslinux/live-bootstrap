@@ -54,7 +54,7 @@ src_prepare() {
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
-    cp ${PREFIX}/share/aclocal/libtool.m4 aclocal.m4
+    cp "${PREFIX}/share/aclocal/libtool.m4" aclocal.m4
 
     # automake errors out without this
     cd gas

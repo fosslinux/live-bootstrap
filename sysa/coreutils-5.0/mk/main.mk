@@ -13,7 +13,6 @@ CC      = tcc
 LD      = tcc
 AR      = tcc -ar
 
-PREFIX=/after
 bindir=$(PREFIX)/bin
 
 CFLAGS  = -I . -I lib \
@@ -41,7 +40,7 @@ CFLAGS  = -I . -I lib \
           -DTIME_WITH_SYS_TIME=1 \
           -DHAVE_STDINT_H=1 \
           -DMB_LEN_MAX=16 \
-          -DLIBDIR=\"$(PREFIX)/lib\" \
+          -DLIBDIR=\"$(PREFIX)/lib/mes\" \
           -DHAVE_DECL_WCWIDTH=0 \
           -DHAVE_SYS_STAT_H=1 \
           -DHAVE_INTTYPES_H=1 \

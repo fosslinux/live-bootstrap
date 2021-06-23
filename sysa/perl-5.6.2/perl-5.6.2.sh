@@ -30,7 +30,7 @@ src_prepare() {
     sed -i 's/sv_setptrobj/Perl_sv_setref_iv/' ext/POSIX/POSIX.xs
 
     # We are using non-standard locations
-    sed -i 's#/usr/include/errno.h#/after/include/musl/bits/errno.h#' ext/Errno/Errno_pm.PL
+    sed -i "s#/usr/include/errno.h#${PREFIX}/include/musl/bits/errno.h#" ext/Errno/Errno_pm.PL
 }
 
 src_install() {

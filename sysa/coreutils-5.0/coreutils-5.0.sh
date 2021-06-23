@@ -23,5 +23,5 @@ src_install() {
     default
 
     # perl later requires /bin/pwd
-    ln -s /after/bin/pwd /bin/pwd
+    ln -s "${PREFIX}/bin/pwd" /bin/pwd
 }

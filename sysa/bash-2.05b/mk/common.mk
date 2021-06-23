@@ -24,8 +24,8 @@ COMMON_CFLAGS  = \
 	-DHAVE_DECL_STRTOULL \
 	-DHAVE_TZNAME \
 	-DPIPESIZE=4096 \
-	-DDEFAULT_PATH_VALUE=\"/after/bin\" \
-	-DSTANDARD_UTILS_PATH=\"/after/bin\" \
+	-DDEFAULT_PATH_VALUE=\"/image/bin\" \
+	-DSTANDARD_UTILS_PATH=\"/image/bin\" \
 	-DPPROMPT=\"$ \" \
 	-DSPROMPT=\"$ \" \
 	-DCONF_MACHTYPE=\"bootstrap\" \

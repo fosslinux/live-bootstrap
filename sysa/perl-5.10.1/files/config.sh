@@ -6,7 +6,7 @@
 ar='ar'
 cc='gcc'
 ldlibpthname='LD_LIBRARY_PATH'
-libpth='/after/lib'
+libpth='/image/lib'
 path_sep=':'
 archname='i386'
 osvers=''

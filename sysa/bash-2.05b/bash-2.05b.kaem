@@ -40,10 +40,10 @@ cd ..
 make
 
 # Install
-install bash /after/bin/
-ln -s /after/bin/bash /bin/bash
-ln -s /after/bin/bash /bin/sh
-ln -s /after/bin/bash /after/bin/sh
+install bash ${prefix}/bin/
+ln -s ${prefix}/bin/bash /bin/bash
+ln -s ${prefix}/bin/bash /bin/sh
+ln -s ${prefix}/bin/bash ${prefix}/bin/sh
 
 cd ../..
 

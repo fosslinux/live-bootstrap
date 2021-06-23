@@ -13,9 +13,9 @@ src_configure() {
     CC=tcc ./configure \
       --host=i386 \
       --disable-shared \
-      --prefix=/after \
-      --libdir=/after/lib/musl \
-      --includedir=/after/include/
+      --prefix="${PREFIX}" \
+      --libdir="${PREFIX}/lib/musl" \
+      --includedir="${PREFIX}/include/"
 
     # configure script creates this file
     if test -f /dev/null; then
@@ -28,6 +28,6 @@ src_compile() {
 }
 
 src_install() {
-    rm -rf /after/include
+    rm -rf "${PREFIX}/include"
     make install
 }
