@@ -683,3 +683,9 @@ texinfo 6.7
 
 Texinfo is a typesetting syntax used for generating documentation. We can now use
 ``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
+
+libunistring 0.9.10
+===================
+
+Library for manipulating Unicode and C strings according to Unicode standard. This
+is a dependency of GNU Guile.

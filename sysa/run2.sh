@@ -56,6 +56,8 @@ build gettext-0.21
 
 build texinfo-6.7
 
+build libunistring-0.9.10
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp
