@@ -67,7 +67,7 @@
 #define Uid_t uid_t
 
 #define LOC_SED "/image/bin/sed"
-#define ARCHLIB "/image[O/lib/perl5/"
+#define ARCHLIB "/image/lib/perl5/"
 
 #define CAT2(a,b) a##b
 #define Gconvert(x,n,t,b) gcvt((x),(n),(b))
