@@ -153,6 +153,8 @@ build util-linux-2.19.1
 
 build kexec-tools-2.0.22
 
+build linux-2.6.16.62
+
 build bash-5.1
 
 exec env -i PATH=${PREFIX}/bin PREFIX=${PREFIX} SOURCES=${SOURCES} bash run2.sh

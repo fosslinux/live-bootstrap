@@ -384,6 +384,10 @@ class SysA:
         self.get_file("https://github.com/horms/kexec-tools/archive/refs/tags/v2.0.22.tar.gz",
                 output="kexec-tools-2.0.22.tar.gz")
 
+        # linux kernel 2.6.16.62
+        # for some reason this is no longer on kernel.org
+        self.get_file("https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/snapshot/linux-2.6.16.62.tar.gz")
+
         # bash 5.1
         self.get_file("https://mirrors.kernel.org/gnu/bash/bash-5.1.tar.gz")
 

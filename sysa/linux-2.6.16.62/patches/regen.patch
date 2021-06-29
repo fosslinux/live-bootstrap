@@ -1,0 +1,28 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+Regens flex/bison/kbd stuff.
+
+--- scripts/kconfig/Makefile	2021-07-19 21:42:19.154935765 +1000
++++ scripts/kconfig/Makefile	2021-07-19 21:42:27.450004325 +1000
+@@ -231,7 +231,7 @@
+ # The following requires flex/bison/gperf
+ # By default we use the _shipped versions, uncomment the following line if
+ # you are modifying the flex/bison src.
+-# LKC_GENPARSER := 1
++LKC_GENPARSER := 1
+ 
+ ifdef LKC_GENPARSER
+ 
+--- drivers/char/Makefile	2021-07-22 16:53:46.898671775 +1000
++++ drivers/char/Makefile	2021-07-22 16:53:52.823710936 +1000
+@@ -111,7 +111,7 @@
+ # Uncomment if you're changing the keymap and have an appropriate
+ # loadkeys version for the map. By default, we'll use the shipped
+ # versions.
+-# GENERATE_KEYMAP := 1
++GENERATE_KEYMAP := 1
+ 
+ ifdef GENERATE_KEYMAP
+ 
