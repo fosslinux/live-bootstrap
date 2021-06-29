@@ -392,6 +392,9 @@ class SysA:
         self.get_file(["https://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-8.32.tar.gz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
 
+        # pkg-config 0.29.2
+        self.get_file("https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz")
+
         # make 4.2.1
         self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
 

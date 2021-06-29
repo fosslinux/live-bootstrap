@@ -581,6 +581,11 @@ We build the latest available coreutils 8.32 which adds needed options to make
 results of build metadata reproducible. For example, timestamps are changed with
 ``touch --no-dereference``.
 
+pkg-config 0.29.2
+=================
+
+pkg-config is a helper tool that helps to insert compile and link time flags.
+
 make 4.2.1
 ==========
 
