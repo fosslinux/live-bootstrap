@@ -689,6 +689,12 @@ texinfo 6.7
 Texinfo is a typesetting syntax used for generating documentation. We can now use
 ``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
+zlib 1.2.11
+===========
+
+zlib is a software library used for data compression and implements an abstraction of
+DEFLATE algorithm that is also used in ``gzip``.
+
 libunistring 0.9.10
 ===================
 

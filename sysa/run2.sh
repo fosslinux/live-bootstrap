@@ -58,6 +58,8 @@ build gettext-0.21
 
 build texinfo-6.7
 
+build zlib-1.2.11
+
 build libunistring-0.9.10
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
