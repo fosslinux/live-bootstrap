@@ -20,7 +20,8 @@ src_configure() {
 	--build=i386-unknown-linux-gnu \
 	--host=i386-unknown-linux-gnu \
 	--target=i386-unknown-linux-gnu \
-	--libdir="${PREFIX}/lib/musl"
+	--libdir="${PREFIX}/lib/musl" \
+	--disable-shared
 }
 
 src_compile() {
