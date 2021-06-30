@@ -5,7 +5,7 @@
 src_prepare() {
     default
 
-    autoreconf-2.65 -f
+    autoreconf-2.64 -f
 }
 
 src_configure() {
