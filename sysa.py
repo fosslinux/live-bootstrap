@@ -448,6 +448,9 @@ class SysA:
         self.get_file(["https://mirrors.kernel.org/gnu/texinfo/texinfo-6.7.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b81ec69.tar.gz"])
 
+        # zlib 1.2.11
+        self.get_file("https://www.zlib.net/zlib-1.2.11.tar.xz")
+
         # libunistring 0.9.10
         self.get_file(["https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"])
