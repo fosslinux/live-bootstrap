@@ -359,8 +359,8 @@ class SysA:
         # automake 1.10.3
         self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.10.3.tar.bz2")
 
-        # autoconf 2.65
-        self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.65.tar.bz2")
+        # autoconf 2.64
+        self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.64.tar.bz2")
 
         # gcc 4.0.4
         self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.0.4/gcc-core-4.0.4.tar.bz2",

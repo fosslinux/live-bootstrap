@@ -7,7 +7,7 @@ src_prepare() {
 
     ../../import-gnulib.sh
 
-    AUTOPOINT=true autoreconf-2.65 -fi
+    AUTOPOINT=true autoreconf-2.69 -fi
 
     # Remove pregenerated files
     rm src/parse-gram.c src/parse-gram.h src/scan-skel.c src/scan-gram.c

@@ -4,7 +4,7 @@
 
 src_prepare() {
     rm doc/standards.info
-    autoreconf-2.65 -f
+    autoreconf-2.64 -f
 
     # Install autoconf data files into versioned directory
     for file in */*/Makefile.in */Makefile.in Makefile.in; do
