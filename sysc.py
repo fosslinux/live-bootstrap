@@ -195,3 +195,6 @@ class SysC(SysGeneral):
 
         # libffi 3.3
         self.get_file("https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz")
+
+        # libatomic_ops 7.6.10
+        self.get_file("https://github.com/ivmai/libatomic_ops/releases/download/v7.6.10/libatomic_ops-7.6.10.tar.gz")
