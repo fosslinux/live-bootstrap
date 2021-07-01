@@ -706,3 +706,9 @@ libffi 3.3
 
 The libffi library provides a portable, high level programming interface to various
 calling conventions.
+
+libatomic_ops 7.6.10
+====================
+
+``libatomic_ops`` provides semi-portable access to hardware-provided atomic memory
+update operations on a number of architectures.
