@@ -457,3 +457,6 @@ class SysA:
         # libunistring 0.9.10
         self.get_file(["https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"])
+
+        # libffi 3.3
+        self.get_file("https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz")
