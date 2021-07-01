@@ -70,6 +70,8 @@ build gperf-3.1
 
 build libunistring-0.9.10
 
+build libffi-3.3
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp

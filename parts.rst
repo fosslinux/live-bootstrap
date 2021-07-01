@@ -785,3 +785,9 @@ libunistring 0.9.10
 
 Library for manipulating Unicode and C strings according to Unicode standard. This
 is a dependency of GNU Guile.
+
+libffi 3.3
+==========
+
+The libffi library provides a portable, high level programming interface to various
+calling conventions.
