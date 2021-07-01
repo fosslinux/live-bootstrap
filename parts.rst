@@ -695,6 +695,12 @@ zlib 1.2.11
 zlib is a software library used for data compression and implements an abstraction of
 DEFLATE algorithm that is also used in ``gzip``.
 
+gcc 4.7.4
+=========
+
+GCC 4.7.4 is the last version written in C. We again build just C frontent but this
+time it supports C11 that we need to build GNU Guile.
+
 libunistring 0.9.10
 ===================
 
