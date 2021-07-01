@@ -60,6 +60,8 @@ build texinfo-6.7
 
 build zlib-1.2.11
 
+build gcc-4.7.4 pass1.sh checksums/pass1
+
 build libunistring-0.9.10
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then

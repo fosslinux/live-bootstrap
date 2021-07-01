@@ -689,6 +689,12 @@ texinfo 6.7
 Texinfo is a typesetting syntax used for generating documentation. We can now use
 ``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
+gcc 4.7.4
+=========
+
+GCC 4.7.4 is the last version written in C. We again build just C frontent but this
+time it supports C11 that we need to build GNU Guile.
+
 libunistring 0.9.10
 ===================
 

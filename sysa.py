@@ -451,6 +451,9 @@ class SysA:
         # zlib 1.2.11
         self.get_file("https://www.zlib.net/zlib-1.2.11.tar.xz")
 
+        # gcc 4.7.4
+        self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2")
+
         # libunistring 0.9.10
         self.get_file(["https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"])
