@@ -797,3 +797,9 @@ libatomic_ops 7.6.10
 
 ``libatomic_ops`` provides semi-portable access to hardware-provided atomic memory
 update operations on a number of architectures.
+
+boehm-gc 8.0.4
+==============
+
+The Boehm-Demers-Weiser conservative garbage collector can be used as a garbage
+collecting replacement for C malloc or C++ new.
