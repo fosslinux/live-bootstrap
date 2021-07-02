@@ -467,3 +467,6 @@ class SysA:
 
         # libatomic_ops 7.6.10
         self.get_file("https://github.com/ivmai/libatomic_ops/releases/download/v7.6.10/libatomic_ops-7.6.10.tar.gz")
+
+        # boehm-gc 8.0.4
+        self.get_file("https://www.hboehm.info/gc/gc_source/gc-8.0.4.tar.gz")

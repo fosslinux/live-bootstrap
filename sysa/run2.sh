@@ -68,6 +68,8 @@ build libffi-3.3
 
 build libatomic_ops-7.6.10
 
+build gc-8.0.4
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp
