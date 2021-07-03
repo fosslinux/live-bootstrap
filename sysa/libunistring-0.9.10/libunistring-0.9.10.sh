@@ -7,7 +7,7 @@ src_prepare() {
 
     # libunistring does not specify which gnulib snapshot was used,
     # pick a random one that works
-    GNULIB_TOOL=../gnulib-52a06cb3a849df0bbce38b69dd7ae58cc1de5f68/gnulib-tool ./autogen.sh
+    GNULIB_TOOL=../gnulib-52a06cb3/gnulib-tool ./autogen.sh
 
     # autogen.sh does not regenerate libtool files
     autoreconf-2.69 -fi
