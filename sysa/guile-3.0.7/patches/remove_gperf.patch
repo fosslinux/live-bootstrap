@@ -1,0 +1,53 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Remove dependency on gperf and hence g++.
+
+--- libguile/bytevectors.c	Thu Mar  4 11:54:31 2021
++++ libguile/bytevectors.c	Sat Jul  3 13:57:17 2021
+@@ -28,7 +28,6 @@
+ 
+ #include <byteswap.h>
+ #include <errno.h>
+-#include <striconveh.h>
+ #include <uniconv.h>
+ #include <unistr.h>
+ #include <string.h>
+--- libguile/ports.c	Wed Mar  3 15:22:56 2021
++++ libguile/ports.c	Sat Jul  3 13:57:08 2021
+@@ -33,7 +33,6 @@
+ #include <iconv.h>
+ #include <poll.h>
+ #include <stdio.h>
+-#include <striconveh.h>
+ #include <string.h>
+ #include <uniconv.h>
+ #include <unistd.h>
+--- libguile/strings.c	Sat Aug 24 09:57:39 2019
++++ libguile/strings.c	Sat Jul  3 13:57:39 2021
+@@ -44,7 +44,7 @@
+ #include "ports-internal.h"
+ #include "ports.h"
+ #include "private-options.h"
+-#include "striconveh.h"
++#include "mem_iconveh.h"
+ #include "symbols.h"
+ #include "threads.h"
+ 
+--- /dev/null   Sat Jul  3 11:14:47 2021
++++ libguile/mem_iconveh.h Sat Jul  3 13:11:09 2021
+@@ -0,0 +1,14 @@
++int
++mem_iconveh (const char *src, size_t srclen,
++             const char *from_codeset, const char *to_codeset,
++             enum iconv_ilseq_handler handler,
++             size_t *offsets,
++             char **resultp, size_t *lengthp)
++{
++    char *result;
++    result = (char *) malloc (srclen);
++    memcpy (result, src, srclen);
++    *resultp = result;
++    *lengthp = srclen;
++    return 0;
++}

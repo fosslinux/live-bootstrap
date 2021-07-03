@@ -470,3 +470,9 @@ class SysA:
 
         # boehm-gc 8.0.4
         self.get_file("https://www.hboehm.info/gc/gc_source/gc-8.0.4.tar.gz")
+
+        # guile 3.0.7
+        self.get_file(["https://mirrors.kernel.org/gnu/guile/guile-3.0.7.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-901694b9.tar.gz",
+                       "https://github.com/schierlm/guile-psyntax-bootstrapping/archive/refs/tags/guile-3.0.7.tar.gz"],
+                       output=["guile-3.0.7.tar.xz", "gnulib-901694b9.tar.gz", "guile-psyntax-bootstrapping.tar.gz"])
