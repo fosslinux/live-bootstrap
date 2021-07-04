@@ -26,6 +26,8 @@ build tar-1.34
 
 build coreutils-8.32
 
+build pkg-config-0.29.2
+
 build make-4.2.1
 
 build gmp-6.2.1
