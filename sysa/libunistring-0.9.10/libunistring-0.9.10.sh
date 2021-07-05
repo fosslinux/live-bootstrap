@@ -16,9 +16,6 @@ src_prepare() {
 src_configure() {
     ./configure \
 	--prefix="${PREFIX}" \
-	--build=i386-unknown-linux-gnu \
-	--host=i386-unknown-linux-gnu \
-	--target=i386-unknown-linux-gnu \
 	--libdir="${PREFIX}/lib/musl" \
 	--disable-shared
 }

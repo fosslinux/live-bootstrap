@@ -13,9 +13,6 @@ src_configure() {
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
-        --target=i386-unknown-linux-gnu \
-        --host=i386-unknown-linux-gnu \
-        --build=i386-unknown-linux-gnu \
         --disable-shared
 
     # Disable tuning as that might cause non-reproducible build

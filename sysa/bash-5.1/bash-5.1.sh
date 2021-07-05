@@ -19,10 +19,11 @@ src_prepare() {
 }
 
 src_configure() {
+    # --build argument needed for reproducibility
     ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
         --disable-nls \
-        --build=i386-unknown-linux-gnu \
+        --build=i386-unknown-linux-musl \
         --enable-static-link
 }
 

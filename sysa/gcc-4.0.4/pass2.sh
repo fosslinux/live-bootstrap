@@ -3,6 +3,11 @@
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+src_unpack() {
+    default
+    tar xzf ${SOURCES}/automake-1.16.3/src/automake-1.16.3.tar.gz
+}
+
 src_prepare() {
     default
 
@@ -39,7 +44,7 @@ src_prepare() {
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
-    cp "${PREFIX}/"/share/automake-1.9/config.sub .
+    cp ../automake-1.16.3/lib/config.sub .
 
     # Rebuild bison files
     # Workaround for bison being too new
@@ -68,9 +73,9 @@ src_configure() {
         ../../$dir/configure \
             --prefix="${PREFIX}" \
             --libdir="${PREFIX}"/lib/musl \
-            --build=i386-unknown-linux-gnu \
-            --target=i386-unknown-linux-gnu \
-            --host=i386-unknown-linux-gnu \
+            --build=i386-unknown-linux-musl \
+            --target=i386-unknown-linux-musl \
+            --host=i386-unknown-linux-musl \
             --disable-shared \
             --program-transform-name=
         cd ..
@@ -79,7 +84,7 @@ src_configure() {
 }
 
 src_compile() {
-    ln -s . build/build-i386-unknown-linux-gnu
+    ln -s . build/build-i386-unknown-linux-musl
     for dir in libiberty libcpp gcc; do
         make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" STMP_FIXINC=
     done

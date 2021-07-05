@@ -17,10 +17,7 @@ src_prepare() {
 src_configure() {
     FORCE_UNSAFE_CONFIGURE=1 ./configure \
         --prefix="${PREFIX}" \
-        --disable-nls \
-        --target=i386-unknown-linux-gnu \
-        --host=i386-unknown-linux-gnu \
-        --build=i386-unknown-linux-gnu
+        --disable-nls
 }
 
 src_compile() {

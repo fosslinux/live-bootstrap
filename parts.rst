@@ -698,8 +698,7 @@ DEFLATE algorithm that is also used in ``gzip``.
 gcc 4.7.4
 =========
 
-GCC 4.7.4 is the last version written in C. We again build just C frontent but this
-time it supports C11 that we need to build GNU Guile.
+GCC 4.7.4 is the last version written in C.
 
 libunistring 0.9.10
 ===================

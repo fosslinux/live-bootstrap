@@ -15,9 +15,7 @@ src_prepare() {
 src_configure() {
     ./configure \
         --prefix="${PREFIX}" \
-        --target=i386-unknown-linux-gnu \
-        --host=i386-unknown-linux-gnu \
-        --build=i386-unknown-linux-gnu \
+        --build=i386-unknown-linux-musl \
         --disable-nls
 }
 

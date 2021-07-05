@@ -4,7 +4,7 @@
 
 src_configure() {
     CC=gcc ./configure \
-        --host=i386-unknown-linux-gnu \
+        --host=i386-unknown-linux-musl \
         --disable-shared \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \

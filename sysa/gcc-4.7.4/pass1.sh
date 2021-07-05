@@ -6,8 +6,11 @@
 src_prepare() {
     default
 
+    # Needs gperf
+    rm gcc/cp/cfns.h
+
     # Needed for musl
-    sed -i 's/struct siginfo/siginfo_t/' libgcc/config/i386/linux-unwind.h
+    # sed -i 's/struct siginfo/siginfo_t/' libgcc/config/i386/linux-unwind.h
 
     # Regenerating top level Makefile requires GNU Autogen and hence Guile,
     # but it is not essential for building gcc.
@@ -63,7 +66,7 @@ src_prepare() {
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
-    cp "${PREFIX}/"/share/automake-1.9/config.sub .
+    cp "${PREFIX}/"/share/automake-1.15/config.sub .
 
     # Workaround for bison being too new
     rm intl/plural.c
@@ -88,9 +91,9 @@ src_configure() {
         ../../$dir/configure \
             --prefix="${PREFIX}" \
             --libdir="${PREFIX}"/lib/musl \
-            --build=i386-unknown-linux-gnu \
-            --target=i386-unknown-linux-gnu \
-            --host=i386-unknown-linux-gnu \
+            --build=i386-unknown-linux-musl \
+            --target=i386-unknown-linux-musl \
+            --host=i386-unknown-linux-musl \
             --disable-shared \
             --program-transform-name=
         cd ..
@@ -99,7 +102,7 @@ src_configure() {
 }
 
 src_compile() {
-    ln -s . build/build-i386-unknown-linux-gnu
+    ln -s . build/build-i386-unknown-linux-musl
     for dir in libiberty libcpp libdecnumber gcc; do
         # We have makeinfo now but it is not happy with gcc .info files, so skip it
         make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" \

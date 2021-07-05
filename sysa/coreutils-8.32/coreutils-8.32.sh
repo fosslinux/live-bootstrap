@@ -32,9 +32,7 @@ src_configure() {
     # error from configuration system of coreutils.
     FORCE_UNSAFE_CONFIGURE=1 ./configure CFLAGS="-static" \
         --prefix="${PREFIX}" \
-        --target=i386-unknown-linux-gnu \
-        --host=i386-unknown-linux-gnu \
-        --build=i386-unknown-linux-gnu
+        --build=i386-unknown-linux-musl
 }
 
 src_compile() {

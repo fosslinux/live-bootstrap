@@ -3,6 +3,11 @@
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+src_unpack() {
+    default
+    tar xzf ${SOURCES}/automake-1.16.3/src/automake-1.16.3.tar.gz
+}
+
 src_prepare() {
     default
     # This is needed for building with TCC
@@ -40,7 +45,7 @@ src_prepare() {
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
-    cp "${PREFIX}/"/share/automake-1.9/config.sub .
+    cp ../automake-1.16.3/lib/config.sub .
 
     # Rebuild bison files
     # Workaround for bison being too new
@@ -69,9 +74,9 @@ src_configure() {
         CC=tcc CFLAGS="-D HAVE_ALLOCA_H" ../../$dir/configure \
             --prefix="${PREFIX}" \
             --libdir="${PREFIX}"/lib/musl \
-            --build=i386-unknown-linux-gnu \
-            --target=i386-unknown-linux-gnu \
-            --host=i386-unknown-linux-gnu \
+            --build=i386-unknown-linux-musl \
+            --target=i386-unknown-linux-musl \
+            --host=i386-unknown-linux-musl \
             --disable-shared \
             --program-transform-name=
         cd ..
@@ -83,7 +88,7 @@ src_configure() {
 }
 
 src_compile() {
-    ln -s . build/build-i386-unknown-linux-gnu
+    ln -s . build/build-i386-unknown-linux-musl
     mkdir build/gcc/include
     ln -s ../../../gcc/gsyslimits.h build/gcc/include/syslimits.h
     for dir in libiberty libcpp gcc; do
@@ -92,6 +97,6 @@ src_compile() {
 }
 
 src_install() {
-    mkdir -p "${PREFIX}/lib/musl/gcc/i386-unknown-linux-gnu/4.0.4/install-tools/include"
+    mkdir -p "${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/install-tools/include"
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
 }
