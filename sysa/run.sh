@@ -9,15 +9,40 @@
 set -e
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
+. bootstrap.cfg
 
 populate_device_nodes() {
     # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
-    test -c /dev/null || mknod -m 666 /dev/null c 1 3
-    test -c /dev/zero || mknod -m 666 /dev/zero c 1 5
-    test -c /dev/ptmx || mknod -m 666 /dev/ptmx c 5 2
-    test -c /dev/tty || mknod -m 666 /dev/tty c 5 0
-    test -c /dev/random || mknod -m 444 /dev/random c 1 8
-    test -c /dev/urandom || mknod -m 444 /dev/urandom c 1 9
+    mkdir -p "${1}/dev"
+    test -c "${1}/dev/null" || mknod -m 666 "${1}/dev/null" c 1 3
+    test -c "${1}/dev/zero" || mknod -m 666 "${1}/dev/zero" c 1 5
+    test -c "${1}/dev/ptmx" || mknod -m 666 "${1}/dev/ptmx" c 5 2
+    test -c "${1}/dev/tty" || mknod -m 666 "${1}/dev/tty" c 5 0
+    test -c "${1}/dev/random" || mknod -m 444 "${1}/dev/random" c 1 8
+    test -c "${1}/dev/urandom" || mknod -m 444 "${1}/dev/urandom" c 1 9
+    test -c "${1}/dev/console" || mknod -m 666 "${1}/dev/console" c 5 1
+}
+
+create_sysb() {
+    # Copy everything in
+    echo "Creating sysb rootfs"
+    mkdir -p /sysb/usr
+    for d in bin include lib libexec sbin share; do
+        cp -r "/after/${d}" "/sysb/usr/${d}"
+    done
+    populate_device_nodes /sysb
+}
+
+go_sysb() {
+    # Mount proc for kexec
+    mkdir /proc /etc
+    mount -t proc proc /proc
+    # kexec time
+    echo "Loading kernel + sysb initramfs using kexec"
+    kexec -l "${PREFIX}/boot/linux-2.6.16.62" --console-serial \
+        --append="console=ttyS0 root=/dev/ram0 init=/init"
+    echo "kexecing into sysb"
+    kexec -e
 }
 
 export PREFIX=/image
@@ -149,12 +174,18 @@ build musl-1.2.2
 
 build gcc-4.0.4 pass2.sh checksums/pass2
 
-build util-linux-2.19.1
+if [ "${CHROOT}" = False ]; then
+    build util-linux-2.19.1
 
-build kexec-tools-2.0.22
+    build kexec-tools-2.0.22
 
-build linux-2.6.16.62
+    create_sysb
 
-build bash-5.1
+    build linux-2.6.16.62
 
+<<<<<<< HEAD
 exec env -i PATH=${PREFIX}/bin PREFIX=${PREFIX} SOURCES=${SOURCES} bash run2.sh
+=======
+    go_sysb
+fi
+>>>>>>> a95c6f2 (Add sysb and sysc scaffolding.)

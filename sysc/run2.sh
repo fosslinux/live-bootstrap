@@ -9,7 +9,8 @@
 
 set -e
 
-# shellcheck source=sysa/helpers.sh
+trap "env - PATH=${PREFIX}/bin PS1='\w # ' bash -i" EXIT
+
 . helpers.sh
 
 . bootstrap.cfg

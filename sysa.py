@@ -3,36 +3,39 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
-import hashlib
+import glob
 import os
 from distutils.dir_util import copy_tree
 import shutil
-
-import requests
+import subprocess
 
 from lib.utils import mount, umount, copytree, get_target
+from lib.sysgeneral import SysGeneral
 
-
-class SysA:
+class SysA(SysGeneral):
     """
     Class responsible for preparing sources for System A.
     """
-    def __init__(self, arch, preserve_tmp, tmpdir, force_timestamps):
+    def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_tmp):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
 
+        self.sys_dir = os.path.join(self.git_dir, 'sysa')
         if tmpdir is None:
-            self.tmp_dir = os.path.join(self.git_dir, 'sysa', 'tmp')
+            self.tmp_dir = os.path.join(self.sys_dir, 'tmp')
         else:
-            self.tmp_dir = tmpdir
-        self.sysa_dir = os.path.join(self.git_dir, 'sysa')
+            self.tmp_dir = os.path.join(tmpdir, 'sysa')
+            os.mkdir(self.tmp_dir)
         self.after_dir = os.path.join(self.tmp_dir, 'after')
-        self.force_timestamps = force_timestamps
+        self.base_dir = self.after_dir
+        self.sysb_tmp = sysb_tmp
 
         self.prepare()
 
+<<<<<<< HEAD
     def __del__(self):
         if not self.preserve_tmp:
             print("Unmounting tmpfs from %s" % (self.tmp_dir))
@@ -128,6 +131,10 @@ class SysA:
 
             # Install sources into target directory
             shutil.copy2(tarball, target_src_dir)
+=======
+        if not chroot:
+            self.make_initramfs()
+>>>>>>> 6252572 (Add sysb and sysc scaffolding.)
 
     def prepare(self):
         """
@@ -135,17 +142,23 @@ class SysA:
         We create an empty tmpfs, unpack stage0-posix.
         Rest of the files are unpacked into more structured directory /after
         """
-        if not os.path.isdir(self.tmp_dir):
-            os.mkdir(self.tmp_dir)
-        print("Mounting tmpfs on %s" % (self.tmp_dir))
-        mount('tmpfs', self.tmp_dir, 'tmpfs', 'size=8G')
+        self.mount_tmpfs()
+        os.mkdir(self.after_dir)
 
         self.stage0_posix()
         self.after()
 
+        # sysb must be added to sysa as it is another initramfs stage
+        self.sysb()
+
+    def sysb(self):
+        """Copy in sysb files for sysb."""
+        shutil.copytree(self.sysb_tmp, os.path.join(self.tmp_dir, 'sysb'),
+                shutil.ignore_patterns('tmp'))
+
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
-        stage0_posix_base_dir = os.path.join(self.sysa_dir, 'stage0-posix', 'src')
+        stage0_posix_base_dir = os.path.join(self.sys_dir, 'stage0-posix', 'src')
         stage0_posix_arch_dir = os.path.join(stage0_posix_base_dir, self.arch)
         copy_tree(stage0_posix_arch_dir, self.tmp_dir)
 
@@ -166,14 +179,14 @@ class SysA:
         copytree(mescc_tools_extra_dir, self.tmp_dir)
 
         # bootstrap seeds
-        bootstrap_seeds_dir = os.path.join(self.sysa_dir, 'stage0-posix', 'src', 'bootstrap-seeds')
+        bootstrap_seeds_dir = os.path.join(self.sys_dir, 'stage0-posix', 'src', 'bootstrap-seeds')
         copytree(bootstrap_seeds_dir, self.tmp_dir)
         kaem_optional_seed = os.path.join(bootstrap_seeds_dir, 'POSIX',
                                           self.arch, 'kaem-optional-seed')
         shutil.copy2(kaem_optional_seed, os.path.join(self.tmp_dir, 'init'))
 
         # stage0-posix hook to continue running live-bootstrap
-        shutil.copy2(os.path.join(self.sysa_dir, 'after.kaem'),
+        shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
                      os.path.join(self.tmp_dir, 'after.kaem'))
 
         # create directories needed
@@ -190,25 +203,15 @@ class SysA:
         the stage0-posix one is hella messy.
         """
 
-        self.create_configuration_file()
         self.deploy_extra_files()
+        self.deploy_sysglobal_files()
         self.get_packages()
-
-    def create_configuration_file(self):
-        """
-        Creates bootstrap.cfg file which would contain options used to
-        customize bootstrap.
-        """
-        os.mkdir(self.after_dir)
-        config_path = os.path.join(self.after_dir, "bootstrap.cfg")
-        with open(config_path, "w") as config:
-            config.write("FORCE_TIMESTAMPS=" + str(self.force_timestamps))
 
     def deploy_extra_files(self):
         """Deploy misc files"""
-        extra_files = ['helpers.sh', 'run.sh', 'run2.sh']
+        extra_files = ['run.sh']
         for extra_file in extra_files:
-            shutil.copy2(os.path.join(self.sysa_dir, extra_file), self.after_dir)
+            shutil.copy2(os.path.join(self.sys_dir, extra_file), self.after_dir)
 
         shutil.copy2(os.path.join(self.git_dir, 'SHA256SUMS.sources'), self.after_dir)
 
@@ -384,98 +387,9 @@ class SysA:
         self.get_file("https://github.com/horms/kexec-tools/archive/refs/tags/v2.0.22.tar.gz",
                 output="kexec-tools-2.0.22.tar.gz")
 
+        # kbd 1.15
+        self.get_file("https://mirrors.edge.kernel.org/pub/linux/utils/kbd/kbd-1.15.tar.gz")
+
         # linux kernel 2.6.16.62
         # for some reason this is no longer on kernel.org
         self.get_file("https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/snapshot/linux-2.6.16.62.tar.gz")
-
-        # bash 5.1
-        self.get_file("https://mirrors.kernel.org/gnu/bash/bash-5.1.tar.gz")
-
-        # xz 5.0.5
-        self.get_file("https://tukaani.org/xz/xz-5.0.5.tar.bz2")
-
-        # automake 1.11.2
-        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.11.2.tar.bz2")
-
-        # autoconf 2.69
-        self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.69.tar.xz")
-
-        # automake 1.15.1
-        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.15.1.tar.xz")
-
-        # tar 1.34
-        self.get_file(["https://mirrors.kernel.org/gnu/tar/tar-1.34.tar.xz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-30820c.tar.gz"])
-
-        # coreutils 8.32
-        self.get_file(["https://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-8.32.tar.gz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
-
-        # pkg-config 0.29.2
-        self.get_file("https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz")
-
-        # make 4.2.1
-        self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
-
-        # gmp 6.2.1
-        self.get_file("https://mirrors.kernel.org/gnu/gmp/gmp-6.2.1.tar.xz")
-
-        # autoconf archive 2021.02.19
-        self.get_file("https://mirrors.kernel.org/gnu/autoconf-archive/autoconf-archive-2021.02.19.tar.xz")
-
-        # mpfr 4.1.0
-        self.get_file("https://mirrors.kernel.org/gnu/mpfr/mpfr-4.1.0.tar.xz")
-
-        # mpc 1.2.1
-        self.get_file("https://mirrors.kernel.org/gnu/mpc/mpc-1.2.1.tar.gz")
-
-        # flex 2.5.33
-        self.get_file("http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.33.tar.gz")
-
-        # bison 2.3
-        self.get_file(["https://mirrors.kernel.org/gnu/bison/bison-2.3.tar.bz2",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b28236b.tar.gz"])
-
-        # bison 3.4.2
-        self.get_file(["https://mirrors.kernel.org/gnu/bison/bison-3.4.2.tar.xz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-672663a.tar.gz"])
-
-        # perl 5.10.5
-        self.get_file("https://www.cpan.org/src/5.0/perl-5.10.1.tar.bz2")
-
-        # dist 3.5-236
-        # Debian's version is used because upstream is not to be found (dead?)
-        self.get_file("https://salsa.debian.org/perl-team/interpreter/dist/-/archive/d1de81f/dist-d1de81f.tar.gz",
-                      output="dist-3.5-236.tar.gz")
-
-        # perl 5.32.1
-        self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
-                       "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
-
-        # automake 1.16.3
-        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.16.3.tar.gz")
-
-        # patch 2.7.6
-        self.get_file(["https://mirrors.kernel.org/gnu/patch/patch-2.7.6.tar.xz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-e017871.tar.gz"])
-
-        # gettext 0.21
-        self.get_file(["https://mirrors.kernel.org/gnu/gettext/gettext-0.21.tar.xz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-7daa86f.tar.gz"])
-
-        # texinfo 6.7
-        self.get_file(["https://mirrors.kernel.org/gnu/texinfo/texinfo-6.7.tar.xz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b81ec69.tar.gz"])
-
-        # zlib 1.2.11
-        self.get_file("https://www.zlib.net/zlib-1.2.11.tar.xz")
-
-        # gcc 4.7.4
-        self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2")
-
-        # gperf 3.1
-        self.get_file("https://mirrors.kernel.org/gnu/gperf/gperf-3.1.tar.gz")
-
-        # libunistring 0.9.10
-        self.get_file(["https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz",
-                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"])
