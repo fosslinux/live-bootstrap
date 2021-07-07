@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 SPDX-License-Identifier: GPL-2.0-or-later
 
 This macro does not exist in newer versions of autoconf and is unrequired.
-There is no verion of autoconf supporting this project + gnulib + this macro.
+There is no version of autoconf supporting this project + gnulib + this macro.
 
 --- m4/po_gl.m4	2021-04-11 18:39:53.353069610 +1000
 +++ m4/po_gl.m4	2021-04-11 18:40:20.422242498 +1000

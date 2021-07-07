@@ -195,7 +195,7 @@ we patch mes libc.
 tcc 0.9.27
 ==========
 
-Rebuild tcc 0.9.27 to get the fix from patches mes libc. We have to do
+Rebuild tcc 0.9.27 to get the fix from patched mes libc. We have to do
 it using older ``tcc`` because tcc-0.9.27 is not self hosting.
 
 musl 1.1.24
@@ -698,7 +698,9 @@ DEFLATE algorithm that is also used in ``gzip``.
 gcc 4.7.4
 =========
 
-GCC 4.7.4 is the last version written in C.
+GCC 4.7.4 is the last version written in C. This time we build both C and C++ backends.
+C++ backend has some dependency on ``gperf`` which is written in C++. Fortunately, it is
+easy to patch it out and resulting ``g++`` compiler is capable of building ``gperf``.
 
 libunistring 0.9.10
 ===================

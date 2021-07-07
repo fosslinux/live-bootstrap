@@ -1,0 +1,36 @@
+SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Remove dependency on gperf.
+
+--- gcc/cp/except.c	2021-07-07 18:24:36.561530121 +0100
++++ gcc/cp/except.c	2021-07-07 18:27:18.035681929 +0100
+@@ -987,8 +987,6 @@
+    exception, unless it calls a program-supplied function that
+    throws an exception.  */
+ 
+-#include "cfns.h"
+-
+ int
+ nothrow_libfn_p (const_tree fn)
+ {
+@@ -1007,7 +1005,7 @@
+      unless the system headers are playing rename tricks, and if
+      they are, we don't want to be confused by them.  */
+   id = DECL_NAME (fn);
+-  return !!libc_name_p (IDENTIFIER_POINTER (id), IDENTIFIER_LENGTH (id));
++  return 0;
+ }
+ 
+ /* Returns nonzero if an exception of type FROM will be caught by a
+--- gcc/cp/Make-lang.in	2021-07-07 18:24:36.571530380 +0100
++++ gcc/cp/Make-lang.in	2021-07-07 18:26:47.154887799 +0100
+@@ -313,7 +313,7 @@
+ cp/rtti.o: cp/rtti.c $(CXX_TREE_H) $(TM_H) $(FLAGS_H) convert.h \
+   $(TARGET_H) $(C_PRAGMA_H) gt-cp-rtti.h intl.h
+ cp/except.o: cp/except.c $(CXX_TREE_H) $(TM_H) $(FLAGS_H) \
+-  cp/cfns.h $(TREE_INLINE_H) $(TARGET_H) gt-cp-except.h
++  $(TREE_INLINE_H) $(TARGET_H) gt-cp-except.h
+ cp/expr.o: cp/expr.c $(CXX_TREE_H) $(TM_H) $(FLAGS_H) $(TM_P_H)
+ cp/pt.o: cp/pt.c $(CXX_TREE_H) $(TM_H) cp/decl.h cp/cp-objcp-common.h \
+   toplev.h $(TREE_INLINE_H) pointer-set.h gt-cp-pt.h vecprim.h intl.h \

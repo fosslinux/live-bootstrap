@@ -6,11 +6,8 @@
 src_prepare() {
     default
 
-    # Needs gperf
+    # Generated using gperf
     rm gcc/cp/cfns.h
-
-    # Needed for musl
-    # sed -i 's/struct siginfo/siginfo_t/' libgcc/config/i386/linux-unwind.h
 
     # Regenerating top level Makefile requires GNU Autogen and hence Guile,
     # but it is not essential for building gcc.
@@ -26,21 +23,24 @@ src_prepare() {
     done
     cd gcc
     rm aclocal.m4
-    AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 aclocal-1.11 --acdir=../config #AM_PROG_CC_C_O
+    AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 aclocal-1.11 --acdir=../config
     cd ..
     cd fixincludes
     rm aclocal.m4
     AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 aclocal-1.11 --acdir=../gcc
     cd ..
-    #libjava warning
-    for dir in boehm-gc libffi libgfortran libgo libgomp libitm libjava libmudflap libobjc libquadmath libssp libstdc++-v3 lto-plugin zlib; do
+    for dir in boehm-gc libffi libgfortran libgo libgomp libitm libjava libmudflap libobjc libquadmath libssp lto-plugin zlib; do
         cd $dir
         rm aclocal.m4
         AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 aclocal-1.11
         cd ..
     done
-
+    cd libstdc++-v3
+    ACLOCAL=aclocal-1.11 AUTOMAKE=automake-1.11 AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
+    cd ..
     # Regenerate configure scripts
+    # Find all folders with configure script and rebuild them. At the moment we exclude boehm-gc folder due to
+    # an error but we don't use that directory anyway (it's only needed for Objective C)
     for dir in $(ls */configure | sed 's#/configure##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
         cd $dir
         rm configure
@@ -49,6 +49,7 @@ src_prepare() {
     done
 
     # Regenerate Makefile.in
+    # Find all folders with Makefile.am and rebuild them. At the moment we exclude boehm-gc folder.
     for dir in $(ls */Makefile.am | sed 's#/Makefile.am##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
         cd $dir
         rm Makefile.in
@@ -85,7 +86,7 @@ src_configure() {
     mkdir build
     cd build
 
-    for dir in libiberty libcpp libdecnumber gcc libgcc; do
+    for dir in libiberty libcpp libdecnumber gcc libgcc libstdc++-v3; do
         mkdir $dir
         cd $dir
         ../../$dir/configure \
@@ -95,7 +96,9 @@ src_configure() {
             --target=i386-unknown-linux-musl \
             --host=i386-unknown-linux-musl \
             --disable-shared \
-            --program-transform-name=
+            --program-transform-name= \
+            --enable-languages=c,c++ \
+            --disable-sjlj-exceptions
         cd ..
     done
     cd ..
@@ -112,9 +115,13 @@ src_compile() {
     # host_subdir is necessary because we have slightly different build directory layout
     make -C build/libgcc PATH="${PATH}:../gcc" CC=../gcc/xgcc \
 	 host_subdir=build CFLAGS="-I../gcc/include -I/${PREFIX}/include"
+
+    make -C build/libstdc++-v3 PATH="${PATH}:${PWD}/build/gcc" \
+	 CXXFLAGS="-I${PWD}/build/gcc/include -I ${PREFIX}/include"
 }
 
 src_install() {
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}" MAKEINFO=true
     make -C build/libgcc install DESTDIR="${DESTDIR}" host_subdir=build
+    make -C build/libstdc++-v3 install DESTDIR="${DESTDIR}"
 }
