@@ -458,6 +458,9 @@ class SysA:
         # gcc 4.7.4
         self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2")
 
+        # gperf 3.1
+        self.get_file("https://mirrors.kernel.org/gnu/gperf/gperf-3.1.tar.gz")
+
         # libunistring 0.9.10
         self.get_file(["https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"])

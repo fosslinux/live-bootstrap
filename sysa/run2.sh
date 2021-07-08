@@ -62,6 +62,8 @@ build zlib-1.2.11
 
 build gcc-4.7.4
 
+build gperf-3.1
+
 build libunistring-0.9.10
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then

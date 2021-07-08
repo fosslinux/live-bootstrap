@@ -702,6 +702,11 @@ GCC 4.7.4 is the last version written in C. This time we build both C and C++ ba
 C++ backend has some dependency on ``gperf`` which is written in C++. Fortunately, it is
 easy to patch it out and resulting ``g++`` compiler is capable of building ``gperf``.
 
+gperf 3.1
+=========
+
+``gperf`` is a perfect hash function generator (hash function is injective).
+
 libunistring 0.9.10
 ===================
 
