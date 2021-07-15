@@ -10,7 +10,7 @@ src_prepare() {
 
     autoreconf -f -i
 
-    # Pre-build texinfo files
+    # Pre-built texinfo files
     find . -name '*.info*' -delete
 }
 

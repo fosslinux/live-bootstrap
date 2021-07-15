@@ -7,7 +7,7 @@ src_prepare() {
 
     autoreconf-2.61 -f
 
-    # Pre-build texinfo files
+    # Pre-built texinfo files
     rm doc/find.info
 }
 

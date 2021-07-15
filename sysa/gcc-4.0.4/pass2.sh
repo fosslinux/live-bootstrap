@@ -59,7 +59,7 @@ src_prepare() {
     # Remove translation catalogs
     find . -name '*.gmo' -delete
 
-    # Pre-build texinfo files
+    # Pre-built texinfo files
     find . -name '*.info' -delete
 }
 
