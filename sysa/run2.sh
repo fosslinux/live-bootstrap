@@ -14,6 +14,8 @@ set -e
 
 . bootstrap.cfg
 
+trap bash EXIT
+
 build xz-5.0.5
 
 build automake-1.11.2
