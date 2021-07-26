@@ -32,22 +32,23 @@ src_install() {
     # We "compile" the headers here because it is easier
     for d in include/uapi arch/x86/include/uapi; do
         cd "${d}"
-        find . -type d -exec mkdir "/after/include/{}" -p \;
+        find . -type d -exec mkdir "${PREFIX}/include/{}" -p \;
         headers="$(find . -type f -name "*.h")"
         cd "${base_dir}"
         for h in ${headers}; do
-            scripts/headers_install.sh "${d}/${h}" "/after/include/${h}"
+            scripts/headers_install.sh "${d}/${h}" "${PREFIX}/include/${h}"
         done
     done
 
     # Pick-and-choose asm-generic headers
-    cp /after/include/asm-generic/types.h /after/include/asm/types.h
-    cp /after/include/asm-generic/ioctl.h /after/include/asm/ioctl.h
+    for i in types ioctl termios termbits ioctls; do
+        cp ${PREFIX}/include/asm-generic/${i}.h ${PREFIX}/include/asm/${i}.h
+    done
 
     # Generate asm/unistd_32.h
     bash arch/x86/entry/syscalls/syscallhdr.sh \
         arch/x86/entry/syscalls/syscall_32.tbl \
-        /after/include/asm/unistd_32.h i386
+        ${PREFIX}/include/asm/unistd_32.h i386
 
     # Generate linux/version.h
     # Rules are from makefile
@@ -56,7 +57,7 @@ src_install() {
     SUBLEVEL=42
     VERSION_CODE="$((${VERSION} * 65536 + ${PATCHLEVEL} * 256 + ${SUBLEVEL}))"
     echo '#define LINUX_VERSION_CODE '"${VERSION_CODE}" \
-        > /after/include/linux/version.h
+        > ${PREFIX}/include/linux/version.h
     echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))' \
-        >> /after/include/linux/version.h
+        >> ${PREFIX}/include/linux/version.h
 }

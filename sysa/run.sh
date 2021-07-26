@@ -11,6 +11,11 @@ set -e
 . helpers.sh
 . bootstrap.cfg
 
+export PREFIX=/usr
+export SOURCES=/after
+mkdir "${PREFIX}/sbin"
+export PATH="${PREFIX}/bin:${PREFIX}/sbin"
+
 populate_device_nodes() {
     # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
     mkdir -p "${1}/dev"
@@ -28,7 +33,7 @@ create_sysb() {
     echo "Creating sysb rootfs"
     mkdir -p /sysb/usr
     for d in bin include lib libexec sbin share; do
-        cp -r "/after/${d}" "/sysb/usr/${d}"
+        cp -r "${PREFIX}/${d}" "/sysb/usr/${d}"
     done
     populate_device_nodes /sysb
 }
@@ -40,14 +45,10 @@ go_sysb() {
     # kexec time
     echo "Loading kernel + sysb initramfs using kexec"
     kexec -l "${PREFIX}/boot/linux-2.6.16.62" --console-serial \
-        --append="console=ttyS0 root=/dev/ram0 init=/init"
+        --append="root=/dev/ram0 init=/init clocksource=acpi_pm clock=pmtmr"
     echo "kexecing into sysb"
     kexec -e
 }
-
-export PREFIX=/image
-export PATH="${PREFIX}/bin"
-export SOURCES=/after
 
 build flex-2.5.11
 
@@ -179,13 +180,11 @@ if [ "${CHROOT}" = False ]; then
 
     build kexec-tools-2.0.22
 
+    build kbd-1.15
+
     create_sysb
 
     build linux-2.6.16.62
 
-<<<<<<< HEAD
-exec env -i PATH=${PREFIX}/bin PREFIX=${PREFIX} SOURCES=${SOURCES} bash run2.sh
-=======
     go_sysb
 fi
->>>>>>> a95c6f2 (Add sysb and sysc scaffolding.)
