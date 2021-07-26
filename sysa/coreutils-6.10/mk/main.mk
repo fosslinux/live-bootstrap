@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -48,7 +49,7 @@ CFLAGS  = -I . -I lib \
           -DHAVE_LOCALE_H=1 \
           -DTIME_WITH_SYS_TIME=1 \
           -DHAVE_STDINT_H=1 \
-          -DLIBDIR=\"/image/lib\" \
+          -DLIBDIR=\"/usr/lib\" \
           -DHAVE_DECL_WCWIDTH=0 \
           -DHAVE_SYS_STAT_H=1 \
           -DHAVE_INTTYPES_H=1 \

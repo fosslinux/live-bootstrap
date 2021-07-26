@@ -157,3 +157,31 @@ class SysC(SysGeneral):
         # perl 5.32.1
         self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
                        "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
+
+        # automake 1.16.3
+        self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.16.3.tar.xz")
+
+        # patch 2.7.6
+        self.get_file(["https://mirrors.kernel.org/gnu/patch/patch-2.7.6.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-e017871.tar.gz"])
+
+        # gettext 0.21
+        self.get_file(["https://mirrors.kernel.org/gnu/gettext/gettext-0.21.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-7daa86f.tar.gz"])
+
+        # texinfo 6.7
+        self.get_file(["https://mirrors.kernel.org/gnu/texinfo/texinfo-6.7.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b81ec69.tar.gz"])
+
+        # zlib 1.2.11
+        self.get_file("https://www.zlib.net/zlib-1.2.11.tar.xz")
+
+        # gcc 4.7.4
+        self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2")
+
+        # gperf 3.1
+        self.get_file("https://mirrors.kernel.org/gnu/gperf/gperf-3.1.tar.gz")
+
+        # libunistring 0.9.10
+        self.get_file(["https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"])

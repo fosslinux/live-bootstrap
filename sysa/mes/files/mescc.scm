@@ -1,4 +1,5 @@
 ; SPDX-FileCopyrightText: Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+; SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 ;
 ; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -12,9 +13,9 @@
                         (cdr (string-split %host-type #\-)))))))
 
 (define %prefix (or (getenv "MES_PREFIX")
-                      (if (string-prefix? "@prefix" "/image")
+                      (if (string-prefix? "@prefix" "/usr")
                           ""
-                          "/image")))
+                          "/usr")))
 
 (define %includedir (or (getenv "includedir")
                         (string-append %prefix "/include")))

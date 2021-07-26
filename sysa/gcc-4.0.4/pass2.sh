@@ -1,12 +1,8 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
-
-src_unpack() {
-    default
-    tar xzf ${SOURCES}/automake-1.16.3/src/automake-1.16.3.tar.gz
-}
 
 src_prepare() {
     default
@@ -92,4 +88,5 @@ src_compile() {
 
 src_install() {
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
+    cp gcc/gsyslimits.h ${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include/syslimits.h
 }

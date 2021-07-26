@@ -4,7 +4,7 @@
 
 eunicefix=':'
 grep='grep'
-privlib='/image/lib/perl5/@PERLVER@'
+privlib='/usr/lib/perl5/@PERLVER@'
 VERSION='3'
 ENV='env'
 PATCHLEVEL='5'

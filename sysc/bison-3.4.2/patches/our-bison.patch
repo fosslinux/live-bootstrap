@@ -12,7 +12,7 @@ exist...
  ## but also to run the tests.  Of course, you ought to keep a sane
  ## version of Bison nearby...
 -BISON = $(top_builddir)/tests/bison
-+BISON = /image/bin/bison
++BISON = /usr/bin/bison
  BISON_IN = $(top_srcdir)/tests/bison.in
  YACC = $(BISON) -o y.tab.c
  AM_YFLAGS_WITH_LINES = --defines -Werror -Wall --report=all
