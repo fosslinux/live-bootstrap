@@ -293,6 +293,9 @@ class SysA(SysGeneral):
         # kbd 1.15
         self.get_file("https://mirrors.edge.kernel.org/pub/linux/utils/kbd/kbd-1.15.tar.gz")
 
+        # make 3.82
+        self.get_file("http://ftp.gnu.org/gnu/make/make-3.82.tar.gz")
+
         # linux kernel 2.6.16.62
         # for some reason this is no longer on kernel.org
         self.get_file("https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/snapshot/linux-2.6.16.62.tar.gz")

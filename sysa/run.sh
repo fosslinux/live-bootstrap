@@ -13,7 +13,7 @@ set -e
 
 export PREFIX=/usr
 export SOURCES=/after
-mkdir "${PREFIX}/sbin"
+mkdir -p "${PREFIX}/sbin"
 export PATH="${PREFIX}/bin:${PREFIX}/sbin"
 
 populate_device_nodes() {
@@ -175,12 +175,14 @@ build musl-1.2.2
 
 build gcc-4.0.4 pass2.sh checksums/pass2
 
+build util-linux-2.19.1
+
+build kbd-1.15
+
+build make-3.82
+
 if [ "${CHROOT}" = False ]; then
-    build util-linux-2.19.1
-
     build kexec-tools-2.0.22
-
-    build kbd-1.15
 
     create_sysb
 
