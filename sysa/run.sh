@@ -44,8 +44,9 @@ go_sysb() {
     mount -t proc proc /proc
     # kexec time
     echo "Loading kernel + sysb initramfs using kexec"
-    kexec -l "${PREFIX}/boot/linux-2.6.16.62" --console-serial \
-        --append="root=/dev/ram0 init=/init clocksource=acpi_pm clock=pmtmr"
+    kexec -l "${PREFIX}/boot/linux-4.9.10" --console-serial \
+        --initrd="${PREFIX}/boot/initramfs-sysb" \
+        --append="init=/init console=ttyS0"
     echo "kexecing into sysb"
     kexec -e
 }
@@ -186,7 +187,7 @@ if [ "${CHROOT}" = False ]; then
 
     create_sysb
 
-    build linux-2.6.16.62
+    build linux-4.9.10
 
     go_sysb
 fi

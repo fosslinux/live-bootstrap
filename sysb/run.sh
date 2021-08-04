@@ -24,15 +24,15 @@ populate_device_nodes() {
 }
 
 create_hdx() {
-    # Create all of the hd{a,b,c..}
+    # Create all of the sd{a,b,c..}
     minor=0
     alpha="a b c d e f g h i j k l m n o p" # 16 disks -- more than enough
     # For each disk...
     for a in ${alpha}; do
-        mknod -m 600 "/dev/hd${a}" b 3 "$((minor++))"
+        mknod -m 600 "/dev/sd${a}" b 8 "$((minor++))"
         # For each partition...
         for p in $(seq 15); do
-            mknod -m 600 "/dev/hd${a}${p}" b 3 "$((minor++))"
+            mknod -m 600 "/dev/sd${a}${p}" b 8 "$((minor++))"
         done
     done
 }
@@ -50,7 +50,7 @@ mkdir /sysc
 mkdir -p /etc /dev
 populate_device_nodes
 create_hdx
-mount -t ext2 "/dev/${DISK}" /sysc
+mount -t ext4 "/dev/${DISK}" /sysc
 
 # Copy over appropriate data
 echo "Copying data into sysc"

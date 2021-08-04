@@ -32,7 +32,7 @@ def create_configuration_file(args):
     with open(config_path, "w") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot) + "\n")
-        config.write("DISK=hda1\n")
+        config.write("DISK=sda1\n")
 
 def main():
     """
@@ -128,7 +128,8 @@ print(shutil.which('chroot'))
             '-hda', system_c.dev_name,
             '-kernel', args.kernel,
             '-initrd', system_a.initramfs_path,
-            '-display', 'curses')
+            '-nographic',
+            '-append', 'console=ttyS0')
 
 if __name__ == "__main__":
     main()

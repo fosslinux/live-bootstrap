@@ -47,10 +47,10 @@ class SysC(SysGeneral):
         if not self.chroot:
             # Create + mount a disk for QEMU to use
             disk_path = os.path.join(self.tmp_dir, 'disk.img')
-            self.dev_name = create_disk(disk_path, "msdos", "ext2", '8G')
+            self.dev_name = create_disk(disk_path, "msdos", "ext4", '8G')
             self.rootfs_dir = os.path.join(self.tmp_dir, 'mnt')
             os.mkdir(self.rootfs_dir)
-            mount(self.dev_name + "p1", self.rootfs_dir, 'ext2')
+            mount(self.dev_name + "p1", self.rootfs_dir, 'ext4')
             # Use chown to allow executing user to access it
             run('sudo', 'chown', getpass.getuser(), self.dev_name)
             run('sudo', 'chown', getpass.getuser(), self.rootfs_dir)
@@ -119,9 +119,6 @@ class SysC(SysGeneral):
         # coreutils 8.32
         self.get_file(["https://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-8.32.tar.gz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
-
-        # make 4.2.1
-        self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
 
         # gmp 6.2.1
         self.get_file("https://mirrors.kernel.org/gnu/gmp/gmp-6.2.1.tar.xz")

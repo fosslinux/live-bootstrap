@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+Remove the 68() which I'm not really sure what it does but still works and
+breaks our version of binutils.
+
+--- arch/x86/boot/bioscall.S	2021-07-31 17:50:09.519480274 +1000
++++ arch/x86/boot/bioscall.S	2021-07-31 18:21:32.086972277 +1000
+@@ -65,7 +65,7 @@
+ 	movw	%ax, %es
+ 
+ 	/* Copy output state from stack frame */
+-	movw	68(%esp), %di	/* Original %cx == 3rd argument */
++	movw	%sp, %di	/* Original %cx == 3rd argument */
+ 	andw	%di, %di
+ 	jz	4f
+ 	movw	%sp, %si

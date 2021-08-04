@@ -297,5 +297,6 @@ class SysA(SysGeneral):
         self.get_file("http://ftp.gnu.org/gnu/make/make-3.82.tar.gz")
 
         # linux kernel 2.6.16.62
-        # for some reason this is no longer on kernel.org
-        self.get_file("https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/snapshot/linux-2.6.16.62.tar.gz")
+        self.get_file(["https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.10.tar.gz",
+            "http://linux-libre.fsfla.org/pub/linux-libre/releases/4.9.10-gnu/deblob-4.9",
+            "http://linux-libre.fsfla.org/pub/linux-libre/releases/4.9.10-gnu/deblob-check"])

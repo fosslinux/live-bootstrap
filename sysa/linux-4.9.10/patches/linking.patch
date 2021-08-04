@@ -1,0 +1,17 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+This seemingly useless statement (redefined a couple of lines later) is
+not liked by our version of binutils.
+
+--- arch/x86/kernel/vmlinux.lds.S	2021-07-31 18:45:14.787124887 +1000
++++ arch/x86/kernel/vmlinux.lds.S	2021-07-31 18:43:16.234180449 +1000
+@@ -170,7 +170,6 @@
+ 		. = __vvar_beginning_hack + PAGE_SIZE;
+ 	} :data
+ 
+-       . = ALIGN(__vvar_page + PAGE_SIZE, PAGE_SIZE);
+ 
+ 	/* Init code and data - will be freed after init */
+ 	. = ALIGN(PAGE_SIZE);
