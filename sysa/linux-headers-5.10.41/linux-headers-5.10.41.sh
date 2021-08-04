@@ -60,4 +60,8 @@ src_install() {
         > ${PREFIX}/include/linux/version.h
     echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))' \
         >> ${PREFIX}/include/linux/version.h
+
+    # Clear up storage space
+    cd ../..
+    rm -rf build src
 }
