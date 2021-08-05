@@ -1,3 +1,2 @@
-c37eb935fe06afa7467369ac16d83b39d55f83aa01a53e15f5b8b1595dce298f  /usr/lib/musl/libmpfr.a
-6fc2e9a148554acd7c96e3d25bac5da6f2f2fe6bb20f626d26265a5efe7d0a22  /usr/lib/musl/libmpfr.la
-9866e9a47fe3f2c53120792fd0abefee147339e07b86c2414a686b403ccc82b4  /usr/lib/musl/libmpfr.so.6.1.0
+e371f927701ce87c8d1ba18232c071c4ec8bfb472506bbfc85ce3cbe0ff9a07e  /usr/lib/musl/libmpfr.la
+df94005ccbf27cdd6d8234bcaf2e1da69a718de47a8d158a5a55f936267e51f5  /usr/lib/musl/libmpfr.a

@@ -30,4 +30,6 @@ src_configure() {
 src_install() {
     # Do not install prebuilt .mo translation catalogs
     install bash "${DESTDIR}${PREFIX}/bin"
+    # Work around weird symlink bug
+    install bash "${DESTDIR}${PREFIX}/bin/sh"
 }

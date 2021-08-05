@@ -4,9 +4,9 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 We disable the following programs for the following reasons:
 
-* script: dosen't build with musl.
-* flock: GCC dosen't like some directive.
-* fstrim: ??? dosen't build (missing/bad linux header?)
+* script: doesn't build with musl.
+* flock: GCC doesn't like some directive.
+* fstrim: ??? doesn't build (missing/bad linux header?)
 * fsfreeze: ditto.
 * hexdump: musl incompatibility.
 * column: musl incompatibility.

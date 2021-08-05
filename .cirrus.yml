@@ -9,10 +9,11 @@ pylint_task:
   deps_script:
     - apt-get -y update
     - apt-get -y dist-upgrade
-    - apt-get -y install python3-requests pylint
+    - apt-get -y install python3-pip python3-requests
     - apt-get -y clean
+    - pip3 install pylint
   check_script:
-    - pylint rootfs.py sysa.py lib/utils.py
+    - pylint rootfs.py sysa.py sysb.py sysc.py lib/utils.py lib/sysgeneral.py --disable=duplicate-code
 
 shell_lint_task:
   container:
@@ -23,7 +24,7 @@ shell_lint_task:
     - apt-get -y install shellcheck
     - apt-get -y clean
   check_script:
-    - shellcheck sysa/run.sh sysa/helpers.sh
+    - shellcheck sysa/run.sh sysb/run.sh sysc/run.sh sysc/run2.sh sysglobal/helpers.sh
 
 reuse_lint_task:
   container:

@@ -6,22 +6,15 @@
 
 set -e
 
+# shellcheck source=sysglobal/helpers.sh
+. helpers.sh
+# shellcheck source=/dev/null
 . bootstrap.cfg
 
 export PATH=/usr/bin:/usr/sbin
 
 # Unload the current kernel before things go weird
 kexec -u
-
-populate_device_nodes() {
-    # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
-    test -c /dev/null || mknod -m 666 /dev/null c 1 3
-    test -c /dev/zero || mknod -m 666 /dev/zero c 1 5
-    test -c /dev/ptmx || mknod -m 666 /dev/ptmx c 5 2
-    test -c /dev/tty || mknod -m 666 /dev/tty c 5 0
-    test -c /dev/random || mknod -m 444 /dev/random c 1 8
-    test -c /dev/urandom || mknod -m 444 /dev/urandom c 1 9
-}
 
 create_hdx() {
     # Create all of the sd{a,b,c..}
@@ -48,7 +41,7 @@ echo "Mounting sysc"
 mkdir /sysc
 # All the various structures that don't exist but needed to mount
 mkdir -p /etc /dev
-populate_device_nodes
+populate_device_nodes ""
 create_hdx
 mount -t ext4 "/dev/${DISK}" /sysc
 

@@ -22,6 +22,15 @@ class SysGeneral:
     A class from which all Sys* class are extended.
     Contains functions used in all Sys*
     """
+
+    # All of these are variables defined in the individual Sys* classes
+    preserve_tmp = None
+    tmp_dir = None
+    base_dir = None
+    git_dir = None
+    sys_dir = None
+    initramfs_path = None
+
     def __del__(self):
         if not self.preserve_tmp:
             print("Unmounting tmpfs from %s" % (self.tmp_dir))
@@ -38,7 +47,7 @@ class SysGeneral:
     def check_file(self, file_name):
         """Check hash of downloaded source file."""
         checksum_store = os.path.join(self.git_dir, 'SHA256SUMS.sources')
-        with open(checksum_store) as checksum_file:
+        with open(checksum_store, encoding="utf_8") as checksum_file:
             hashes = checksum_file.read().splitlines()
         for hash_line in hashes:
             if os.path.basename(file_name) in hash_line:
@@ -73,6 +82,7 @@ class SysGeneral:
         if not os.path.isfile(abs_file_name):
             print("Downloading: %s" % (file_name))
             request = requests.get(url, allow_redirects=True)
+            # pylint: disable=consider-using-with
             open(abs_file_name, 'wb').write(request.content)
 
         # Check SHA256 hash
@@ -125,8 +135,8 @@ class SysGeneral:
     def deploy_sysglobal_files(self):
         """Deploy files common to all Sys*"""
         sysglobal_files = ['bootstrap.cfg', 'helpers.sh']
-        for f in sysglobal_files:
-            shutil.copy2(os.path.join(self.git_dir, 'sysglobal', f), 
+        for file in sysglobal_files:
+            shutil.copy2(os.path.join(self.git_dir, 'sysglobal', file),
                          self.base_dir)
 
     def make_initramfs(self):
@@ -145,7 +155,10 @@ class SysGeneral:
         file_list = [remove_prefix(f, self.tmp_dir + os.sep) for f in file_list]
 
         # Create the initramfs
-        with open(self.initramfs_path, "w") as initramfs:
-            cpio = subprocess.Popen(["cpio", "--format", "newc", "--create", "--directory", self.tmp_dir],
-                                    stdin=subprocess.PIPE, stdout=initramfs)
+        with open(self.initramfs_path, "w", encoding="utf_8") as initramfs:
+            # pylint: disable=consider-using-with
+            cpio = subprocess.Popen(
+                    ["cpio", "--format", "newc", "--create",
+                        "--directory", self.tmp_dir],
+                     stdin=subprocess.PIPE, stdout=initramfs)
             cpio.communicate(input='\n'.join(file_list).encode())

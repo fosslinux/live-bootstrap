@@ -566,6 +566,48 @@ Linux kernel without a manual restart from within a running system. It is a
 kind of soft-restart. It is only built for non-chroot mode, as we only use it
 in non-chroot mode. It is used to go into sysb/sysc.
 
+create_sysb
+===========
+
+The next step is not a package, but the creation of the sysb rootfs, containing
+all of the scripts for sysb (which merely move to sysc). Again, this is only
+done in non-chroot mode, because sysb does not exist in chroot mode.
+
+Linux kernel 4.9.10
+===================
+
+A lot going on here. This is the first (and currently only) time the Linux kernel
+is built. Firstly, Linux kernel version 4.9.x is used because newer versions
+require much more stringent requirements on the make, GCC, binutils versions.
+However, the docs are also wrong, as the latest of the 4.9.x series does not
+work with our version of binutils. However, a much earlier 4.9.10 does
+(selected arbitarily, could go newer but did not test), with a small amount
+of patching. This is also modern enough for most hardware and to cause few
+problems with software built in sysc. Secondly, the linux-libre scripts are used
+to deblob the kernel. Unauditable, unbootstrappable binary blobs within our
+kernel are unacceptable. Our gawk is too buggy/old so we use sed instead for
+this operation. Every other pregenerated file is appended with ``_shipped`` so
+we use a ``find`` command to remove those, which are automatically regenerated.
+The kernel config was originally taken from Void Linux, and was then modified
+for the requirements of live-bootstrap, including compiler features, drivers,
+and removing modules. Speaking of which, modules cannot be used. These cannot
+be transferred to subsequent systems, and we do not have ``modprobe``. Lastly,
+the initramfs of sysb is generated in this stage, using ``gen_init_cpio`` within
+the Linux kernel tree. This avoids the compilation of ``cpio`` as well.
+
+go_sysb
+=======
+
+This is the last step of sysa, run for non-chroot mode. It uses kexec to load
+the new Linux kernel into RAM and execute it, moving into sysb.
+
+sysb
+====
+
+sysb is purely a transition to sysc, allowing binaries from sysa to get onto a
+disk (as sysa does not nessecarily have hard disk support in the kernel).
+It populates device nodes, mounts sysc, copies over data, and executes sysc.
+
 bash 5.1
 ========
 

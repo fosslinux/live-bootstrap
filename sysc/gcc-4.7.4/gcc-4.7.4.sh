@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -109,19 +110,30 @@ src_compile() {
     for dir in libiberty libcpp libdecnumber gcc; do
         # We have makeinfo now but it is not happy with gcc .info files, so skip it
         make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" \
-	     STMP_FIXINC= GMPLIBS="-lmpc -lmpfr -lgmp" MAKEINFO=true
+            STMP_FIXINC= GMPLIBS="-lmpc -lmpfr -lgmp" MAKEINFO=true
     done
 
     # host_subdir is necessary because we have slightly different build directory layout
     make -C build/libgcc PATH="${PATH}:../gcc" CC=../gcc/xgcc \
-	 host_subdir=build CFLAGS="-I../gcc/include -I/${PREFIX}/include"
+        host_subdir=build CFLAGS="-I../gcc/include -I/${PREFIX}/include"
 
     make -C build/libstdc++-v3 PATH="${PATH}:${PWD}/build/gcc" \
-	 CXXFLAGS="-I${PWD}/build/gcc/include -I ${PREFIX}/include"
+        CXXFLAGS="-I${PWD}/build/gcc/include -I ${PREFIX}/include"
+
+    # Fix ordering of libstdc++.a
+    pushd build/libstdc++-v3/src
+    mkdir order-a
+    pushd order-a
+    ar x ../.libs/libstdc++.a
+    rm ../.libs/libstdc++.a
+    ar cru ../.libs/libstdc++.a *.o
+    popd
+    popd
 }
 
 src_install() {
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}" MAKEINFO=true
     make -C build/libgcc install DESTDIR="${DESTDIR}" host_subdir=build
     make -C build/libstdc++-v3 install DESTDIR="${DESTDIR}"
+    cp gcc/gsyslimits.h ${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/syslimits.h
 }

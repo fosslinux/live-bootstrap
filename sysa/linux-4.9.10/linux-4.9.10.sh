@@ -34,7 +34,7 @@ src_prepare() {
     # Deblob the kernel
     chmod +x deblob-4.9 deblob-check
     # Don't use gawk, use sed
-    AWK=dosentexist ./deblob-4.9 
+    AWK=dosentexist ./deblob-4.9
 
     # Remove shipped files
     find . -name "*_shipped*" -delete

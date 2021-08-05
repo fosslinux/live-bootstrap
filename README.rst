@@ -25,7 +25,10 @@ Get me started!
    a. Alternatively, run ``./rootfs.py --chroot`` to run it in a chroot.
    b. Alternatively, run ``./rootfs.py`` but don’t run the actual
       virtualization and instead copy sysa/tmp/initramfs to a USB or
-      some other device and boot from bare metal.
+      some other device and boot from bare metal. NOTE: we now require
+      a hard drive. This is currently hardcoded as sda. You also need
+      to put ``sysc/tmp/disk.img`` onto your sda on the bootstrapping
+      machine.
 
 5. Wait.
 6. If you can, observe the many binaries in ``/after/bin``! When the
@@ -129,4 +132,24 @@ sysa
 sysa is the first ‘system’ used in live-bootstrap. We move to a new
 system after a reboot, which often occurs after the movement to a new
 kernel. It is run by the seed Linux kernel provided by the user. It
-currently compiles everything.
+compiles everything we need to be able to compile our own Linux kernel.
+It runs fully in an initramfs and does not rely on disk support in the
+seed Linux kernel.
+
+sysb
+~~~~
+
+sysb is the second 'system' of live-bootstrap. This uses the Linux 4.9.10
+kernel compiled within sysa. As we do not rely on disk support in sysa, we
+need this intermediate system to be able to add the missing binaries to sysc
+before moving into it. This is executed through kexec from sysa. At this point,
+a SATA disk IS required.
+
+sysc
+~~~~
+
+sysc is the (current) last 'system' of live-bootstrap. This is a continuation
+from sysb, executed through util-linux's ``switch_root`` command which moves
+the entire rootfs without a reboot. Every package from here on out is compiled
+under this system, taking binaries from sysa. Chroot mode skips sysb, as it
+is obviously irrelevant for a chroot.

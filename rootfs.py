@@ -13,15 +13,13 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 import argparse
-import glob
 import os
-import subprocess
 import shutil
 
 from sysa import SysA
 from sysb import SysB
 from sysc import SysC
-from lib.utils import run, umount
+from lib.utils import run
 
 def create_configuration_file(args):
     """
@@ -29,7 +27,7 @@ def create_configuration_file(args):
     customize bootstrap.
     """
     config_path = os.path.join('sysglobal', 'bootstrap.cfg')
-    with open(config_path, "w") as config:
+    with open(config_path, "w", encoding="utf_8") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot) + "\n")
         config.write("DISK=sda1\n")
@@ -72,9 +70,12 @@ def main():
 
     create_configuration_file(args)
 
-    system_b = SysB(arch=args.arch, preserve_tmp=args.preserve, tmpdir=args.tmpdir, chroot=args.chroot)
-    system_a = SysA(arch=args.arch, preserve_tmp=args.preserve, tmpdir=args.tmpdir, chroot=args.chroot, sysb_tmp=system_b.tmp_dir)
-    system_c = SysC(arch=args.arch, preserve_tmp=args.preserve, tmpdir=args.tmpdir, chroot=args.chroot)
+    system_b = SysB(arch=args.arch, preserve_tmp=args.preserve,
+            tmpdir=args.tmpdir, chroot=args.chroot)
+    system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
+            tmpdir=args.tmpdir, chroot=args.chroot, sysb_tmp=system_b.tmp_dir)
+    system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
+            tmpdir=args.tmpdir, chroot=args.chroot)
 
     bootstrap(args, system_a, system_b, system_c)
 
@@ -94,11 +95,11 @@ print(shutil.which('chroot'))
         # Perform the steps for sysa -> sysc transition that would occur within
         # qemu if we were running not in chroot
         # We skip sysb as that is only pertinent to "hardware" (not chroot)
-    #    system_c.chroot_transition(system_a.tmp_dir)
+        system_c.chroot_transition(system_a.tmp_dir)
         # sysc
         print("Bootstrapping %s -- SysC" % (args.arch))
-    #    init = os.path.join(os.sep, 'init')
-    #    run('sudo', chroot_binary, system_c.tmp_dir, init)
+        init = os.path.join(os.sep, 'init')
+        run('sudo', chroot_binary, system_c.tmp_dir, init)
 
     elif args.minikernel:
         if os.path.isdir('kritis-linux'):
@@ -116,7 +117,7 @@ print(shutil.which('chroot'))
             '--kernel', '3.18.140',
             '--features', 'kflock,highrestimers',
             # Hack to add -hda /dev/blah
-            '--ramsize', str(args.qemu_ram) + 'M -hda ' + sysb.dev_name,
+            '--ramsize', str(args.qemu_ram) + 'M -hda ' + system_b.dev_name,
             '--initrd', system_a.initramfs_path,
             '--log', '/tmp/bootstrap.log')
 

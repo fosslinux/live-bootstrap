@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 """System C"""
 # SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space> 
 
 import os
 import shutil
 import getpass
 
-from lib.utils import mount, umount, copytree, create_disk, run
+from lib.utils import mount, umount, create_disk, run
 from lib.sysgeneral import SysGeneral
 
+# pylint: disable=consider-using-with
 class SysC(SysGeneral):
     """
     Class responsible for preparing sources for System C.
     """
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, arch, preserve_tmp, tmpdir, chroot):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
@@ -56,7 +58,7 @@ class SysC(SysGeneral):
             run('sudo', 'chown', getpass.getuser(), self.rootfs_dir)
         else:
             self.rootfs_dir = self.tmp_dir
- 
+
         # Expand to the full base dir
         self.base_dir = os.path.join(self.rootfs_dir, 'usr', 'src')
         os.makedirs(self.base_dir)
@@ -71,25 +73,27 @@ class SysC(SysGeneral):
         if not self.chroot:
             umount(self.rootfs_dir)
 
-    def chroot_transition(sysb_tmp, self):
-        # See create_sysb in sysb/run.sh
-        # We skip sysb when using chroot, as sysb is entirely irrelevant
-        # to chrooting (only for kernel shenanigans)
-        # Copy directories from /after (sysa) -> /usr (sysc)
-        usr_dirs = ['bin', 'include', 'lib', 'sbin', 'share']
-        for d in usr_dirs:
-            copy_tree(os.path.join(sysa_tmp, 'after', d),
-                      os.path.join(self.rootfs_dir, 'usr'))
-        # Copy /boot
-        copy_tree(os.path.join(sysa_tmp, 'after', 'boot'),
-                  os.path.join(self.rootfs_dir, 'boot'))
+    def chroot_transition(self, original):
+        """
+        For chroot, transition sysa -> sysc
+        See create_sysc in sysb/run.sh
+        We skip sysb when using chroot, as sysb is entirely irrelevant
+        to chrooting (only for kernel shenanigans)
+        Copy directories from /usr (sysa) -> /usr (sysc)
+        """
+        run('sudo', 'chown', '-R', getpass.getuser(), original)
+        run('sudo', 'chown', '-R', getpass.getuser(), self.rootfs_dir)
+        shutil.copytree(os.path.join(original, 'usr'),
+                os.path.join(self.rootfs_dir, 'usr'),
+                ignore=shutil.ignore_patterns("src"),
+                dirs_exist_ok=True, symlinks=True)
 
     def deploy_scripts(self):
         """Add the scripts to the chroot"""
         src_files = ['run.sh', 'run2.sh']
-        for f in src_files:
-            shutil.copy2(os.path.join(self.sys_dir, f),
-                         os.path.join(self.base_dir, f))
+        for file in src_files:
+            shutil.copy2(os.path.join(self.sys_dir, file),
+                         os.path.join(self.base_dir, file))
         # init script
         os.mkdir(os.path.join(self.rootfs_dir, 'sbin'))
         shutil.copy2(os.path.join(self.sys_dir, 'init'), self.rootfs_dir)
@@ -119,6 +123,12 @@ class SysC(SysGeneral):
         # coreutils 8.32
         self.get_file(["https://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-8.32.tar.gz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
+
+        # pkg-config 0.29.2
+        self.get_file("https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz")
+
+        # make 4.2.1
+        self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
 
         # gmp 6.2.1
         self.get_file("https://mirrors.kernel.org/gnu/gmp/gmp-6.2.1.tar.xz")

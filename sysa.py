@@ -5,19 +5,19 @@
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
-import glob
 import os
 from distutils.dir_util import copy_tree
 import shutil
-import subprocess
 
-from lib.utils import mount, umount, copytree, get_target
+from lib.utils import copytree
 from lib.sysgeneral import SysGeneral
 
+# pylint: disable=consider-using-with
 class SysA(SysGeneral):
     """
     Class responsible for preparing sources for System A.
     """
+    # pylint: disable=too-many-instance-attributes,too-many-arguments
     def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_tmp):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch

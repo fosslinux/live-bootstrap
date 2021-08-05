@@ -2,13 +2,11 @@
 """System B"""
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space> 
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 import os
 import shutil
-import getpass
 
-from lib.utils import mount, umount, copytree, create_disk, run
 from lib.sysgeneral import SysGeneral
 
 class SysB(SysGeneral):

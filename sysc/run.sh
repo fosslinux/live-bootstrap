@@ -8,6 +8,7 @@
 
 set -e
 
+# shellcheck source=sysglobal/helpers.sh
 . helpers.sh
 
 export PATH=/usr/bin:/usr/sbin
@@ -25,6 +26,8 @@ create_fhs() {
     # Make /tmp a ramdisk (speeds up configure etc significantly)
     mount -t tmpfs tmpfs /tmp
 }
+
+populate_device_nodes ""
 
 create_fhs
 

@@ -9,11 +9,12 @@
 
 set -e
 
-trap "env - PATH=${PREFIX}/bin PS1='\w # ' bash -i" EXIT
+trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 
+# shellcheck source=sysglobal/helpers.sh
 . helpers.sh
-
-. bootstrap.cfg
+# shellcheck source=/dev/null
+. helpers.sh
 
 trap bash EXIT
 
@@ -77,4 +78,4 @@ fi
 echo "Bootstrapping completed."
 
 cd "${PREFIX}"
-exec env - PATH=${PREFIX}/bin PS1="\w # " bash -i
+exec env - PATH="${PREFIX}/bin" PS1="\w # " bash -i
