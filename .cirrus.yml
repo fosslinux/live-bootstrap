@@ -38,32 +38,33 @@ reuse_lint_task:
   check_script:
     - reuse lint
 
-run_task:
-  timeout_in: 180m
-  container:
-    image: potyarkin/molecule:host-kvm
-    kvm: true
-    cpu: 2
-    memory: 4G
-  # Required background services
-  dbus_background_script:
-    - mkdir -p /var/run/dbus
-    - /usr/bin/dbus-daemon --system --nofork --nopidfile
-  virtlogd_background_script:
-    - /usr/sbin/virtlogd
-  libvirtd_background_script:
-    - sleep 2 && /usr/sbin/libvirtd
-  iptables_legacy_script:
-    - update-alternatives --set iptables /usr/sbin/iptables-legacy
-  deps_script:
-    - apt-get -y update
-    - apt-get -y dist-upgrade
-    - apt-get -y install sudo git cpio linux-image-4.19.0-16-amd64 expect wget
-    - apt-get -y clean
-  submodule_script:
-    - git submodule update --init --recursive
-  kernel_script:
-    - cp /boot/vmlinuz-4.19.0-16-amd64 ./kernel
-  run_script:
-    - ./.cirrus.expect | tee -a /tmp/run.log
-    - grep -q 'Bootstrapping completed.' /tmp/run.log
+# XXX: Takes too long right now
+#run_task:
+#  timeout_in: 180m
+#  container:
+#    image: potyarkin/molecule:host-kvm
+#    kvm: true
+#    cpu: 2
+#    memory: 4G
+#  # Required background services
+#  dbus_background_script:
+#    - mkdir -p /var/run/dbus
+#    - /usr/bin/dbus-daemon --system --nofork --nopidfile
+#  virtlogd_background_script:
+#    - /usr/sbin/virtlogd
+#  libvirtd_background_script:
+#    - sleep 2 && /usr/sbin/libvirtd
+#  iptables_legacy_script:
+#    - update-alternatives --set iptables /usr/sbin/iptables-legacy
+#  deps_script:
+#    - apt-get -y update
+#    - apt-get -y dist-upgrade
+#    - apt-get -y install sudo git cpio linux-image-4.19.0-16-amd64 expect wget
+#    - apt-get -y clean
+#  submodule_script:
+#    - git submodule update --init --recursive
+#  kernel_script:
+#    - cp /boot/vmlinuz-4.19.0-16-amd64 ./kernel
+#  run_script:
+#    - ./.cirrus.expect | tee -a /tmp/run.log
+#    - grep -q 'Bootstrapping completed.' /tmp/run.log
