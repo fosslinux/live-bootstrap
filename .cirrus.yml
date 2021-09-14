@@ -9,10 +9,11 @@ pylint_task:
   deps_script:
     - apt-get -y update
     - apt-get -y dist-upgrade
-    - apt-get -y install python3-requests pylint
+    - apt-get -y install python3-pip python3-requests
     - apt-get -y clean
+    - pip3 install pylint
   check_script:
-    - pylint rootfs.py sysa.py lib/utils.py
+    - pylint rootfs.py sysa.py sysb.py sysc.py lib/utils.py lib/sysgeneral.py --disable=duplicate-code
 
 shell_lint_task:
   container:
@@ -23,7 +24,7 @@ shell_lint_task:
     - apt-get -y install shellcheck
     - apt-get -y clean
   check_script:
-    - shellcheck sysa/run.sh sysa/helpers.sh
+    - shellcheck sysa/run.sh sysb/run.sh sysc/run.sh sysc/run2.sh sysglobal/helpers.sh
 
 reuse_lint_task:
   container:
@@ -37,32 +38,33 @@ reuse_lint_task:
   check_script:
     - reuse lint
 
-run_task:
-  timeout_in: 180m
-  container:
-    image: potyarkin/molecule:host-kvm
-    kvm: true
-    cpu: 2
-    memory: 4G
-  # Required background services
-  dbus_background_script:
-    - mkdir -p /var/run/dbus
-    - /usr/bin/dbus-daemon --system --nofork --nopidfile
-  virtlogd_background_script:
-    - /usr/sbin/virtlogd
-  libvirtd_background_script:
-    - sleep 2 && /usr/sbin/libvirtd
-  iptables_legacy_script:
-    - update-alternatives --set iptables /usr/sbin/iptables-legacy
-  deps_script:
-    - apt-get -y update
-    - apt-get -y dist-upgrade
-    - apt-get -y install sudo git cpio linux-image-4.19.0-16-amd64 expect wget
-    - apt-get -y clean
-  submodule_script:
-    - git submodule update --init --recursive
-  kernel_script:
-    - cp /boot/vmlinuz-4.19.0-16-amd64 ./kernel
-  run_script:
-    - ./.cirrus.expect | tee -a /tmp/run.log
-    - grep -q 'Bootstrapping completed.' /tmp/run.log
+# XXX: Takes too long right now
+#run_task:
+#  timeout_in: 180m
+#  container:
+#    image: potyarkin/molecule:host-kvm
+#    kvm: true
+#    cpu: 2
+#    memory: 4G
+#  # Required background services
+#  dbus_background_script:
+#    - mkdir -p /var/run/dbus
+#    - /usr/bin/dbus-daemon --system --nofork --nopidfile
+#  virtlogd_background_script:
+#    - /usr/sbin/virtlogd
+#  libvirtd_background_script:
+#    - sleep 2 && /usr/sbin/libvirtd
+#  iptables_legacy_script:
+#    - update-alternatives --set iptables /usr/sbin/iptables-legacy
+#  deps_script:
+#    - apt-get -y update
+#    - apt-get -y dist-upgrade
+#    - apt-get -y install sudo git cpio linux-image-4.19.0-16-amd64 expect wget
+#    - apt-get -y clean
+#  submodule_script:
+#    - git submodule update --init --recursive
+#  kernel_script:
+#    - cp /boot/vmlinuz-4.19.0-16-amd64 ./kernel
+#  run_script:
+#    - ./.cirrus.expect | tee -a /tmp/run.log
+#    - grep -q 'Bootstrapping completed.' /tmp/run.log

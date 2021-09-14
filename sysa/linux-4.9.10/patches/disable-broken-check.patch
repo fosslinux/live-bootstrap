@@ -1,0 +1,22 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+There's something incorrect with this macro for live-bootstrap, most likely as
+a result of the dodgy installation of linux-headers. However, there is no
+problem with this, and it is verified that BITS_PER_LONG __BITS_PER_LONG
+have functional and correct values.
+
+--- tools/include/asm-generic/bitsperlong.h	2021-07-31 11:50:26.616768608 +1000
++++ tools/include/asm-generic/bitsperlong.h	2021-07-31 11:50:36.786847443 +1000
+@@ -9,10 +9,6 @@
+ #define BITS_PER_LONG __WORDSIZE
+ #endif
+ 
+-#if BITS_PER_LONG != __BITS_PER_LONG
+-#error Inconsistent word size. Check asm/bitsperlong.h
+-#endif
+-
+ #ifndef BITS_PER_LONG_LONG
+ #define BITS_PER_LONG_LONG 64
+ #endif

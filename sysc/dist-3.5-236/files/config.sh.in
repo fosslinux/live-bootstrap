@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+eunicefix=':'
+grep='grep'
+privlib='/usr/lib/perl5/@PERLVER@'
+VERSION='3'
+ENV='env'
+PATCHLEVEL='5'
+spitshell='cat'

@@ -1,2 +1,2 @@
-ec1e79231d889bdb7edad9986071586809b5facd312967864aeced473bb49f6c  /image/bin/tcc-musl
-dd2f569a10a5bce7a8d264a9a04a86be9c3c1293df64c907370a8d5088c21e65  /image/lib/musl/tcc/libtcc1.a
+0ce457c089aa5500f8d13d6f1e9485dd42847447f2b13fd713e9beac82557534  /usr/bin/tcc-musl
+dd2f569a10a5bce7a8d264a9a04a86be9c3c1293df64c907370a8d5088c21e65  /usr/lib/musl/tcc/libtcc1.a

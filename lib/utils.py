@@ -5,12 +5,12 @@ This file contains a few self-contained helper functions
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 import os
 import shutil
 import subprocess
 import sys
-
 
 def run(*args, **kwargs):
     """A small wrapper around subprocess.run"""
@@ -24,6 +24,19 @@ def run(*args, **kwargs):
     except subprocess.CalledProcessError:
         print("Bootstrapping failed")
         sys.exit(1)
+
+def create_disk(image, disk_type, fs_type, size):
+    """Create a disk image, with a filesystem on it"""
+    run('truncate', '-s', size, image)
+    # First find the device we will use, then actually use it
+    loop_dev = run('losetup', '-f', capture_output=True).stdout.decode().strip()
+    run('sudo', 'losetup', loop_dev, image)
+    # Create the partition
+    run('sudo', 'parted', '--script', image, 'mklabel', disk_type, 'mkpart',
+            'primary', 'ext4', '0%', '100%')
+    run('sudo', 'partprobe', loop_dev)
+    run('sudo', 'mkfs.' + fs_type, loop_dev + "p1")
+    return loop_dev
 
 def mount(source, target, fs_type, options='', **kwargs):
     """Mount filesystem"""

@@ -16,7 +16,6 @@ cd ${pkg}
 
 # Create .h files
 catm config.h
-catm /after/include/mes/config.h
 
 # Patch
 patch -Np0 -i ../../patches/mes-libc.patch
@@ -36,8 +35,8 @@ tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART implicit.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DHAVE_DUP2 -Dvfork=fork job.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DLOCALEDIR=\"/fake-locale\" -DPACKAGE=\"fake-make\" -DHAVE_MKTEMP -DHAVE_GETCWD main.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DHAVE_STRERROR -DHAVE_VPRINTF misc.c
-tcc -c -I. -Iglob -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DINCLUDEDIR=\"/after/include\" read.c
-tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DFILE_TIMESTAMP_HI_RES=0 -DHAVE_FCNTL_H -DLIBDIR=\"/after/lib\" remake.c
+tcc -c -I. -Iglob -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DINCLUDEDIR=\"${PREFIX}/include\" read.c
+tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DFILE_TIMESTAMP_HI_RES=0 -DHAVE_FCNTL_H -DLIBDIR=\"${PREFIX}/lib\" remake.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART rule.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART signame.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART variable.c

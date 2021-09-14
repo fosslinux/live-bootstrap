@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: 2020 Andrius Štikonas <andrius@stikonas.eu>
+// SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -9,7 +10,7 @@
 #define HAVE_SNPRINTF 1
 #define HAVE_STDINT_H 1
 #define HAVE_UNISTD_H 1
-#define M4 "/image/bin/m4"
+#define M4 "/usr/bin/m4"
 #define M4_GNU_OPTION ""
 #define PACKAGE "bison"
 #define PACKAGE_BUGREPORT "bug-bison@gnu.org"

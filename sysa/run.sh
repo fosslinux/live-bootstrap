@@ -7,22 +7,38 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
-# shellcheck source=sysa/helpers.sh
+# shellcheck source=sysglobal/helpers.sh
 . helpers.sh
+# shellcheck source=/dev/null
+. bootstrap.cfg
 
-populate_device_nodes() {
-    # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
-    test -c /dev/null || mknod -m 666 /dev/null c 1 3
-    test -c /dev/zero || mknod -m 666 /dev/zero c 1 5
-    test -c /dev/ptmx || mknod -m 666 /dev/ptmx c 5 2
-    test -c /dev/tty || mknod -m 666 /dev/tty c 5 0
-    test -c /dev/random || mknod -m 444 /dev/random c 1 8
-    test -c /dev/urandom || mknod -m 444 /dev/urandom c 1 9
+export PREFIX=/usr
+export SOURCES=/after
+mkdir -p "${PREFIX}/sbin"
+export PATH="${PREFIX}/bin:${PREFIX}/sbin"
+
+create_sysb() {
+    # Copy everything in
+    echo "Creating sysb rootfs"
+    mkdir -p /sysb/usr
+    for d in bin include lib libexec sbin share; do
+        cp -r "${PREFIX}/${d}" "/sysb/usr/${d}"
+    done
+    populate_device_nodes /sysb
 }
 
-export PREFIX=/image
-export PATH="${PREFIX}/bin"
-export SOURCES=/after
+go_sysb() {
+    # Mount proc for kexec
+    mkdir /proc /etc
+    mount -t proc proc /proc
+    # kexec time
+    echo "Loading kernel + sysb initramfs using kexec"
+    kexec -l "${PREFIX}/boot/linux-4.9.10" --console-serial \
+        --initrd="${PREFIX}/boot/initramfs-sysb" \
+        --append="init=/init console=ttyS0"
+    echo "kexecing into sysb"
+    kexec -e
+}
 
 build flex-2.5.11
 
@@ -143,10 +159,24 @@ build autoconf-2.64
 
 build gcc-4.0.4 pass1.sh checksums/pass1
 
+build linux-headers-5.10.41 '' '' '' linux-5.10.41
+
 build musl-1.2.2
 
 build gcc-4.0.4 pass2.sh checksums/pass2
 
-build bash-5.1
+build util-linux-2.19.1
 
-exec env -i PATH=${PREFIX}/bin PREFIX=${PREFIX} SOURCES=${SOURCES} bash run2.sh
+build kbd-1.15
+
+build make-3.82
+
+if [ "${CHROOT}" = False ]; then
+    build kexec-tools-2.0.22
+
+    create_sysb
+
+    build linux-4.9.10
+
+    go_sysb
+fi

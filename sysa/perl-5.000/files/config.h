@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+// SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #define MEM_ALIGNBYTES 8
-#define BIN "/image/bin"
+#define BIN "/usr/bin"
 #define BYTEORDER 0x4321
 #define CPPSTDIN "tcc -E"
 #define CPPMINUS "-"
@@ -47,13 +48,13 @@
 #define INTSIZE 4
 #define Off_t off_t
 
-#define PRIVLIB "/image/lib/perl5"
+#define PRIVLIB "/usr/lib/perl5"
 
 #define _(args) args
 
 #define RANDBITS 31
 
-#define SCRIPTDIR "/image/bin"
+#define SCRIPTDIR "/usr/bin"
 
 #define SIG_NAME "ZERO","HUP","INT","QUIT","ILL","TRAP","IOT","BUS","FPE","KILL","USR1","SEGV","USR2","PIPE","ALRM","TERM","STKFLT","CHLD","CONT","STOP","TSTP","TTIN","TTOU","URG","XCPU","XFSZ","VTALRM","PROF","WINCH", "IO", "POLL", "PWR", "SYS", "UNUSED"
 
@@ -62,8 +63,8 @@
 #define STDCHAR char
 #define Uid_t uid_t
 
-#define LOC_SED "/image/bin/sed"
-#define ARCHLIB "/image/lib/perl5/"
+#define LOC_SED "/usr/bin/sed"
+#define ARCHLIB "/usr/lib/perl5/"
 
 #define CAT2(a,b) a##b
 #define Gconvert(x,n,t,b) gcvt((x),(n),(b))

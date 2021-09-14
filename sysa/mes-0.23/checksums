@@ -1,5 +1,5 @@
-920b35eb5ae2fda55348a30aafed7f006a5b86cbe05093df2c75e5d169bd9cb0  /image/lib/mes/libc.a
-12c07ae103e7e3b390150a79e5c600d88de14e9bb73a066f6342582729ef5a3f  /image/lib/mes/libgetopt.a
-d1168ee9b528e39f0b40e8d51fb7fa3619c4a5ee928137f7faf6d0879b0916b0  /image/lib/mes/crt1.o
-461ca1494737fab86fe1c1d3addeaf9d0ece413e353abcdea8674db3f700cda3  /image/lib/mes/crtn.o
-09d4f9821a2566f7e56381a19259c41bd97f3c5ed83f490705acbfd1139a7736  /image/lib/mes/crti.o
+920b35eb5ae2fda55348a30aafed7f006a5b86cbe05093df2c75e5d169bd9cb0  /usr/lib/mes/libc.a
+12c07ae103e7e3b390150a79e5c600d88de14e9bb73a066f6342582729ef5a3f  /usr/lib/mes/libgetopt.a
+d1168ee9b528e39f0b40e8d51fb7fa3619c4a5ee928137f7faf6d0879b0916b0  /usr/lib/mes/crt1.o
+461ca1494737fab86fe1c1d3addeaf9d0ece413e353abcdea8674db3f700cda3  /usr/lib/mes/crtn.o
+09d4f9821a2566f7e56381a19259c41bd97f3c5ed83f490705acbfd1139a7736  /usr/lib/mes/crti.o

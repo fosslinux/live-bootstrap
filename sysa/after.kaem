@@ -12,7 +12,7 @@ PATH=/bin
 
 # Set commonly used variables
 sources=/after
-prefix=/image
+prefix=/usr
 bindir=${prefix}/bin
 libdir=${prefix}/lib
 incdir=${prefix}/include
@@ -23,8 +23,7 @@ NYACC_PKG=nyacc-1.00.2
 MES_PKG=mes
 MES_PREFIX=${sources}/${MES_PKG}/src/mes-m2-a7522f26ee020dc498219d0122ea1b7d345bcdd5
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sources}/${MES_PKG}/src/${NYACC_PKG}/module
-
-mkdir ${bindir} ${libdir} ${incdir} ${tmpdir}
+mkdir ${prefix} ${bindir} ${libdir} ${incdir} ${tmpdir}
 cd ${prefix}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
@@ -33,15 +32,14 @@ cp /bin/catm bin/catm
 cp /bin/chmod bin/chmod
 cp /bin/get_machine bin/get_machine
 cp /bin/hex2 bin/hex2
-cp /bin/kaem bin/kaem
+cp /bin/kaem ${bindir}/kaem
 cp /bin/M1 bin/M1
 cp /bin/M2-Planet bin/M2-Planet
 cp /bin/mkdir bin/mkdir
 cp /bin/sha256sum bin/sha256sum
 cp /bin/ungz bin/ungz
 cp /bin/untar bin/untar
-
-cp /bin/cp ${prefix}/bin/cp
+cp /bin/cp bin/cp
 
 chmod 755 bin/blood-elf
 chmod 755 bin/catm
@@ -57,7 +55,7 @@ chmod 755 bin/sha256sum
 chmod 755 bin/ungz
 chmod 755 bin/untar
 
-PATH=${prefix}/bin
+PATH=${bindir}
 
 cd ${sources}
 

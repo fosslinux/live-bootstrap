@@ -1,0 +1,23 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+kconfig uses gperf, which we don't have at this stage. We manually generate
+everything (in the actual script) that is actually required within kconfig,
+and forgo everything that is not really required for the build.
+
+--- Makefile	2021-07-30 21:25:43.577592065 +1000
++++ Makefile	2021-07-30 21:26:40.349015612 +1000
+@@ -547,10 +547,10 @@
+ export KBUILD_DEFCONFIG KBUILD_KCONFIG
+ 
+ config: scripts_basic outputmakefile FORCE
+-	$(Q)$(MAKE) $(build)=scripts/kconfig $@
++	$(Q)true
+
+ %config: scripts_basic outputmakefile FORCE
+-	$(Q)$(MAKE) $(build)=scripts/kconfig $@
++	true
+
+ else
+ # ===========================================================================
