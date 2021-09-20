@@ -33,7 +33,7 @@ class SysGeneral:
 
     def __del__(self):
         if not self.preserve_tmp:
-            print("Unmounting tmpfs from %s" % (self.tmp_dir))
+            print(f"Unmounting tmpfs from {self.tmp_dir}")
             umount(self.tmp_dir)
             os.rmdir(self.tmp_dir)
 
@@ -41,7 +41,7 @@ class SysGeneral:
         """Mount the tmpfs for this sysx"""
         if not os.path.isdir(self.tmp_dir):
             os.mkdir(self.tmp_dir)
-        print("Mounting tmpfs on %s" % (self.tmp_dir))
+        print(f"Mounting tmpfs on {self.tmp_dir}")
         mount('tmpfs', self.tmp_dir, 'tmpfs', 'size=8G')
 
     def check_file(self, file_name):
@@ -80,7 +80,7 @@ class SysGeneral:
 
         # Actually download the file
         if not os.path.isfile(abs_file_name):
-            print("Downloading: %s" % (file_name))
+            print(f"Downloading: {file_name}")
             request = requests.get(url, allow_redirects=True)
             # pylint: disable=consider-using-with
             open(abs_file_name, 'wb').write(request.content)

@@ -81,7 +81,7 @@ def main():
 
 def bootstrap(args, system_a, system_b, system_c):
     """Kick off bootstrap process."""
-    print("Bootstrapping %s -- SysA" % (args.arch))
+    print(f"Bootstrapping {args.arch} -- SysA")
     if args.chroot:
         find_chroot = """
 import shutil
@@ -97,7 +97,7 @@ print(shutil.which('chroot'))
         # We skip sysb as that is only pertinent to "hardware" (not chroot)
         system_c.chroot_transition(system_a.tmp_dir)
         # sysc
-        print("Bootstrapping %s -- SysC" % (args.arch))
+        print(f"Bootstrapping {args.arch} -- SysC")
         init = os.path.join(os.sep, 'init')
         run('sudo', chroot_binary, system_c.tmp_dir, init)
 

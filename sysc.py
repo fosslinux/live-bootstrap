@@ -35,9 +35,9 @@ class SysC(SysGeneral):
     def __del__(self):
         if not self.preserve_tmp:
             if not self.chroot:
-                print("Deleting %s" % (self.dev_name))
+                print(f"Deleting {self.dev_name}")
                 run('sudo', 'losetup', '-d', self.dev_name)
-            print("Unmounting tmpfs from %s" % (self.tmp_dir))
+            print(f"Unmounting tmpfs from {self.tmp_dir}")
             umount(self.tmp_dir)
             os.rmdir(self.tmp_dir)
 
