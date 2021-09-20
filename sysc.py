@@ -35,9 +35,9 @@ class SysC(SysGeneral):
     def __del__(self):
         if not self.preserve_tmp:
             if not self.chroot:
-                print("Deleting %s" % (self.dev_name))
+                print(f"Deleting {self.dev_name}")
                 run('sudo', 'losetup', '-d', self.dev_name)
-            print("Unmounting tmpfs from %s" % (self.tmp_dir))
+            print(f"Unmounting tmpfs from {self.tmp_dir}")
             umount(self.tmp_dir)
             os.rmdir(self.tmp_dir)
 
@@ -192,3 +192,18 @@ class SysC(SysGeneral):
         # libunistring 0.9.10
         self.get_file(["https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"])
+
+        # libffi 3.3
+        self.get_file("https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz")
+
+        # libatomic_ops 7.6.10
+        self.get_file("https://github.com/ivmai/libatomic_ops/releases/download/v7.6.10/libatomic_ops-7.6.10.tar.gz")
+
+        # boehm-gc 8.0.4
+        self.get_file("https://www.hboehm.info/gc/gc_source/gc-8.0.4.tar.gz")
+
+        # guile 3.0.7
+        self.get_file(["https://mirrors.kernel.org/gnu/guile/guile-3.0.7.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-901694b9.tar.gz",
+                       "https://github.com/schierlm/guile-psyntax-bootstrapping/archive/refs/tags/guile-3.0.7.tar.gz"],
+                       output=["guile-3.0.7.tar.xz", "gnulib-901694b9.tar.gz", "guile-psyntax-bootstrapping.tar.gz"])

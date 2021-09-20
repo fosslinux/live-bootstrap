@@ -785,3 +785,31 @@ libunistring 0.9.10
 
 Library for manipulating Unicode and C strings according to Unicode standard. This
 is a dependency of GNU Guile.
+
+libffi 3.3
+==========
+
+The libffi library provides a portable, high level programming interface to various
+calling conventions.
+
+libatomic_ops 7.6.10
+====================
+
+``libatomic_ops`` provides semi-portable access to hardware-provided atomic memory
+update operations on a number of architectures.
+
+boehm-gc 8.0.4
+==============
+
+The Boehm-Demers-Weiser conservative garbage collector can be used as a garbage
+collecting replacement for C malloc or C++ new.
+
+guile 3.0.7
+===========
+
+GNU Ubiquitous Intelligent Language for Extensions (GNU Guile) is the preferred
+extension language system for the GNU Project and features an implementation
+of the programming language Scheme.
+
+We use ``guile-psyntax-bootstrapping`` project to bootstrap Guile's ``psyntax.pp``
+without relying on pre-expanded code.
