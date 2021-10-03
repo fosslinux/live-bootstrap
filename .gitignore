@@ -7,4 +7,4 @@ tmp/
 kernel
 sources/
 __pycache__
-sysglobal/bootstrap.cfg
+sysa/bootstrap.cfg

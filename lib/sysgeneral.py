@@ -137,7 +137,7 @@ class SysGeneral:
 
     def deploy_sysglobal_files(self):
         """Deploy files common to all Sys*"""
-        sysglobal_files = ['bootstrap.cfg', 'helpers.sh']
+        sysglobal_files = ['helpers.sh']
         for file in sysglobal_files:
             shutil.copy2(os.path.join(self.git_dir, 'sysglobal', file),
                          self.base_dir)

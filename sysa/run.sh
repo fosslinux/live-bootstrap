@@ -24,6 +24,7 @@ create_sysb() {
     for d in bin include lib libexec sbin share; do
         cp -r "${PREFIX}/${d}" "/sysb/usr/${d}"
     done
+    cp "${SOURCES}/bootstrap.cfg" /sysb/usr/src/bootstrap.cfg
     populate_device_nodes /sysb
 }
 
@@ -39,6 +40,59 @@ go_sysb() {
     echo "kexecing into sysb"
     kexec -e
 }
+
+# Ask some questions
+echo
+echo "Now that bash has been built, there are potentially some questions for you!"
+echo "To give your answer, type your answer, press Enter, and then Control-D."
+echo
+
+ask_chroot() {
+    read -r CHROOT_STRING
+    if [ "${CHROOT_STRING}" = "yes" ] || [ "${CHROOT_STRING}" = "y" ]; then
+        CHROOT=True
+    elif [ "${CHROOT_STRING}" = "no" ] || [ "${CHROOT_STRING}" = "n" ]; then
+        CHROOT=False
+    else
+        echo "Invalid response. Please give a yes/no answer."
+        ask_chroot
+    fi
+}
+
+if [ -z "${CHROOT}" ]; then
+    echo "Currently, it is unknown if live-bootstrap is running in a chroot"
+    echo "or not. Is it? (yes/no answer)"
+    ask_chroot
+    echo
+fi
+
+ask_timestamps() {
+    read -r TIMESTAMPS_STRING
+    if [ "${TIMESTAMPS_STRING}" = "yes" ] || [ "${TIMESTAMPS_STRING}" = "y" ]; then
+        FORCE_TIMESTAMPS=True
+    elif [ "${TIMESTAMPS_STRING}" = "no" ] || [ "${TIMESTAMPS_STRING}" = "n" ]; then
+        FORCE_TIMESTAMPS=False
+    else
+        echo "Invalid response. Please give a yes/no answer."
+        ask_timestamps
+    fi
+}
+
+if [ -z "${FORCE_TIMESTAMPS}" ]; then
+    echo "Would you like all timestamps to be set to unix time 0"
+    echo "(Jan 1 1970 00:00) at the end of the bootstrap? This makes a"
+    echo "fully reproducible disk image. (yes/no answer)"
+    ask_timestamps
+    echo
+fi
+
+echo "Thank you! All done."
+
+# Write to bootstrap.cfg
+rm "${SOURCES}/bootstrap.cfg"
+for var in CHROOT FORCE_TIMESTAMPS DISK; do
+    echo "${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
+done
 
 build flex-2.5.11
 

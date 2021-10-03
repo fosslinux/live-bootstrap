@@ -93,7 +93,7 @@ class SysA(SysGeneral):
 
     def deploy_extra_files(self):
         """Deploy misc files"""
-        extra_files = ['run.sh']
+        extra_files = ['run.sh', 'bootstrap.cfg']
         for extra_file in extra_files:
             shutil.copy2(os.path.join(self.sys_dir, extra_file), self.after_dir)
 

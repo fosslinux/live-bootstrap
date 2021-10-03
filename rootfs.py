@@ -26,7 +26,7 @@ def create_configuration_file(args):
     Creates bootstrap.cfg file which would contain options used to
     customize bootstrap.
     """
-    config_path = os.path.join('sysglobal', 'bootstrap.cfg')
+    config_path = os.path.join('sysa', 'bootstrap.cfg')
     with open(config_path, "w", encoding="utf_8") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot) + "\n")
@@ -49,26 +49,59 @@ def main():
     parser.add_argument("--force_timestamps",
                         help="Force all files timestamps to be 0 unix time",
                         action="store_true")
+    parser.add_argument("--no-create-config",
+                        help="Do not automatically create config file",
+                        action="store_true")
 
     # QEMU arguments
-    parser.add_argument("-q", "--qemu-cmd", help="QEMU command",
+    parser.add_argument("-q", "--qemu", help="Use QEMU",
+                        action="store_true")
+    parser.add_argument("-qc", "--qemu-cmd", help="QEMU command to run",
                         default="qemu-system-x86_64")
-    parser.add_argument("-r", "--qemu-ram", help="Memory (in megabytes) allocated to QEMU VM",
+    parser.add_argument("-qr", "--qemu-ram", help="Memory (in megabytes) allocated to QEMU VM",
                         default=8000)
-    parser.add_argument("-k", "--kernel", help="Kernel to use (default is ./kernel)",
+    parser.add_argument("-qk", "--kernel", help="Kernel to use (default is ./kernel)",
                         default="kernel")
 
     parser.add_argument("-m", "--minikernel", help="Use minikernel",
                         action="store_true")
+    parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
+                        action="store_true")
 
     args = parser.parse_args()
-    if args.chroot and args.minikernel:
-        raise ValueError("chroot and minikernel options cannot be used simultaneously.")
+
+    def check_types():
+        count = 0
+        if args.qemu:
+            count += 1
+        if args.chroot:
+            count += 1
+        if args.minikernel:
+            count += 1
+        if args.bare_metal:
+            count += 1
+        return count
+
+    if check_types() > 1:
+        raise ValueError("No more than one of qemu, chroot, minikernel, bare metal may be used.")
+    if check_types() == 0:
+        raise ValueError("One of qemu, chroot, minikernel or bare metal must be selected.")
+
+    if args.bare_metal:
+        args.no_create_config = True
 
     if args.arch != "x86":
         raise ValueError("Only x86 is supported at the moment.")
 
-    create_configuration_file(args)
+    try:
+        os.remove(os.path.join('sysa', 'bootstrap.cfg'))
+    except FileNotFoundError:
+        pass
+    if not args.no_create_config:
+        create_configuration_file(args)
+    else:
+        with open(os.path.join('sysa', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
+            pass
 
     system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
             tmpdir=args.tmpdir, chroot=args.chroot)
@@ -113,6 +146,11 @@ print(shutil.which('chroot'))
             '--ramsize', str(args.qemu_ram) + 'M -hda ' + system_b.dev_name,
             '--initrd', system_a.initramfs_path,
             '--log', '/tmp/bootstrap.log')
+
+    elif args.bare_metal:
+        print("Please:")
+        print("  1. Take sysa/tmp/initramfs and your kernel, boot using this.")
+        print("  2. Take sysc/tmp/disk.img and put this on a writable storage medium.")
 
     else:
         run(args.qemu_cmd,

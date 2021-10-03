@@ -30,19 +30,40 @@ create_hdx() {
     done
 }
 
-# If there is no disk specified error out
-if [ -z "${DISK}" ]; then
-    echo "You must specify a disk where sysb will be located!"
-    exit 1
-fi
-
-# Otherwise, add stuff from sysa to sysb
-echo "Mounting sysc"
-mkdir /sysc
 # All the various structures that don't exist but needed to mount
 mkdir -p /etc /dev
 populate_device_nodes ""
 create_hdx
+
+ask_disk() {
+    echo
+    echo "What disk would you like to use for live-bootstrap?"
+    echo "(live-bootstrap assumes you have pre-prepared the disk)."
+    echo "Please provide in format sdxx (as you would find under /dev)."
+    echo "You can type 'list' to get a list of disks to help you figure"
+    echo "out which is the right disk."
+    echo
+    read -r DISK
+
+    if [ "${DISK}" = "list" ]; then
+        fdisk -l
+        ask_disk
+    elif [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
+        echo "Invalid."
+        ask_disk
+    fi
+}
+
+if [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
+    echo "You did not provide a valid disk in the configuration file."
+    ask_disk
+fi
+
+echo "DISK=${DISK}" >> /usr/src/bootstrap.cfg
+
+# Otherwise, add stuff from sysa to sysb
+echo "Mounting sysc"
+mkdir /sysc
 mount -t ext4 "/dev/${DISK}" /sysc
 
 # Copy over appropriate data
@@ -50,6 +71,8 @@ echo "Copying data into sysc"
 cp -r /dev /sysc/
 # Don't include /usr/src
 find /usr -mindepth 1 -maxdepth 1 -type d -not -name src -exec cp -r {} /sysc/{} \;
+# Except for bootstrap.cfg
+cp /usr/src/bootstrap.cfg /sysc/usr/src/bootstrap.cfg
 sync
 
 # switch_root into sysc 1. for simplicity 2. to avoid kexecing again
