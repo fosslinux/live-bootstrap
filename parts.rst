@@ -223,7 +223,7 @@ itself. Interestingly, tcc-0.9.27 linked against musl is self hosting.
 musl 1.1.24 (tcc-musl)
 ======================
 
-We now rebuild ``musl`` with ``tcc-musl`` of Part 22, which fixes a
+We now rebuild ``musl`` with the just built ``tcc-musl``, which fixes a
 number of bugs, particularly regarding floats, in the first ``musl``.
 
 tcc 0.9.27 (musl v2)
