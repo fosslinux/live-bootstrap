@@ -41,6 +41,7 @@ make
 
 # Install
 install bash ${prefix}/bin/
+mkdir /bin/
 ln -s ${prefix}/bin/bash /bin/bash
 ln -s ${prefix}/bin/bash /bin/sh
 ln -s ${prefix}/bin/bash ${prefix}/bin/sh
