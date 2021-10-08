@@ -8,7 +8,7 @@
 
 set -ex
 
-PATH=/bin
+PATH=/x86/bin
 
 # Set commonly used variables
 sources=/after
@@ -21,25 +21,25 @@ tmpdir=/tmp # tmpdir is needed for patch to work
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
 MES_PKG=mes
-MES_PREFIX=${sources}/${MES_PKG}/src/mes-m2-a7522f26ee020dc498219d0122ea1b7d345bcdd5
+MES_PREFIX=${sources}/${MES_PKG}/src/mes-m2-7fa2f99bf9bba2d79bd9d15c579be8905520d960
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sources}/${MES_PKG}/src/${NYACC_PKG}/module
 mkdir ${prefix} ${bindir} ${libdir} ${incdir} ${tmpdir}
 cd ${prefix}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
-cp /bin/blood-elf bin/blood-elf
-cp /bin/catm bin/catm
-cp /bin/chmod bin/chmod
-cp /bin/get_machine bin/get_machine
-cp /bin/hex2 bin/hex2
-cp /bin/kaem ${bindir}/kaem
-cp /bin/M1 bin/M1
-cp /bin/M2-Planet bin/M2-Planet
-cp /bin/mkdir bin/mkdir
-cp /bin/sha256sum bin/sha256sum
-cp /bin/ungz bin/ungz
-cp /bin/untar bin/untar
-cp /bin/cp bin/cp
+cp /x86/bin/blood-elf bin/blood-elf
+cp /x86/bin/catm bin/catm
+cp /x86/bin/chmod bin/chmod
+cp /x86/bin/get_machine bin/get_machine
+cp /x86/bin/hex2 bin/hex2
+cp /x86/bin/kaem ${bindir}/kaem
+cp /x86/bin/M1 bin/M1
+cp /x86/bin/M2-Planet bin/M2-Planet
+cp /x86/bin/mkdir bin/mkdir
+cp /x86/bin/sha256sum bin/sha256sum
+cp /x86/bin/ungz bin/ungz
+cp /x86/bin/untar bin/untar
+cp /x86/bin/cp bin/cp
 
 chmod 755 bin/blood-elf
 chmod 755 bin/catm
@@ -133,4 +133,4 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-bash run.sh
+exec bash run.sh

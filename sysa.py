@@ -9,7 +9,6 @@ import os
 from distutils.dir_util import copy_tree
 import shutil
 
-from lib.utils import copytree
 from lib.sysgeneral import SysGeneral
 
 # pylint: disable=consider-using-with
@@ -61,42 +60,15 @@ class SysA(SysGeneral):
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
         stage0_posix_base_dir = os.path.join(self.sys_dir, 'stage0-posix', 'src')
-        stage0_posix_arch_dir = os.path.join(stage0_posix_base_dir, self.arch)
-        copy_tree(stage0_posix_arch_dir, self.tmp_dir)
+        copy_tree(stage0_posix_base_dir, self.tmp_dir)
 
-        m2_planet_dir = os.path.join(stage0_posix_base_dir, 'M2-Planet')
-        copytree(m2_planet_dir, self.tmp_dir)
-
-        # M2libc
-        m2libc_dir = os.path.join(stage0_posix_base_dir, 'M2libc')
-        copytree(m2libc_dir, self.tmp_dir)
-
-        # mescc-tools
-        mescc_tools_dir = os.path.join(stage0_posix_base_dir, 'mescc-tools')
-        copytree(mescc_tools_dir, self.tmp_dir)
-
-        # mescc-tools-extra
-        # Some additional tools such as cp, chmod, untar and ungz
-        mescc_tools_extra_dir = os.path.join(stage0_posix_base_dir, 'mescc-tools-extra')
-        copytree(mescc_tools_extra_dir, self.tmp_dir)
-
-        # bootstrap seeds
-        bootstrap_seeds_dir = os.path.join(self.sys_dir, 'stage0-posix', 'src', 'bootstrap-seeds')
-        copytree(bootstrap_seeds_dir, self.tmp_dir)
-        kaem_optional_seed = os.path.join(bootstrap_seeds_dir, 'POSIX',
-                                          self.arch, 'kaem-optional-seed')
+        kaem_optional_seed = os.path.join(self.sys_dir, 'stage0-posix', 'src', 'bootstrap-seeds',
+                                          'POSIX', self.arch, 'kaem-optional-seed')
         shutil.copy2(kaem_optional_seed, os.path.join(self.tmp_dir, 'init'))
 
         # stage0-posix hook to continue running live-bootstrap
         shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
                      os.path.join(self.tmp_dir, 'after.kaem'))
-
-        # create directories needed
-        os.mkdir(os.path.join(self.tmp_dir, 'bin'))
-
-        # stage0-posix checksums
-        shutil.copy2(os.path.join(stage0_posix_base_dir, self.arch + '.answers'),
-                     os.path.join(self.tmp_dir, self.arch + '.answers'))
 
     def after(self):
         """
@@ -122,7 +94,7 @@ class SysA(SysGeneral):
         """Prepare remaining sources"""
 
         # mes-0.22 snapshot with m2 fixes
-        self.get_file(["https://github.com/oriansj/mes-m2/archive/a7522f26ee020dc498219d0122ea1b7d345bcdd5.tar.gz",
+        self.get_file(["https://github.com/oriansj/mes-m2/archive/7fa2f99bf9bba2d79bd9d15c579be8905520d960.tar.gz",
                        "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
                       output=["mes.tar.gz", "nyacc-1.00.2.tar.gz"])
 
@@ -142,7 +114,7 @@ class SysA(SysGeneral):
         self.get_file("https://mirrors.kernel.org/gnu/sed/sed-4.0.9.tar.gz")
 
         # patch 2.5.9
-        self.get_file("https://ftp.gnu.org/pub/gnu/patch/patch-2.5.9.tar.gz")
+        self.get_file("https://mirrors.kernel.org/gnu/patch/patch-2.5.9.tar.gz")
 
         # make 3.80
         self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz")
@@ -160,7 +132,7 @@ class SysA(SysGeneral):
         self.get_file("http://downloads.sourceforge.net/project/heirloom/heirloom-devtools/070527/heirloom-devtools-070527.tar.bz2")
 
         # bash 2.05b
-        self.get_file("https://ftp.gnu.org/pub/gnu/bash/bash-2.05b.tar.gz")
+        self.get_file("https://mirrors.kernel.org/gnu/bash/bash-2.05b.tar.gz")
 
         # flex 2.5.11
         self.get_file("http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.11.tar.gz")
@@ -294,9 +266,9 @@ class SysA(SysGeneral):
         self.get_file("https://mirrors.edge.kernel.org/pub/linux/utils/kbd/kbd-1.15.tar.gz")
 
         # make 3.82
-        self.get_file("http://ftp.gnu.org/gnu/make/make-3.82.tar.gz")
+        self.get_file("https://mirrors.kernel.org/gnu/make/make-3.82.tar.gz")
 
         # linux kernel 2.6.16.62
         self.get_file(["https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.10.tar.gz",
-            "http://linux-libre.fsfla.org/pub/linux-libre/releases/4.9.10-gnu/deblob-4.9",
-            "http://linux-libre.fsfla.org/pub/linux-libre/releases/4.9.10-gnu/deblob-check"])
+            "https://linux-libre.fsfla.org/pub/linux-libre/releases/old/gen6/4.9.10-gnu/deblob-4.9",
+            "https://linux-libre.fsfla.org/pub/linux-libre/releases/old/gen6/4.9.10-gnu/deblob-check"])

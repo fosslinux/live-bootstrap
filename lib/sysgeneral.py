@@ -81,9 +81,12 @@ class SysGeneral:
         # Actually download the file
         if not os.path.isfile(abs_file_name):
             print(f"Downloading: {file_name}")
-            request = requests.get(url, allow_redirects=True)
-            # pylint: disable=consider-using-with
-            open(abs_file_name, 'wb').write(request.content)
+            response = requests.get(url, allow_redirects=True, stream=True)
+            if response.status_code == 200:
+                with open(abs_file_name, 'wb') as target_file:
+                    target_file.write(response.raw.read())
+            else:
+                raise Exception("Download failed.")
 
         # Check SHA256 hash
         self.check_file(abs_file_name)
