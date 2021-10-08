@@ -452,10 +452,9 @@ e2cf3d846f8f40844d299ab9ff85cc7e1cb6ee5bd84e322b350d17e180c3ab23  /usr/lib/musl/
 3c9a9519ab901c1b50044509118ca6594f3ed8506581dc6876fb438680546eaa  /usr/lib/musl/guile/3.0/ccache/ice-9/psyntax-pp.go
 489f4c55d32bfdc564a99e6d76eb177cd58dc56d836317b544110733698816fb  /usr/lib/musl/guile/3.0/ccache/ice-9/eval.go
 97a33176dadf774beb067201fd6552dd674f9a3fc6feecc15e607d278c2941a7  /usr/lib/musl/libguile-3.0.a-gdb.scm
-09931b26cb37a5ed306861ed30a3e66fa470a977566dfc8d1c776de11fa504fd  /usr/lib/musl/libguile-3.0.a
+252a5c8dcb2d23dd8338bc1f53a6492c6cfa290678dc6cbe9f06281ab724edb7  /usr/lib/musl/libguile-3.0.a
 c6199bd229d15fd770e8bbb95e5dfdc2674b62aec4990eafa6f453d9531b7f7c  /usr/lib/musl/libguile-3.0.la
 b0c9e99c458a2c1dbd6a97eace601097511938947e2549c4ca478f73520b0ce9  /usr/lib/musl/pkgconfig/guile-3.0.pc
-b8909c03a947096bb28597a16b95f68d2c1e7316b34d71a0305d2f0074ab3f36  /usr/share/man/man1/guile.1
 ec1fc9e27ee3dfba39c1ee72331ca1298025137170b222e25c505c0250f2dd5e  /usr/share/info/r5rs.info
 f3ecca2e5a9209ba7491d6ceaac0e47c51451155718379e3d49cf8f4f9b7ef1c  /usr/share/info/dir
 256ad479fc0b4e346389534ba5d72dcc9b45790ecc1663066a4d65a268fb6841  /usr/share/info/guile.info-11
@@ -815,7 +814,9 @@ a272ec5ae54149333929f9bf51ee45eccf75d61af55f04161a69dd2c69d0ba9e  /usr/share/gui
 136bf32e0aa03d228330b2d3b68d79563ccd6ce4d9041c4ff91258037980e7d3  /usr/share/guile/3.0/ice-9/psyntax-pp.scm
 7c72516475f8c1470d2488039ea53e3505f1779cdf80aaaabc6bdde6a725e3b0  /usr/share/guile/3.0/ice-9/eval.scm
 a78f2fcaf573a644576a67e3081335568bd4b77be31be228b33550d6bb189392  /usr/share/aclocal/guile.m4
-5a1af2046c855d107b5a49a157adc69c64bcd51cdcaadb619d30398be351dd6c  /usr/bin/guile-snarf
-512c5eb652a7470277cc62173640f85e63d76b3e0a8e315d29ae5097be81c61b  /usr/bin/guile
-62cb07dff2b51611f5d088e1aec406d2ba5db9fe249e849d2a798e5dffc26c01  /usr/bin/guild
+f8a990f6b50d6d95fd3e9ad7258fd4af02ca63056828428ce72cb19cb2c96bbe  /usr/bin/guile
 1dde10bc8daad6f1c560dd5dbff0891be33dc8e0f3d3591fdef4aed51f61439b  /usr/bin/guile-config
+5a1af2046c855d107b5a49a157adc69c64bcd51cdcaadb619d30398be351dd6c  /usr/bin/guile-snarf
+62cb07dff2b51611f5d088e1aec406d2ba5db9fe249e849d2a798e5dffc26c01  /usr/bin/guile-tools
+62cb07dff2b51611f5d088e1aec406d2ba5db9fe249e849d2a798e5dffc26c01  /usr/bin/guild
+b8909c03a947096bb28597a16b95f68d2c1e7316b34d71a0305d2f0074ab3f36  /usr/share/man/man1/guile.1
