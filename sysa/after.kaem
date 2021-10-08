@@ -133,4 +133,4 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-bash run.sh
+exec bash run.sh
