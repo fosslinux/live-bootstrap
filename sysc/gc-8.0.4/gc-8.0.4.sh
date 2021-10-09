@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    autoreconf-2.69 -fi
+    autoreconf-2.71 -fi
 }
 
 src_configure() {

@@ -816,6 +816,6 @@ a272ec5ae54149333929f9bf51ee45eccf75d61af55f04161a69dd2c69d0ba9e  /usr/share/gui
 7c72516475f8c1470d2488039ea53e3505f1779cdf80aaaabc6bdde6a725e3b0  /usr/share/guile/3.0/ice-9/eval.scm
 a78f2fcaf573a644576a67e3081335568bd4b77be31be228b33550d6bb189392  /usr/share/aclocal/guile.m4
 5a1af2046c855d107b5a49a157adc69c64bcd51cdcaadb619d30398be351dd6c  /usr/bin/guile-snarf
-60c6b7eb8383bba911c8c2f0e2156e5b2100856aee58e77616fcf7751aa63295  /usr/bin/guile
+512c5eb652a7470277cc62173640f85e63d76b3e0a8e315d29ae5097be81c61b  /usr/bin/guile
 62cb07dff2b51611f5d088e1aec406d2ba5db9fe249e849d2a798e5dffc26c01  /usr/bin/guild
 1dde10bc8daad6f1c560dd5dbff0891be33dc8e0f3d3591fdef4aed51f61439b  /usr/bin/guile-config
