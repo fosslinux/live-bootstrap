@@ -59,7 +59,7 @@ def main():
     parser.add_argument("-qc", "--qemu-cmd", help="QEMU command to run",
                         default="qemu-system-x86_64")
     parser.add_argument("-qr", "--qemu-ram", help="Memory (in megabytes) allocated to QEMU VM",
-                        default=8000)
+                        default=4096)
     parser.add_argument("-qk", "--kernel", help="Kernel to use (default is ./kernel)",
                         default="kernel")
 

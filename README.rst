@@ -18,7 +18,7 @@ Get me started!
 1. ``git clone https://github.com/fosslinux/live-bootstrap``
 2. ``git submodule update --init --recursive``
 3. Provide a kernel (vmlinuz file) as the name kernel in the root of the
-   repository.
+   repository. **This must be a 32-bit kernel.**
 4. ``./rootfs.py`` - ensure your account has kvm privileges and qemu
    installed.
 
