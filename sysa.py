@@ -17,7 +17,7 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_tmp):
+    def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_tmp, sysc_tmp):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -31,6 +31,8 @@ class SysA(SysGeneral):
         self.after_dir = os.path.join(self.tmp_dir, 'after')
         self.base_dir = self.after_dir
         self.sysb_tmp = sysb_tmp
+        self.sysc_tmp = sysc_tmp
+        self.chroot = chroot
 
         self.prepare()
 
@@ -52,9 +54,17 @@ class SysA(SysGeneral):
         # sysb must be added to sysa as it is another initramfs stage
         self.sysb()
 
+        if self.chroot:
+            self.sysc()
+
     def sysb(self):
         """Copy in sysb files for sysb."""
         shutil.copytree(self.sysb_tmp, os.path.join(self.tmp_dir, 'sysb'),
+                shutil.ignore_patterns('tmp'))
+
+    def sysc(self):
+        """Copy in sysc files for sysc."""
+        shutil.copytree(self.sysc_tmp, os.path.join(self.tmp_dir, 'sysc'),
                 shutil.ignore_patterns('tmp'))
 
     def stage0_posix(self):

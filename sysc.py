@@ -73,21 +73,6 @@ class SysC(SysGeneral):
         if not self.chroot:
             umount(self.rootfs_dir)
 
-    def chroot_transition(self, original):
-        """
-        For chroot, transition sysa -> sysc
-        See create_sysc in sysb/run.sh
-        We skip sysb when using chroot, as sysb is entirely irrelevant
-        to chrooting (only for kernel shenanigans)
-        Copy directories from /usr (sysa) -> /usr (sysc)
-        """
-        run('sudo', 'chown', '-R', getpass.getuser(), original)
-        run('sudo', 'chown', '-R', getpass.getuser(), self.rootfs_dir)
-        shutil.copytree(os.path.join(original, 'usr'),
-                os.path.join(self.rootfs_dir, 'usr'),
-                ignore=shutil.ignore_patterns("src"),
-                dirs_exist_ok=True, symlinks=True)
-
     def deploy_scripts(self):
         """Add the scripts to the chroot"""
         src_files = ['run.sh', 'run2.sh']

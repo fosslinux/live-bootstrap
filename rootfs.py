@@ -70,12 +70,13 @@ def main():
 
     create_configuration_file(args)
 
+    system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
+            tmpdir=args.tmpdir, chroot=args.chroot)
     system_b = SysB(arch=args.arch, preserve_tmp=args.preserve,
             tmpdir=args.tmpdir, chroot=args.chroot)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
-            tmpdir=args.tmpdir, chroot=args.chroot, sysb_tmp=system_b.tmp_dir)
-    system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
-            tmpdir=args.tmpdir, chroot=args.chroot)
+                    tmpdir=args.tmpdir, chroot=args.chroot,
+                    sysb_tmp=system_b.tmp_dir, sysc_tmp=system_c.tmp_dir)
 
     bootstrap(args, system_a, system_b, system_c)
 
@@ -92,14 +93,6 @@ print(shutil.which('chroot'))
         # sysa
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', args.arch, 'kaem-optional-seed')
         run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
-        # Perform the steps for sysa -> sysc transition that would occur within
-        # qemu if we were running not in chroot
-        # We skip sysb as that is only pertinent to "hardware" (not chroot)
-        system_c.chroot_transition(system_a.tmp_dir)
-        # sysc
-        print(f"Bootstrapping {args.arch} -- SysC")
-        init = os.path.join(os.sep, 'init')
-        run('sudo', chroot_binary, system_c.tmp_dir, init)
 
     elif args.minikernel:
         if os.path.isdir('kritis-linux'):
