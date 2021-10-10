@@ -8,4 +8,4 @@ set -e
 
 # Begin sysc bootstrapping process
 cd /usr/src
-./run.sh
+exec ./run.sh

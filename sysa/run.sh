@@ -180,3 +180,8 @@ if [ "${CHROOT}" = False ]; then
 
     go_sysb
 fi
+
+# In chroot mode transition directly into System C.
+SYSC="/sysc"
+cp -R "${PREFIX}" "${SYSC}"
+exec chroot "${SYSC}" /init
