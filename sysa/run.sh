@@ -225,6 +225,15 @@ build kbd-1.15
 
 build make-3.82
 
+# Clear up some RAM space
+grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
+    rm -rf "${SOURCES:?}/${p:?}"
+done
+grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/=$//' | while read -r p ; do
+    rm -rf "${SOURCES:?}/${p:?}"
+done
+rm -rf "${SOURCES}/mes"
+
 if [ "${CHROOT}" = False ]; then
     build kexec-tools-2.0.22
 
