@@ -22,10 +22,14 @@ create_sysb() {
     echo "Creating sysb rootfs"
     mkdir -p /sysb/usr
     for d in bin include lib libexec sbin share; do
-        cp -r "${PREFIX}/${d}" "/sysb/usr/${d}"
+        # Minimise RAM (storage) use - use hard links
+        cp -rl "${PREFIX}/${d}" "/sysb/usr/${d}"
     done
     cp "${SOURCES}/bootstrap.cfg" /sysb/usr/src/bootstrap.cfg
     populate_device_nodes /sysb
+    echo "Creating sysb initramfs"
+    gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb
+    rm -rf /sysb # Cleanup
 }
 
 go_sysb() {
@@ -35,7 +39,7 @@ go_sysb() {
     # kexec time
     echo "Loading kernel + sysb initramfs using kexec"
     kexec -l "${PREFIX}/boot/linux-4.9.10" --console-serial \
-        --initrd="${PREFIX}/boot/initramfs-sysb" \
+        --initrd="${PREFIX}/boot/initramfs-sysb.cpio.gz" \
         --append="init=/init console=ttyS0"
     echo "kexecing into sysb"
     kexec -e
@@ -237,10 +241,9 @@ rm -rf "${SOURCES}/mes"
 if [ "${CHROOT}" = False ]; then
     build kexec-tools-2.0.22
 
-    create_sysb
-
     build linux-4.9.10
 
+    create_sysb
     go_sysb
 fi
 

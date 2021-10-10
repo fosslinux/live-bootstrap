@@ -41,14 +41,6 @@ src_prepare() {
 }
 
 src_compile() {
-    # Generate the initramfs so we can remove /sysb
-    make ARCH=i386 prepare
-    make ARCH=i386 usr/
-    mkdir -p "${PREFIX}/boot"
-    mv usr/initramfs_data.cpio.gz "${PREFIX}/boot/initramfs-sysb"
-    make clean
-    rm -rf /sysb
-    sed -i 's:/sysb::' .config
     cp .config include/config/auto.conf
     rm include/generated/autoconf.h
     generate_autoconf_h
@@ -58,5 +50,8 @@ src_compile() {
 }
 
 src_install() {
+    mkdir -p "${PREFIX}/boot"
     cp arch/i386/boot/bzImage "${PREFIX}/boot/linux-4.9.10"
+    cp usr/gen_init_cpio "${PREFIX}/bin"
+    cp scripts/gen_initramfs_list.sh "${PREFIX}/bin"
 }
