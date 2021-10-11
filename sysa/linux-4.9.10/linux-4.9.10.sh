@@ -5,7 +5,7 @@
 src_unpack() {
     default || true # Predictable link errors - not a problem
 
-    cp ../src/deblob-4.9 ../src/deblob-check ${pkg}/ 
+    cp ../src/deblob-4.9 ${pkg}/
 
     # Clear up storage space
     rm -rf ../src
@@ -32,9 +32,8 @@ src_prepare() {
     generate_autoconf_h
 
     # Deblob the kernel
-    chmod +x deblob-4.9 deblob-check
-    # Don't use gawk, use sed
-    AWK=dosentexist ./deblob-4.9
+    chmod +x deblob-4.9
+    ./deblob-4.9 --force
 
     # Remove shipped files
     find . -name "*_shipped*" -delete
@@ -45,6 +44,8 @@ src_compile() {
     rm include/generated/autoconf.h
     generate_autoconf_h
 
+    # Allow use of patched initramfs_list.sh (which is required anyway)
+    export PATH=$PWD/usr:$PATH
     make ARCH=i386 prepare
     make ARCH=i386
 }

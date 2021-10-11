@@ -280,5 +280,4 @@ class SysA(SysGeneral):
 
         # linux kernel 2.6.16.62
         self.get_file(["https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.10.tar.gz",
-            "https://linux-libre.fsfla.org/pub/linux-libre/releases/old/gen6/4.9.10-gnu/deblob-4.9",
-            "https://linux-libre.fsfla.org/pub/linux-libre/releases/old/gen6/4.9.10-gnu/deblob-check"])
+            "https://linux-libre.fsfla.org/pub/linux-libre/releases/old/gen6/4.9.10-gnu/deblob-4.9"])
