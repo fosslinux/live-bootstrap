@@ -56,6 +56,8 @@ build perl-5.32.1
 
 build automake-1.16.3
 
+build autoconf-2.71
+
 build patch-2.7.6
 
 build gettext-0.21

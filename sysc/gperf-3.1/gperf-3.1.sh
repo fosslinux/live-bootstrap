@@ -8,10 +8,10 @@ src_prepare() {
     for d in doc tests lib src; do
         cd $d
         ln -s ../aclocal.m4 aclocal.m4
-        autoreconf-2.69 -fi
+        autoreconf-2.71 -fi
         cd ..
     done
-    autoreconf-2.69 -fi
+    autoreconf-2.71 -fi
 }
 
 src_configure() {

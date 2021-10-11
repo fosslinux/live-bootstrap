@@ -633,8 +633,7 @@ need Autoconf 2.68.
 autoconf 2.69
 =============
 
-This the final version of GNU Autoconf that we will require. There are some newer
-versions but we won't need them.
+This is a much newer version of GNU Autoconf.
 
 automake 1.15.1
 ===============
@@ -743,6 +742,12 @@ automake 1.16.3
 ===============
 
 GNU Automake from 1.16 series that required newer Perl.
+
+autoconf 2.71
+=============
+
+GNU Autoconf 2.71 is even newer version of autoconf. It does not build with miniperl,
+so we postponed it until full perl was built.
 
 patch 2.7.6
 ===========

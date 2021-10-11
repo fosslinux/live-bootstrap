@@ -13,7 +13,7 @@ src_prepare() {
     # Remove buildstamp
     sed -i "s/date -u +'%Y-%m-%d %T'/1970-01-01 00:00:00/" libguile/Makefile.am
 
-    autoreconf-2.69 -fi
+    autoreconf-2.71 -fi
 
     # pp-syntax bootstrap: remove pre-gen file
     sha256sum module/ice-9/psyntax-pp.scm | tee psyntax-pp.sha256
