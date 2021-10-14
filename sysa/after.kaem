@@ -8,7 +8,9 @@
 
 set -ex
 
-PATH=/x86/bin
+ARCH=x86
+
+PATH=/${ARCH}/bin
 
 # Set commonly used variables
 sources=/after
@@ -27,19 +29,20 @@ mkdir ${prefix} ${bindir} ${libdir} ${incdir} ${tmpdir}
 cd ${prefix}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
-cp /x86/bin/blood-elf bin/blood-elf
-cp /x86/bin/catm bin/catm
-cp /x86/bin/chmod bin/chmod
-cp /x86/bin/get_machine bin/get_machine
-cp /x86/bin/hex2 bin/hex2
-cp /x86/bin/kaem ${bindir}/kaem
-cp /x86/bin/M1 bin/M1
-cp /x86/bin/M2-Planet bin/M2-Planet
-cp /x86/bin/mkdir bin/mkdir
-cp /x86/bin/sha256sum bin/sha256sum
-cp /x86/bin/ungz bin/ungz
-cp /x86/bin/untar bin/untar
-cp /x86/bin/cp bin/cp
+cp /${ARCH}/bin/blood-elf bin/blood-elf
+cp /${ARCH}/bin/catm bin/catm
+cp /${ARCH}/bin/chmod bin/chmod
+cp /${ARCH}/bin/get_machine bin/get_machine
+cp /${ARCH}/bin/hex2 bin/hex2
+cp /${ARCH}/bin/kaem bin/kaem
+cp /${ARCH}/bin/match bin/match
+cp /${ARCH}/bin/M1 bin/M1
+cp /${ARCH}/bin/M2-Planet bin/M2-Planet
+cp /${ARCH}/bin/mkdir bin/mkdir
+cp /${ARCH}/bin/sha256sum bin/sha256sum
+cp /${ARCH}/bin/ungz bin/ungz
+cp /${ARCH}/bin/untar bin/untar
+cp /${ARCH}/bin/cp bin/cp
 
 chmod 755 bin/blood-elf
 chmod 755 bin/catm
@@ -48,6 +51,7 @@ chmod 755 bin/cp
 chmod 755 bin/get_machine
 chmod 755 bin/hex2
 chmod 755 bin/kaem
+chmod 755 bin/match
 chmod 755 bin/M1
 chmod 755 bin/M2-Planet
 chmod 755 bin/mkdir
