@@ -92,10 +92,16 @@ fi
 
 echo "Thank you! All done."
 
+# Clear up some RAM space
+grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/=$//' | while read -r p ; do
+    rm -rf "${SOURCES:?}/${p:?}"
+done
+rm -rf "${SOURCES}/mes"
+
 # Write to bootstrap.cfg
 rm "${SOURCES}/bootstrap.cfg"
 for var in CHROOT FORCE_TIMESTAMPS DISK; do
-    echo "${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
+    echo "export ${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
 done
 
 build flex-2.5.11
@@ -233,10 +239,6 @@ build make-3.82
 grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"
 done
-grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/=$//' | while read -r p ; do
-    rm -rf "${SOURCES:?}/${p:?}"
-done
-rm -rf "${SOURCES}/mes"
 
 if [ "${CHROOT}" = False ]; then
     build kexec-tools-2.0.22
@@ -250,4 +252,5 @@ fi
 # In chroot mode transition directly into System C.
 SYSC="/sysc"
 cp -R "${PREFIX}" "${SYSC}"
+cp "${SOURCES}/bootstrap.cfg" "${SYSC}/usr/src/"
 exec chroot "${SYSC}" /init

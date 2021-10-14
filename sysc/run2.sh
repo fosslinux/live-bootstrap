@@ -14,7 +14,7 @@ trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 # shellcheck source=sysglobal/helpers.sh
 . helpers.sh
 # shellcheck source=/dev/null
-. helpers.sh
+. bootstrap.cfg
 
 trap bash EXIT
 

@@ -59,7 +59,7 @@ if [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
     ask_disk
 fi
 
-echo "DISK=${DISK}" >> /usr/src/bootstrap.cfg
+echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
 
 # Otherwise, add stuff from sysa to sysb
 echo "Mounting sysc"
