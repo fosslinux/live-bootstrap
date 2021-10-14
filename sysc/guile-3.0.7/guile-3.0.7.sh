@@ -11,7 +11,8 @@ src_prepare() {
     # kernel-specific (in ways other than hardcoded string). Hence disable
     # checksumming for guile binary under chroot.
     if [ "$CHROOT" = True ]; then
-        sed -i '/guile$/d' ../../checksums
+        sed -i '\|/usr/bin/guile$|d' ../../checksums
+        sed -i '\|/usr/lib/musl/libguile-3.0.a$|d' ../../checksums
     fi
 
     find . -name '*.info*' -delete
