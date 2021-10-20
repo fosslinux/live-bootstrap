@@ -9,7 +9,7 @@ import os
 from distutils.dir_util import copy_tree
 import shutil
 
-from lib.sysgeneral import SysGeneral
+from lib.sysgeneral import SysGeneral, stage0_arch_map
 
 # pylint: disable=consider-using-with
 class SysA(SysGeneral):
@@ -72,13 +72,17 @@ class SysA(SysGeneral):
         stage0_posix_base_dir = os.path.join(self.sys_dir, 'stage0-posix', 'src')
         copy_tree(stage0_posix_base_dir, self.tmp_dir)
 
+        arch = stage0_arch_map.get(self.arch, self.arch)
         kaem_optional_seed = os.path.join(self.sys_dir, 'stage0-posix', 'src', 'bootstrap-seeds',
-                                          'POSIX', self.arch, 'kaem-optional-seed')
+                                          'POSIX', arch, 'kaem-optional-seed')
         shutil.copy2(kaem_optional_seed, os.path.join(self.tmp_dir, 'init'))
 
         # stage0-posix hook to continue running live-bootstrap
-        shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
+        shutil.copy2(os.path.join(self.sys_dir, f"after.kaem.{self.arch}"),
                      os.path.join(self.tmp_dir, 'after.kaem'))
+
+        shutil.copy2(os.path.join(self.sys_dir, 'run.kaem'),
+                     os.path.join(self.tmp_dir, 'run.kaem'))
 
     def after(self):
         """
