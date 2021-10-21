@@ -20,6 +20,7 @@ from sysa import SysA
 from sysb import SysB
 from sysc import SysC
 from lib.utils import run
+from lib.sysgeneral import stage0_arch_map
 
 def create_configuration_file(args):
     """
@@ -123,8 +124,10 @@ print(shutil.which('chroot'))
 """
         chroot_binary = run('sudo', 'python3', '-c', find_chroot,
                             capture_output=True).stdout.decode().strip()
+
         # sysa
-        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', args.arch, 'kaem-optional-seed')
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
 
     elif args.minikernel:

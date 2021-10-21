@@ -165,3 +165,7 @@ class SysGeneral:
                         "--directory", self.tmp_dir],
                      stdin=subprocess.PIPE, stdout=initramfs)
             cpio.communicate(input='\n'.join(file_list).encode())
+
+stage0_arch_map = {
+    "amd64": "AMD64",
+}

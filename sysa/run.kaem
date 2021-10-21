@@ -8,9 +8,7 @@
 
 set -ex
 
-ARCH=x86
-
-PATH=/${ARCH}/bin
+PATH=/${STAGE0_ARCH}/bin
 
 # Set commonly used variables
 sources=/after
@@ -29,20 +27,20 @@ mkdir ${prefix} ${bindir} ${libdir} ${incdir} ${tmpdir}
 cd ${prefix}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
-cp /${ARCH}/bin/blood-elf bin/blood-elf
-cp /${ARCH}/bin/catm bin/catm
-cp /${ARCH}/bin/chmod bin/chmod
-cp /${ARCH}/bin/get_machine bin/get_machine
-cp /${ARCH}/bin/hex2 bin/hex2
-cp /${ARCH}/bin/kaem bin/kaem
-cp /${ARCH}/bin/match bin/match
-cp /${ARCH}/bin/M1 bin/M1
-cp /${ARCH}/bin/M2-Planet bin/M2-Planet
-cp /${ARCH}/bin/mkdir bin/mkdir
-cp /${ARCH}/bin/sha256sum bin/sha256sum
-cp /${ARCH}/bin/ungz bin/ungz
-cp /${ARCH}/bin/untar bin/untar
-cp /${ARCH}/bin/cp bin/cp
+cp /${STAGE0_ARCH}/bin/blood-elf bin/blood-elf
+cp /${STAGE0_ARCH}/bin/catm bin/catm
+cp /${STAGE0_ARCH}/bin/chmod bin/chmod
+cp /${STAGE0_ARCH}/bin/get_machine bin/get_machine
+cp /${STAGE0_ARCH}/bin/hex2 bin/hex2
+cp /${STAGE0_ARCH}/bin/kaem bin/kaem
+cp /${STAGE0_ARCH}/bin/match bin/match
+cp /${STAGE0_ARCH}/bin/M1 bin/M1
+cp /${STAGE0_ARCH}/bin/M2-Planet bin/M2-Planet
+cp /${STAGE0_ARCH}/bin/mkdir bin/mkdir
+cp /${STAGE0_ARCH}/bin/sha256sum bin/sha256sum
+cp /${STAGE0_ARCH}/bin/ungz bin/ungz
+cp /${STAGE0_ARCH}/bin/untar bin/untar
+cp /${STAGE0_ARCH}/bin/cp bin/cp
 
 chmod 755 bin/blood-elf
 chmod 755 bin/catm
