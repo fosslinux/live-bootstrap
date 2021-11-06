@@ -34,7 +34,7 @@ cp mes/module/srfi/srfi-9/gnu-struct.mes mes/module/srfi/srfi-9/gnu.mes
 
 # Build mes-m2
 mkdir bin m2
-kaem -v -f kaem.run
+kaem --verbose --strict --file kaem.${ARCH}
 cp bin/mes-m2 ${bindir}/mes-m2
 chmod 755 ${bindir}/mes-m2
 

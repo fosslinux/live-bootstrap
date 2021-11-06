@@ -108,7 +108,7 @@ class SysA(SysGeneral):
         """Prepare remaining sources"""
 
         # mes-0.22 snapshot with m2 fixes
-        self.get_file(["https://github.com/oriansj/mes-m2/archive/7fa2f99bf9bba2d79bd9d15c579be8905520d960.tar.gz",
+        self.get_file(["https://github.com/oriansj/mes-m2/archive/c07111ff876882591bc0077b32b7303d3bf2b99e.tar.gz",
                        "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
                       output=["mes.tar.gz", "nyacc-1.00.2.tar.gz"])
 
