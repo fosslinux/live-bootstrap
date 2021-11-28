@@ -31,7 +31,7 @@ Get me started!
       machine.
 
 5. Wait.
-6. If you can, observe the many binaries in ``/after/bin``! When the
+6. If you can, observe the many binaries in ``/usr/bin``! When the
    bootstrap is completed ``bash`` is launched providing a shell to
    explore the system.
 
