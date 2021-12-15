@@ -56,6 +56,8 @@ build perl-5.32.1
 
 build libarchive-3.5.2
 
+build openssl-1.1.1l
+
 build automake-1.16.3
 
 build autoconf-2.71
