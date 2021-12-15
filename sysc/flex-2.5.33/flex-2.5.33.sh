@@ -17,6 +17,7 @@ src_prepare() {
 src_configure() {
     ./configure \
         --prefix="${PREFIX}" \
+        --libdir="${PREFIX}/lib/musl" \
         --program-suffix=-2.5.33
 }
 

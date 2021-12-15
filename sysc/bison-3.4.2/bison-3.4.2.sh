@@ -20,7 +20,9 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}" --disable-nls
+    ./configure --prefix="${PREFIX}" \
+        --libdir="${PREFIX}/lib/musl" \
+        --disable-nls
 }
 
 src_compile() {
