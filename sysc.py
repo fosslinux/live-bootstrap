@@ -150,6 +150,9 @@ class SysC(SysGeneral):
         self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
                        "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
 
+        # libarchive-3.5.2
+        self.get_file("https://libarchive.org/downloads/libarchive-3.5.2.tar.xz")
+
         # autoconf 2.71
         self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.71.tar.xz")
 

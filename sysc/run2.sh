@@ -54,6 +54,8 @@ build dist-3.5-236 '' '' '' dist-d1de81f
 
 build perl-5.32.1
 
+build libarchive-3.5.2
+
 build automake-1.16.3
 
 build autoconf-2.71
