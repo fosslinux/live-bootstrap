@@ -58,6 +58,10 @@ build libarchive-3.5.2
 
 build openssl-1.1.1l
 
+build zlib-1.2.11
+
+build xbps-0.59.1
+
 build automake-1.16.3
 
 build autoconf-2.71
@@ -67,8 +71,6 @@ build patch-2.7.6
 build gettext-0.21
 
 build texinfo-6.7
-
-build zlib-1.2.11
 
 build gcc-4.7.4
 

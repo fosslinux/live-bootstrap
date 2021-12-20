@@ -156,6 +156,10 @@ class SysC(SysGeneral):
         # openssl-1.1.1l
         self.get_file("https://www.openssl.org/source/openssl-1.1.1l.tar.gz")
 
+        # xbps 0.59.1
+        self.get_file("https://github.com/void-linux/xbps/archive/refs/tags/0.59.1.tar.gz",
+                       output="xbps-0.59.1.tar.gz")
+
         # autoconf 2.71
         self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.71.tar.xz")
 
