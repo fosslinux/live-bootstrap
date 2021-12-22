@@ -62,7 +62,8 @@ class SysGeneral:
                 raise Exception(f"Checksum mismatch for file {os.path.basename(file_name)}:\n\
 expected: {expected_hash}\n\
 actual:   {readable_hash}\n\
-When in doubt, try deleting the file in question -- it will be downloaded again when running this script the next time")
+When in doubt, try deleting the file in question -- it will be downloaded again when running \
+this script the next time")
 
         raise Exception("File checksum is not yet recorded")
 
