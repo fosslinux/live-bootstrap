@@ -40,7 +40,7 @@ chmod 755 ${bindir}/mes-m2
 
 # Build Mes C library using mes-m2 bootstrapped Mes
 
-alias mescc="${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -c"
+alias mescc="${MES} -e main ${bindir}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -c"
 
 # Start with crt1.o
 mescc lib/linux/x86-mes-mescc/crt1.c
