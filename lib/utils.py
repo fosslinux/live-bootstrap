@@ -44,7 +44,7 @@ def mount(source, target, fs_type, options='', **kwargs):
 
 def umount(target, **kwargs):
     """Unmount filesystem"""
-    run('sudo', 'umount', target, **kwargs)
+    run('sudo', 'umount', '--recursive', target, **kwargs)
 
 def copytree(src, dst, ignore=shutil.ignore_patterns('*.git*')):
     """Copy directory tree into another directory"""
