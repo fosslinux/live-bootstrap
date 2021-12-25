@@ -23,13 +23,15 @@ Get me started!
    installed.
 
    a. Alternatively, run ``./rootfs.py --chroot`` to run it in a chroot.
-   b. Alternatively, run ``./rootfs.py`` but don’t run the actual
+   b. Alternatively, run ``./rootfs.py --bwrap`` to run it in a bubblewrap
+      sandbox. When user namespaces are supported, this mode is rootless.
+   c. Alternatively, run ``./rootfs.py`` but don’t run the actual
       virtualization and instead copy sysa/tmp/initramfs to a USB or
       some other device and boot from bare metal. NOTE: we now require
       a hard drive. This is currently hardcoded as sda. You also need
       to put ``sysc/tmp/disk.img`` onto your sda on the bootstrapping
       machine.
-   c. Alternatively, do not use python at all, see "Python-less build"
+   d. Alternatively, do not use python at all, see "Python-less build"
       below.
 
 5. Wait.

@@ -7,6 +7,7 @@ you can run bootstap inside chroot.
 """
 
 # SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
@@ -30,7 +31,7 @@ def create_configuration_file(args):
     config_path = os.path.join('sysa', 'bootstrap.cfg')
     with open(config_path, "w", encoding="utf_8") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
-        config.write("CHROOT=" + str(args.chroot) + "\n")
+        config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
         config.write("DISK=sda1\n")
 
@@ -44,6 +45,8 @@ def main():
     parser.add_argument("-a", "--arch", help="Bootstrap architecture",
                         default="x86")
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
+                        action="store_true")
+    parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
                         action="store_true")
     parser.add_argument("-p", "--preserve", help="Do not remove temporary dir",
                         action="store_true")
@@ -80,6 +83,8 @@ def main():
         if args.qemu:
             count += 1
         if args.chroot:
+            count += 1
+        if args.bwrap:
             count += 1
         if args.minikernel:
             count += 1
@@ -138,6 +143,38 @@ print(shutil.which('chroot'))
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
+
+    elif args.bwrap:
+        system_c.prepare(mount_tmpfs=False,
+                         create_disk_image=False)
+        system_a.prepare(mount_tmpfs=False,
+                         copy_sysc=True,
+                         create_initramfs=False)
+
+        # sysa
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+        run('bwrap', '--unshare-user',
+                     '--uid', '0',
+                     '--gid', '0',
+                     '--cap-add', 'CAP_SYS_CHROOT', # Required for chroot from sysa to sysc
+                     '--clearenv',
+                     '--setenv', 'PATH', '/usr/bin',
+                     '--bind', system_a.tmp_dir, '/',
+                     '--dir', '/dev',
+                     '--dev-bind', '/dev/null', '/dev/null',
+                     '--dev-bind', '/dev/zero', '/dev/zero',
+                     '--dev-bind', '/dev/random', '/dev/random',
+                     '--dev-bind', '/dev/urandom', '/dev/urandom',
+                     '--dir', '/sysc/dev',
+                     '--dev-bind', '/dev/null', '/sysc/dev/null',
+                     '--dev-bind', '/dev/zero', '/sysc/dev/zero',
+                     '--dev-bind', '/dev/random', '/sysc/dev/random',
+                     '--dev-bind', '/dev/urandom', '/sysc/dev/urandom',
+                     '--proc', '/sysc/proc',
+                     '--bind', '/sys', '/sysc/sys',
+                     '--tmpfs', '/sysc/tmp',
+                     init)
 
     elif args.minikernel:
         if os.path.isdir('kritis-linux'):
