@@ -96,7 +96,7 @@ this script the next time")
         self.check_file(abs_file_name)
         return abs_file_name
 
-    def get_file(self, url, mkbuild=False, output=None):
+    def get_file(self, url, output=None):
         """
         Download and prepare source packages
 
@@ -105,9 +105,6 @@ this script the next time")
           2. list of URLs to download. In this case the first URL is the primary URL
              from which we derive the name of package directory
         output can be used to override file name of the downloaded file(s).
-
-        mkbuild=True can be used to pre-create build directories before
-        mkdir is available.
         """
         # Single URL
         if isinstance(url, str):
@@ -136,8 +133,6 @@ this script the next time")
             tarball = self.download_file(urls[i], outputs[i])
             # Install sources into target directory
             shutil.copy2(tarball, target_src_dir)
-        if mkbuild:
-            os.mkdir(os.path.join(self.base_dir, target_name, 'build'))
 
     def deploy_sysglobal_files(self):
         """Deploy files common to all Sys*"""
