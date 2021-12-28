@@ -10,6 +10,8 @@ set -e
 
 # shellcheck source=sysglobal/helpers.sh
 . helpers.sh
+# shellcheck source=/dev/null
+. bootstrap.cfg
 
 export PATH=/usr/bin:/usr/sbin
 export PREFIX=/usr
