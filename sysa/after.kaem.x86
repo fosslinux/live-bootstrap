@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-#
-# SPDX-License-Identifier: GPL-3.0-or-later
-
-ARCH=x86
-STAGE0_ARCH=x86
-exec /${ARCH}/bin/kaem --verbose --file run.kaem

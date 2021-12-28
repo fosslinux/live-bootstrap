@@ -78,11 +78,8 @@ class SysA(SysGeneral):
         shutil.copy2(kaem_optional_seed, os.path.join(self.tmp_dir, 'init'))
 
         # stage0-posix hook to continue running live-bootstrap
-        shutil.copy2(os.path.join(self.sys_dir, f"after.kaem.{self.arch}"),
+        shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
                      os.path.join(self.tmp_dir, 'after.kaem'))
-
-        shutil.copy2(os.path.join(self.sys_dir, 'run.kaem'),
-                     os.path.join(self.tmp_dir, 'run.kaem'))
 
     def after(self):
         """
