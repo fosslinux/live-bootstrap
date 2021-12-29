@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #define MEM_ALIGNBYTES 8
-#define BIN "/image/bin"
+#define BIN "/usr/bin"
 #define BYTEORDER 0x4321
 #define CPPSTDIN "tcc -E"
 #define CPPMINUS "-"
@@ -51,13 +51,13 @@
 #define INTSIZE 4
 #define Off_t off_t
 
-#define PRIVLIB "/image/lib/perl5"
+#define PRIVLIB "/usr/lib/perl5"
 
 #define _(args) args
 
 #define RANDBITS 31
 
-#define SCRIPTDIR "/image/bin"
+#define SCRIPTDIR "/usr/bin"
 
 #define SIG_NAME "ZERO","HUP","INT","QUIT","ILL","TRAP","IOT","BUS","FPE","KILL","USR1","SEGV","USR2","PIPE","ALRM","TERM","STKFLT","CHLD","CONT","STOP","TSTP","TTIN","TTOU","URG","XCPU","XFSZ","VTALRM","PROF","WINCH", "IO", "POLL", "PWR", "SYS", "UNUSED"
 #define SIG_NUM 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
@@ -67,8 +67,8 @@
 #define STDCHAR char
 #define Uid_t uid_t
 
-#define LOC_SED "/image/bin/sed"
-#define ARCHLIB "/image/lib/perl5/"
+#define LOC_SED "/usr/bin/sed"
+#define ARCHLIB "/usr/lib/perl5/"
 
 #define CAT2(a,b) a##b
 #define Gconvert(x,n,t,b) gcvt((x),(n),(b))
