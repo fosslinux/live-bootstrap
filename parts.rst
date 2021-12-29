@@ -549,7 +549,7 @@ kbd-1.15
 
 ``kbd`` contains ``loadkeys`` which is required for building the Linux kernel.
 The 2.x series is not used because it requires particular features of autotools
-that we do not have avaliable.
+that we do not have available.
 
 make 3.82
 =========
