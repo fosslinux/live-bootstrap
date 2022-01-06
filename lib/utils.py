@@ -29,7 +29,7 @@ def create_disk(image, disk_type, fs_type, size):
     """Create a disk image, with a filesystem on it"""
     run('truncate', '-s', size, image)
     # First find the device we will use, then actually use it
-    loop_dev = run('losetup', '-f', capture_output=True).stdout.decode().strip()
+    loop_dev = run('sudo', 'losetup', '-f', capture_output=True).stdout.decode().strip()
     run('sudo', 'losetup', loop_dev, image)
     # Create the partition
     run('sudo', 'parted', '--script', image, 'mklabel', disk_type, 'mkpart',
