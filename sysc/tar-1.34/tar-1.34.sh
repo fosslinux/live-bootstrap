@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+
 src_prepare() {
     default
 
@@ -26,4 +27,7 @@ src_compile() {
 
 src_install() {
     make install PREFIX="${PREFIX}" MAKEINFO="true" DESTDIR="${DESTDIR}"
+    # Manually install tar (cannot replace tar while running)
+    cp "${DESTDIR}${PREFIX}/bin/tar" "${PREFIX}/bin/tar"
+    rm "${DESTDIR}${PREFIX}/bin/tar"
 }
