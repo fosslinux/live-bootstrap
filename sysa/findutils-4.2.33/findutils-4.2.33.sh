@@ -5,6 +5,8 @@
 src_prepare() {
     . ../../import-gnulib.sh
 
+    default_src_prepare
+
     autoreconf-2.61 -f
 
     # Pre-built texinfo files
