@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+
 src_unpack() {
     src_dir="${base_dir}/src"
 
@@ -16,6 +17,8 @@ src_prepare() {
     cp lib/ftw_.h lib/ftw.h
     cp lib/search_.h lib/search.h
     touch config.h
+
+    patch -Np0 -i ../../patches/touch-getdate.patch
 
     # Bison pre-generated file
     rm lib/getdate.c
