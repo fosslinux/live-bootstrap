@@ -29,7 +29,10 @@ src_configure() {
 
 src_install() {
     # Do not install prebuilt .mo translation catalogs
-    install bash "${DESTDIR}${PREFIX}/bin"
+    install -D bash "${DESTDIR}${PREFIX}/bin/bash"
     # Work around weird symlink bug
     install bash "${DESTDIR}${PREFIX}/bin/sh"
+
+    # Needs special handling b/c is currently running - tar doesn't like this
+    rm -f "${PREFIX}/bin/bash" "${PREFIX}/bin/sh"
 }

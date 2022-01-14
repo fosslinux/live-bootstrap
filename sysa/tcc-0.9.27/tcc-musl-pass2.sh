@@ -39,6 +39,6 @@ src_compile() {
 }
 
 src_install() {
-    install tcc-musl ${DESTDIR}${bindir}
-    install -m 644 libtcc1.a ${DESTDIR}${libdir}
+    install -D tcc-musl ${DESTDIR}${bindir}/tcc-musl
+    install -D -m 644 libtcc1.a ${DESTDIR}${libdir}/libtcc1.a
 }

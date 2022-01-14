@@ -15,5 +15,5 @@ src_configure() {
 src_install() {
     default
 
-    rm "${PREFIX}/lib/musl/libxbps.so"*
+    rm "${DESTDIR}${PREFIX}/lib/musl/libxbps.so"*
 }

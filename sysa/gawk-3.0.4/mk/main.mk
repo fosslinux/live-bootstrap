@@ -49,5 +49,5 @@ awktab.c: awk.y
 	bison $^ -o $@
 
 install: all
-	install gawk "$(DESTDIR)$(PREFIX)/bin"
-	ln -s "$(PREFIX)/bin/gawk" "$(DESTDIR)$(PREFIX)/bin/awk"
+	install -D gawk $(DESTDIR)$(PREFIX)/bin/gawk
+	ln -s $(PREFIX)/bin/gawk $(DESTDIR)$(PREFIX)/bin/awk

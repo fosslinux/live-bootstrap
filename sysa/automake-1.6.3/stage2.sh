@@ -21,11 +21,13 @@ src_compile() {
 }
 
 src_install() {
-    install automake "${DESTDIR}${PREFIX}"/bin/automake-1.6
+    install -D automake "${DESTDIR}${PREFIX}"/bin/automake-1.6
     mkdir -p "${DESTDIR}${PREFIX}"/share/automake-1.6/am
+    mkdir -p "${DESTDIR}${PREFIX}"/share/automake-1.6/Automake
     cp lib/Automake/*.pm "${DESTDIR}${PREFIX}"/share/automake-1.6/Automake/
     cp -r lib/am/*.am "${DESTDIR}${PREFIX}"/share/automake-1.6/am/
 
-    install aclocal "${DESTDIR}${PREFIX}"/bin/aclocal-1.6
+    install -D aclocal "${DESTDIR}${PREFIX}"/bin/aclocal-1.6
+    mkdir -p "${DESTDIR}${PREFIX}"/share/aclocal-1.6/
     cp -r m4/*.m4 "${DESTDIR}${PREFIX}"/share/aclocal-1.6/
 }

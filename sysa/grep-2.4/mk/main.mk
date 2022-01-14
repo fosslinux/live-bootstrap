@@ -27,6 +27,6 @@ grep: $(GREP_OBJECTS)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: all
-	install grep $(DESTDIR)$(PREFIX)/bin
+	install -D grep $(DESTDIR)$(PREFIX)/bin/grep
 	ln -sf $(PREFIX)/bin/grep $(DESTDIR)$(PREFIX)/bin/egrep
 	ln -sf $(PREFIX)/bin/grep $(DESTDIR)$(PREFIX)/bin/fgrep

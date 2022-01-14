@@ -123,4 +123,5 @@ $(SRC_DIR)/sha1sum: $(SRC_DIR)/sha1sum.o $(SRC_DIR)/md5sum.o $(LIB_DIR)/libfetti
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: $(ALL)
+	$(SRC_DIR)/install -d $(bindir)
 	$(SRC_DIR)/install $^ $(bindir)

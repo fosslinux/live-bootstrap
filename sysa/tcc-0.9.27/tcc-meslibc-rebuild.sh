@@ -34,5 +34,5 @@ src_compile() {
 }
 
 src_install() {
-    install tcc ${DESTDIR}${bindir}
+    install -D tcc ${DESTDIR}${bindir}/tcc
 }

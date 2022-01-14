@@ -132,6 +132,6 @@ endef
 $(foreach f,$(EXTENSIONS),$(eval $(call build_rule,$f)))
 
 install: all
-	install perl "$(DESTDIR)$(PREFIX)/bin/perl"
+	install -D perl "$(DESTDIR)$(PREFIX)/bin/perl"
 	mkdir -p "$(DESTDIR)$(PRIVLIB_EXP)"
 	cp -r lib/* "$(DESTDIR)$(PRIVLIB_EXP)"

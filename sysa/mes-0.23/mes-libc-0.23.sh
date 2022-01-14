@@ -63,6 +63,7 @@ src_compile() {
 }
 
 src_install() {
+    mkdir -p "${DESTDIR}${PREFIX}/lib/mes"
     install -m 644 libc.a "${DESTDIR}${PREFIX}/lib/mes"
     install -m 644 libgetopt.a "${DESTDIR}${PREFIX}/lib/mes"
     install -m 644 crt1.o "${DESTDIR}${PREFIX}/lib/mes"

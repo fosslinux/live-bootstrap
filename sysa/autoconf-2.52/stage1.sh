@@ -14,7 +14,7 @@ src_compile() {
 }
 
 src_install() {
-    install autoconf ${DESTDIR}${PREFIX}/bin/autoconf-2.52
+    install -D autoconf ${DESTDIR}${PREFIX}/bin/autoconf-2.52
     mkdir -p ${DESTDIR}${PREFIX}/share/autoconf-2.52
     cp -r *.m4* ${DESTDIR}${PREFIX}/share/autoconf-2.52/
 }

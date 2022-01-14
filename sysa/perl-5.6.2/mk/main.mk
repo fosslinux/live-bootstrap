@@ -115,7 +115,7 @@ perl: perlmain.o lib/auto/DynaLoader/DynaLoader.a $(EXTENSIONS_A) lib/auto/POSIX
 	$(CC) $(CFLAGS) perlmain.o lib/auto/DynaLoader/DynaLoader.a $(EXTENSIONS_A) lib/auto/POSIX/POSIX.a libperl.a -o $@
 
 install: all
-	install perl $(DESTDIR)$(PREFIX)/bin/perl
+	install -D perl $(DESTDIR)$(PREFIX)/bin/perl
 	mkdir -p "$(DESTDIR)$(PRIVLIB_EXP)"
 	cp -r lib/* "$(DESTDIR)$(PRIVLIB_EXP)"
 

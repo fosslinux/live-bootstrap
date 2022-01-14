@@ -111,4 +111,5 @@ $(SRC_DIR)/mktemp: $(SRC_DIR)/mktemp.o $(LIB_DIR)/libfettish.a
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: $(ALL)
+	install -d $(bindir)
 	install $^ $(bindir)
