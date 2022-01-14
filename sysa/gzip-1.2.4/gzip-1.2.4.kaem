@@ -11,10 +11,17 @@ set -ex
 mkdir build
 cd build
 
+catm gzip.c.new ../../files/stat_override.c gzip.c
+cp gzip.c.new gzip.c
+
 # Extract
 ungz ../src/${pkg}.tar.gz
 untar ../src/${pkg}.tar
 cd ${pkg}
+
+# Prepare
+catm gzip.c.new ../../files/stat_override.c gzip.c
+cp gzip.c.new gzip.c
 
 # Compile
 tcc -c -DNO_UTIME gzip.c

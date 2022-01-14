@@ -18,6 +18,8 @@ untar ../src/${pkg}.tar
 cd ${pkg}
 
 cp ../../files/getdate_stub.c lib/getdate_stub.c
+catm src/create.c.new ../../files/stat_override.c src/create.c
+cp src/create.c.new src/create.c
 
 # Compile
 
