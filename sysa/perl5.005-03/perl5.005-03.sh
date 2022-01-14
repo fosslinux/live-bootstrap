@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+
 src_prepare() {
     default
 
@@ -16,6 +17,10 @@ src_prepare() {
         rm -f ${file}.h
         perl ${file}.pl
     done
+    rm -f regnodes.h
+    perl regcomp.pl
+    rm -f fbyterun.h byterun.c
+    perl bytecode.pl
 }
 
 src_install() {

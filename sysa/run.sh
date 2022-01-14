@@ -152,9 +152,9 @@ build perl-5.000
 
 build perl-5.003
 
-build perl5.004_05
+build perl5.004-05 '' '' '' perl5.004_05
 
-build perl5.005_03
+build perl5.005-03 '' '' '' perl5.005_03
 
 build perl-5.6.2
 
