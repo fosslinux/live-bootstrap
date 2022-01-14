@@ -61,6 +61,7 @@ build openssl-1.1.1l
 build zlib-1.2.11
 
 build xbps-0.59.1
+export XBPS_TARGET_ARCH="${ARCH}"
 
 build automake-1.16.3
 

@@ -98,9 +98,11 @@ rm -rf "${SOURCES}/mes"
 
 # Write to bootstrap.cfg
 rm "${SOURCES}/bootstrap.cfg"
-for var in CHROOT FORCE_TIMESTAMPS DISK; do
+for var in CHROOT FORCE_TIMESTAMPS DISK ARCH; do
     echo "export ${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
 done
+
+mkdir -p /tmp/destdir /usr/src/repo /dev
 
 build flex-2.5.11
 

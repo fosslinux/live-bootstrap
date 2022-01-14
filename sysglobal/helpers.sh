@@ -7,6 +7,55 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Find a list of links
+get_links() {
+    original="${1:-${PWD}/}"
+    if [ -n "$(ls)" ]; then
+        for f in *; do
+            # Bash link detection is broken
+            # and we don't always have grep, hence this pretty dodgy solution
+            case "$(ls -ld "${f}")" in
+            *" -> "*)
+                fullpath="${PWD}/${f}"
+                # shellcheck disable=SC2001
+                echo "$(readlink "${f}") /$(echo "${fullpath}" | sed "s:^${original}::")"
+                rm "${f}" # Don't include in tarball
+                ;;
+            *)
+                if [ -d "${f}" ]; then
+                    cd "${f}"
+                    get_links "${original}"
+                    cd ..
+                fi
+                ;;
+            esac
+        done
+    fi
+}
+
+# Reset all timestamps to unix time 0
+reset_timestamp() {
+    fs=
+    if [ -n "$(ls)" ]; then
+        fs=$(echo *)
+    fi
+    if [ -n "$(ls .[0-z]*)" ]; then
+        fs="${fs} $(echo .[0-z]*)"
+    fi
+    for f in ${fs}; do
+        args=
+        if touch --help | grep ' \-h' >/dev/null; then
+            args="-h"
+        fi
+        touch ${args} -t 197001010000.00 "${f}"
+        if [ -d "${f}" ]; then
+            cd "${f}"
+            reset_timestamp
+            cd ..
+        fi
+    done
+}
+
 # Common build steps
 # Build function provides a few common stages with default implementation
 # that can be overridden on per package basis in the build script.
@@ -16,10 +65,9 @@
 # 3) optionally specify name of checksum file. Default is checksums
 # 4) directory of patches. Default is patches
 # 5) directory to cd into. Default is ${pkg}
-build () {
+build() {
     pkg=$1
     script_name=${2:-${pkg}.sh}
-    checksum_f=${3:-checksums}
     dirname=${5:-${pkg}}
 
     cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
@@ -28,6 +76,8 @@ build () {
     patch_dir="${base_dir}/${4:-patches}"
     mk_dir="${base_dir}/mk"
     files_dir="${base_dir}/files"
+
+    DESTDIR="/tmp/destdir"
 
     mkdir -p "build"
     cd "build"
@@ -56,19 +106,83 @@ build () {
     build_stage=src_compile
     call $build_stage
 
-    echo "${pkg}: installing."
+    echo "${pkg}: install to fakeroot."
     build_stage=src_install
     call $build_stage
 
-    cd "${SOURCES}/${pkg}"
+    cd /usr/src/repo
+    # Get revision (n time this package has been built)
+    revision="$(echo "${pkg}"*)"
+    # Different versions of bash
+    if [ "${revision}" = "${pkg}*" ] || [ -z "${revision}" ]; then
+        revision=0
+    else
+        revision="${revision##*_}"
+        revision="${revision%%.*}"
+        revision=$((++revision))
+    fi
 
-    echo "${pkg}: checksumming installed files."
-    test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
+    echo "${pkg}: creating package."
+    # Various shenanigans must be implemented for repoducibility
+    # as a result of timestamps
+    cd "${DESTDIR}"
+    touch -t 197001010000.00 .
+    reset_timestamp
+    cd /usr/src/repo
+    if command -v xbps-create >/dev/null 2>&1; then
+        xbps-create -A "${ARCH}" -n "${pkg}_${revision}" -s "${pkg}" --compression xz "${DESTDIR}"
+    else
+        # All symlinks are dereferenced, which is BAD
+        cd "${DESTDIR}"
+        get_links > "/usr/src/repo/${pkg}_${revision}.links"
+        cd /usr/src/repo
+        args=
+        if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
+            args="--sort=name"
+        fi
+        tar -C "${DESTDIR}" ${args} -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+        touch -t 197001010000.00 "${pkg}_${revision}.tar"
+        gzip "${pkg}_${revision}.tar"
+    fi
+
+    echo "${pkg}: checksumming created package."
+    # shellcheck disable=SC2154
+    test -z "${checksum}" || checksum="$(echo "${checksum} " "${pkg}_${revision}."*)"
+    if echo "${checksum}" | grep -q ".links"; then
+        checksum="$(echo "${checksum}" | cut -f'1 2 4' -d' ')"
+    fi
+    test -z "${checksum}" || echo "${checksum}" | sha256sum -c || \
+        (echo "Expected: ${checksum}"; echo "Got: $(sha256sum $(echo "${checksum}" | cut -d' ' -f3))"; false)
+
+    if command -v xbps-rindex >/dev/null 2>&1; then
+        echo "${pkg}: adding package to repository."
+        xbps-rindex --compression xz -a "/usr/src/repo/${pkg}_${revision}.${ARCH}.xbps"
+    fi
 
     echo "${pkg}: cleaning up."
-    rm -rf "build"
+    rm -rf "${SOURCES}/${pkg}/build"
+    rm -rf /tmp/destdir/
+    mkdir -p /tmp/destdir/
+
+    echo "${pkg}: installing package."
+    if command -v xbps-install >/dev/null 2>&1; then
+        xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
+    else
+        tar -C / -xzpf "/usr/src/repo/${pkg}_${revision}.tar.gz"
+        # shellcheck disable=SC2162
+        # ^ read -r unsupported in old bash
+        while read line; do
+            # shellcheck disable=SC2001
+            # ^ cannot use variable expansion here
+            rm -f "$(echo "${line}" | sed 's/.* //')"
+            # shellcheck disable=SC2226,SC2086
+            # ^ ${line} expands into two arguments
+            ln -s ${line}
+        done < "/usr/src/repo/${pkg}_${revision}.links"
+    fi
 
     echo "${pkg}: build successful"
+
     cd "${SOURCES}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install
@@ -170,6 +284,7 @@ canonicalise_all_files_timestamp() {
 populate_device_nodes() {
     # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
     mkdir -p "${1}/dev"
+    rm "${1}/dev/null" -f
     test -c "${1}/dev/null" || mknod -m 666 "${1}/dev/null" c 1 3
     test -c "${1}/dev/zero" || mknod -m 666 "${1}/dev/zero" c 1 5
     test -c "${1}/dev/random" || mknod -m 444 "${1}/dev/random" c 1 8
