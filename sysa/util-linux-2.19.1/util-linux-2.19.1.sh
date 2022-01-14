@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+
 src_prepare() {
     default
 
@@ -9,13 +10,10 @@ src_prepare() {
     AUTOPOINT=true autoreconf -fi
 }
 
-#        --target=i386-unknown-linux-gnu \
-#        --host=i386-unknown-linux-gnu \
-#        --build=i386-unknown-linux-gnu \
 src_configure() {
     ./configure --prefix=${PREFIX} \
         --bindir="${PREFIX}/bin" \
-        --sbindir="${PREFIX}/sbin" \
+        --sbindir="${PREFIX}/bin" \
         --libdir="${PREFIX}/lib/musl" \
         --disable-libuuid \
         --without-ncurses \

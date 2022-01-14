@@ -11,8 +11,6 @@ set -e
 # shellcheck source=/dev/null
 . bootstrap.cfg
 
-export PATH=/usr/bin:/usr/sbin
-
 # Unload the current kernel before things go weird
 kexec -u
 

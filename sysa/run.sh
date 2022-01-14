@@ -14,14 +14,12 @@ set -e
 
 export PREFIX=/usr
 export SOURCES=/after
-mkdir -p "${PREFIX}/sbin"
-export PATH="${PREFIX}/bin:${PREFIX}/sbin"
 
 create_sysb() {
     # Copy everything in
     echo "Creating sysb rootfs"
     mkdir -p /sysb/usr
-    for d in bin include lib libexec sbin share; do
+    for d in bin include lib libexec share; do
         # Minimise RAM (storage) use - use hard links
         cp -rl "${PREFIX}/${d}" "/sysb/usr/${d}"
     done

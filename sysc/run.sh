@@ -22,9 +22,8 @@ create_fhs() {
     for d in bin lib sbin; do
         ln -s "usr/${d}" "/${d}"
     done
-    # Make sbin a symlink to bin
     mv /usr/sbin/* /usr/bin/
-    rmdir /usr/sbin
+    rm -r /sbin /usr/sbin
     ln -s bin /usr/sbin
     ln -s bin /sbin
     mkdir /etc /proc /run /sys /tmp /var
