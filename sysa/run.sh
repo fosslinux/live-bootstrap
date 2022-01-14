@@ -221,7 +221,10 @@ build autoconf-2.64
 
 build gcc-4.0.4 pass1.sh checksums/pass1
 
+# This hack fixes a strange bug in mes libc bash
+set -x
 build linux-headers-5.10.41 '' '' '' linux-5.10.41
+set +x
 
 build musl-1.2.2
 
