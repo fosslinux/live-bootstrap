@@ -3,17 +3,10 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=74a415b13672827c2a33af0cdb32fece2510721fc051010a36b055223a16a2ce
+
 src_prepare() {
     default
-
-    # If we are in chroot mode, we can make no assumptions about the host
-    # kernel. It appears the resulting binary is at least somewhat
-    # kernel-specific (in ways other than hardcoded string). Hence disable
-    # checksumming for guile binary under chroot.
-    if [ "$CHROOT" = True ]; then
-        sed -i '\|/usr/bin/guile$|d' ../../checksums
-        sed -i '\|/usr/lib/musl/libguile-3.0.a$|d' ../../checksums
-    fi
 
     find . -name '*.info*' -delete
 

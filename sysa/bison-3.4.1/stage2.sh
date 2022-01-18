@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=1c4358bb5c67eb8a194800d3b705cccf51224c9ef6aa2d847463495c740b7d69
+
 src_prepare() {
     default
 

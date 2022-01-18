@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=8447f286410c39a8c5933881a8524add93800fb39571c1fa016ef89eaf604dd6
+
 src_prepare() {
     rm configure standards.info autoconf.info
     touch autoconf.info

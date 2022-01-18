@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=a01861fd8b93496f932cd94fd3dcccd7241a6bde613ea9390c26398c7588fba4
+
 src_prepare() {
     . ../../import-gnulib.sh
 

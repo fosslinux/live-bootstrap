@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=8c0c50860613d0223d36892013493b069c1855eb002b95526d55d590207635ec
+
 # When we rebuild flex it no longer needs patching
 # and can use simplified makefile
 src_prepare() {

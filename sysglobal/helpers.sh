@@ -186,6 +186,7 @@ build() {
     cd "${SOURCES}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install
+    unset checksum
 }
 
 # Default unpacking function that unpacks all source tarballs.

@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=452767f7321aef2eeff9d3a935a574f0680f834f89f2589f3a43951a159b3948
+
 src_prepare() {
     autoreconf-2.71 -fi
 }

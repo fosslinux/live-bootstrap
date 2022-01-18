@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=748512d89578c2b454cee350c81707c4a27bc02637429ee5f5d9b32c6d76f73a
 
 src_unpack() {
     src_dir="${base_dir}/src"

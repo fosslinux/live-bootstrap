@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=9f148a2eb166d7c66d9328996e82d314c19b86d27c9d61ea8803d380307059c8
+
 src_prepare() {
     # Remove bison generated files
     rm y.tab.c y.tab.h

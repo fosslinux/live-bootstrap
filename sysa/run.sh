@@ -111,13 +111,13 @@ build mes-0.23 mes-libc-0.23.sh
 
 build tcc-0.9.27 tcc-meslibc-rebuild.sh checksums/tcc-meslibc-rebuild
 
-build musl-1.1.24 '' checksums/pass1
+build musl-1.1.24 pass1.sh checksums/pass1
 
 # Rebuild tcc using musl
 build tcc-0.9.27 tcc-musl-pass1.sh checksums/tcc-musl-pass1
 
 # Rebuild musl using tcc-musl
-build musl-1.1.24 '' checksums/pass2
+build musl-1.1.24 pass2.sh checksums/pass2
 
 # Rebuild tcc-musl using new musl
 build tcc-0.9.27 tcc-musl-pass2.sh checksums/tcc-musl-pass2

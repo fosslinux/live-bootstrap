@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=a4810ca31d5fb1ce968a889c19de8def4470a6a941b6a274b894c6bcb966c6dd
+
 src_prepare() {
     sed -i '/Makefile/d' configure.in
 

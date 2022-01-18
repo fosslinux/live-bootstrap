@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=f2f82ffefc2dbbe72ccc5ae532d207778af2f56537abc0cc756d080eb8a2b11e
+
 src_configure() {
     CC=gcc ./configure \
         --host=i386-unknown-linux-musl \

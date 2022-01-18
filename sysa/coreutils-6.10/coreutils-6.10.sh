@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=7ee4b097f5a896af925b53eee7055ba87dad89949f44d14695566249f45a5eaf
+
 src_prepare() {
     default
     mv lib/fnmatch.in.h lib/fnmatch.h

@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=7c92699f3b1c2f63a18b8a771d00128aa8992403c47a9e552cccad741ced61ac
+
 src_compile() {
     rm doc/standards.info doc/autoconf.info
     cp autoconf.in autoconf

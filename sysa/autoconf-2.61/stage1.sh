@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=f123f798e1135347ffb9a84bd09a4a3c569e0941454fb094ba177a384c2a2619
+
 src_prepare() {
     rm doc/standards.info
     sed -i -e '/AC_PROG_GREP/d' -e '/AC_PROG_SED/d' configure.ac

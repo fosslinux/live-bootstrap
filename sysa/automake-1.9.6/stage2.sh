@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+checksum=ce2252cf0e4e402248f06bff1f425829ba68a79a4e34efa2105234cfd0b76ca1
+
 src_prepare() {
     rm doc/automake.info*
 
