@@ -6,19 +6,19 @@ src_prepare() {
     default
 
     # Regenerate bison files
-    rm perly.c perly.h
+    rm -f perly.c perly.h
     bison -d perly.y
     mv perly.tab.c perly.c
     mv perly.tab.h perly.h
 
     # Regenerate other prebuilt header files
     for file in embed keywords opcode; do
-        rm ${file}.h
+        rm -f ${file}.h
         perl ${file}.pl
     done
-    rm regnodes.h
+    rm -f regnodes.h
     perl regcomp.pl
-    rm byterun.h byterun.c
+    rm -f fbyterun.h byterun.c
     perl bytecode.pl
 }
 

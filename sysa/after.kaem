@@ -23,7 +23,7 @@ NYACC_PKG=nyacc-1.00.2
 MES_PKG=mes
 MES_PREFIX=${sources}/${MES_PKG}/src/mes-m2-dad1744fa80f52b3b428803c06b09d39c285f500
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sources}/${MES_PKG}/src/${NYACC_PKG}/module
-mkdir ${prefix} ${bindir} ${libdir} ${incdir} ${tmpdir}
+mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${tmpdir}
 cd ${prefix}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)

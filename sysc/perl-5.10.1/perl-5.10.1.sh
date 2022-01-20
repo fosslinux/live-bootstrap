@@ -12,14 +12,14 @@ src_prepare() {
     # is not dependent on perly.y any more.
     perl regen_perly.pl -b bison-2.3
     # Remove the source file so make works.
-    rm perly.y
+    rm -f perly.y
 
     # Regenerate other prebuilt header files
     # Taken from headers of regen scripts
-    rm lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c overload.h \
-        overload.c lib/overload/numbers.pm opcode.h opnames.h pp_proto.h \
-        pp.sym keywords.h embed.h embedvar.h global.sym perlapi.c perlapi.h \
-        proto.h
+    rm -f lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c overload.h \
+          overload.c lib/overload/numbers.pm opcode.h opnames.h pp_proto.h \
+          pp.sym keywords.h embed.h embedvar.h global.sym perlapi.c perlapi.h \
+          proto.h
     perl regen.pl
 
     mkdir -p ext/File ext/Digest ext/Data

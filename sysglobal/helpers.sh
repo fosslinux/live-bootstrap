@@ -172,9 +172,12 @@ populate_device_nodes() {
     mkdir -p "${1}/dev"
     test -c "${1}/dev/null" || mknod -m 666 "${1}/dev/null" c 1 3
     test -c "${1}/dev/zero" || mknod -m 666 "${1}/dev/zero" c 1 5
-    test -c "${1}/dev/ptmx" || mknod -m 666 "${1}/dev/ptmx" c 5 2
-    test -c "${1}/dev/tty" || mknod -m 666 "${1}/dev/tty" c 5 0
     test -c "${1}/dev/random" || mknod -m 444 "${1}/dev/random" c 1 8
     test -c "${1}/dev/urandom" || mknod -m 444 "${1}/dev/urandom" c 1 9
-    test -c "${1}/dev/console" || mknod -m 666 "${1}/dev/console" c 5 1
+
+    if [ "${CHROOT}" = False ]; then
+        test -c "${1}/dev/ptmx" || mknod -m 666 "${1}/dev/ptmx" c 5 2
+        test -c "${1}/dev/tty" || mknod -m 666 "${1}/dev/tty" c 5 0
+        test -c "${1}/dev/console" || mknod -m 666 "${1}/dev/console" c 5 1
+    fi
 }

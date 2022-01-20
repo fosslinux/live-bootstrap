@@ -12,7 +12,7 @@ mkdir build
 cd build
 
 # Extract
-gunzip ../src/${pkg}.tar.gz
+gunzip -f ../src/${pkg}.tar.gz
 untar ../src/${pkg}.tar
 
 cd ${pkg}

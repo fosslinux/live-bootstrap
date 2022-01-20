@@ -13,7 +13,7 @@ cd build
 lexdir=/lex
 
 # Extract
-bunzip2 ../src/${pkg}.tar.bz2
+bunzip2 -f ../src/${pkg}.tar.bz2
 tar xf ../src/${pkg}.tar ${pkg}/yacc ${pkg}/lex
 cd ${pkg}
 

@@ -4,6 +4,10 @@
 
 src_unpack() {
     src_dir="${base_dir}/src"
+
+    # Remove previous source diretory
+    rm -rf "${pkg}"
+
     tar -xf "${src_dir}/${pkg}.tar"
 }
 

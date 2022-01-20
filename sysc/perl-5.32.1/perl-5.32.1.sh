@@ -14,15 +14,15 @@ src_prepare() {
 
     # Regenerate other prebuilt header files
     # Taken from headers of regen scripts
-    rm embed.h embedvar.h perlapi.c perlapi.h proto.h mg_names.inc mg_raw.h \
-        mg_vtable.h opcode.h opnames.h pp_proto.h \
-        lib/B/Op_private.pm overload.h overload.inc lib/overload/numbers.pm \
-        reentr.h reentr.c regnodes.h lib/warnings.pm \
-        warnings.h lib/feature.pm feature.h
+    rm -f embed.h embedvar.h perlapi.c perlapi.h proto.h mg_names.inc mg_raw.h \
+          mg_vtable.h opcode.h opnames.h pp_proto.h \
+          lib/B/Op_private.pm overload.h overload.inc lib/overload/numbers.pm \
+          reentr.h reentr.c regnodes.h lib/warnings.pm \
+          warnings.h lib/feature.pm feature.h
     perl regen.pl
 
     # Regenerate configure + config_h.SH
-    rm Configure config_h.SH
+    rm -f Configure config_h.SH
     ln -s ../perl-5f2dc80/regen-configure/.package .
     ln -s ../perl-5f2dc80/regen-configure/U .
     metaconfig -m

@@ -12,22 +12,22 @@ src_prepare() {
     default
 
     # Remove and regenerate bison files
-    rm perly.c perly.h
+    rm -f perly.c perly.h
     bison -d perly.y
     mv perly.tab.c perly.c
     mv perly.tab.h perly.h
 
     # Regenerate embed.h
-    rm embed.h
+    rm -f embed.h
     ./embed_h.SH
 
     # Regenerate keywords.h
-    rm keywords.h
+    rm -f keywords.h
     chmod +x keywords.sh
     ./keywords.sh
 
     # Regenerate opcode.h
-    rm opcode.h
+    rm -f opcode.h
     chmod +x opcode.sh
     ./opcode.sh
 }
