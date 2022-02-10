@@ -5,7 +5,7 @@
 ar='tcc -ar'
 cc='tcc'
 ldlibpthname='LD_LIBRARY_PATH'
-libpth='/image/lib/musl'
+libpth='/usr/lib/musl'
 path_sep=':'
 archname=''
 osvers=''

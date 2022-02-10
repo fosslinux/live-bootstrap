@@ -45,4 +45,7 @@ src_install() {
     rm -rf "${PREFIX}"/lib/perl5/
 
     default
+
+    # Remove messed up manpages
+    rm -r "${DESTDIR}/"*.0
 }

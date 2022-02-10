@@ -35,25 +35,30 @@ get_links() {
 
 # Reset all timestamps to unix time 0
 reset_timestamp() {
-    fs=
-    if [ -n "$(ls)" ]; then
-        fs=$(echo *)
+    args=
+    if touch --help | grep ' \-h' >/dev/null; then
+        args="-h"
     fi
-    if [ -n "$(ls .[0-z]*)" ]; then
-        fs="${fs} $(echo .[0-z]*)"
+    if command -v find 2>&1 >/dev/null; then
+        find . -exec touch ${args} -t 197001010000.00 "{}" \;
+    else
+        # A rudimentary find implementation that does the trick
+        fs=
+        if [ -n "$(ls)" ]; then
+            fs=$(echo *)
+        fi
+        if [ -n "$(ls .[0-z]*)" ]; then
+            fs="${fs} $(echo .[0-z]*)"
+        fi
+        for f in ${fs}; do
+            touch ${args} -t 197001010000.00 "${f}"
+            if [ -d "${f}" ]; then
+                cd "${f}"
+                reset_timestamp
+                cd ..
+            fi
+        done
     fi
-    for f in ${fs}; do
-        args=
-        if touch --help | grep ' \-h' >/dev/null; then
-            args="-h"
-        fi
-        touch ${args} -t 197001010000.00 "${f}"
-        if [ -d "${f}" ]; then
-            cd "${f}"
-            reset_timestamp
-            cd ..
-        fi
-    done
 }
 
 # Common build steps
@@ -76,8 +81,6 @@ build() {
     patch_dir="${base_dir}/${4:-patches}"
     mk_dir="${base_dir}/mk"
     files_dir="${base_dir}/files"
-
-    DESTDIR="/tmp/destdir"
 
     mkdir -p "build"
     cd "build"
@@ -135,12 +138,19 @@ build() {
         # All symlinks are dereferenced, which is BAD
         cd "${DESTDIR}"
         get_links > "/usr/src/repo/${pkg}_${revision}.links"
-        cd /usr/src/repo
-        args=
-        if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
-            args="--sort=name"
+        if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+            find -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
         fi
-        tar -C "${DESTDIR}" ${args} -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+        cd /usr/src/repo
+        if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
+            tar -C "${DESTDIR}" --sort=name --hard-dereference -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+        elif command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+            cd "${DESTDIR}"
+            tar --no-recursion --null -T /tmp/filelist.txt -cf "/usr/src/repo/${pkg}_${revision}.tar"
+            cd -
+        else
+            tar -C "${DESTDIR}" -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+        fi
         touch -t 197001010000.00 "${pkg}_${revision}.tar"
         gzip "${pkg}_${revision}.tar"
     fi
@@ -168,16 +178,22 @@ build() {
     if command -v xbps-install >/dev/null 2>&1; then
         xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
     else
+        # Overwriting files is mega busted, so do it manually
+        while IFS= read -d $'\0' file; do
+            rm -f "/${file}" >/dev/null 2>&1 || true
+        done < /tmp/filelist.txt
         tar -C / -xzpf "/usr/src/repo/${pkg}_${revision}.tar.gz"
         # shellcheck disable=SC2162
         # ^ read -r unsupported in old bash
         while read line; do
             # shellcheck disable=SC2001
             # ^ cannot use variable expansion here
-            rm -f "$(echo "${line}" | sed 's/.* //')"
+            fname="$(echo "${line}" | sed 's/.* //')"
+            rm -f "${fname}"
             # shellcheck disable=SC2226,SC2086
             # ^ ${line} expands into two arguments
             ln -s ${line}
+            touch -t 197001010000.00 "${fname}"
         done < "/usr/src/repo/${pkg}_${revision}.links"
     fi
 

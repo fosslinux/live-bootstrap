@@ -16,6 +16,7 @@ set -e
 export PATH=/usr/bin:/usr/sbin
 export PREFIX=/usr
 export SOURCES=/usr/src
+export DESTDIR=/tmp/destdir
 
 create_fhs() {
     # Add the rest of the FHS that we will use and is not created pre-boot
@@ -39,4 +40,4 @@ create_fhs
 
 build bash-5.1
 
-exec env -i PATH=${PATH} PREFIX=${PREFIX} SOURCES=${SOURCES} bash run2.sh
+exec env -i PATH=${PATH} PREFIX=${PREFIX} SOURCES=${SOURCES} DESTDIR=${DESTDIR} bash run2.sh

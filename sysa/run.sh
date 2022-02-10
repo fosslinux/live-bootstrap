@@ -14,6 +14,7 @@ set -e
 
 export PREFIX=/usr
 export SOURCES=/after
+export DESTDIR="/tmp/destdir"
 
 create_sysb() {
     # Copy everything in

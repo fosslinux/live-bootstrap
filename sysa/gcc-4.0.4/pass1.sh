@@ -57,6 +57,9 @@ src_prepare() {
 
     # Pre-built texinfo files
     find . -name '*.info' -delete
+
+    # Pre-built man files
+    rm gcc/doc/*.1 gcc/doc/*.7
 }
 
 src_configure() {
