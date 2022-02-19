@@ -22,3 +22,11 @@ src_compile() {
     export SOURCE_DATE_EPOCH=1638831119
     default
 }
+
+src_install() {
+    default
+
+    rm -r "${DESTDIR}${PREFIX}/share/doc/openssl/html/man"{1,3,7}
+    rm -r "${DESTDIR}${PREFIX}/share/man/man"{1,3,7}
+    rm -r "${DESTDIR}${PREFIX}/ssl/misc"
+}

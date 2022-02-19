@@ -40,7 +40,8 @@ reset_timestamp() {
         args="-h"
     fi
     if command -v find 2>&1 >/dev/null; then
-        find . -exec touch ${args} -t 197001010000.00 "{}" \;
+        # find does not error out on exec error
+        find . -print0 | xargs -0 touch ${args} -t 197001010000.00
     else
         # A rudimentary find implementation that does the trick
         fs=

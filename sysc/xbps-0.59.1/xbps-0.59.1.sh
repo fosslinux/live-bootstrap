@@ -18,4 +18,5 @@ src_install() {
     default
 
     rm "${DESTDIR}${PREFIX}/lib/musl/libxbps.so"*
+    rm -r "${DESTDIR}${PREFIX}/share/bash-completion/completions"
 }
