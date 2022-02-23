@@ -56,8 +56,6 @@ build perl-5.32.1
 
 build libarchive-3.5.2
 
-false
-
 build openssl-1.1.1l
 
 build zlib-1.2.11

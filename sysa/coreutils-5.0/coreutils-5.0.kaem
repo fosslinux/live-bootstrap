@@ -35,4 +35,4 @@ make -f Makefile PREFIX=${prefix} install
 cd ../..
 
 # Checksums
-sha256sum -c checksums/pass1
+sha256sum -c checksums

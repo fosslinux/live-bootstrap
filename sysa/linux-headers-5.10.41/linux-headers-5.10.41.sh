@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-checksum=4ca12ba3d9baa979bb13c270cb152834897cf9400d63800804ff7052452ff9e1
-
 src_unpack() {
     src_dir="${base_dir}/src"
     tar -xzf "${src_dir}/"*.tar.gz "${dirname}/scripts"

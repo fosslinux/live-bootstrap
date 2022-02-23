@@ -136,7 +136,7 @@ this script the next time")
 
     def deploy_sysglobal_files(self):
         """Deploy files common to all Sys*"""
-        sysglobal_files = ['helpers.sh']
+        sysglobal_files = ['helpers.sh', 'SHA256SUMS.pkgs']
         for file in sysglobal_files:
             shutil.copy2(os.path.join(self.git_dir, 'sysglobal', file),
                          self.base_dir)

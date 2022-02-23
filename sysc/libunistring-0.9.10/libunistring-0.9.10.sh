@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-checksum=19bde5b058c188e976f4cfcea35d9f0d897daf593479a7db00eb6a6eabefd131
-
 src_prepare() {
     find . -name '*.info*' -delete
 

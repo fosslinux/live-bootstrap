@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-checksum=d43d89ea6efb13cc84ad7fd218ca4fa19c07fa6ab308edf9df62919ad8b00359
-
 regenerate_files() {
     build-aux/gen-lists-of-programs.sh --autoconf > m4/cu-progs.m4
     build-aux/gen-lists-of-programs.sh --automake > src/cu-progs.mk

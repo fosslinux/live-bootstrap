@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-checksum=ad8e113ecc22a49b1c40e670f0620da86bde6199ec56366c3d46368cf46c184c
-
 # We manually compile here because ./Configure uses metaconfig itself
 # *sigh*
 

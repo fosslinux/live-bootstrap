@@ -39,16 +39,16 @@ reset_timestamp() {
     if touch --help | grep ' \-h' >/dev/null; then
         args="-h"
     fi
-    if command -v find 2>&1 >/dev/null; then
+    if command -v find >/dev/null 2>&1; then
         # find does not error out on exec error
         find . -print0 | xargs -0 touch ${args} -t 197001010000.00
     else
         # A rudimentary find implementation that does the trick
         fs=
-        if [ -n "$(ls)" ]; then
+        if [ -n "$(ls 2>/dev/null)" ]; then
             fs=$(echo *)
         fi
-        if [ -n "$(ls .[0-z]*)" ]; then
+        if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
             fs="${fs} $(echo .[0-z]*)"
         fi
         for f in ${fs}; do
@@ -60,6 +60,17 @@ reset_timestamp() {
             fi
         done
     fi
+}
+
+# Fake grep
+fake_grep() {
+    text="${1}"
+    fname="${2}"
+    while read line; do
+        case "${line}" in *"${text}"*)
+            echo "${line}" ;;
+        esac
+    done < "${fname}"
 }
 
 # Common build steps
@@ -157,13 +168,11 @@ build() {
     fi
 
     echo "${pkg}: checksumming created package."
-    # shellcheck disable=SC2154
-    test -z "${checksum}" || checksum="$(echo "${checksum} " "${pkg}_${revision}."*)"
-    if echo "${checksum}" | grep -q ".links"; then
-        checksum="$(echo "${checksum}" | cut -f'1 2 4' -d' ')"
+    if command -v grep >/dev/null 2>&1; then
+        grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
+    else
+        fake_grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
     fi
-    test -z "${checksum}" || echo "${checksum}" | sha256sum -c || \
-        (echo "Expected: ${checksum}"; echo "Got: $(sha256sum $(echo "${checksum}" | cut -d' ' -f3))"; false)
 
     if command -v xbps-rindex >/dev/null 2>&1; then
         echo "${pkg}: adding package to repository."

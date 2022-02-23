@@ -46,4 +46,4 @@ tcc -version
 cd ../..
 
 # Checksums
-sha256sum -c checksums/tcc-0.9.27
+sha256sum -c checksums

@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-checksum=e0e13b46d2aaee18d6dd0bbd86c47c1ca951c78e7c5e8e76f79fd14c2502e6ea
-
 src_prepare() {
     rm configure Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 automake.info*
     aclocal-1.6

@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-checksum=8447f286410c39a8c5933881a8524add93800fb39571c1fa016ef89eaf604dd6
-
 src_prepare() {
+    default
+
     rm configure standards.info autoconf.info
     touch autoconf.info
     autoconf-2.52
@@ -21,5 +21,5 @@ src_compile() {
 }
 
 src_install() {
-    make install MAKEINFO=true DESTDIR="${DESTDIR}"
+    make MAKEINFO=true DESTDIR="${DESTDIR}" install
 }
