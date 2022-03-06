@@ -71,6 +71,8 @@ if [ -z "${CHROOT}" ]; then
     echo "or not. Is it? (yes/no answer)"
     ask_chroot
     echo
+
+    echo "export CHROOT=${CHROOT}" >> "${SOURCES}/bootstrap.cfg"
 fi
 
 ask_timestamps() {
@@ -91,15 +93,13 @@ if [ -z "${FORCE_TIMESTAMPS}" ]; then
     echo "fully reproducible disk image. (yes/no answer)"
     ask_timestamps
     echo
+
+    echo "export FORCE_TIMESTAMPS=${FORCE_TIMESTAMPS}" >> "${SOURCES}/bootstrap.cfg"
 fi
 
 echo "Thank you! All done."
 
-# Write to bootstrap.cfg
-rm "${SOURCES}/bootstrap.cfg"
-for var in CHROOT FORCE_TIMESTAMPS DISK ARCH UPDATE_CHECKSUMS; do
-    echo "export ${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
-done
+echo "export ARCH=${ARCH}" >> "${SOURCES}/bootstrap.cfg"
 
 mkdir -p "${DESTDIR}" "${REPO}" /dev
 
