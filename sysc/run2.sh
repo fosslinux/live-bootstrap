@@ -85,7 +85,7 @@ build libatomic_ops-7.6.10
 
 build gc-8.0.4
 
-#build guile-3.0.7
+build guile-3.0.7
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -14,6 +14,7 @@ src_configure() {
         --bindir="${PREFIX}/bin" \
         --sbindir="${PREFIX}/bin" \
         --libdir="${PREFIX}/lib/musl" \
+        --build=i386-unknown-linux-gnu \
         --disable-libuuid \
         --without-ncurses \
         --enable-static \

@@ -1,9 +1,12 @@
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
     default
+
+    # Remove two useless manpages that code in hostname
+    rm doc/man5/x509v3_config.pod doc/man5/config.pod
 
     # Remove a bunch of pregenerated files
     # thanks for making these easy to find :)

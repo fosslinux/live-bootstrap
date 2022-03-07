@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 #
@@ -46,7 +46,7 @@ reset_timestamp() {
         # A rudimentary find implementation that does the trick
         fs=
         if [ -n "$(ls 2>/dev/null)" ]; then
-            fs=$(echo *)
+            fs=$(echo ./*)
         fi
         if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
             fs="${fs} $(echo .[0-z]*)"
@@ -66,6 +66,7 @@ reset_timestamp() {
 fake_grep() {
     text="${1}"
     fname="${2}"
+    # shellcheck disable=SC2162
     while read line; do
         case "${line}" in *"${text}"*)
             echo "${line}" ;;
@@ -151,7 +152,7 @@ build() {
         cd "${DESTDIR}"
         get_links > "/usr/src/repo/${pkg}_${revision}.links"
         if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
-            find -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
+            find . -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
         fi
         cd /usr/src/repo
         if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
@@ -189,6 +190,7 @@ build() {
         xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
     else
         # Overwriting files is mega busted, so do it manually
+        # shellcheck disable=SC2162
         while IFS= read -d $'\0' file; do
             rm -f "/${file}" >/dev/null 2>&1 || true
         done < /tmp/filelist.txt
