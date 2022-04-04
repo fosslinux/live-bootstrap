@@ -34,7 +34,7 @@ src_configure() {
     PKG_CONFIG_PATH="${PREFIX}/lib/musl/pkgconfig" ./configure \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
-	    --build=i386-unknown-linux-musl \
+        --build=i386-unknown-linux-musl \
         --disable-shared \
         --disable-jit
 }

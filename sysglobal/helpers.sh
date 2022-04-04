@@ -36,8 +36,11 @@ get_links() {
 # Reset all timestamps to unix time 0
 reset_timestamp() {
     args=
-    if touch --help | grep ' \-h' >/dev/null; then
-        args="-h"
+    # touch -h is not avaliable until after grep is built.
+    if command -v grep >/dev/null 2>&1; then
+        if touch --help | grep ' \-h' >/dev/null; then
+            args="-h"
+        fi
     fi
     if command -v find >/dev/null 2>&1; then
         # find does not error out on exec error
@@ -63,15 +66,19 @@ reset_timestamp() {
 }
 
 # Fake grep
-fake_grep() {
+_grep() {
     text="${1}"
     fname="${2}"
-    # shellcheck disable=SC2162
-    while read line; do
-        case "${line}" in *"${text}"*)
-            echo "${line}" ;;
-        esac
-    done < "${fname}"
+    if command -v grep >/dev/null 2>&1; then
+        grep "${text}" "${fname}"
+    else
+        # shellcheck disable=SC2162
+        while read line; do
+            case "${line}" in *"${text}"*)
+                echo "${line}" ;;
+            esac
+        done < "${fname}"
+    fi
 }
 
 # Common build steps
@@ -139,46 +146,13 @@ build() {
     fi
 
     echo "${pkg}: creating package."
+    cd "${DESTDIR}"
+    src_pkg
     # Various shenanigans must be implemented for repoducibility
     # as a result of timestamps
-    cd "${DESTDIR}"
-    touch -t 197001010000.00 .
-    reset_timestamp
-    cd /usr/src/repo
-    if command -v xbps-create >/dev/null 2>&1; then
-        xbps-create -A "${ARCH}" -n "${pkg}_${revision}" -s "${pkg}" --compression xz "${DESTDIR}"
-    else
-        # All symlinks are dereferenced, which is BAD
-        cd "${DESTDIR}"
-        get_links > "/usr/src/repo/${pkg}_${revision}.links"
-        if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
-            find . -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
-        fi
-        cd /usr/src/repo
-        if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
-            tar -C "${DESTDIR}" --sort=name --hard-dereference -cf "/usr/src/repo/${pkg}_${revision}.tar" .
-        elif command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
-            cd "${DESTDIR}"
-            tar --no-recursion --null -T /tmp/filelist.txt -cf "/usr/src/repo/${pkg}_${revision}.tar"
-            cd -
-        else
-            tar -C "${DESTDIR}" -cf "/usr/src/repo/${pkg}_${revision}.tar" .
-        fi
-        touch -t 197001010000.00 "${pkg}_${revision}.tar"
-        gzip "${pkg}_${revision}.tar"
-    fi
 
     echo "${pkg}: checksumming created package."
-    if command -v grep >/dev/null 2>&1; then
-        grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
-    else
-        fake_grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
-    fi
-
-    if command -v xbps-rindex >/dev/null 2>&1; then
-        echo "${pkg}: adding package to repository."
-        xbps-rindex --compression xz -a "/usr/src/repo/${pkg}_${revision}.${ARCH}.xbps"
-    fi
+    _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
 
     echo "${pkg}: cleaning up."
     rm -rf "${SOURCES}/${pkg}/build"
@@ -186,28 +160,7 @@ build() {
     mkdir -p /tmp/destdir/
 
     echo "${pkg}: installing package."
-    if command -v xbps-install >/dev/null 2>&1; then
-        xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
-    else
-        # Overwriting files is mega busted, so do it manually
-        # shellcheck disable=SC2162
-        while IFS= read -d $'\0' file; do
-            rm -f "/${file}" >/dev/null 2>&1 || true
-        done < /tmp/filelist.txt
-        tar -C / -xzpf "/usr/src/repo/${pkg}_${revision}.tar.gz"
-        # shellcheck disable=SC2162
-        # ^ read -r unsupported in old bash
-        while read line; do
-            # shellcheck disable=SC2001
-            # ^ cannot use variable expansion here
-            fname="$(echo "${line}" | sed 's/.* //')"
-            rm -f "${fname}"
-            # shellcheck disable=SC2226,SC2086
-            # ^ ${line} expands into two arguments
-            ln -s ${line}
-            touch -t 197001010000.00 "${fname}"
-        done < "/usr/src/repo/${pkg}_${revision}.links"
-    fi
+    src_apply
 
     echo "${pkg}: build successful"
 
@@ -281,6 +234,69 @@ default_src_compile() {
 # Note that upstream makefiles might ignore PREFIX and have to be configured in configure stage.
 default_src_install() {
     make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}"
+}
+
+create_tarball_pkg() {
+    # If grep is unavaliable, then tar --sort is unavaliable.
+    # So this does not need a command -v grep.
+    if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
+        tar -C "${DESTDIR}" --sort=name --hard-dereference -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+    elif command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+        cd "${DESTDIR}"
+        tar --no-recursion --null -T /tmp/filelist.txt -cf "/usr/src/repo/${pkg}_${revision}.tar"
+        cd -
+    else
+        tar -C "${DESTDIR}" -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+    fi
+    touch -t 197001010000.00 "${pkg}_${revision}.tar"
+    gzip "${pkg}_${revision}.tar"
+}
+
+src_pkg() {
+    touch -t 197001010000.00 .
+    reset_timestamp
+    if command -v xbps-create >/dev/null 2>&1; then
+        cd /usr/src/repo
+        xbps-create -A "${ARCH}" -n "${pkg}_${revision}" -s "${pkg}" --compression xz "${DESTDIR}"
+        echo "${pkg}: adding package to repository."
+        xbps-rindex --compression xz -a "/usr/src/repo/${pkg}_${revision}.${ARCH}.xbps"
+    else
+        cd "${DESTDIR}"
+        # All symlinks are dereferenced, which is BAD
+        get_links > "/usr/src/repo/${pkg}_${revision}.links"
+        if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+            find . -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
+        fi
+        cd /usr/src/repo
+        create_tarball_pkg
+    fi
+}
+
+src_apply() {
+    if command -v xbps-install >/dev/null 2>&1; then
+        xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
+    else
+        # Overwriting files is mega busted, so do it manually
+        # shellcheck disable=SC2162
+        if [ -e /tmp/filelist.txt ]; then
+            while IFS= read -d $'\0' file; do
+                rm -f "/${file}" >/dev/null 2>&1 || true
+            done < /tmp/filelist.txt
+        fi
+        tar -C / -xzpf "/usr/src/repo/${pkg}_${revision}.tar.gz"
+        # shellcheck disable=SC2162
+        # ^ read -r unsupported in old bash
+        while read line; do
+            # shellcheck disable=SC2001
+            # ^ cannot use variable expansion here
+            fname="$(echo "${line}" | sed 's/.* //')"
+            rm -f "${fname}"
+            # shellcheck disable=SC2226,SC2086
+            # ^ ${line} expands into two arguments
+            ln -s ${line}
+            touch -t 197001010000.00 "${fname}"
+        done < "/usr/src/repo/${pkg}_${revision}.links"
+    fi
 }
 
 # Check if bash function exists

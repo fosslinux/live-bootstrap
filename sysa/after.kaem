@@ -17,6 +17,7 @@ bindir=${prefix}/bin
 libdir=${prefix}/lib
 incdir=${prefix}/include
 tmpdir=/tmp # tmpdir is needed for patch to work
+TMPDIR=/tmp
 
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2

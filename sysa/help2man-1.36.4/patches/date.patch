@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+help2man manpages hardcode the current month and date into the generated
+manpage.
+
+This makes manpages not reproducible.
+
+diff --color -ru help2man.PL help2man.PL
+--- help2man.PL	2022-04-02 10:20:20.100234930 +1100
++++ help2man.PL	2022-04-02 10:20:21.866247540 +1100
+@@ -303,7 +303,7 @@
+ 	    $_, $ARGV[0]
+ } $help_option, $version_option;
+ 
+-my $date = strftime "%B %Y", localtime;
++my $date = "";
+ (my $program = $ARGV[0]) =~ s!.*/!!;
+ my $package = $program;
+ my $version;

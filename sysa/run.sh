@@ -92,12 +92,6 @@ fi
 
 echo "Thank you! All done."
 
-# Clear up some RAM space
-grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/=$//' | while read -r p ; do
-    rm -rf "${SOURCES:?}/${p:?}"
-done
-rm -rf "${SOURCES}/mes"
-
 # Write to bootstrap.cfg
 rm "${SOURCES}/bootstrap.cfg"
 for var in CHROOT FORCE_TIMESTAMPS DISK ARCH; do
@@ -241,6 +235,11 @@ build kbd-1.15
 build make-3.82
 
 # Clear up some RAM space
+grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/"$//' | while read -r p ; do
+    rm -rf "${SOURCES:?}/${p:?}"
+done
+rm -rf "${SOURCES}/mes"
+
 grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"
 done
