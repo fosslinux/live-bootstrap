@@ -1,11 +1,85 @@
 #!/bin/bash -e
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+
+# Find a list of links
+get_links() {
+    original="${1:-${PWD}/}"
+    if [ -n "$(ls)" ]; then
+        for f in *; do
+            # Bash link detection is broken
+            # and we don't always have grep, hence this pretty dodgy solution
+            case "$(ls -ld "${f}")" in
+            *" -> "*)
+                fullpath="${PWD}/${f}"
+                # shellcheck disable=SC2001
+                echo "$(readlink "${f}") /$(echo "${fullpath}" | sed "s:^${original}::")"
+                rm "${f}" # Don't include in tarball
+                ;;
+            *)
+                if [ -d "${f}" ]; then
+                    cd "${f}"
+                    get_links "${original}"
+                    cd ..
+                fi
+                ;;
+            esac
+        done
+    fi
+}
+
+# Reset all timestamps to unix time 0
+reset_timestamp() {
+    args=
+    # touch -h is not avaliable until after grep is built.
+    if command -v grep >/dev/null 2>&1; then
+        if touch --help | grep ' \-h' >/dev/null; then
+            args="-h"
+        fi
+    fi
+    if command -v find >/dev/null 2>&1; then
+        # find does not error out on exec error
+        find . -print0 | xargs -0 touch ${args} -t 197001010000.00
+    else
+        # A rudimentary find implementation that does the trick
+        fs=
+        if [ -n "$(ls 2>/dev/null)" ]; then
+            fs=$(echo ./*)
+        fi
+        if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
+            fs="${fs} $(echo .[0-z]*)"
+        fi
+        for f in ${fs}; do
+            touch ${args} -t 197001010000.00 "${f}"
+            if [ -d "${f}" ]; then
+                cd "${f}"
+                reset_timestamp
+                cd ..
+            fi
+        done
+    fi
+}
+
+# Fake grep
+_grep() {
+    text="${1}"
+    fname="${2}"
+    if command -v grep >/dev/null 2>&1; then
+        grep "${text}" "${fname}"
+    else
+        # shellcheck disable=SC2162
+        while read line; do
+            case "${line}" in *"${text}"*)
+                echo "${line}" ;;
+            esac
+        done < "${fname}"
+    fi
+}
 
 # Common build steps
 # Build function provides a few common stages with default implementation
@@ -16,10 +90,9 @@
 # 3) optionally specify name of checksum file. Default is checksums
 # 4) directory of patches. Default is patches
 # 5) directory to cd into. Default is ${pkg}
-build () {
+build() {
     pkg=$1
     script_name=${2:-${pkg}.sh}
-    checksum_f=${3:-checksums}
     dirname=${5:-${pkg}}
 
     cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
@@ -56,22 +129,45 @@ build () {
     build_stage=src_compile
     call $build_stage
 
-    echo "${pkg}: installing."
+    echo "${pkg}: install to fakeroot."
     build_stage=src_install
     call $build_stage
 
-    cd "${SOURCES}/${pkg}"
+    cd /usr/src/repo
+    # Get revision (n time this package has been built)
+    revision="$(echo "${pkg}"*)"
+    # Different versions of bash
+    if [ "${revision}" = "${pkg}*" ] || [ -z "${revision}" ]; then
+        revision=0
+    else
+        revision="${revision##*_}"
+        revision="${revision%%.*}"
+        revision=$((++revision))
+    fi
 
-    echo "${pkg}: checksumming installed files."
-    test -e "${checksum_f}" && sha256sum -c "${checksum_f}"
+    echo "${pkg}: creating package."
+    cd "${DESTDIR}"
+    src_pkg
+    # Various shenanigans must be implemented for repoducibility
+    # as a result of timestamps
+
+    echo "${pkg}: checksumming created package."
+    _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
 
     echo "${pkg}: cleaning up."
-    rm -rf "build"
+    rm -rf "${SOURCES}/${pkg}/build"
+    rm -rf /tmp/destdir/
+    mkdir -p /tmp/destdir/
+
+    echo "${pkg}: installing package."
+    src_apply
 
     echo "${pkg}: build successful"
+
     cd "${SOURCES}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install
+    unset checksum
 }
 
 # Default unpacking function that unpacks all source tarballs.
@@ -140,6 +236,69 @@ default_src_install() {
     make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}"
 }
 
+create_tarball_pkg() {
+    # If grep is unavailable, then tar --sort is unavailable.
+    # So this does not need a command -v grep.
+    if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
+        tar -C "${DESTDIR}" --sort=name --hard-dereference -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+    elif command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+        cd "${DESTDIR}"
+        tar --no-recursion --null -T /tmp/filelist.txt -cf "/usr/src/repo/${pkg}_${revision}.tar"
+        cd -
+    else
+        tar -C "${DESTDIR}" -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+    fi
+    touch -t 197001010000.00 "${pkg}_${revision}.tar"
+    gzip "${pkg}_${revision}.tar"
+}
+
+src_pkg() {
+    touch -t 197001010000.00 .
+    reset_timestamp
+    if command -v xbps-create >/dev/null 2>&1; then
+        cd /usr/src/repo
+        xbps-create -A "${ARCH}" -n "${pkg}_${revision}" -s "${pkg}" --compression xz "${DESTDIR}"
+        echo "${pkg}: adding package to repository."
+        xbps-rindex --compression xz -a "/usr/src/repo/${pkg}_${revision}.${ARCH}.xbps"
+    else
+        cd "${DESTDIR}"
+        # All symlinks are dereferenced, which is BAD
+        get_links > "/usr/src/repo/${pkg}_${revision}.links"
+        if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+            find . -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
+        fi
+        cd /usr/src/repo
+        create_tarball_pkg
+    fi
+}
+
+src_apply() {
+    if command -v xbps-install >/dev/null 2>&1; then
+        xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
+    else
+        # Overwriting files is mega busted, so do it manually
+        # shellcheck disable=SC2162
+        if [ -e /tmp/filelist.txt ]; then
+            while IFS= read -d $'\0' file; do
+                rm -f "/${file}" >/dev/null 2>&1 || true
+            done < /tmp/filelist.txt
+        fi
+        tar -C / -xzpf "/usr/src/repo/${pkg}_${revision}.tar.gz"
+        # shellcheck disable=SC2162
+        # ^ read -r unsupported in old bash
+        while read line; do
+            # shellcheck disable=SC2001
+            # ^ cannot use variable expansion here
+            fname="$(echo "${line}" | sed 's/.* //')"
+            rm -f "${fname}"
+            # shellcheck disable=SC2226,SC2086
+            # ^ ${line} expands into two arguments
+            ln -s ${line}
+            touch -t 197001010000.00 "${fname}"
+        done < "/usr/src/repo/${pkg}_${revision}.links"
+    fi
+}
+
 # Check if bash function exists
 fn_exists() {
     test "$(type -t "$1")" == 'function'
@@ -170,6 +329,7 @@ canonicalise_all_files_timestamp() {
 populate_device_nodes() {
     # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
     mkdir -p "${1}/dev"
+    rm "${1}/dev/null" -f
     test -c "${1}/dev/null" || mknod -m 666 "${1}/dev/null" c 1 3
     test -c "${1}/dev/zero" || mknod -m 666 "${1}/dev/zero" c 1 5
     test -c "${1}/dev/random" || mknod -m 444 "${1}/dev/random" c 1 8

@@ -1,0 +1,16 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+Remove hostname from libtool script.
+
+--- libltdl/m4/libtool.m4	2022-02-26 10:27:30.649198752 +1100
++++ libltdl/m4/libtool.m4	2022-02-26 10:28:39.458342624 +1100
+@@ -684,7 +684,6 @@
+ 
+ # `$ECHO "$ofile" | sed 's%^.*/%%'` - Provide generalized library-building support services.
+ # Generated automatically by $as_me ($PACKAGE$TIMESTAMP) $VERSION
+-# Libtool was configured on host `(hostname || uname -n) 2>/dev/null | sed 1q`:
+ # NOTE: Changes made to this file will be lost: look at ltmain.sh.
+ #
+ _LT_COPYING

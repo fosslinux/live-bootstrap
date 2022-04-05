@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -10,8 +10,6 @@ set -e
 . helpers.sh
 # shellcheck source=/dev/null
 . bootstrap.cfg
-
-export PATH=/usr/bin:/usr/sbin
 
 # Unload the current kernel before things go weird
 kexec -u
@@ -73,6 +71,7 @@ cp -r /dev /sysc/
 find /usr -mindepth 1 -maxdepth 1 -type d -not -name src -exec cp -r {} /sysc/{} \;
 # Except for bootstrap.cfg
 cp /usr/src/bootstrap.cfg /sysc/usr/src/bootstrap.cfg
+cp -r /usr/src/repo /sysc/usr/src/repo
 sync
 
 # switch_root into sysc 1. for simplicity 2. to avoid kexecing again

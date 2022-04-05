@@ -1,0 +1,32 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Do not build or install shared binaries.
+Additionally, install static binaries with normal names.
+
+--- mk/prog.mk	2021-12-18 21:39:55.589895753 +1100
++++ mk/prog.mk	2021-12-18 21:45:08.260778227 +1100
+@@ -21,9 +21,8 @@
+ .PHONY: install
+ install: all
+ 	install -d $(DESTDIR)$(SBINDIR)
+-	install -m 755 $(BIN) $(DESTDIR)$(SBINDIR)
+ ifdef BUILD_STATIC
+-	install -m 755 $(BIN).static $(DESTDIR)$(SBINDIR)
++	install -m 755 $(BIN).static $(DESTDIR)$(SBINDIR)/$(BIN)
+ endif
+ ifdef MAN
+ 	install -d $(DESTDIR)$(MANDIR)/man$(MANSECTION)
+@@ -49,9 +48,5 @@
+ 	${SILENT}$(CC) -static $(OBJS) $(CPPFLAGS) -L$(TOPDIR)/lib \
+ 		$(CFLAGS) $(LDFLAGS) $(PROG_LDFLAGS) $(STATIC_LIBS) -o $@
+ 
+-$(BIN): $(OBJS) $(TOPDIR)/lib/libxbps.so
+-	@printf " [CCLD]\t\t$@\n"
+-	${SILENT}$(CC) $^ $(CPPFLAGS) -L$(TOPDIR)/lib \
+-		$(CFLAGS) $(PROG_CFLAGS) $(LDFLAGS) $(PROG_LDFLAGS) \
+-		-lxbps -o $@
+-
++$(BIN):
++.PHONY = $(BIN)

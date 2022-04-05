@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -15,4 +16,4 @@ miniperl: $(MINIPERL_OBJ)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: all
-	install miniperl $(DESTDIR)$(PREFIX)/bin/perl
+	install -D miniperl $(DESTDIR)$(PREFIX)/bin/perl

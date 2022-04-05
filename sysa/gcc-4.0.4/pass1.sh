@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -57,6 +58,9 @@ src_prepare() {
 
     # Pre-built texinfo files
     find . -name '*.info' -delete
+
+    # Pre-built man files
+    rm gcc/doc/*.1 gcc/doc/*.7
 }
 
 src_configure() {
@@ -92,6 +96,6 @@ src_compile() {
 }
 
 src_install() {
-    mkdir -p "${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/install-tools/include"
+    mkdir -p "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/install-tools/include"
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
 }

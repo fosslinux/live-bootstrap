@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -27,6 +28,6 @@ grep: $(GREP_OBJECTS)
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: all
-	install grep $(DESTDIR)$(PREFIX)/bin
+	install -D grep $(DESTDIR)$(PREFIX)/bin/grep
 	ln -sf $(PREFIX)/bin/grep $(DESTDIR)$(PREFIX)/bin/egrep
 	ln -sf $(PREFIX)/bin/grep $(DESTDIR)$(PREFIX)/bin/fgrep

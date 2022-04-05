@@ -54,6 +54,15 @@ build dist-3.5-236 '' '' '' dist-d1de81f
 
 build perl-5.32.1
 
+build libarchive-3.5.2
+
+build openssl-1.1.1l
+
+build zlib-1.2.11
+
+build xbps-0.59.1
+export XBPS_TARGET_ARCH="${ARCH}"
+
 build automake-1.16.3
 
 build autoconf-2.71
@@ -63,8 +72,6 @@ build patch-2.7.6
 build gettext-0.21
 
 build texinfo-6.7
-
-build zlib-1.2.11
 
 build gcc-4.7.4
 

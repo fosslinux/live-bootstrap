@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -20,7 +20,9 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}" --disable-nls
+    ./configure --prefix="${PREFIX}" \
+        --libdir="${PREFIX}/lib/musl" \
+        --disable-nls
 }
 
 src_compile() {

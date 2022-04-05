@@ -1,19 +1,11 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Michael Schierl <schierlm@gmx.de>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
     default
-
-    # If we are in chroot mode, we can make no assumptions about the host
-    # kernel. It appears the resulting binary is at least somewhat
-    # kernel-specific (in ways other than hardcoded string). Hence disable
-    # checksumming for guile binary under chroot.
-    if [ "$CHROOT" = True ]; then
-        sed -i '\|/usr/bin/guile$|d' ../../checksums
-        sed -i '\|/usr/lib/musl/libguile-3.0.a$|d' ../../checksums
-    fi
 
     find . -name '*.info*' -delete
 
@@ -42,6 +34,7 @@ src_configure() {
     PKG_CONFIG_PATH="${PREFIX}/lib/musl/pkgconfig" ./configure \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
+        --build=i386-unknown-linux-musl \
         --disable-shared \
         --disable-jit
 }

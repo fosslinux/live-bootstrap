@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """System C"""
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 
 import os
@@ -149,6 +149,16 @@ class SysC(SysGeneral):
         # perl 5.32.1
         self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
                        "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
+
+        # libarchive-3.5.2
+        self.get_file("https://libarchive.org/downloads/libarchive-3.5.2.tar.xz")
+
+        # openssl-1.1.1l
+        self.get_file("https://www.openssl.org/source/openssl-1.1.1l.tar.gz")
+
+        # xbps 0.59.1
+        self.get_file("https://github.com/void-linux/xbps/archive/refs/tags/0.59.1.tar.gz",
+                       output="xbps-0.59.1.tar.gz")
 
         # autoconf 2.71
         self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.71.tar.xz")

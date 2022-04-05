@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -34,5 +34,5 @@ src_compile() {
 }
 
 src_install() {
-    install tcc ${DESTDIR}${bindir}
+    install -D tcc ${DESTDIR}${bindir}/tcc
 }

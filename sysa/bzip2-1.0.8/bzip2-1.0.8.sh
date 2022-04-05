@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -16,7 +17,7 @@ src_compile() {
 }
 
 src_install() {
-    install bzip2 ${DESTDIR}${PREFIX}/bin
+    install -D bzip2 ${DESTDIR}${PREFIX}/bin/bzip2
     ln -sf ${PREFIX}/bin/bzip2 ${DESTDIR}${PREFIX}/bin/bunzip2
     ln -sf ${PREFIX}/bin/bzip2 ${DESTDIR}${PREFIX}/bin/bzcat
 }

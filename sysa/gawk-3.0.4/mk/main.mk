@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -49,5 +50,5 @@ awktab.c: awk.y
 	bison $^ -o $@
 
 install: all
-	install gawk "$(DESTDIR)$(PREFIX)/bin"
-	ln -s "$(PREFIX)/bin/gawk" "$(DESTDIR)$(PREFIX)/bin/awk"
+	install -D gawk $(DESTDIR)$(PREFIX)/bin/gawk
+	ln -s $(PREFIX)/bin/gawk $(DESTDIR)$(PREFIX)/bin/awk

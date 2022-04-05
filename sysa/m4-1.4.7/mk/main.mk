@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -44,4 +45,4 @@ lib/config.h:
 	touch lib/config.h
 
 install: all
-	install src/m4 $(DESTDIR)$(PREFIX)/bin
+	install -D src/m4 $(DESTDIR)$(PREFIX)/bin/m4

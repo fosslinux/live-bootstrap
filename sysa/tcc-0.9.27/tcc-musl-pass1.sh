@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -17,11 +18,11 @@ src_compile() {
 
     # We first have to recompile using tcc-0.9.26 as tcc-0.9.27 is not self-hosting,
     # but when linked with musl it is.
-    for TCC in tcc-0.9.26 tcc-musl; do
+    for TCC in tcc-0.9.26 ./tcc-musl; do
         ${TCC} \
             -v \
             -static \
-            -o ${bindir}/tcc-musl \
+            -o tcc-musl \
             -D TCC_TARGET_I386=1 \
             -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
             -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
@@ -45,5 +46,6 @@ src_install() {
     # Remove old tcc binaries
     rm ${bindir}/tcc
     rm ${bindir}/boot*-tcc ${bindir}/tcc-0.9.26 ${bindir}/mes-tcc
-    ln -s ${bindir}/tcc-musl ${DESTDIR}${bindir}/tcc
+    install -D tcc-musl ${DESTDIR}${bindir}/tcc-musl
+    ln -s tcc-musl ${DESTDIR}${bindir}/tcc
 }

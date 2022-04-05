@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -83,7 +84,7 @@ CFLAGS  = -I . -I lib \
 
 SRC_DIR=src
 
-COREUTILS = basename cat chmod chroot cksum comm csplit cut dd dirname echo env expand expr factor false fmt fold head id join kill link ln logname mkfifo mkdir mknod nl od paste pathchk printf ptx pwd readlink rmdir seq sleep sort split sum sync tail tee tr tsort uname unexpand uniq unlink wc whoami test true yes
+COREUTILS = basename cat chmod chroot cksum comm csplit cut dd dirname echo env expand expr factor false fmt fold head id join kill link ln logname mkfifo mkdir mknod nl od paste pathchk printf ptx pwd readlink rmdir seq sleep sort split sum sync tail tee touch tr tsort uname unexpand uniq unlink wc whoami test true yes
 
 BINARIES = $(addprefix $(SRC_DIR)/, $(COREUTILS))
 
@@ -123,4 +124,5 @@ $(SRC_DIR)/sha1sum: $(SRC_DIR)/sha1sum.o $(SRC_DIR)/md5sum.o $(LIB_DIR)/libfetti
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 install: $(ALL)
+	$(SRC_DIR)/install -d $(bindir)
 	$(SRC_DIR)/install $^ $(bindir)

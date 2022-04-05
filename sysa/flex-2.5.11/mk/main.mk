@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2019-2020 Giovanni Mascellani <gio@debian.org>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -38,5 +39,5 @@ skel.c: mkskel.sh flex.skl
 	/bin/sh ./mkskel.sh ./flex.skl > skel.c
 
 install: all
-	install flex $(DESTDIR)$(PREFIX)/bin
+	install -D flex $(DESTDIR)$(PREFIX)/bin/flex
 	ln -sf $(PREFIX)/bin/flex $(DESTDIR)$(PREFIX)/bin/lex

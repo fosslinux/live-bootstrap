@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -29,7 +30,10 @@ src_configure() {
 
 src_install() {
     # Do not install prebuilt .mo translation catalogs
-    install bash "${DESTDIR}${PREFIX}/bin"
+    install -D bash "${DESTDIR}${PREFIX}/bin/bash"
     # Work around weird symlink bug
     install bash "${DESTDIR}${PREFIX}/bin/sh"
+
+    # Needs special handling b/c is currently running - tar doesn't like this
+    rm -f "${PREFIX}/bin/bash" "${PREFIX}/bin/sh"
 }

@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -35,7 +36,9 @@ src_configure() {
         -Dusedl=false \
         -Ddate=':' \
         -Dccflags="-U__DATE__ -U__TIME__" \
-        -Darchname="i386-linux"
+        -Darchname="i386-linux" \
+        -Dmyhostname="(none)" \
+        -Dmaildomain="(none)"
 }
 
 src_install() {
@@ -43,4 +46,7 @@ src_install() {
     rm -rf "${PREFIX}"/lib/perl5/
 
     default
+
+    # Remove messed up manpages
+    rm -r "${DESTDIR}/"*.0
 }

@@ -1,8 +1,11 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    default
+
     rm configure standards.info autoconf.info
     touch autoconf.info
     autoconf-2.52
@@ -19,5 +22,5 @@ src_compile() {
 }
 
 src_install() {
-    make install MAKEINFO=true DESTDIR="${DESTDIR}"
+    make MAKEINFO=true DESTDIR="${DESTDIR}" install
 }

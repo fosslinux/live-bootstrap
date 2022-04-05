@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Do not use CC argument Wno-unused-command-line-argument.
+Unsupported in GCC 4.
+
+--- mk/prog.mk	2021-12-18 21:32:27.025764282 +1100
++++ mk/prog.mk	2021-12-18 21:32:06.909579026 +1100
+@@ -10,8 +10,6 @@
+ BINS += $(BIN).static
+ endif
+ 
+-CFLAGS += -Wno-unused-command-line-argument
+-
+ .PHONY: all
+ all: $(BINS)
+ 

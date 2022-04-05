@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -32,23 +32,23 @@ src_install() {
     # We "compile" the headers here because it is easier
     for d in include/uapi arch/x86/include/uapi; do
         cd "${d}"
-        find . -type d -exec mkdir "${PREFIX}/include/{}" -p \;
+        find . -type d -exec mkdir "${DESTDIR}${PREFIX}/include/{}" -p \;
         headers="$(find . -type f -name "*.h")"
         cd "${base_dir}"
         for h in ${headers}; do
-            scripts/headers_install.sh "${d}/${h}" "${PREFIX}/include/${h}"
+            scripts/headers_install.sh "${d}/${h}" "${DESTDIR}${PREFIX}/include/${h}"
         done
     done
 
     # Pick-and-choose asm-generic headers
     for i in types ioctl termios termbits ioctls; do
-        cp ${PREFIX}/include/asm-generic/${i}.h ${PREFIX}/include/asm/${i}.h
+        cp "${DESTDIR}${PREFIX}/include/asm-generic/${i}.h" "${DESTDIR}${PREFIX}/include/asm/${i}.h"
     done
 
     # Generate asm/unistd_32.h
     bash arch/x86/entry/syscalls/syscallhdr.sh \
         arch/x86/entry/syscalls/syscall_32.tbl \
-        ${PREFIX}/include/asm/unistd_32.h i386
+        "${DESTDIR}${PREFIX}/include/asm/unistd_32.h" i386
 
     # Generate linux/version.h
     # Rules are from makefile
@@ -57,9 +57,9 @@ src_install() {
     SUBLEVEL=42
     VERSION_CODE="$((${VERSION} * 65536 + ${PATCHLEVEL} * 256 + ${SUBLEVEL}))"
     echo '#define LINUX_VERSION_CODE '"${VERSION_CODE}" \
-        > ${PREFIX}/include/linux/version.h
+        > "${DESTDIR}${PREFIX}/include/linux/version.h"
     echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))' \
-        >> ${PREFIX}/include/linux/version.h
+        >> "${DESTDIR}${PREFIX}/include/linux/version.h"
 
     # Clear up storage space
     cd ../..

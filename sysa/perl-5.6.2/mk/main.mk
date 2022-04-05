@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -115,7 +116,7 @@ perl: perlmain.o lib/auto/DynaLoader/DynaLoader.a $(EXTENSIONS_A) lib/auto/POSIX
 	$(CC) $(CFLAGS) perlmain.o lib/auto/DynaLoader/DynaLoader.a $(EXTENSIONS_A) lib/auto/POSIX/POSIX.a libperl.a -o $@
 
 install: all
-	install perl $(DESTDIR)$(PREFIX)/bin/perl
+	install -D perl $(DESTDIR)$(PREFIX)/bin/perl
 	mkdir -p "$(DESTDIR)$(PRIVLIB_EXP)"
 	cp -r lib/* "$(DESTDIR)$(PRIVLIB_EXP)"
 

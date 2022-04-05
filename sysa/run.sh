@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -14,18 +14,18 @@ set -e
 
 export PREFIX=/usr
 export SOURCES=/after
-mkdir -p "${PREFIX}/sbin"
-export PATH="${PREFIX}/bin:${PREFIX}/sbin"
+export DESTDIR="/tmp/destdir"
 
 create_sysb() {
     # Copy everything in
     echo "Creating sysb rootfs"
     mkdir -p /sysb/usr
-    for d in bin include lib libexec sbin share; do
+    for d in bin include lib libexec share; do
         # Minimise RAM (storage) use - use hard links
         cp -rl "${PREFIX}/${d}" "/sysb/usr/${d}"
     done
     cp "${SOURCES}/bootstrap.cfg" /sysb/usr/src/bootstrap.cfg
+    cp -rl "/usr/src/repo" /sysb/usr/src/repo
     populate_device_nodes /sysb
     echo "Creating sysb initramfs"
     gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb
@@ -92,17 +92,13 @@ fi
 
 echo "Thank you! All done."
 
-# Clear up some RAM space
-grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/=$//' | while read -r p ; do
-    rm -rf "${SOURCES:?}/${p:?}"
-done
-rm -rf "${SOURCES}/mes"
-
 # Write to bootstrap.cfg
 rm "${SOURCES}/bootstrap.cfg"
-for var in CHROOT FORCE_TIMESTAMPS DISK; do
+for var in CHROOT FORCE_TIMESTAMPS DISK ARCH; do
     echo "export ${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
 done
+
+mkdir -p /tmp/destdir /usr/src/repo /dev
 
 build flex-2.5.11
 
@@ -111,13 +107,13 @@ build mes-0.23 mes-libc-0.23.sh
 
 build tcc-0.9.27 tcc-meslibc-rebuild.sh checksums/tcc-meslibc-rebuild
 
-build musl-1.1.24 '' checksums/pass1
+build musl-1.1.24 "" checksums/pass1
 
 # Rebuild tcc using musl
 build tcc-0.9.27 tcc-musl-pass1.sh checksums/tcc-musl-pass1
 
 # Rebuild musl using tcc-musl
-build musl-1.1.24 '' checksums/pass2
+build musl-1.1.24 "" checksums/pass2
 
 # Rebuild tcc-musl using new musl
 build tcc-0.9.27 tcc-musl-pass2.sh checksums/tcc-musl-pass2
@@ -152,9 +148,9 @@ build perl-5.000
 
 build perl-5.003
 
-build perl5.004_05
+build perl5.004-05 '' '' '' perl5.004_05
 
-build perl5.005_03
+build perl5.005-03 '' '' '' perl5.005_03
 
 build perl-5.6.2
 
@@ -223,7 +219,10 @@ build autoconf-2.64
 
 build gcc-4.0.4 pass1.sh checksums/pass1
 
+# This hack fixes a strange bug in mes libc bash
+set -x
 build linux-headers-5.10.41 '' '' '' linux-5.10.41
+set +x
 
 build musl-1.2.2
 
@@ -236,6 +235,11 @@ build kbd-1.15
 build make-3.82
 
 # Clear up some RAM space
+grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/"$//' | while read -r p ; do
+    rm -rf "${SOURCES:?}/${p:?}"
+done
+rm -rf "${SOURCES}/mes"
+
 grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"
 done
