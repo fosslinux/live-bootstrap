@@ -237,7 +237,7 @@ default_src_install() {
 }
 
 create_tarball_pkg() {
-    # If grep is unavaliable, then tar --sort is unavaliable.
+    # If grep is unavailable, then tar --sort is unavailable.
     # So this does not need a command -v grep.
     if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
         tar -C "${DESTDIR}" --sort=name --hard-dereference -cf "/usr/src/repo/${pkg}_${revision}.tar" .
