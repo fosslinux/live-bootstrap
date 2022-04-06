@@ -10,20 +10,23 @@ set -e
 # shellcheck source=sysglobal/helpers.sh
 . helpers.sh
 
-export PREFIX=${prefix}
-export SOURCES=${sources}
-export DESTDIR="/tmp/destdir"
+# shellcheck disable=SC2154
+export PREFIX="${prefix}"
+# shellcheck disable=SC2154
+export SOURCES="${sources}"
+export DESTDIR=/tmp/destdir
+export REPO="${PREFIX}/src/repo"
 
 create_sysb() {
     # Copy everything in
     echo "Creating sysb rootfs"
-    mkdir -p /sysb/usr
+    mkdir -p "/sysb${PREFIX}"
     for d in bin include lib libexec share; do
         # Minimise RAM (storage) use - use hard links
-        cp -rl "${PREFIX}/${d}" "/sysb/usr/${d}"
+        cp -rl "${PREFIX}/${d}" "/sysb${PREFIX}/${d}"
     done
     cp "${SOURCES}/bootstrap.cfg" /sysb/usr/src/bootstrap.cfg
-    cp -rl "/usr/src/repo" /sysb/usr/src/repo
+    cp -rl "${REPO}" "/sysb/${REPO}"
     populate_device_nodes /sysb
     echo "Creating sysb initramfs"
     gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb
@@ -96,7 +99,7 @@ for var in CHROOT FORCE_TIMESTAMPS DISK ARCH UPDATE_CHECKSUMS; do
     echo "export ${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
 done
 
-mkdir -p /tmp/destdir /usr/src/repo /dev
+mkdir -p "${DESTDIR}" "${REPO}" /dev
 
 build flex-2.5.11
 
