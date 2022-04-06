@@ -28,8 +28,8 @@ class SysA(SysGeneral):
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysa')
             os.mkdir(self.tmp_dir)
-        self.after_dir = os.path.join(self.tmp_dir, 'after')
-        self.base_dir = self.after_dir
+        self.sysa_dir = os.path.join(self.tmp_dir, 'sysa')
+        self.base_dir = self.sysa_dir
         self.sysb_tmp = sysb_tmp
         self.sysc_tmp = sysc_tmp
         self.chroot = chroot
@@ -43,13 +43,13 @@ class SysA(SysGeneral):
         """
         Prepare directory structure for System A.
         We create an empty tmpfs, unpack stage0-posix.
-        Rest of the files are unpacked into more structured directory /after
+        Rest of the files are unpacked into more structured directory /sysa
         """
         self.mount_tmpfs()
-        os.mkdir(self.after_dir)
+        os.mkdir(self.sysa_dir)
 
         self.stage0_posix()
-        self.after()
+        self.sysa()
 
         # sysb must be added to sysa as it is another initramfs stage
         self.sysb()
@@ -81,9 +81,9 @@ class SysA(SysGeneral):
         shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
                      os.path.join(self.tmp_dir, 'after.kaem'))
 
-    def after(self):
+    def sysa(self):
         """
-        Prepare sources in /after directory.
+        Prepare sources in /sysa directory.
         After stage0-posix we get into our own directory because
         the stage0-posix one is hella messy.
         """
@@ -96,9 +96,9 @@ class SysA(SysGeneral):
         """Deploy misc files"""
         extra_files = ['run.sh', 'bootstrap.cfg']
         for extra_file in extra_files:
-            shutil.copy2(os.path.join(self.sys_dir, extra_file), self.after_dir)
+            shutil.copy2(os.path.join(self.sys_dir, extra_file), self.sysa_dir)
 
-        shutil.copy2(os.path.join(self.git_dir, 'SHA256SUMS.sources'), self.after_dir)
+        shutil.copy2(os.path.join(self.git_dir, 'SHA256SUMS.sources'), self.sysa_dir)
 
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):

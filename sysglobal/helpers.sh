@@ -7,6 +7,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# shellcheck source=/dev/null
+. bootstrap.cfg
+
 # Find a list of links
 get_links() {
     original="${1:-${PWD}/}"
@@ -151,8 +154,7 @@ build() {
     # Various shenanigans must be implemented for repoducibility
     # as a result of timestamps
 
-    echo "${pkg}: checksumming created package."
-    _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
+    src_checksum
 
     echo "${pkg}: cleaning up."
     rm -rf "${SOURCES}/${pkg}/build"
@@ -269,6 +271,13 @@ src_pkg() {
         fi
         cd /usr/src/repo
         create_tarball_pkg
+    fi
+}
+
+src_checksum() {
+    if ! [ "$UPDATE_CHECKSUMS" = True ] ; then
+        echo "${pkg}: checksumming created package."
+        _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
     fi
 }
 

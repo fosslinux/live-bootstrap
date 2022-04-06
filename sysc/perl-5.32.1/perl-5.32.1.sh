@@ -48,5 +48,6 @@ src_install() {
     default
 
     # Remove messed up manpages
-    rm -r "${DESTDIR}/"*.0
+    rm "${DESTDIR}/"*.0
+    rm "${DESTDIR}${PREFIX}/lib/perl5/5.32.1/pod/perldebguts.pod"
 }

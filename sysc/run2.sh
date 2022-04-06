@@ -13,8 +13,6 @@ trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 
 # shellcheck source=sysglobal/helpers.sh
 . helpers.sh
-# shellcheck source=/dev/null
-. bootstrap.cfg
 
 trap bash EXIT
 
@@ -90,6 +88,12 @@ build guile-3.0.7
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp
+fi
+
+if [ "$UPDATE_CHECKSUMS" = True ] ; then
+    pushd /usr/src/repo
+    sha256sum ./* | tee "${SOURCES}/SHA256SUMS.pkgs"
+    popd
 fi
 
 echo "Bootstrapping completed."

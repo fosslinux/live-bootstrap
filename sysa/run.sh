@@ -9,11 +9,9 @@
 set -e
 # shellcheck source=sysglobal/helpers.sh
 . helpers.sh
-# shellcheck source=/dev/null
-. bootstrap.cfg
 
-export PREFIX=/usr
-export SOURCES=/after
+export PREFIX=${prefix}
+export SOURCES=${sources}
 export DESTDIR="/tmp/destdir"
 
 create_sysb() {
@@ -94,7 +92,7 @@ echo "Thank you! All done."
 
 # Write to bootstrap.cfg
 rm "${SOURCES}/bootstrap.cfg"
-for var in CHROOT FORCE_TIMESTAMPS DISK ARCH; do
+for var in CHROOT FORCE_TIMESTAMPS DISK ARCH UPDATE_CHECKSUMS; do
     echo "export ${var}=${!var}" >> "${SOURCES}/bootstrap.cfg"
 done
 
