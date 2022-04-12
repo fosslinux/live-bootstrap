@@ -20,11 +20,13 @@ TCC_PKG=tcc-0.9.26-1136-g5bba73cc
 MES_PKG=mes-0.23
 
 # Unpack
+mkdir src
+cp ${sources}/${TCC_TAR}.tar.gz src
 cd src
 ungz ${TCC_TAR}.tar.gz
 untar ${TCC_TAR}.tar
 
-cp ../../mes-0.23/src/mes-0.23.tar.gz mes-0.23.tar.gz
+cp ${sources}/mes-0.23.tar.gz mes-0.23.tar.gz
 ungz mes-0.23.tar.gz
 untar mes-0.23.tar
 

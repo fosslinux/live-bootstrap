@@ -24,12 +24,13 @@ class SysA(SysGeneral):
 
         self.sys_dir = os.path.join(self.git_dir, 'sysa')
         if tmpdir is None:
-            self.tmp_dir = os.path.join(self.sys_dir, 'tmp')
+            self.tmp_dir = os.path.join(self.git_dir, 'tmp')
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysa')
             os.mkdir(self.tmp_dir)
         self.sysa_dir = os.path.join(self.tmp_dir, 'sysa')
         self.base_dir = self.sysa_dir
+        self.cache_dir = os.path.join(self.git_dir, 'sources')
         self.sysb_tmp = sysb_tmp
         self.sysc_tmp = sysc_tmp
         self.chroot = chroot
@@ -46,7 +47,6 @@ class SysA(SysGeneral):
         Rest of the files are unpacked into more structured directory /sysa
         """
         self.mount_tmpfs()
-        os.mkdir(self.sysa_dir)
 
         self.stage0_posix()
         self.sysa()
@@ -56,6 +56,15 @@ class SysA(SysGeneral):
 
         if self.chroot:
             self.sysc()
+
+    def sysa(self):
+        """Copy in sysb files for sysb."""
+        self.get_packages()
+        shutil.copytree(self.sys_dir, os.path.join(self.tmp_dir, 'sysa'),
+                shutil.ignore_patterns('tmp'))
+
+        # Copy in downloaded sources
+        shutil.copytree(self.cache_dir, os.path.join(self.tmp_dir, 'sources'))
 
     def sysb(self):
         """Copy in sysb files for sysb."""
@@ -80,25 +89,6 @@ class SysA(SysGeneral):
         # stage0-posix hook to continue running live-bootstrap
         shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
                      os.path.join(self.tmp_dir, 'after.kaem'))
-
-    def sysa(self):
-        """
-        Prepare sources in /sysa directory.
-        After stage0-posix we get into our own directory because
-        the stage0-posix one is hella messy.
-        """
-
-        self.deploy_extra_files()
-        self.deploy_sysglobal_files()
-        self.get_packages()
-
-    def deploy_extra_files(self):
-        """Deploy misc files"""
-        extra_files = ['run.sh', 'bootstrap.cfg']
-        for extra_file in extra_files:
-            shutil.copy2(os.path.join(self.sys_dir, extra_file), self.sysa_dir)
-
-        shutil.copy2(os.path.join(self.git_dir, 'SHA256SUMS.sources'), self.sysa_dir)
 
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):

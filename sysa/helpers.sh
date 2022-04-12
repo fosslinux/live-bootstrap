@@ -105,7 +105,8 @@ build() {
     mk_dir="${base_dir}/mk"
     files_dir="${base_dir}/files"
 
-    mkdir -p "build"
+    rm -rf "build"
+    mkdir "build"
     cd "build"
 
     build_script="${base_dir}/${script_name}"
@@ -117,6 +118,7 @@ build() {
     echo "${pkg}: unpacking source."
     build_stage=src_unpack
     call $build_stage
+    unset EXTRA_SRCS
 
     cd "${dirname}" || (echo "Cannot cd into build/${dirname}!"; kill $$)
 
@@ -158,8 +160,8 @@ build() {
 
     echo "${pkg}: cleaning up."
     rm -rf "${SOURCES}/${pkg}/build"
-    rm -rf /tmp/destdir/
-    mkdir -p /tmp/destdir/
+    rm -rf "${DESTDIR}"
+    mkdir -p "${DESTDIR}"
 
     echo "${pkg}: installing package."
     src_apply
@@ -174,29 +176,32 @@ build() {
 
 # Default unpacking function that unpacks all source tarballs.
 default_src_unpack() {
-    src_dir="${base_dir}/src"
+    SRCS=$EXTRA_SRCS
+    for f in "/sources/${pkg}."*; do
+        SRCS="$(basename "$f") ${SRCS}"
+    done
 
     # Check for new tar
     if test -e "${PREFIX}/libexec/rmt"; then
-        for i in "${src_dir}"/*; do
-            tar --no-same-owner -xf "${i}"
+        for i in $SRCS; do
+            tar --no-same-owner -xf "/sources/${i}"
         done
     else
-        for i in "${src_dir}"/*.tar.gz; do
-            [ -e "${i}" ] || continue
-            tar -xzf "${i}"
-        done
-        for i in "${src_dir}"/*.tar.bz2; do
-            [ -e "${i}" ] || continue
-            tar -xf "${i}" --use-compress-program=bzip2
-        done
-        for i in "${src_dir}"/*.tar.xz; do
-            [ -e "${i}" ] || continue
-            tar -xf "${i}" --use-compress-program=xz
-        done
-        for i in "${src_dir}"/*.tar; do
-            [ -e "${i}" ] || continue
-            tar -xf "${i}"
+        for i in $SRCS; do
+            case "$i" in
+            *.tar.gz)
+                tar -xzf "/sources/${i}"
+                ;;
+            *.tar.bz2)
+                # Initial bzip2 built against meslibc has broken pipes
+                bzip2 --decompress --keep "/sources/${i}"
+                tar -xf "/sources/${i%.bz2}"
+                rm "/sources/${i%.bz2}"
+                ;;
+            *.tar.xz)
+                tar -xf "/sources/${i}" --use-compress-program=xz
+                ;;
+            esac
         done
     fi
 }
@@ -251,7 +256,7 @@ create_tarball_pkg() {
         tar -C "${DESTDIR}" -cf "/usr/src/repo/${pkg}_${revision}.tar" .
     fi
     touch -t 197001010000.00 "${pkg}_${revision}.tar"
-    gzip "${pkg}_${revision}.tar"
+    bzip2 --best "${pkg}_${revision}.tar"
 }
 
 src_pkg() {
@@ -292,7 +297,9 @@ src_apply() {
                 rm -f "/${file}" >/dev/null 2>&1 || true
             done < /tmp/filelist.txt
         fi
-        tar -C / -xzpf "/usr/src/repo/${pkg}_${revision}.tar.gz"
+        bzip2 --decompress --keep "/usr/src/repo/${pkg}_${revision}.tar.bz2"
+        tar -C / -xpf "/usr/src/repo/${pkg}_${revision}.tar"
+        rm "/usr/src/repo/${pkg}_${revision}.tar"
         # shellcheck disable=SC2162
         # ^ read -r unsupported in old bash
         while read line; do

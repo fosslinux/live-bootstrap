@@ -11,20 +11,20 @@ set -ex
 PATH=/${ARCH_DIR}/bin
 
 # Set commonly used variables
-sources=/sysa
+sysa=/sysa
+sources=/sources
 prefix=/usr
 bindir=${prefix}/bin
 libdir=${prefix}/lib
 incdir=${prefix}/include
-tmpdir=/tmp # tmpdir is needed for patch to work
-TMPDIR=/tmp
+TMPDIR=/tmp # tmpdir is needed for patch to work
 
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
 MES_PKG=mes
-MES_PREFIX=${sources}/${MES_PKG}/src/mes-m2-dad1744fa80f52b3b428803c06b09d39c285f500
-GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sources}/${MES_PKG}/src/${NYACC_PKG}/module
-mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${tmpdir}
+MES_PREFIX=${sysa}/${MES_PKG}/src/mes-m2-dad1744fa80f52b3b428803c06b09d39c285f500
+GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sysa}/${MES_PKG}/src/${NYACC_PKG}/module
+mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${TMPDIR}
 cd ${prefix}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
@@ -60,13 +60,13 @@ chmod 755 bin/untar
 
 PATH=${bindir}
 
-cd ${sources}
+cd ${sysa}
 
 # mes
 pkg=${MES_PKG}
 cd ${pkg}
 kaem --file ${pkg}.kaem
-cd ${sources}
+cd ${sysa}
 
 # tcc 0.9.26
 pkg="tcc-0.9.26"

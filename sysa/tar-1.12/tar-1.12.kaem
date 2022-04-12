@@ -8,10 +8,11 @@
 
 set -ex
 
-mkdir build
+mkdir build src
 cd build
 
 # Extract
+cp ${sources}/${pkg}.tar.gz ../src/
 gunzip -f ../src/${pkg}.tar.gz
 untar ../src/${pkg}.tar
 

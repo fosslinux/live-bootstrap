@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 #
@@ -8,12 +8,14 @@
 
 set -ex
 
-mkdir build
+mkdir build src
 cd build
 
 # Extract
+cp ${sources}/${pkg}.tar.gz ../src/
 gunzip -f ../src/${pkg}.tar.gz
 tar xf ../src/${pkg}.tar
+rm -r ../src/
 cd ${pkg}
 cp ../../mk/main.mk Makefile
 cp ../../mk/builtins.mk builtins/Makefile

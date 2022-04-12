@@ -1,11 +1,13 @@
 #!/usr/bin/bash
 
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
 
 # Begin sysb bootstrapping process
+mv ./run.sh /usr/src
 cd /usr/src
 ./run.sh

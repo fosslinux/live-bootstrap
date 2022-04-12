@@ -1,14 +1,19 @@
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_unpack() {
+    mkdir "${pkg}"
+    mv /sources/deblob-4.9 "${pkg}/"
+    mv "/sources/${pkg}.tar.gz" .
+    # Remove all previous source tarballs
+    rm /sources/*
+    mv ${pkg}.tar.gz /sources
     default || true # Predictable link errors - not a problem
 
-    cp ../src/deblob-4.9 ${pkg}/
-
     # Clear up storage space
-    rm -rf ../src
+    rm -rf "/sources/${pkg}.tar.gz"
 }
 
 generate_autoconf_h() {

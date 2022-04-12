@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+
+EXTRA_SRCS="gnulib-b28236b.tar.gz"
 
 src_prepare() {
     default

@@ -1,7 +1,9 @@
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+
+EXTRA_SRCS="gnulib-8e128e.tar.gz"
 
 src_prepare() {
     . ../../import-gnulib.sh

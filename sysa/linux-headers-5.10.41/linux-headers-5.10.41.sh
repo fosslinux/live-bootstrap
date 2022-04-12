@@ -1,13 +1,14 @@
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_unpack() {
-    src_dir="${base_dir}/src"
-    tar -xzf "${src_dir}/"*.tar.gz "${dirname}/scripts"
-    tar -xzf "${src_dir}/"*.tar.gz "${dirname}/include"
-    tar -xzf "${src_dir}/"*.tar.gz "${dirname}/arch/x86/include"
-    tar -xzf "${src_dir}/"*.tar.gz "${dirname}/arch/x86/entry"
+    tarball="/sources/linux-headers-5.10.41.tar.gz"
+    tar -xzf "${tarball}" "${dirname}/scripts"
+    tar -xzf "${tarball}" "${dirname}/include"
+    tar -xzf "${tarball}" "${dirname}/arch/x86/include"
+    tar -xzf "${tarball}" "${dirname}/arch/x86/entry"
 }
 
 src_prepare() {

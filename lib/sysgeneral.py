@@ -9,13 +9,12 @@ This file contains a few functions to be shared by all Sys* classes
 
 import os
 import hashlib
-import shutil
 import glob
 import subprocess
 
 import requests
 
-from lib.utils import mount, umount, get_target, copytree
+from lib.utils import mount, umount
 
 class SysGeneral:
     """
@@ -26,6 +25,7 @@ class SysGeneral:
     # All of these are variables defined in the individual Sys* classes
     preserve_tmp = None
     tmp_dir = None
+    cache_dir = None
     base_dir = None
     git_dir = None
     sys_dir = None
@@ -71,16 +71,14 @@ this script the next time")
         """
         Download a single source archive.
         """
-        cache_dir = os.path.join(self.git_dir, 'sources')
-
         # Automatically determine file name based on URL.
         if file_name is None:
             file_name = os.path.basename(url)
-        abs_file_name = os.path.join(cache_dir, file_name)
+        abs_file_name = os.path.join(self.cache_dir, file_name)
 
         # Create a cache directory for downloaded sources
-        if not os.path.isdir(cache_dir):
-            os.mkdir(cache_dir)
+        if not os.path.isdir(self.cache_dir):
+            os.mkdir(self.cache_dir)
 
         # Actually download the file
         if not os.path.isfile(abs_file_name):
@@ -109,37 +107,19 @@ this script the next time")
         # Single URL
         if isinstance(url, str):
             assert output is None or isinstance(output, str)
-            file_name = url if output is None else output
             urls = [url]
             outputs = [output]
         # Multiple URLs
         elif isinstance(url, list):
             assert output is None or len(output) == len(url)
-            file_name = url[0] if output is None else output[0]
             urls = url
             outputs = output if output is not None else [None] * len(url)
         else:
             raise TypeError("url must be either a string or a list of strings")
-        # Determine installation directory
-        target_name = get_target(file_name)
-        target_src_dir = os.path.join(self.base_dir, target_name, 'src')
         # Install base files
-        src_tree = os.path.join(self.sys_dir, target_name)
-        copytree(src_tree, self.base_dir)
-        if not os.path.isdir(target_src_dir):
-            os.mkdir(target_src_dir)
         for i, _ in enumerate(urls):
             # Download files into cache directory
-            tarball = self.download_file(urls[i], outputs[i])
-            # Install sources into target directory
-            shutil.copy2(tarball, target_src_dir)
-
-    def deploy_sysglobal_files(self):
-        """Deploy files common to all Sys*"""
-        sysglobal_files = ['helpers.sh', 'SHA256SUMS.pkgs']
-        for file in sysglobal_files:
-            shutil.copy2(os.path.join(self.git_dir, 'sysglobal', file),
-                         self.base_dir)
+            self.download_file(urls[i], outputs[i])
 
     def make_initramfs(self):
         """Package binary bootstrap seeds and sources into initramfs."""

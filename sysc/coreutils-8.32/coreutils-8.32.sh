@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+
+EXTRA_SRCS="gnulib-d279bc.tar.gz"
 
 regenerate_files() {
     build-aux/gen-lists-of-programs.sh --autoconf > m4/cu-progs.m4

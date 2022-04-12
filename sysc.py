@@ -8,7 +8,7 @@ import os
 import shutil
 import getpass
 
-from lib.utils import mount, umount, create_disk, run
+from lib.utils import mount, umount, create_disk, run, copytree
 from lib.sysgeneral import SysGeneral
 
 # pylint: disable=consider-using-with
@@ -24,6 +24,7 @@ class SysC(SysGeneral):
         self.chroot = chroot
 
         self.sys_dir = os.path.join(self.git_dir, 'sysc')
+        self.cache_dir = os.path.join(self.sys_dir, 'sources')
         if tmpdir is None:
             self.tmp_dir = os.path.join(self.sys_dir, 'tmp')
         else:
@@ -59,29 +60,13 @@ class SysC(SysGeneral):
         else:
             self.rootfs_dir = self.tmp_dir
 
-        # Expand to the full base dir
-        self.base_dir = os.path.join(self.rootfs_dir, 'usr', 'src')
-        os.makedirs(self.base_dir)
-
-        # Misc files/scripts
-        self.deploy_scripts()
-        self.deploy_sysglobal_files()
-
         self.get_packages()
+
+        copytree(self.sys_dir, self.rootfs_dir, ignore=shutil.ignore_patterns("tmp"))
 
         # Unmount tmp/mnt if it exists
         if not self.chroot:
             umount(self.rootfs_dir)
-
-    def deploy_scripts(self):
-        """Add the scripts to the chroot"""
-        src_files = ['run.sh', 'run2.sh']
-        for file in src_files:
-            shutil.copy2(os.path.join(self.sys_dir, file),
-                         os.path.join(self.base_dir, file))
-        # init script
-        os.mkdir(os.path.join(self.rootfs_dir, 'sbin'))
-        shutil.copy2(os.path.join(self.sys_dir, 'init'), self.rootfs_dir)
 
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):

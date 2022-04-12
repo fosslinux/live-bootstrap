@@ -504,7 +504,7 @@ automake 1.10.3
 GNU Automake from 1.10 series. ``aclocal`` is slightly patched to work
 with our ``perl``.
 
-autoconf 2.65
+autoconf 2.64
 =============
 
 Slightly newer version of GNU Autoconf. At this stage Autoconf is mostly

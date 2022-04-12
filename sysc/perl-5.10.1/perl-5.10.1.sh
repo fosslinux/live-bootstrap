@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+
+EXTRA_SRCS="perl-5.10.1.tar.bz2"
 
 src_prepare() {
     default_src_prepare
