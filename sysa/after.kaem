@@ -11,7 +11,7 @@ set -ex
 PATH=/${ARCH_DIR}/bin
 
 # Set commonly used variables
-sources=/after
+sources=/sysa
 prefix=/usr
 bindir=${prefix}/bin
 libdir=${prefix}/lib

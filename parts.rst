@@ -46,13 +46,13 @@ checksumming tool, that we use to ensure reproducibility and authenticity
 of generated binaries. We also build initial ``untar`` and ``ungz``
 utilities to deal with compressed archives.
 
-``/after``
+``/sysa``
 ==========
 
-We now move into the ``/after`` directory. As stage0-posix has no
+We now move into the ``/sysa`` directory. As stage0-posix has no
 concept of ``chdir()`` (not added until very late in stage0-posix),
 we have to copy a lot of files into the root of the initramfs, making it
-very messy. We get into the move ordered directory ``/after`` here,
+very messy. We get into the move ordered directory ``/sysa`` here,
 copying over all of the required binaries from ``/``.
 
 mes

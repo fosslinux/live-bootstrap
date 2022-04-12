@@ -8,8 +8,6 @@ set -e
 
 # shellcheck source=sysglobal/helpers.sh
 . helpers.sh
-# shellcheck source=/dev/null
-. bootstrap.cfg
 
 # Unload the current kernel before things go weird
 kexec -u

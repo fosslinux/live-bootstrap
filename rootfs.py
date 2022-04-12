@@ -31,6 +31,7 @@ def create_configuration_file(args):
     with open(config_path, "w", encoding="utf_8") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot) + "\n")
+        config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
         config.write("DISK=sda1\n")
 
 def main():
@@ -47,8 +48,11 @@ def main():
     parser.add_argument("-p", "--preserve", help="Do not unmount temporary dir",
                         action="store_true")
     parser.add_argument("-t", "--tmpdir", help="Temporary directory")
-    parser.add_argument("--force_timestamps",
+    parser.add_argument("--force-timestamps",
                         help="Force all files timestamps to be 0 unix time",
+                        action="store_true")
+    parser.add_argument("--update-checksums",
+                        help="Update checksum files.",
                         action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
