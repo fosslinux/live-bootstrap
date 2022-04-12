@@ -17,9 +17,6 @@ cd ${pkg}
 # Create .h files
 catm config.h
 
-# Patch
-patch -Np0 -i ../../patches/mes-libc.patch
-
 # Compile
 tcc -c getopt.c
 tcc -c getopt1.c
@@ -32,7 +29,7 @@ tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART expand.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DFILE_TIMESTAMP_HI_RES=0 file.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -Dvfork=fork function.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART implicit.c
-tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DHAVE_DUP2 -Dvfork=fork job.c
+tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DHAVE_DUP2 -DHAVE_STRCHR -Dvfork=fork job.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DLOCALEDIR=\"/fake-locale\" -DPACKAGE=\"fake-make\" -DHAVE_MKTEMP -DHAVE_GETCWD main.c
 tcc -c -I. -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DHAVE_STRERROR -DHAVE_VPRINTF misc.c
 tcc -c -I. -Iglob -DHAVE_INTTYPES_H -DHAVE_SA_RESTART -DINCLUDEDIR=\"${PREFIX}/include\" read.c
@@ -49,7 +46,7 @@ tcc -c -Iglob -DSTDC_HEADERS glob/fnmatch.c
 tcc -c -Iglob -DHAVE_STRDUP -DHAVE_DIRENT_H glob/glob.c
 
 # Link
-tcc -o ${bindir}/make getopt.o getopt1.o ar.o arscan.o commands.o default.o dir.o expand.o file.o function.o implicit.o job.o main.o misc.o read.o remake.o rule.o signame.o variable.o version.o vpath.o remake.o rule.o signame.o variable.o version.o vpath.o hash.o remote-stub.o getloadavg.o fnmatch.o glob.o
+tcc -o ${bindir}/make getopt.o getopt1.o ar.o arscan.o commands.o default.o dir.o expand.o file.o function.o implicit.o job.o main.o misc.o read.o remake.o rule.o signame.o variable.o version.o vpath.o hash.o remote-stub.o getloadavg.o fnmatch.o glob.o
 
 # Test
 make --version
