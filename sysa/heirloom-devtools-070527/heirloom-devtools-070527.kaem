@@ -7,14 +7,16 @@
 
 set -ex
 
-mkdir build
+mkdir build src
 cd build
 
 lexdir=/lex
 
 # Extract
+cp ${sources}/${pkg}.tar.bz2 ../src/
 bunzip2 -f ../src/${pkg}.tar.bz2
 tar xf ../src/${pkg}.tar ${pkg}/yacc ${pkg}/lex
+rm -r ../src/
 cd ${pkg}
 
 # Prepare and patch

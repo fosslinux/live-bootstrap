@@ -6,6 +6,11 @@
 
 set -e
 
+# Prepare sysc directory structure
+mkdir -p /usr/src
+mv run*.sh /usr/src
+mv /*-* /usr/src # build scripts
+
 # Begin sysc bootstrapping process
 cd /usr/src
 exec ./run.sh

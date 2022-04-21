@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
@@ -11,7 +11,7 @@ set -e
 
 trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 
-# shellcheck source=sysglobal/helpers.sh
+# shellcheck source=sysa/helpers.sh
 . helpers.sh
 
 trap bash EXIT
@@ -92,7 +92,7 @@ fi
 
 if [ "$UPDATE_CHECKSUMS" = True ] ; then
     pushd /usr/src/repo
-    sha256sum ./* | tee "${SOURCES}/SHA256SUMS.pkgs"
+    sha256sum -- * | tee "${SOURCES}/SHA256SUMS.pkgs"
     popd
 fi
 

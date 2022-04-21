@@ -18,6 +18,9 @@ cp files/mescc.scm ${bindir}/
 chmod 755 ${bindir}/mescc.scm
 
 # Unpack
+mkdir src
+cp ${sources}/${NYACC_PKG}.tar.gz src/
+cp ${sources}/${MES_PKG}.tar.gz src/
 cd src
 ungz ${NYACC_PKG}.tar.gz
 untar ${NYACC_PKG}.tar
@@ -284,5 +287,5 @@ cp include/sys/user.h ${incdir}/sys/user.h
 cp include/sys/wait.h ${incdir}/sys/wait.h
 
 # Checksums
-cd ${sources}/${MES_PKG}
+cd ${sysa}/${MES_PKG}
 sha256sum -c checksums

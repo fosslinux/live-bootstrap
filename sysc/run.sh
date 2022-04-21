@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 #
@@ -8,7 +8,7 @@
 
 set -e
 
-# shellcheck source=sysglobal/helpers.sh
+# shellcheck source=sysa/helpers.sh
 . helpers.sh
 
 export PATH=/usr/bin:/usr/sbin

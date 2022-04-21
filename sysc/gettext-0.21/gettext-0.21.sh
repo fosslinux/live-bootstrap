@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
+
+EXTRA_SRCS="gnulib-7daa86f.tar.gz"
 
 src_prepare() {
     find . -name '*.info*' -delete

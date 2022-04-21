@@ -48,19 +48,16 @@ def umount(target, **kwargs):
 
 def copytree(src, dst, ignore=shutil.ignore_patterns('*.git*')):
     """Copy directory tree into another directory"""
-    file_name = os.path.basename(src)
-    shutil.copytree(src, os.path.join(dst, file_name), ignore=ignore)
-
-def get_target(file_name):
-    """Determine package installation directory"""
-    bname = os.path.basename(file_name)
-
-    # Remove file extension. This is not completely trivial because
-    # tar archives often come with double extensions.
-    first_ext = os.path.splitext(os.path.basename(bname))
-    second_ext = os.path.splitext(first_ext[0])
-    if second_ext[1] == '.tar':
-        bname = second_ext[0]
-    else:
-        bname = first_ext[0]
-    return bname
+    if not os.path.exists(dst):
+        os.makedirs(dst)
+    lst = os.listdir(src)
+    if ignore:
+        excl = ignore(src, lst)
+        lst = [x for x in lst if x not in excl]
+    for item in lst:
+        source = os.path.join(src, item)
+        dest = os.path.join(dst, item)
+        if os.path.isdir(source):
+            copytree(source, dest, ignore)
+        else:
+            shutil.copy2(source, dest)

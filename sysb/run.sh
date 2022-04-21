@@ -6,7 +6,7 @@
 
 set -e
 
-# shellcheck source=sysglobal/helpers.sh
+# shellcheck source=sysa/helpers.sh
 . helpers.sh
 
 # Unload the current kernel before things go weird
@@ -65,10 +65,11 @@ mount -t ext4 "/dev/${DISK}" /sysc
 # Copy over appropriate data
 echo "Copying data into sysc"
 cp -r /dev /sysc/
+mkdir -p /sysc/usr/src
 # Don't include /usr/src
 find /usr -mindepth 1 -maxdepth 1 -type d -not -name src -exec cp -r {} /sysc/{} \;
-# Except for bootstrap.cfg
-cp /usr/src/bootstrap.cfg /sysc/usr/src/bootstrap.cfg
+# Except for a few files
+cp /usr/src/helpers.sh /usr/src/SHA256SUMS.pkgs /usr/src/bootstrap.cfg /sysc/usr/src/
 cp -r /usr/src/repo /sysc/usr/src/repo
 sync
 

@@ -7,6 +7,7 @@
 import os
 import shutil
 
+from lib.utils import copytree
 from lib.sysgeneral import SysGeneral
 
 class SysB(SysGeneral):
@@ -25,7 +26,6 @@ class SysB(SysGeneral):
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysb')
             os.mkdir(self.tmp_dir)
-        self.base_dir = os.path.join(self.tmp_dir, 'usr', 'src')
 
         self.prepare()
 
@@ -34,15 +34,4 @@ class SysB(SysGeneral):
         Prepare directory structure for System B.
         """
         self.mount_tmpfs()
-        os.makedirs(self.base_dir)
-
-        # Misc files/scripts
-        self.deploy_sysglobal_files()
-        self.deploy_scripts()
-
-    def deploy_scripts(self):
-        """Add the scripts to the chroot"""
-        # init script
-        shutil.copy2(os.path.join(self.sys_dir, 'init'), self.tmp_dir)
-        # run.sh
-        shutil.copy2(os.path.join(self.sys_dir, 'run.sh'), self.base_dir)
+        copytree(self.sys_dir, self.tmp_dir, ignore=shutil.ignore_patterns("tmp"))

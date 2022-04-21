@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
-# shellcheck source=sysglobal/helpers.sh
+# shellcheck source=sysa/helpers.sh
 . helpers.sh
 
 # shellcheck disable=SC2154
 export PREFIX="${prefix}"
 # shellcheck disable=SC2154
-export SOURCES="${sources}"
+export SOURCES="${sysa}"
 export DESTDIR=/tmp/destdir
 export REPO="${PREFIX}/src/repo"
 
@@ -25,7 +25,8 @@ create_sysb() {
         # Minimise RAM (storage) use - use hard links
         cp -rl "${PREFIX}/${d}" "/sysb${PREFIX}/${d}"
     done
-    cp "${SOURCES}/bootstrap.cfg" /sysb/usr/src/bootstrap.cfg
+    mkdir /sysb/usr/src
+    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" /sysb/usr/src/
     cp -rl "${REPO}" "/sysb/${REPO}"
     populate_device_nodes /sysb
     echo "Creating sysb initramfs"
@@ -257,5 +258,5 @@ fi
 # In chroot mode transition directly into System C.
 SYSC="/sysc"
 cp -R "${PREFIX}" "${SYSC}"
-cp "${SOURCES}/bootstrap.cfg" "${SYSC}/usr/src/"
+cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "${SYSC}/usr/src/"
 exec chroot "${SYSC}" /init
