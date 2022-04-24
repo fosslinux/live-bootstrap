@@ -5,6 +5,7 @@
 
 tmp/
 kernel
-sources/
+sysa/distfiles/
+sysc/distfiles/
 __pycache__
 sysa/bootstrap.cfg

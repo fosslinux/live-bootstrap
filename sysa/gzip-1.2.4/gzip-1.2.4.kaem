@@ -15,7 +15,7 @@ catm gzip.c.new ../../files/stat_override.c gzip.c
 cp gzip.c.new gzip.c
 
 # Extract
-cp ${sources}/${pkg}.tar.gz ../src/
+cp ${distfiles}/${pkg}.tar.gz ../src/
 ungz ../src/${pkg}.tar.gz
 untar ../src/${pkg}.tar
 cd ${pkg}

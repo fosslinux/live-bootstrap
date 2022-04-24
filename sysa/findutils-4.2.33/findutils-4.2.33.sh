@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="gnulib-8e128e.tar.gz"
+EXTRA_DISTFILES="gnulib-8e128e.tar.gz"
 
 src_prepare() {
     . ../../import-gnulib.sh

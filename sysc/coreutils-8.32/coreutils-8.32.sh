@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="gnulib-d279bc.tar.gz"
+EXTRA_DISTFILES="gnulib-d279bc.tar.gz"
 
 regenerate_files() {
     build-aux/gen-lists-of-programs.sh --autoconf > m4/cu-progs.m4

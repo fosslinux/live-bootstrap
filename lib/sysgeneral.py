@@ -3,7 +3,7 @@
 This file contains a few functions to be shared by all Sys* classes
 """
 
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -30,9 +30,10 @@ class SysGeneral:
     git_dir = None
     sys_dir = None
     initramfs_path = None
+    mounted_tmpfs = False
 
     def __del__(self):
-        if not self.preserve_tmp:
+        if self.mounted_tmpfs and not self.preserve_tmp:
             print(f"Unmounting tmpfs from {self.tmp_dir}")
             umount(self.tmp_dir)
             os.rmdir(self.tmp_dir)
@@ -43,6 +44,7 @@ class SysGeneral:
             os.mkdir(self.tmp_dir)
         print(f"Mounting tmpfs on {self.tmp_dir}")
         mount('tmpfs', self.tmp_dir, 'tmpfs', 'size=8G')
+        self.mounted_tmpfs = True
 
     def check_file(self, file_name):
         """Check hash of downloaded source file."""

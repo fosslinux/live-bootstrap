@@ -2,7 +2,7 @@
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
-# SPDX-FileCopyrightText: 2020-2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2020-2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -12,7 +12,7 @@ PATH=/${ARCH_DIR}/bin
 
 # Set commonly used variables
 sysa=/sysa
-sources=/sources
+distfiles=/sysa/distfiles
 prefix=/usr
 bindir=${prefix}/bin
 libdir=${prefix}/lib
@@ -22,8 +22,8 @@ TMPDIR=/tmp # tmpdir is needed for patch to work
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
 MES_PKG=mes
-MES_PREFIX=${sysa}/${MES_PKG}/src/mes-m2-dad1744fa80f52b3b428803c06b09d39c285f500
-GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sysa}/${MES_PKG}/src/${NYACC_PKG}/module
+MES_PREFIX=${sysa}/${MES_PKG}/build/mes-m2-dad1744fa80f52b3b428803c06b09d39c285f500
+GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sysa}/${MES_PKG}/build/${NYACC_PKG}/module
 mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${TMPDIR}
 cd ${prefix}
 
@@ -66,7 +66,7 @@ cd ${sysa}
 pkg=${MES_PKG}
 cd ${pkg}
 kaem --file ${pkg}.kaem
-cd ${sysa}
+cd ..
 
 # tcc 0.9.26
 pkg="tcc-0.9.26"

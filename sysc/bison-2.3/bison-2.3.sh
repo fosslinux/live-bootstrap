@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="gnulib-b28236b.tar.gz"
+EXTRA_DISTFILES="gnulib-b28236b.tar.gz"
 
 src_prepare() {
     default

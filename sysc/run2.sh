@@ -9,6 +9,7 @@
 
 set -e
 
+# shellcheck disable=SC2153
 trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 
 # shellcheck source=sysa/helpers.sh

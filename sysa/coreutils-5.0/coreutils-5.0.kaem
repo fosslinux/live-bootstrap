@@ -12,7 +12,7 @@ mkdir build src
 cd build
 
 # Extract
-cp ${sources}/${pkg}.tar.bz2 ../src/
+cp ${distfiles}/${pkg}.tar.bz2 ../src/
 bunzip2 -f ../src/${pkg}.tar.bz2
 tar xf ../src/${pkg}.tar
 cd ${pkg}

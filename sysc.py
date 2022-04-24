@@ -24,7 +24,7 @@ class SysC(SysGeneral):
         self.chroot = chroot
 
         self.sys_dir = os.path.join(self.git_dir, 'sysc')
-        self.cache_dir = os.path.join(self.sys_dir, 'sources')
+        self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         if tmpdir is None:
             self.tmp_dir = os.path.join(self.sys_dir, 'tmp')
         else:

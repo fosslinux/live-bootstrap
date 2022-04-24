@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 
 import os
 from distutils.dir_util import copy_tree
@@ -17,7 +17,7 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_tmp, sysc_tmp):
+    def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_dir, sysc_tmp):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -30,8 +30,8 @@ class SysA(SysGeneral):
             os.mkdir(self.tmp_dir)
         self.sysa_dir = os.path.join(self.tmp_dir, 'sysa')
         self.base_dir = self.sysa_dir
-        self.cache_dir = os.path.join(self.git_dir, 'sources')
-        self.sysb_tmp = sysb_tmp
+        self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
+        self.sysb_dir = sysb_dir
         self.sysc_tmp = sysc_tmp
         self.chroot = chroot
 
@@ -58,17 +58,15 @@ class SysA(SysGeneral):
             self.sysc()
 
     def sysa(self):
-        """Copy in sysb files for sysb."""
+        """Copy in sysa files for sysa."""
         self.get_packages()
+
         shutil.copytree(self.sys_dir, os.path.join(self.tmp_dir, 'sysa'),
                 shutil.ignore_patterns('tmp'))
 
-        # Copy in downloaded sources
-        shutil.copytree(self.cache_dir, os.path.join(self.tmp_dir, 'sources'))
-
     def sysb(self):
         """Copy in sysb files for sysb."""
-        shutil.copytree(self.sysb_tmp, os.path.join(self.tmp_dir, 'sysb'),
+        shutil.copytree(self.sysb_dir, os.path.join(self.tmp_dir, 'sysb'),
                 shutil.ignore_patterns('tmp'))
 
     def sysc(self):

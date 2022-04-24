@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="gnulib-b81ec69.tar.gz"
+EXTRA_DISTFILES="gnulib-b81ec69.tar.gz"
 
 src_prepare() {
     find . -name '*.mo' -delete
