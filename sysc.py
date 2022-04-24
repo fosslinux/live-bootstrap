@@ -163,8 +163,8 @@ class SysC(SysGeneral):
         self.get_file(["https://mirrors.kernel.org/gnu/texinfo/texinfo-6.7.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b81ec69.tar.gz"])
 
-        # zlib 1.2.11
-        self.get_file("https://sourceforge.net/projects/libpng/files/zlib/1.2.11/zlib-1.2.11.tar.xz")
+        # zlib 1.2.12
+        self.get_file("https://www.zlib.net/zlib-1.2.12.tar.xz")
 
         # gcc 4.7.4
         self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2")
