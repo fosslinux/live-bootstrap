@@ -94,14 +94,14 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# patch
-pkg="patch-2.5.9"
+# make
+pkg="make-3.80"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# make
-pkg="make-3.80"
+# patch
+pkg="patch-2.5.9"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
