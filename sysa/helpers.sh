@@ -36,6 +36,28 @@ get_links() {
     fi
 }
 
+# Get a list of files
+get_files() {
+    local prefix
+    prefix="${1}"
+    fs=
+    if [ -n "$(ls 2>/dev/null)" ]; then
+        fs=$(echo ./*)
+    fi
+    if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
+        fs="${fs} $(echo .[0-z]*)"
+    fi
+    for f in ${fs}; do
+        if [ -d "${f}" ]; then
+            cd "${f}"
+            get_files "${prefix}/${f}"
+            cd ..
+        else
+            echo -n "${prefix}/${f} "
+        fi
+    done
+}
+
 # Reset all timestamps to unix time 0
 reset_timestamp() {
     args=
@@ -246,7 +268,13 @@ create_tarball_pkg() {
         tar --no-recursion --null -T /tmp/filelist.txt -cf "/usr/src/repo/${pkg}_${revision}.tar"
         cd -
     else
-        tar -C "${DESTDIR}" -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+        echo -n > /dev/null
+        tar -cf "/usr/src/repo/${pkg}_${revision}.tar" -T /dev/null
+        cd "${DESTDIR}"
+        for f in $(get_files .); do
+            tar -rf "/usr/src/repo/${pkg}_${revision}.tar" "${f}"
+        done
+        cd -
     fi
     touch -t 197001010000.00 "${pkg}_${revision}.tar"
     bzip2 --best "${pkg}_${revision}.tar"
