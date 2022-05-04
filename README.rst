@@ -29,11 +29,14 @@ Get me started!
       a hard drive. This is currently hardcoded as sda. You also need
       to put ``sysc/tmp/disk.img`` onto your sda on the bootstrapping
       machine.
+   c. Alternatively, do not use python at all, see "Python-less build"
+      below.
 
 5. Wait.
 6. If you can, observe the many binaries in ``/usr/bin``! When the
    bootstrap is completed ``bash`` is launched providing a shell to
    explore the system.
+
 
 Background
 ----------
@@ -88,7 +91,7 @@ Comparison between GNU Guix and live-bootstrap
 +----------------------+----------------------+----------------------+
 
 [1]: Both projects only use software licensed under a FSF-approved
-free software license.
+free software license. Kernel is excluded from seed.
 [2]: Reiterating that Guix is working on a full source bootstrap,
 although that still uses guile (~12 MB). [3]: Work is ongoing to use
 other, smaller POSIX kernels.
@@ -153,3 +156,16 @@ from sysb, executed through util-linux's ``switch_root`` command which moves
 the entire rootfs without a reboot. Every package from here on out is compiled
 under this system, taking binaries from sysa. Chroot mode skips sysb, as it
 is obviously irrelevant for a chroot.
+
+Python-less build
+-----------------
+
+Python is no longer a requirement to set up the build system. The
+repository is almost completely in a form where it can be used as the
+source of a build.
+
+1. Copy sysa/stage0-posix/src/* to the root of the repository.
+2. Copy sysa/stage0-posix/src/bootstrap-seeds/POSIX/x86/kaem-optional-seed
+   to init in the root of the repository.
+3. Create a CPIO archive (eg, ``cpio --format newc --create --directory . > ../initramfs``).
+4. Boot your initramfs and kernel.
