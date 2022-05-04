@@ -10,9 +10,8 @@ stage0-posix
 ============
 
 This is where all the magic begins. We start with our hex0 and kaem
-seeds and bootstrap our way up to M2-Planet, a subset of C, and mes-m2,
-an independent port of GNU Mes to M2-Planet. The following steps are
-taken here:
+seeds and bootstrap our way up to M2-Planet, a subset of C.
+The following steps are taken here:
 
 -  hex0 (seed)
 -  hex0 compiles hex1
@@ -47,7 +46,7 @@ of generated binaries. We also build initial ``untar`` and ``ungz``
 utilities to deal with compressed archives.
 
 ``/sysa``
-==========
+=========
 
 We now move into the ``/sysa`` directory. As stage0-posix has no
 concept of ``chdir()`` (not added until very late in stage0-posix),
@@ -55,8 +54,8 @@ we have to copy a lot of files into the root of the initramfs, making it
 very messy. We get into the move ordered directory ``/sysa`` here,
 copying over all of the required binaries from ``/``.
 
-mes
-===
+mes 0.24
+========
 
 ``mes`` is a scheme interpreter. It runs the sister project ``mescc``,
 which is a C compiler written in scheme, which links against the Mes C
@@ -66,8 +65,8 @@ using the experimental ``wip-m2`` branch to jump over the gap between
 
 1. Compiling an initial mes using ``M2-Planet``. Note that this is
    *only* the Mes interpreter, not the libc or anything else.
-2. We then use this to compile the Mes libc. We need the libc to compile
-   all the programs until we get musl.
+2. We then use this to recompile the Mes interpreter as well as building
+   the libc. This second interpreter is faster and less buggy.
 
 tinycc 0.9.26
 =============
@@ -181,22 +180,9 @@ recognize lexical patters.
 
 Unfortunately ``flex`` also depends on itself for compiling its own
 scanner, so first flex 2.5.11 is compiled, with its scanner definition
-manually modified so that it can be processed by lex for the Heirloom
+manually modified so that it can be processed by lex from the Heirloom
 project (the required modifications are mostly syntactical, plus a few
 workarounds to avoid some flex advanced features).
-
-mes 0.23 (libc)
-===============
-
-In order to build musl we need tcc to support more than 255 command line
-arguments. Due to the bug in older mes libc this was not possible. Hence,
-we patch mes libc.
-
-tcc 0.9.27
-==========
-
-Rebuild tcc 0.9.27 to get the fix from patched mes libc. We have to do
-it using older ``tcc`` because tcc-0.9.27 is not self hosting.
 
 musl 1.1.24
 ===========

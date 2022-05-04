@@ -112,18 +112,17 @@ _grep() {
 # build takes three arguments:
 # 1) name-version of the package
 # 2) optionally specify build script. Default is name-version.sh
-# 3) optionally specify name of checksum file. Default is checksums
-# 4) directory of patches. Default is patches
-# 5) directory to cd into. Default is ${pkg}
+# 3) directory of patches. Default is patches
+# 4) directory to cd into. Default is ${pkg}
 build() {
     pkg=$1
     script_name=${2:-${pkg}.sh}
-    dirname=${5:-${pkg}}
+    dirname=${4:-${pkg}}
 
     cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
     base_dir="${PWD}"
-    patch_dir="${base_dir}/${4:-patches}"
+    patch_dir="${base_dir}/${3:-patches}"
     mk_dir="${base_dir}/mk"
     files_dir="${base_dir}/files"
 

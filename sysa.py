@@ -93,15 +93,11 @@ class SysA(SysGeneral):
         """Prepare remaining sources"""
 
         # mes-0.22 snapshot with m2 fixes
-        self.get_file(["https://github.com/oriansj/mes-m2/archive/dad1744fa80f52b3b428803c06b09d39c285f500.tar.gz",
-                       "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
-                      output=["mes.tar.gz", "nyacc-1.00.2.tar.gz"])
+        self.get_file(["https://mirrors.kernel.org/gnu/mes/mes-0.24.tar.gz",
+                       "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"])
 
         # tcc 0.9.26 patched by janneke
         self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
-
-        # mes 0.23 (meslibc)
-        self.get_file("https://mirrors.kernel.org/gnu/mes/mes-0.23.tar.gz")
 
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar.gz")

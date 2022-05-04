@@ -21,8 +21,8 @@ TMPDIR=/tmp # tmpdir is needed for patch to work
 
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
-MES_PKG=mes
-MES_PREFIX=${sysa}/${MES_PKG}/build/mes-m2-dad1744fa80f52b3b428803c06b09d39c285f500
+MES_PKG=mes-0.24
+MES_PREFIX=${sysa}/${MES_PKG}/build/${MES_PKG}
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sysa}/${MES_PKG}/build/${NYACC_PKG}/module
 mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${TMPDIR}
 cd ${prefix}
