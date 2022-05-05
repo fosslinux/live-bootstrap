@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="gnulib-30820c.tar.gz"
+EXTRA_DISTFILES="gnulib-30820c.tar.gz"
 
 src_prepare() {
     default

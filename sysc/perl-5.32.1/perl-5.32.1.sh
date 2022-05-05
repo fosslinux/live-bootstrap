@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="perl-5f2dc80.tar.bz2"
+EXTRA_DISTFILES="perl-5f2dc80.tar.bz2"
 
 src_prepare() {
     default

@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="gnulib-7daa86f.tar.gz"
+EXTRA_DISTFILES="gnulib-7daa86f.tar.gz"
 
 src_prepare() {
     find . -name '*.info*' -delete

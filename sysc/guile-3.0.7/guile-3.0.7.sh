@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_SRCS="gnulib-901694b9.tar.gz guile-psyntax-bootstrapping.tar.gz"
+EXTRA_DISTFILES="gnulib-901694b9.tar.gz guile-psyntax-bootstrapping.tar.gz"
 
 src_prepare() {
     default

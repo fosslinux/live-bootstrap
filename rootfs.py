@@ -111,10 +111,10 @@ def main():
     system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
             tmpdir=args.tmpdir, chroot=args.chroot)
     system_b = SysB(arch=args.arch, preserve_tmp=args.preserve,
-            tmpdir=args.tmpdir, chroot=args.chroot)
+            chroot=args.chroot)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
                     tmpdir=args.tmpdir, chroot=args.chroot,
-                    sysb_tmp=system_b.tmp_dir, sysc_tmp=system_c.tmp_dir)
+                    sysb_dir=system_b.sys_dir, sysc_tmp=system_c.tmp_dir)
 
     bootstrap(args, system_a, system_b, system_c)
 

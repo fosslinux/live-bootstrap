@@ -14,6 +14,7 @@ set -e
 export PREFIX="${prefix}"
 # shellcheck disable=SC2154
 export SOURCES="${sysa}"
+export DISTFILES="${sysa}/distfiles"
 export DESTDIR=/tmp/destdir
 export REPO="${PREFIX}/src/repo"
 

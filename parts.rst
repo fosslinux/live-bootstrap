@@ -250,8 +250,8 @@ m4 1.4.7
 flex 2.6.4 and bison. It allows macros to be defined and files to be
 generated from those macros.
 
-flex 2.6.14
-===========
+flex 2.6.4
+==========
 
 We recompile unpatched GNU ``flex`` using older flex 2.5.11. This is
 again a two stage process, first compiling flex using ``scan.c`` (from
@@ -584,14 +584,12 @@ work with our version of binutils. However, a much earlier 4.9.10 does
 (selected arbitarily, could go newer but did not test), with a small amount
 of patching. This is also modern enough for most hardware and to cause few
 problems with software built in sysc. Secondly, the linux-libre scripts are used
-to deblob the kernel. Unauditable, unbootstrappable binary blobs within our
-kernel are unacceptable. Our gawk is too buggy/old so we use sed instead for
-this operation. Every other pregenerated file is appended with ``_shipped`` so
-we use a ``find`` command to remove those, which are automatically regenerated.
+to deblob the kernel.  Every other pregenerated file is appended with ``_shipped``
+so we use a ``find`` command to remove those, which are automatically regenerated.
 The kernel config was originally taken from Void Linux, and was then modified
 for the requirements of live-bootstrap, including compiler features, drivers,
-and removing modules. Speaking of which, modules cannot be used. These cannot
-be transferred to subsequent systems, and we do not have ``modprobe``. Lastly,
+and removing modules. Modules are unused. They are difficult to transfer to
+subsequent systems, and we do not have ``modprobe``. Lastly,
 the initramfs of sysb is generated in this stage, using ``gen_init_cpio`` within
 the Linux kernel tree. This avoids the compilation of ``cpio`` as well.
 
@@ -601,11 +599,14 @@ go_sysb
 This is the last step of sysa, run for non-chroot mode. It uses kexec to load
 the new Linux kernel into RAM and execute it, moving into sysb.
 
+In chroot, sysb is skipped, and data is transferred directly to sysc and
+chrooted into.
+
 sysb
 ====
 
 sysb is purely a transition to sysc, allowing binaries from sysa to get onto a
-disk (as sysa does not nessecarily have hard disk support in the kernel).
+disk (as sysa does not necessarily have hard disk support in the kernel).
 It populates device nodes, mounts sysc, copies over data, and executes sysc.
 
 bash 5.1
@@ -738,6 +739,31 @@ We finally compile a full version of Perl using Configure. This includes all bas
 extensions required and is the latest version of Perl. We are now basically able
 to run any Perl application we want.
 
+libarchive 3.5.2
+================
+
+``libarchive`` is a C library used to read and write archives.
+
+openssl 1.1.1l
+==============
+
+OpenSSL is a C library for secure communications/cryptography. We do not
+strictly use any of the networking functions of this library but it is a hard dependency
+of XBPS.
+
+zlib 1.2.12
+===========
+
+zlib is a software library used for data compression and implements an abstraction of
+DEFLATE algorithm that is also used in ``gzip``.
+
+xbps 0.59.1
+===========
+
+XBPS is the package manager used from Void Linux. It has a rather simple package
+creation and installation system, and is much more robust than the hand-rolled
+tar package system used previously. From here, all package archives use XBPS.
+
 automake 1.16.3
 ===============
 
@@ -766,12 +792,6 @@ texinfo 6.7
 
 Texinfo is a typesetting syntax used for generating documentation. We can now use
 ``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
-
-zlib 1.2.11
-===========
-
-zlib is a software library used for data compression and implements an abstraction of
-DEFLATE algorithm that is also used in ``gzip``.
 
 gcc 4.7.4
 =========

@@ -9,6 +9,7 @@
 
 set -e
 
+# shellcheck disable=SC2153
 trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 
 # shellcheck source=sysa/helpers.sh
@@ -56,7 +57,7 @@ build libarchive-3.5.2
 
 build openssl-1.1.1l
 
-build zlib-1.2.11
+build zlib-1.2.12
 
 build xbps-0.59.1
 export XBPS_TARGET_ARCH="${ARCH}"

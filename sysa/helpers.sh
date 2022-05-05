@@ -36,6 +36,28 @@ get_links() {
     fi
 }
 
+# Get a list of files
+get_files() {
+    local prefix
+    prefix="${1}"
+    fs=
+    if [ -n "$(ls 2>/dev/null)" ]; then
+        fs=$(echo ./*)
+    fi
+    if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
+        fs="${fs} $(echo .[0-z]*)"
+    fi
+    for f in ${fs}; do
+        if [ -d "${f}" ]; then
+            cd "${f}"
+            get_files "${prefix}/${f}"
+            cd ..
+        else
+            echo -n "${prefix}/${f} "
+        fi
+    done
+}
+
 # Reset all timestamps to unix time 0
 reset_timestamp() {
     args=
@@ -118,7 +140,7 @@ build() {
     echo "${pkg}: unpacking source."
     build_stage=src_unpack
     call $build_stage
-    unset EXTRA_SRCS
+    unset EXTRA_DISTFILES
 
     cd "${dirname}" || (echo "Cannot cd into build/${dirname}!"; kill $$)
 
@@ -153,8 +175,6 @@ build() {
     echo "${pkg}: creating package."
     cd "${DESTDIR}"
     src_pkg
-    # Various shenanigans must be implemented for repoducibility
-    # as a result of timestamps
 
     src_checksum
 
@@ -171,36 +191,31 @@ build() {
     cd "${SOURCES}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install
-    unset checksum
 }
 
 # Default unpacking function that unpacks all source tarballs.
 default_src_unpack() {
-    SRCS=$EXTRA_SRCS
-    for f in "/sources/${pkg}."*; do
-        SRCS="$(basename "$f") ${SRCS}"
+    distfiles=${EXTRA_DISTFILES}
+    # shellcheck disable=SC2153
+    for f in "${DISTFILES}/${pkg}."*; do
+        distfiles="$(basename "$f") ${distfiles}"
     done
 
     # Check for new tar
+    # shellcheck disable=SC2153
     if test -e "${PREFIX}/libexec/rmt"; then
-        for i in $SRCS; do
-            tar --no-same-owner -xf "/sources/${i}"
+        for i in ${distfiles}; do
+            tar --no-same-owner -xf "${DISTFILES}/${i}"
         done
     else
-        for i in $SRCS; do
+        for i in ${distfiles}; do
             case "$i" in
-            *.tar.gz)
-                tar -xzf "/sources/${i}"
-                ;;
+            *.tar.gz) tar -xzf "${DISTFILES}/${i}" ;;
             *.tar.bz2)
                 # Initial bzip2 built against meslibc has broken pipes
-                bzip2 --decompress --keep "/sources/${i}"
-                tar -xf "/sources/${i%.bz2}"
-                rm "/sources/${i%.bz2}"
-                ;;
+                bzip2 -dc "${DISTFILES}/${i}" | tar -xf - ;;
             *.tar.xz)
-                tar -xf "/sources/${i}" --use-compress-program=xz
-                ;;
+                tar -xf "${DISTFILES}/${i}" --use-compress-program=xz ;;
             esac
         done
     fi
@@ -253,7 +268,13 @@ create_tarball_pkg() {
         tar --no-recursion --null -T /tmp/filelist.txt -cf "/usr/src/repo/${pkg}_${revision}.tar"
         cd -
     else
-        tar -C "${DESTDIR}" -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+        echo -n > /dev/null
+        tar -cf "/usr/src/repo/${pkg}_${revision}.tar" -T /dev/null
+        cd "${DESTDIR}"
+        for f in $(get_files .); do
+            tar -rf "/usr/src/repo/${pkg}_${revision}.tar" "${f}"
+        done
+        cd -
     fi
     touch -t 197001010000.00 "${pkg}_${revision}.tar"
     bzip2 --best "${pkg}_${revision}.tar"
@@ -297,9 +318,8 @@ src_apply() {
                 rm -f "/${file}" >/dev/null 2>&1 || true
             done < /tmp/filelist.txt
         fi
-        bzip2 --decompress --keep "/usr/src/repo/${pkg}_${revision}.tar.bz2"
-        tar -C / -xpf "/usr/src/repo/${pkg}_${revision}.tar"
-        rm "/usr/src/repo/${pkg}_${revision}.tar"
+        bzip2 -dc "/usr/src/repo/${pkg}_${revision}.tar.bz2" | \
+            tar -C / -xpf -
         # shellcheck disable=SC2162
         # ^ read -r unsupported in old bash
         while read line; do
