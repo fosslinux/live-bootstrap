@@ -13,7 +13,7 @@ we had to patch musl to replace weak symbols with strong symbols
 -#endif
                  tcc_error_noabort("'%s' defined twice", name);
 +#endif
-+		goto do_patch;
++                goto do_patch;
              }
          } else {
          do_patch:

@@ -23,7 +23,7 @@
 (define %libdir (or (getenv "libdir")
                     (string-append %prefix "/lib")))
 
-(define %version (if (string-prefix? "@VERSION" "0.22-m2") "git"
+(define %version (if (string-prefix? "@VERSION" "0.24") "git"
                      "0.22"))
 
 (define %arch (if (string-prefix? "@mes_cpu" "x86") %arch
