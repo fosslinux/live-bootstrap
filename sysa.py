@@ -270,6 +270,9 @@ class SysA(SysGeneral):
         # make 3.82
         self.get_file("https://mirrors.kernel.org/gnu/make/make-3.82.tar.gz")
 
+        # curl 7.83.0
+        self.get_file("https://curl.se/download/curl-7.83.0.tar.bz2")
+
         # linux kernel 2.6.16.62
         self.get_file(["https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.10.tar.gz",
             "https://linux-libre.fsfla.org/pub/linux-libre/releases/old/gen6/4.9.10-gnu/deblob-4.9"])
