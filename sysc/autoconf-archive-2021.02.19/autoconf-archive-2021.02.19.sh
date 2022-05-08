@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-SRCS="autoconf-archive-2021.02.19.tar.xz"
-
 src_prepare() {
     autoreconf-2.69 -fi
 }

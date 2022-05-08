@@ -11,7 +11,7 @@ src_prepare() {
 
     # Rebuild configure script
     rm configure
-    autoconf-2.61
+    autoconf-2.64
 
     # avoid non-deterministic build:
     printf '%s\n%s\n' \

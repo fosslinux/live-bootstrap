@@ -310,28 +310,33 @@ src_apply() {
     if command -v xbps-install >/dev/null 2>&1; then
         xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
     else
-        # Overwriting files is mega busted, so do it manually
-        # shellcheck disable=SC2162
-        if [ -e /tmp/filelist.txt ]; then
-            while IFS= read -d $'\0' file; do
-                rm -f "/${file}" >/dev/null 2>&1 || true
-            done < /tmp/filelist.txt
-        fi
-        bzip2 -dc "/usr/src/repo/${pkg}_${revision}.tar.bz2" | \
-            tar -C / -xpf -
-        # shellcheck disable=SC2162
-        # ^ read -r unsupported in old bash
-        while read line; do
-            # shellcheck disable=SC2001
-            # ^ cannot use variable expansion here
-            fname="$(echo "${line}" | sed 's/.* //')"
-            rm -f "${fname}"
-            # shellcheck disable=SC2226,SC2086
-            # ^ ${line} expands into two arguments
-            ln -s ${line}
-            touch -t 197001010000.00 "${fname}"
-        done < "/usr/src/repo/${pkg}_${revision}.links"
+        src_apply_tar "${pkg}" "${revision}"
     fi
+}
+
+src_apply_tar() {
+    local pkg=$1 revision=$2
+    # Overwriting files is mega busted, so do it manually
+    # shellcheck disable=SC2162
+    if [ -e /tmp/filelist.txt ]; then
+        while IFS= read -d $'\0' file; do
+            rm -f "/${file}" >/dev/null 2>&1 || true
+        done < /tmp/filelist.txt
+    fi
+    bzip2 -dc "/usr/src/repo/${pkg}_${revision}.tar.bz2" | \
+        tar -C / -xpf -
+    # shellcheck disable=SC2162
+    # ^ read -r unsupported in old bash
+    while read line; do
+        # shellcheck disable=SC2001
+        # ^ cannot use variable expansion here
+        fname="$(echo "${line}" | sed 's/.* //')"
+        rm -f "${fname}"
+        # shellcheck disable=SC2226,SC2086
+        # ^ ${line} expands into two arguments
+        ln -s ${line}
+        touch -t 197001010000.00 "${fname}"
+    done < "/usr/src/repo/${pkg}_${revision}.links"
 }
 
 # Check if bash function exists
@@ -375,4 +380,23 @@ populate_device_nodes() {
         test -c "${1}/dev/tty" || mknod -m 666 "${1}/dev/tty" c 5 0
         test -c "${1}/dev/console" || mknod -m 666 "${1}/dev/console" c 5 1
     fi
+}
+
+sys_transfer() {
+    local dest=$1
+
+    mkdir -p "${dest}/${PREFIX}/bin" "${dest}/${PREFIX}/src"
+
+    # Bash, Tar and Bzip2 are required to install packages
+    cp "${PREFIX}/bin/bash" "${PREFIX}/bin/tar" "${PREFIX}/bin/bzip2" "${dest}${PREFIX}/bin/"
+
+    # Transfer misc files
+    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "${dest}/"
+
+    cp -r "${PREFIX}/src/" "${dest}${PREFIX}/"
+
+    shift
+    # Copy additional binaries
+    set -- "${@/#/${PREFIX}/bin/}"
+    cp "$@" "${dest}${PREFIX}/bin/"
 }

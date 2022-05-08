@@ -6,9 +6,51 @@
 
 set -e
 
+# shellcheck source=sysa/helpers.sh
+. helpers.sh
+
+echo
+echo "Installing packages into sysc"
+
+install_tar() {
+    echo "${1}: installing package"
+    src_apply_tar "$@"
+}
+
+# Install packages.
+# First two packages must be coreutils and sed
+
+install_tar coreutils-5.0 0
+install_tar sed-4.0.9 0
+
+install_tar autoconf-2.64 0
+install_tar automake-1.10.3 0
+install_tar binutils-2.14 0
+install_tar bzip2-1.0.8 0
+install_tar bison-3.4.1 2
+install_tar coreutils-6.10 0
+install_tar diffutils-2.7 0
+install_tar findutils-4.2.33 0
+install_tar flex-2.6.4 0
+install_tar gawk-3.0.4 0
+install_tar gcc-4.0.4 1
+install_tar grep-2.4 0
+install_tar help2man-1.36.4 0
+install_tar libtool-2.2.4 0
+install_tar linux-headers-5.10.41 0
+install_tar m4-1.4.7 0
+install_tar make-3.82 0
+install_tar musl-1.2.2 0
+install_tar perl-5.6.2 0
+install_tar util-linux-2.19.1 0
+
+# Fix invocation of bash from perl
+ln -s /usr/bin/bash /usr/bin/sh
+
 # Prepare sysc directory structure
 mkdir -p /usr/src
 mv run*.sh /usr/src
+mv helpers.sh SHA256SUMS.pkgs bootstrap.cfg /usr/src
 mv /*-* /usr/src # build scripts
 
 # Begin sysc bootstrapping process

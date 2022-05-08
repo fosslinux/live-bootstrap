@@ -20,7 +20,7 @@ export DISTFILES=/distfiles
 create_fhs() {
     # Add the rest of the FHS that we will use and is not created pre-boot
     rm -rf /sbin /usr/sbin
-    ln -s bin /usr/sbin
+    ln -s bin /usr/sbin # Hack to fix xbps (alternatively need to install which)
     for d in bin lib sbin; do
         ln -s "usr/${d}" "/${d}"
     done
