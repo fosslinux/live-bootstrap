@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-SRCS="musl-1.2.2.tar.gz"
-
 src_configure() {
     CC=gcc ./configure \
         --host=i386-unknown-linux-musl \

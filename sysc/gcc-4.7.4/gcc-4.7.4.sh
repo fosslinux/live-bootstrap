@@ -42,20 +42,20 @@ src_prepare() {
     # Regenerate configure scripts
     # Find all folders with configure script and rebuild them. At the moment we exclude boehm-gc folder due to
     # an error but we don't use that directory anyway (it's only needed for Objective C)
-    for dir in $(ls */configure | sed 's#/configure##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
-        cd $dir
+    for dir in $(find . -mindepth 2 -maxdepth 2 -name configure.ac | sed 's#/configure.ac##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
+        pushd "$dir"
         rm configure
         autoconf-2.64 || autoconf-2.64
-        cd ..
+        popd
     done
 
     # Regenerate Makefile.in
     # Find all folders with Makefile.am and rebuild them. At the moment we exclude boehm-gc folder.
-    for dir in $(ls */Makefile.am | sed 's#/Makefile.am##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
-        cd $dir
+    for dir in $(find . -mindepth 2 -maxdepth 2 -name Makefile.am | sed 's#/Makefile.am##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
+        pushd "$dir"
         rm Makefile.in
         AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 automake-1.11
-        cd ..
+        popd
     done
 
     for dir in libdecnumber libcpp libiberty gcc; do
@@ -68,7 +68,7 @@ src_prepare() {
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
-    cp "${PREFIX}/"/share/automake-1.15/config.sub .
+    cp "${PREFIX}/share/automake-1.15/config.sub" .
 
     # Workaround for bison being too new
     rm intl/plural.c
@@ -126,7 +126,7 @@ src_compile() {
     pushd order-a
     ar x ../.libs/libstdc++.a
     rm ../.libs/libstdc++.a
-    ar cru ../.libs/libstdc++.a *.o
+    ar cru ../.libs/libstdc++.a ./*.o
     popd
     popd
 }
@@ -135,7 +135,7 @@ src_install() {
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}" MAKEINFO=true
     make -C build/libgcc install DESTDIR="${DESTDIR}" host_subdir=build
     make -C build/libstdc++-v3 install DESTDIR="${DESTDIR}"
-    cp gcc/gsyslimits.h ${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/syslimits.h
+    cp gcc/gsyslimits.h "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/syslimits.h"
     # Very strange mis-versoning error
     mkdir -p "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/"
     mv "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include/"* "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/"

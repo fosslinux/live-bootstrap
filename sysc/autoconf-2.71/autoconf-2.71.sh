@@ -7,9 +7,7 @@ src_prepare() {
     autoreconf-2.69 -fi
 
     # Install autoconf data files into versioned directory
-    for file in Makefile.in; do
-        sed -i '/^pkgdatadir/s:$:-@VERSION@:' $file
-    done
+    sed -i '/^pkgdatadir/s:$:-@VERSION@:' Makefile.in
 }
 
 src_configure() {

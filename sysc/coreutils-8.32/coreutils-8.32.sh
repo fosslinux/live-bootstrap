@@ -18,8 +18,8 @@ regenerate_files() {
     # dependency.
     cp man/dummy-man man/help2man
 
-    VERSION=$(basename ${BASH_SOURCE[0]} .sh | sed 's/coreutils-//')
-    echo $VERSION > .tarball-version
+    VERSION=$(basename "${BASH_SOURCE[0]}" .sh | sed 's/coreutils-//')
+    echo "$VERSION" > .tarball-version
 
     # We don't have autopoint from gettext yet.
     AUTOPOINT=true autoreconf-2.69 -fi

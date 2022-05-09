@@ -67,7 +67,7 @@ src_compile() {
     pushd libguile/.libs/order
     ar x ../libguile-3.0.a
     rm ../libguile-3.0.a
-    ar cr ../libguile-3.0.a *.o
+    ar cr ../libguile-3.0.a ./*.o
     popd
 
     # Recompile guile with fixed libguile

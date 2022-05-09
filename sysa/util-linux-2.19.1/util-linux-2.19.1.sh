@@ -10,7 +10,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix=${PREFIX} \
+    ./configure --prefix="${PREFIX}" \
         --bindir="${PREFIX}/bin" \
         --sbindir="${PREFIX}/bin" \
         --libdir="${PREFIX}/lib/musl" \

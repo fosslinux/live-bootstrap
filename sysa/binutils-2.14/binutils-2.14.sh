@@ -72,7 +72,7 @@ src_prepare() {
     done
 
     # Rebuild bison files
-    touch */*.y
+    touch -- */*.y
     rm ld/ldgram.c ld/ldgram.h
     rm gas/itbl-parse.c gas/itbl-parse.h
     rm gas/m68k-parse.c
@@ -83,13 +83,13 @@ src_prepare() {
     rm binutils/rcparse.c binutils/rcparse.h
 
     # Rebuild flex generated files
-    touch */*.l
+    touch -- */*.l
     rm ld/ldlex.c
     rm gas/itbl-lex.c
     rm binutils/syslex.c binutils/rclex.c binutils/deflex.c binutils/arlex.c
 
     # Remove prebuilt texinfo files
-    rm */*.info* */*/*.info*
+    rm -- */*.info* */*/*.info*
 }
 
 src_configure() {
