@@ -8,7 +8,7 @@ src_unpack() {
     mv "${DISTFILES}/deblob-4.9" "${pkg}/"
     # Remove all previous source tarballs
     mv "${DISTFILES}/${pkg}.tar.gz" .
-    rm -r "${DISTFILES}/"*
+    rm -r "${DISTFILES:?}/"*
     mv "${pkg}.tar.gz" "${DISTFILES}"
     default || true # Predictable link errors - not a problem
     rm -r "${DISTFILES}" # Clear storage space

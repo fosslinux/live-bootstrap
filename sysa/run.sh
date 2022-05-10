@@ -253,7 +253,6 @@ if [ "${CHROOT}" = False ]; then
 fi
 
 # In chroot mode transition directly into System C.
-SYSC="/sysc"
-cp -R "${PREFIX}" "${SYSC}"
-cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "${SYSC}/usr/src/"
+SYSC=/sysc
+sys_transfer "${SYSC}" gzip patch
 exec chroot "${SYSC}" /init

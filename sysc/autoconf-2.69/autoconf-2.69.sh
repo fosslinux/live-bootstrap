@@ -3,15 +3,13 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-SRCS="autoconf-2.69.tar.xz"
-
 src_prepare() {
     rm doc/standards.info man/*.1
     autoreconf-2.64 -f
 
     # Install autoconf data files into versioned directory
     for file in */*/Makefile.in */Makefile.in Makefile.in; do
-        sed -i '/^pkgdatadir/s:$:-@VERSION@:' $file
+        sed -i '/^pkgdatadir/s:$:-@VERSION@:' "$file"
     done
 }
 

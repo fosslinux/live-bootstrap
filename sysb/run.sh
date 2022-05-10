@@ -55,6 +55,10 @@ if [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
     ask_disk
 fi
 
+PREFIX=/usr
+SOURCES="${PREFIX}/src"
+SYSC=/sysc
+
 echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
 
 # Otherwise, add stuff from sysa to sysb
@@ -64,13 +68,7 @@ mount -t ext4 "/dev/${DISK}" /sysc
 
 # Copy over appropriate data
 echo "Copying data into sysc"
-cp -r /dev /sysc/
-mkdir -p /sysc/usr/src
-# Don't include /usr/src
-find /usr -mindepth 1 -maxdepth 1 -type d -not -name src -exec cp -r {} /sysc/{} \;
-# Except for a few files
-cp /usr/src/helpers.sh /usr/src/SHA256SUMS.pkgs /usr/src/bootstrap.cfg /sysc/usr/src/
-cp -r /usr/src/repo /sysc/usr/src/repo
+sys_transfer "${SYSC}" gzip patch
 sync
 
 # switch_root into sysc 1. for simplicity 2. to avoid kexecing again

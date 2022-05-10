@@ -4,14 +4,14 @@
 
 src_prepare() {
     rm doc/standards.info doc/autoconf.info
-    rm Makefile.in */Makefile.in
+    rm -- Makefile.in */Makefile.in
     rm configure
     autoconf-2.52
     automake-1.4
 
     # Install autoconf data files into versioned directory
     for file in */Makefile.in Makefile.in; do
-        sed -i '/^pkgdatadir/s:$:-@VERSION@:' $file
+        sed -i '/^pkgdatadir/s:$:-@VERSION@:' "$file"
     done
 }
 
@@ -25,8 +25,8 @@ src_compile() {
 
 src_install() {
     # Remove manually installed autoconf
-    rm ${PREFIX}/bin/autoconf-2.52
-    rm -rf ${PREFIX}/share/autoconf-2.52
+    rm "${PREFIX}/bin/autoconf-2.52"
+    rm -rf "${PREFIX}/share/autoconf-2.52"
 
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
 }

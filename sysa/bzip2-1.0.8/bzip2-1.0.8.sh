@@ -14,8 +14,8 @@ src_compile() {
 
 src_install() {
     # Manually install bzip2 (cannot replace binary while running)
-    install -D bzip2 ${PREFIX}/bin/bzip2
-    mkdir -p ${DESTDIR}${PREFIX}/bin
-    ln -sf ${PREFIX}/bin/bzip2 ${DESTDIR}${PREFIX}/bin/bunzip2
-    ln -sf ${PREFIX}/bin/bzip2 ${DESTDIR}${PREFIX}/bin/bzcat
+    install -D bzip2 "${PREFIX}/bin/bzip2"
+    mkdir -p "${DESTDIR}${PREFIX}/bin"
+    ln -sf "${PREFIX}/bin/bzip2" "${DESTDIR}${PREFIX}/bin/bunzip2"
+    ln -sf "${PREFIX}/bin/bzip2" "${DESTDIR}${PREFIX}/bin/bzcat"
 }

@@ -56,7 +56,7 @@ src_install() {
     VERSION=5
     PATCHLEVEL=10
     SUBLEVEL=42
-    VERSION_CODE="$((${VERSION} * 65536 + ${PATCHLEVEL} * 256 + ${SUBLEVEL}))"
+    VERSION_CODE="$((VERSION * 65536 + PATCHLEVEL * 256 + SUBLEVEL))"
     echo '#define LINUX_VERSION_CODE '"${VERSION_CODE}" \
         > "${DESTDIR}${PREFIX}/include/linux/version.h"
     echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + ((c) > 255 ? 255 : (c)))' \

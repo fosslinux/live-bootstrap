@@ -5,7 +5,7 @@
 src_prepare() {
     default
 
-    rm Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 configure
+    rm -- Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 configure
     rm doc/standards.info doc/autoconf.info
 
     aclocal-1.6
@@ -19,7 +19,7 @@ src_prepare() {
 
     # Install autoconf data files into versioned directory
     for file in */*/Makefile.in */Makefile.in Makefile.in; do
-        sed -i '/^pkgdatadir/s:$:-@VERSION@:' $file
+        sed -i '/^pkgdatadir/s:$:-@VERSION@:' "$file"
     done
 }
 

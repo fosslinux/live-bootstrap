@@ -16,7 +16,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix=${PREFIX}
+    ./configure --prefix="${PREFIX}"
 }
 
 src_compile() {
@@ -26,5 +26,5 @@ src_compile() {
 }
 
 src_install() {
-    make MAKEINFO=true DESTDIR=${DESTDIR} install
+    make MAKEINFO=true DESTDIR="${DESTDIR}" install
 }

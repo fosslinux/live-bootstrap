@@ -6,7 +6,7 @@
 src_prepare() {
     sed -i '/Makefile/d' configure.in
 
-    rm configure Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 automake.info*
+    rm -- configure Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 automake.info*
     aclocal-1.6
     autoconf-2.52
 }
