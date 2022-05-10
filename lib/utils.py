@@ -30,7 +30,7 @@ def create_disk(image, disk_type, fs_type, size):
     run('truncate', '-s', size, image)
     # First find the device we will use, then actually use it
     loop_dev = run('sudo', 'losetup', '-f', capture_output=True).stdout.decode().strip()
-    run('sudo', 'losetup', loop_dev, image)
+    run('sudo', 'losetup', '-P', loop_dev, image)
     # Create the partition
     run('sudo', 'parted', '--script', image, 'mklabel', disk_type, 'mkpart',
             'primary', 'ext4', '0%', '100%')
