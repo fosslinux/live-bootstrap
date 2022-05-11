@@ -249,8 +249,8 @@ class SysA(SysGeneral):
         self.get_file("https://mirrors.kernel.org/pub/linux/kernel/v5.x/linux-5.10.41.tar.gz",
                 output="linux-headers-5.10.41.tar.gz")
 
-        # musl 1.2.2
-        self.get_file("https://musl.libc.org/releases/musl-1.2.2.tar.gz")
+        # musl 1.2.3
+        self.get_file("https://musl.libc.org/releases/musl-1.2.3.tar.gz")
 
         # util-linux 2.19.1
         self.get_file("https://mirrors.kernel.org/pub/linux/utils/util-linux/v2.19/util-linux-2.19.1.tar.gz")

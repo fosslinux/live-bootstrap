@@ -223,7 +223,7 @@ set -x
 build linux-headers-5.10.41 '' '' linux-5.10.41
 set +x
 
-build musl-1.2.2
+build musl-1.2.3
 
 build gcc-4.0.4 pass2.sh
 
