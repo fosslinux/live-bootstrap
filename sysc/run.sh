@@ -23,11 +23,15 @@ create_fhs() {
     test -d /sys || (mkdir /sys && mount -t sysfs sysfs /sys)
     # Make /tmp a ramdisk (speeds up configure etc significantly)
     test -d /tmp || (mkdir /tmp && mount -t tmpfs tmpfs /tmp)
+    # Add /etc/resolv.conf
+    echo 'nameserver 1.1.1.1' > /etc/resolv.conf
 }
 
 populate_device_nodes ""
 
 create_fhs
+
+mkdir -p "${DISTFILES}"
 
 build bash-5.1
 

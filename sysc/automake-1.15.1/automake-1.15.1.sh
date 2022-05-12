@@ -3,6 +3,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://mirrors.kernel.org/gnu/automake/automake-1.15.1.tar.xz"
+
 src_prepare() {
     default
 

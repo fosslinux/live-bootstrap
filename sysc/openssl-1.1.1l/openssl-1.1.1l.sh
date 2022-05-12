@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://artfiles.org/openssl.org/source/old/1.1.1/openssl-1.1.1l.tar.gz"
+
 src_prepare() {
     default
 

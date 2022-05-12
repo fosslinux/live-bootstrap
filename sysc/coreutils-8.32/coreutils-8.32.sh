@@ -3,7 +3,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_DISTFILES="gnulib-d279bc.tar.gz"
+urls="http://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-8.32.tar.gz
+ http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"
 
 regenerate_files() {
     build-aux/gen-lists-of-programs.sh --autoconf > m4/cu-progs.m4

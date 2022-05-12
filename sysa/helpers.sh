@@ -147,6 +147,10 @@ build() {
         . "${build_script}"
     fi
 
+    echo "${pkg}: getting sources."
+    build_stage=src_get
+    call $build_stage
+
     echo "${pkg}: unpacking source."
     build_stage=src_unpack
     call $build_stage
@@ -192,13 +196,28 @@ build() {
     unset -f src_unpack src_prepare src_configure src_compile src_install
 }
 
+# Default get function that downloads source tarballs.
+default_src_get() {
+    if ! [ -z "${urls}" ] && command -v curl >/dev/null 2>&1; then
+        for i in ${urls}; do
+            curl -L "${i}" --output "${DISTFILES}/$(basename "${i}")"
+        done
+    fi
+}
+
 # Default unpacking function that unpacks all source tarballs.
 default_src_unpack() {
-    distfiles=${EXTRA_DISTFILES}
-    # shellcheck disable=SC2153
-    for f in "${DISTFILES}/${pkg}."*; do
-        distfiles="$(basename "$f") ${distfiles}"
-    done
+    distfiles="${EXTRA_DISTFILES}"
+    if [ -z "${urls}" ]; then
+        # shellcheck disable=SC2153
+        for f in "${DISTFILES}/${pkg}."*; do
+            distfiles="$(basename "$f") ${distfiles}"
+        done
+    else
+        for i in ${urls}; do
+            distfiles="$(basename "${i}") ${distfiles}"
+        done
+    fi
 
     # Check for new tar
     # shellcheck disable=SC2153

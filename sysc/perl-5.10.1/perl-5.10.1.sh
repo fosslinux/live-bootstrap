@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_DISTFILES="perl-5.10.1.tar.bz2"
+urls="http://www.cpan.org/src/5.0/perl-5.10.1.tar.bz2"
 
 src_prepare() {
     default_src_prepare

@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://mirrors.kernel.org/gnu/gmp/gmp-6.2.1.tar.xz"
+
 src_prepare() {
     default
 

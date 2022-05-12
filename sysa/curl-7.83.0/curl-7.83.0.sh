@@ -21,6 +21,7 @@ src_prepare() {
 src_configure() {
     LDFLAGS="-static" ./configure \
         --prefix="${PREFIX}" \
+        --build=i386-unknown-linux-gnu \
         --without-ssl \
         --disable-hsts
 }

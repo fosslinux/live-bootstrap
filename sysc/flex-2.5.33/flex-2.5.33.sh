@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.33.tar.gz"
+
 src_prepare() {
     default
 

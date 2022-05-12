@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_DISTFILES="gnulib-e017871.tar.gz"
+urls="https://mirrors.kernel.org/gnu/patch/patch-2.7.6.tar.xz
+ https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-e017871.tar.gz"
 
 src_prepare() {
     ../../import-gnulib.sh

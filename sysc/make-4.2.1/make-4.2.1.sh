@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+
 src_prepare() {
     default
 
