@@ -23,7 +23,6 @@ src_prepare() {
 src_configure() {
     LDFLAGS="-static" ./configure \
         --prefix="${PREFIX}" \
-        --build=i386-unknown-linux-gnu \
         --with-openssl \
         --with-ca-bundle=/etc/ssl/certs.pem
 }
