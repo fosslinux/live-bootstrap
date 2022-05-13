@@ -88,14 +88,14 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# sed
-pkg="sed-4.0.9"
+# make
+pkg="make-3.80"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# make
-pkg="make-3.80"
+# sed
+pkg="sed-4.0.9"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..

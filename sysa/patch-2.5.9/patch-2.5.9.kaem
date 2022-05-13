@@ -24,8 +24,6 @@ catm patchlevel.h
 cp pch.c pch_patched.c
 sed -i 841,848d pch_patched.c
 
-# Compile
-
 # Build
 make -f Makefile PREFIX=${prefix}
 

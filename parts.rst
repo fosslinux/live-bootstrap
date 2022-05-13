@@ -104,17 +104,17 @@ tar 1.12
 
 We build GNU Tar 1.12, the last version compilable with mes libc.
 
-sed 4.0.9
-=========
-
-You are most likely aware of GNU ``sed``, a line editor.
-
 make 3.80
 =========
 
 GNU ``make`` is now built so we have a more robust building system.
 ``make`` allows us to do things like define rules for files rather than
 writing complex kaem scripts.
+
+sed 4.0.9
+=========
+
+You are most likely aware of GNU ``sed``, a line editor.
 
 patch 2.5.9
 ===========
