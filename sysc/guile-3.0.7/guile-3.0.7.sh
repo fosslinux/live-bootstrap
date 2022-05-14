@@ -61,16 +61,4 @@ src_compile() {
 
     # Now proceed with the build
     default
-
-    # Ordering of libguile.a is messed up
-    mkdir libguile/.libs/order
-    pushd libguile/.libs/order
-    ar x ../libguile-3.0.a
-    rm ../libguile-3.0.a
-    ar cr ../libguile-3.0.a ./*.o
-    popd
-
-    # Recompile guile with fixed libguile
-    rm libguile/guile
-    make
 }

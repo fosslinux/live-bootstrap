@@ -119,16 +119,6 @@ src_compile() {
 
     make -C build/libstdc++-v3 PATH="${PATH}:${PWD}/build/gcc" \
         CXXFLAGS="-I${PWD}/build/gcc/include -I ${PREFIX}/include"
-
-    # Fix ordering of libstdc++.a
-    pushd build/libstdc++-v3/src
-    mkdir order-a
-    pushd order-a
-    ar x ../.libs/libstdc++.a
-    rm ../.libs/libstdc++.a
-    ar cru ../.libs/libstdc++.a ./*.o
-    popd
-    popd
 }
 
 src_install() {
