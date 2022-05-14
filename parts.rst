@@ -90,19 +90,19 @@ using older versions compilable by tinycc. Prior to this point, all tools
 have been adapted significantly for the bootstrap; now, we will be using
 old tooling instead.
 
-gzip 1.2.4
-==========
-
-``gzip`` is the most common compression format used for software source
-code. It is luckily distributed as a barebones uncompressed ``.tar``,
-which we extract and then build.
-
 make 3.80
 =========
 
 GNU ``make`` is now built so we have a more robust building system.
 ``make`` allows us to do things like define rules for files rather than
 writing complex kaem scripts.
+
+gzip 1.2.4
+==========
+
+``gzip`` is the most common compression format used for software source
+code. It is more capble than ``ungz`` from ``stage0-posix`` and also supports
+compression.
 
 tar 1.12
 ========

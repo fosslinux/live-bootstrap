@@ -21,34 +21,16 @@ untar ../src/${pkg}.tar
 cd ${pkg}
 
 # Prepare
+cp ../../mk/main.mk Makefile
 catm gzip.c.new ../../files/stat_override.c gzip.c
 cp gzip.c.new gzip.c
 
-# Compile
-tcc -c -DNO_UTIME gzip.c
-tcc -c bits.c
-tcc -c crypt.c
-tcc -c deflate.c
-tcc -c getopt.c
-tcc -c inflate.c
-tcc -c lzw.c
-tcc -c trees.c
-tcc -c unlzh.c
-tcc -c unlzw.c
-tcc -c unpack.c
-tcc -c unzip.c
-# strlwr is already defined in mes libc
-tcc -c -Dstrlwr=unused util.c
-tcc -c zip.c
-
-# Link
-tcc -static -o ${bindir}/gzip gzip.o zip.o deflate.o trees.o bits.o unzip.o inflate.o util.o crypt.o lzw.o unlzw.o unpack.o unlzh.o getopt.o
+# Build
+make
 
 # Install
-cp ${bindir}/gzip ${bindir}/gunzip
-cp ${bindir}/gzip ${bindir}/zcat
-chmod 755 ${bindir}/gunzip
-chmod 755 ${bindir}/zcat
+cp gzip ${bindir}/gzip
+chmod 755 ${bindir}/gzip
 
 cd ../..
 

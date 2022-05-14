@@ -13,10 +13,12 @@ cd build
 
 # Extract
 cp ${distfiles}/${pkg}.tar.gz ../src/
-gunzip -f ../src/${pkg}.tar.gz
+gzip -d -f ../src/${pkg}.tar.gz
 untar ../src/${pkg}.tar
 
 cd ${pkg}
+
+# Prepare
 cp ../../mk/main.mk Makefile
 cp ../../files/getdate_stub.c lib/getdate_stub.c
 catm src/create.c.new ../../files/stat_override.c src/create.c

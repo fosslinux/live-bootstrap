@@ -99,11 +99,11 @@ class SysA(SysGeneral):
         # tcc 0.9.26 patched by janneke
         self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
 
-        # gzip 1.2.4
-        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar.gz")
-
         # make 3.80
         self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz")
+
+        # gzip 1.2.4
+        self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar.gz")
 
         # tar 1.12
         self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz")

@@ -76,14 +76,14 @@ cd ..
 
 libdir=${libdir}/mes
 
-# gzip
-pkg="gzip-1.2.4"
+# make
+pkg="make-3.80"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# make
-pkg="make-3.80"
+# gzip
+pkg="gzip-1.2.4"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
