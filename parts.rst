@@ -97,19 +97,17 @@ gzip 1.2.4
 code. It is luckily distributed as a barebones uncompressed ``.tar``,
 which we extract and then build.
 
-Going forward, we can now use ``.tar.gz`` for source code.
-
-tar 1.12
-========
-
-We build GNU Tar 1.12, the last version compilable with mes libc.
-
 make 3.80
 =========
 
 GNU ``make`` is now built so we have a more robust building system.
 ``make`` allows us to do things like define rules for files rather than
 writing complex kaem scripts.
+
+tar 1.12
+========
+
+We build GNU Tar 1.12, the last version compilable with mes libc.
 
 sed 4.0.9
 =========

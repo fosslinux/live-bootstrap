@@ -17,55 +17,17 @@ gunzip -f ../src/${pkg}.tar.gz
 untar ../src/${pkg}.tar
 
 cd ${pkg}
-
+cp ../../mk/main.mk Makefile
 cp ../../files/getdate_stub.c lib/getdate_stub.c
 catm src/create.c.new ../../files/stat_override.c src/create.c
 cp src/create.c.new src/create.c
 
-# Compile
+# Build
+make -f Makefile
 
-## libtar.a
-cd lib
-
-tcc -c argmatch.c
-tcc -c -DHAVE_DIRENT_H backupfile.c
-tcc -c -I . error.c
-tcc -c -I . fnmatch.c
-tcc -c ftruncate.c
-tcc -c getdate_stub.c
-tcc -c getopt.c
-tcc -c getopt1.c
-tcc -c getversion.c
-tcc -c modechange.c
-tcc -c msleep.c
-tcc -c -DHAVE_GETCWD xgetcwd.c
-tcc -c xmalloc.c
-tcc -c xstrdup.c
-
-tcc -ar cr libtar.a argmatch.o backupfile.o error.o fnmatch.o ftruncate.o getdate_stub.o getopt.o getopt1.o getversion.o modechange.o msleep.o xgetcwd.o xmalloc.o xstrdup.o
-cd ..
-
-## tar
-# -DSIZEOF_UNSIGNED_LONG=4 forces use of simulated arithmetic
-# This is to avoid running configure test to determine sizeof(long long)
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/arith.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/buffer.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/compare.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DHAVE_DIRENT_H src/create.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/delete.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/extract.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DHAVE_GETCWD -DHAVE_DIRENT_H src/incremen.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/list.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/mangle.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DHAVE_DIRENT_H src/misc.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DHAVE_GETCWD src/names.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/open3.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/rtapelib.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H -DPACKAGE=\"tar\" -DVERSION=\"1.12\" src/tar.c
-tcc -c -I lib -DSIZEOF_UNSIGNED_LONG=4 -DHAVE_FCNTL_H src/update.c
-
-# Link
-tcc -static -o ${bindir}/tar -L lib lib/libtar.a arith.o buffer.o compare.o create.o delete.o extract.o incremen.o list.o mangle.o misc.o names.o open3.o rtapelib.o tar.o update.o -ltar
+# Install
+cp tar ${prefix}/bin/tar
+chmod 755 ${prefix}/bin/tar
 
 cd ../..
 

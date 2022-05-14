@@ -102,11 +102,11 @@ class SysA(SysGeneral):
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar.gz")
 
-        # tar 1.12
-        self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz")
-
         # make 3.80
         self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz")
+
+        # tar 1.12
+        self.get_file("https://mirrors.kernel.org/gnu/tar/tar-1.12.tar.gz")
 
         # sed 4.0.9
         self.get_file("https://mirrors.kernel.org/gnu/sed/sed-4.0.9.tar.gz")
