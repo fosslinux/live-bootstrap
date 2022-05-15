@@ -54,7 +54,7 @@ if [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
     echo "You did not provide a valid disk in the configuration file."
     ask_disk
 
-    echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
+    echo "DISK=${DISK}" >> /usr/src/bootstrap.cfg
 fi
 
 PREFIX=/usr

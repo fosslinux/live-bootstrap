@@ -72,7 +72,7 @@ if [ -z "${CHROOT}" ]; then
     ask_chroot
     echo
 
-    echo "export CHROOT=${CHROOT}" >> "${SOURCES}/bootstrap.cfg"
+    echo "CHROOT=${CHROOT}" >> "${SOURCES}/bootstrap.cfg"
 fi
 
 ask_timestamps() {
@@ -94,12 +94,12 @@ if [ -z "${FORCE_TIMESTAMPS}" ]; then
     ask_timestamps
     echo
 
-    echo "export FORCE_TIMESTAMPS=${FORCE_TIMESTAMPS}" >> "${SOURCES}/bootstrap.cfg"
+    echo "FORCE_TIMESTAMPS=${FORCE_TIMESTAMPS}" >> "${SOURCES}/bootstrap.cfg"
 fi
 
 echo "Thank you! All done."
 
-echo "export ARCH=${ARCH}" >> "${SOURCES}/bootstrap.cfg"
+echo "ARCH=${ARCH}" >> "${SOURCES}/bootstrap.cfg"
 
 mkdir -p "${DESTDIR}" "${REPO}" /dev
 
