@@ -1,0 +1,74 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2010 Chris Demetriou <cgd@google.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Backported from upstream commit 74c8993c178a1386ea5e2363a01d919738402f30
+
+--- libltdl/config/ltmain.m4sh	2008-05-04 22:09:52.000000000 +0300
++++ libltdl/config/ltmain.m4sh	2022-05-14 14:24:15.506913405 +0300
+@@ -2226,7 +2226,7 @@
+ 	    darwin_file=
+ 	    darwin_files=
+ 	    for darwin_file in $darwin_filelist; do
+-	      darwin_files=`find unfat-$$ -name $darwin_file -print | $NL2SP`
++	      darwin_files=`find unfat-$$ -name $darwin_file -print | sort | $NL2SP`
+ 	      $LIPO -create -output "$darwin_file" $darwin_files
+ 	    done # $darwin_filelist
+ 	    $RM -rf unfat-$$
+@@ -2241,7 +2241,7 @@
+         func_extract_an_archive "$my_xdir" "$my_xabs"
+ 	;;
+       esac
+-      my_oldobjs="$my_oldobjs "`find $my_xdir -name \*.$objext -print -o -name \*.lo -print | $NL2SP`
++      my_oldobjs="$my_oldobjs "`find $my_xdir -name \*.$objext -print -o -name \*.lo -print | sort | $NL2SP`
+     done
+ 
+     func_extract_archives_result="$my_oldobjs"
+--- libltdl/config/ltmain.sh	2008-05-04 22:23:13.000000000 +0300
++++ libltdl/config/ltmain.sh	2022-05-14 14:25:15.314266819 +0300
+@@ -2668,7 +2668,7 @@
+ 	    darwin_file=
+ 	    darwin_files=
+ 	    for darwin_file in $darwin_filelist; do
+-	      darwin_files=`find unfat-$$ -name $darwin_file -print | $NL2SP`
++	      darwin_files=`find unfat-$$ -name $darwin_file -print | sort | $NL2SP`
+ 	      $LIPO -create -output "$darwin_file" $darwin_files
+ 	    done # $darwin_filelist
+ 	    $RM -rf unfat-$$
+@@ -2683,7 +2683,7 @@
+         func_extract_an_archive "$my_xdir" "$my_xabs"
+ 	;;
+       esac
+-      my_oldobjs="$my_oldobjs "`find $my_xdir -name \*.$objext -print -o -name \*.lo -print | $NL2SP`
++      my_oldobjs="$my_oldobjs "`find $my_xdir -name \*.$objext -print -o -name \*.lo -print | sort | $NL2SP`
+     done
+ 
+     func_extract_archives_result="$my_oldobjs"
+--- libltdl/m4/libtool.m4	2008-05-04 19:34:02.000000000 +0300
++++ libltdl/m4/libtool.m4	2022-05-14 14:24:15.507913411 +0300
+@@ -5864,20 +5864,20 @@
+ 	      _LT_TAGVAR(prelink_cmds, $1)='tpldir=Template.dir~
+ 		rm -rf $tpldir~
+ 		$CC --prelink_objects --instantiation_dir $tpldir $objs $libobjs $compile_deplibs~
+-		compile_command="$compile_command `find $tpldir -name \*.o | $NL2SP`"'
++		compile_command="$compile_command `find $tpldir -name \*.o | sort | $NL2SP`"'
+ 	      _LT_TAGVAR(old_archive_cmds, $1)='tpldir=Template.dir~
+ 		rm -rf $tpldir~
+ 		$CC --prelink_objects --instantiation_dir $tpldir $oldobjs$old_deplibs~
+-		$AR $AR_FLAGS $oldlib$oldobjs$old_deplibs `find $tpldir -name \*.o | $NL2SP`~
++		$AR $AR_FLAGS $oldlib$oldobjs$old_deplibs `find $tpldir -name \*.o | sort | $NL2SP`~
+ 		$RANLIB $oldlib'
+ 	      _LT_TAGVAR(archive_cmds, $1)='tpldir=Template.dir~
+ 		rm -rf $tpldir~
+ 		$CC --prelink_objects --instantiation_dir $tpldir $predep_objects $libobjs $deplibs $convenience $postdep_objects~
+-		$CC -shared $pic_flag $predep_objects $libobjs $deplibs `find $tpldir -name \*.o | $NL2SP` $postdep_objects $compiler_flags ${wl}-soname ${wl}$soname -o $lib'
++		$CC -shared $pic_flag $predep_objects $libobjs $deplibs `find $tpldir -name \*.o | sort | $NL2SP` $postdep_objects $compiler_flags ${wl}-soname ${wl}$soname -o $lib'
+ 	      _LT_TAGVAR(archive_expsym_cmds, $1)='tpldir=Template.dir~
+ 		rm -rf $tpldir~
+ 		$CC --prelink_objects --instantiation_dir $tpldir $predep_objects $libobjs $deplibs $convenience $postdep_objects~
+-		$CC -shared $pic_flag $predep_objects $libobjs $deplibs `find $tpldir -name \*.o | $NL2SP` $postdep_objects $compiler_flags ${wl}-soname ${wl}$soname ${wl}-retain-symbols-file ${wl}$export_symbols -o $lib'
++		$CC -shared $pic_flag $predep_objects $libobjs $deplibs `find $tpldir -name \*.o | sort | $NL2SP` $postdep_objects $compiler_flags ${wl}-soname ${wl}$soname ${wl}-retain-symbols-file ${wl}$export_symbols -o $lib'
+ 	      ;;
+ 	    *) # Version 6 will use weak symbols
+ 	      _LT_TAGVAR(archive_cmds, $1)='$CC -shared $pic_flag $predep_objects $libobjs $deplibs $postdep_objects $compiler_flags ${wl}-soname ${wl}$soname -o $lib'
