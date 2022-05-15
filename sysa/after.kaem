@@ -76,6 +76,12 @@ cd ..
 
 libdir=${libdir}/mes
 
+# make
+pkg="make-3.80"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
 # gzip
 pkg="gzip-1.2.4"
 cd ${pkg}
@@ -90,12 +96,6 @@ cd ..
 
 # sed
 pkg="sed-4.0.9"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# make
-pkg="make-3.80"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..

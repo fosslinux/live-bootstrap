@@ -92,12 +92,15 @@ class SysA(SysGeneral):
     def get_packages(self):
         """Prepare remaining sources"""
 
-        # mes-0.22 snapshot with m2 fixes
+        # mes-0.24
         self.get_file(["https://mirrors.kernel.org/gnu/mes/mes-0.24.tar.gz",
                        "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"])
 
         # tcc 0.9.26 patched by janneke
         self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
+
+        # make 3.80
+        self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz")
 
         # gzip 1.2.4
         self.get_file("https://mirrors.kernel.org/gnu/gzip/gzip-1.2.4.tar.gz")
@@ -110,9 +113,6 @@ class SysA(SysGeneral):
 
         # patch 2.5.9
         self.get_file("https://mirrors.kernel.org/gnu/patch/patch-2.5.9.tar.gz")
-
-        # make 3.80
-        self.get_file("https://mirrors.kernel.org/gnu/make/make-3.80.tar.gz")
 
         # bzip2 1.0.8
         self.get_file("https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz")

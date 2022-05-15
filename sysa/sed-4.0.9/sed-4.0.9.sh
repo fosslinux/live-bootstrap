@@ -5,7 +5,6 @@
 src_prepare() {
     default
 
-    cp lib/regex_.h lib/regex.h
     touch config.h
 }
 

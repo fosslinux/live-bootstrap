@@ -11,8 +11,8 @@ cd build
 
 # Extract
 cp ${distfiles}/${pkg}.tar.gz ../src/
-gunzip -f ../src/${pkg}.tar.gz
-tar xf ../src/${pkg}.tar
+ungz ../src/${pkg}.tar.gz
+untar ../src/${pkg}.tar
 cd ${pkg}
 
 # Create .h files
