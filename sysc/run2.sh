@@ -17,6 +17,8 @@ trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 
 trap bash EXIT
 
+umask 0022
+
 build xz-5.0.5
 
 build automake-1.11.2

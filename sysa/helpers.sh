@@ -261,17 +261,23 @@ create_tarball_pkg() {
     # If grep is unavailable, then tar --sort is unavailable.
     # So this does not need a command -v grep.
     if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
-        tar -C "${DESTDIR}" --sort=name --hard-dereference -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+        tar -C "${DESTDIR}" --sort=name --hard-dereference \
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
+            -cf "/usr/src/repo/${pkg}_${revision}.tar" .
     elif command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
         cd "${DESTDIR}"
-        tar --no-recursion --null -T /tmp/filelist.txt -cf "/usr/src/repo/${pkg}_${revision}.tar"
+        tar --no-recursion --null -T /tmp/filelist.txt \
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
+            -cf "/usr/src/repo/${pkg}_${revision}.tar"
         cd -
     else
         echo -n > /dev/null
-        tar -cf "/usr/src/repo/${pkg}_${revision}.tar" -T /dev/null
+        tar --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
+            -cf "/usr/src/repo/${pkg}_${revision}.tar" -T /dev/null
         cd "${DESTDIR}"
         for f in $(get_files .); do
-            tar -rf "/usr/src/repo/${pkg}_${revision}.tar" "${f}"
+            tar --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
+                -rf "/usr/src/repo/${pkg}_${revision}.tar" "${f}"
         done
         cd -
     fi
