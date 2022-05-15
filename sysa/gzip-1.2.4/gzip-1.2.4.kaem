@@ -30,7 +30,9 @@ make
 
 # Install
 cp gzip ${bindir}/gzip
+cp gzip ${bindir}/gunzip
 chmod 755 ${bindir}/gzip
+chmod 755 ${bindir}/gunzip
 
 cd ../..
 
