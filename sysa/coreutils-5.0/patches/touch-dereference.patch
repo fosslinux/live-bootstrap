@@ -1,0 +1,97 @@
+SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
+SPDX-FileCopyrightText: 2009 Eric Blake <ebb9@byu.net>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+touch: add -h to change symlink timestamps, where supported
+
+diff -r -U3 coreutils-5.0.orig/src/touch.c coreutils-5.0/src/touch.c
+--- src/touch.c	2002-12-20 20:09:22.000000000 +0000
++++ src/touch.c	2022-05-16 20:31:37.801988595 +0100
+@@ -77,6 +77,9 @@
+ /* (-r) If nonzero, use times from a reference file. */
+ static int use_ref;
+ 
++/* (-h) If true, change the times of an existing symlink, if possible.  */
++static int no_dereference;
++
+ /* (-t) If nonzero, date supplied on command line in POSIX format. */
+ static int posix_date;
+ 
+@@ -110,6 +113,7 @@
+   {"date", required_argument, 0, 'd'},
+   {"file", required_argument, 0, 'r'}, /* FIXME: phase out --file */
+   {"reference", required_argument, 0, 'r'},
++  {"no-dereference", no_argument, NULL, 'h'},
+   {GETOPT_HELP_OPTION_DECL},
+   {GETOPT_VERSION_OPTION_DECL},
+   {0, 0, 0, 0}
+@@ -138,7 +142,7 @@
+   int fd = -1;
+   int open_errno = 0;
+ 
+-  if (! no_create)
++  if (! (no_create || no_dereference))
+     {
+       /* Try to open FILE, creating it if necessary.  */
+       fd = open (file, O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY,
+@@ -158,7 +162,7 @@
+ 	 the other one.  If we have the file descriptor already, use fstat.
+ 	 Otherwise, either we're in no-create mode (and hence didn't call open)
+ 	 or FILE is inaccessible or a directory, so we have to use stat.  */
+-      if (fd != -1 ? fstat (fd, &sbuf) : stat (file, &sbuf))
++      if (fd != -1 ? fstat (fd, &sbuf) : (no_dereference ? lstat (file, &sbuf) : stat (file, &sbuf)))
+ 	{
+ 	  if (open_errno)
+ 	    error (0, open_errno, _("creating %s"), quote (file));
+@@ -223,7 +227,7 @@
+ 	}
+       else
+ 	{
+-	  if (no_create && errno == ENOENT)
++	  if ((no_create || no_dereference) && errno == ENOENT)
+ 	    return 0;
+ 	  error (0, errno, _("setting times of %s"), quote (file));
+ 	}
+@@ -254,6 +258,9 @@
+   -c, --no-create        do not create any files\n\
+   -d, --date=STRING      parse STRING and use it instead of current time\n\
+   -f                     (ignored)\n\
++  -h, --no-dereference   affect each symbolic link instead of any referenced\n\
++                         file (useful only on systems that can change the\n\
++                         timestamps of a symlink)\n\
+   -m                     change only the modification time\n\
+ "), stdout);
+       fputs (_("\
+@@ -289,7 +296,7 @@
+ 
+   change_times = no_create = use_ref = posix_date = flexible_date = 0;
+ 
+-  while ((c = getopt_long (argc, argv, "acd:fmr:t:", longopts, NULL)) != -1)
++  while ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
+     {
+       switch (c)
+ 	{
+@@ -315,6 +322,10 @@
+ 	case 'f':
+ 	  break;
+ 
++	case 'h':
++	  no_dereference = true;
++	  break;
++
+ 	case 'm':
+ 	  change_times |= CH_MTIME;
+ 	  break;
+@@ -358,7 +369,10 @@
+ 
+   if (use_ref)
+     {
+-      if (stat (ref_file, &ref_stats))
++      /* Don't use (no_dereference ? lstat : stat) (args), since stat
++         might be an object-like macro.  */
++      if (no_dereference ? lstat (ref_file, &ref_stats)
++          : stat (ref_file, &ref_stats))
+ 	error (EXIT_FAILURE, errno,
+ 	       _("failed to get attributes of %s"), quote (ref_file));
+       date_set++;

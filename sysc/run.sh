@@ -11,12 +11,6 @@ set -e
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 
-export PATH=/usr/bin:/usr/sbin
-export PREFIX=/usr
-export SOURCES=/usr/src
-export DESTDIR=/tmp/destdir
-export DISTFILES=/distfiles
-
 create_fhs() {
     # Add the rest of the FHS that we will use and is not created pre-boot
     rm -rf /sbin /usr/sbin
@@ -24,7 +18,7 @@ create_fhs() {
     for d in bin lib sbin; do
         ln -s "usr/${d}" "/${d}"
     done
-    mkdir /etc /proc /run /sys /tmp /var
+    mkdir -p /etc /proc /run /sys /tmp /var
     mount -t proc proc /proc
     mount -t sysfs sysfs /sys
     # Make /tmp a ramdisk (speeds up configure etc significantly)
@@ -37,4 +31,4 @@ create_fhs
 
 build bash-5.1
 
-exec env -i PATH=${PATH} PREFIX=${PREFIX} SOURCES=${SOURCES} DESTDIR=${DESTDIR} DISTFILES=${DISTFILES} bash run2.sh
+exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" bash run2.sh

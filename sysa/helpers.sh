@@ -60,16 +60,9 @@ get_files() {
 
 # Reset all timestamps to unix time 0
 reset_timestamp() {
-    args=
-    # touch -h is not avaliable until after grep is built.
-    if command -v grep >/dev/null 2>&1; then
-        if touch --help | grep ' \-h' >/dev/null; then
-            args="-h"
-        fi
-    fi
     if command -v find >/dev/null 2>&1; then
         # find does not error out on exec error
-        find . -print0 | xargs -0 touch ${args} -t 197001010000.00
+        find . -print0 | xargs -0 touch -h -t 197001010000.00
     else
         # A rudimentary find implementation that does the trick
         fs=
@@ -80,7 +73,7 @@ reset_timestamp() {
             fs="${fs} $(echo .[0-z]*)"
         fi
         for f in ${fs}; do
-            touch ${args} -t 197001010000.00 "${f}"
+            touch -h -t 197001010000.00 "${f}"
             if [ -d "${f}" ]; then
                 cd "${f}"
                 reset_timestamp
@@ -92,8 +85,8 @@ reset_timestamp() {
 
 # Fake grep
 _grep() {
-    text="${1}"
-    fname="${2}"
+    local text="${1}"
+    local fname="${2}"
     if command -v grep >/dev/null 2>&1; then
         grep "${text}" "${fname}"
     else
@@ -308,7 +301,11 @@ src_pkg() {
 src_checksum() {
     if ! [ "$UPDATE_CHECKSUMS" = True ] ; then
         echo "${pkg}: checksumming created package."
-        _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" | sha256sum -c
+        # We avoid using pipes as that is not supported by initial sha256sum from mescc-tools-extra
+        local checksum_file=/tmp/checksum
+        _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" > "${checksum_file}"
+        sha256sum -c "${checksum_file}"
+        rm "${checksum_file}"
     fi
 }
 
@@ -329,8 +326,18 @@ src_apply_tar() {
             rm -f "/${file}" >/dev/null 2>&1 || true
         done < /tmp/filelist.txt
     fi
-    bzip2 -dc "/usr/src/repo/${pkg}_${revision}.tar.bz2" | \
+
+    # Bzip2 does not like to be overwritten
+    if [[ "${pkg}" == bzip2-* ]]; then
+        mkdir -p /tmp
+        mv "${PREFIX}/bin/bzip2" "/tmp/bzip2"
+        BZIP2_PREFIX="/tmp/"
+    fi
+    "${BZIP2_PREFIX}bzip2" -dc "/usr/src/repo/${pkg}_${revision}.tar.bz2" | \
         tar -C / -xpf -
+    unset BZIP2_PREFIX
+    rm -f "/tmp/bzip2"
+
     # shellcheck disable=SC2162
     # ^ read -r unsupported in old bash
     while read line; do
