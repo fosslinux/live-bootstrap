@@ -100,4 +100,7 @@ src_compile() {
 src_install() {
     mkdir -p "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/install-tools/include"
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
+    mkdir -p "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include"
+    rm "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include/syslimits.h"
+    cp  gcc/gsyslimits.h "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include/syslimits.h"
 }

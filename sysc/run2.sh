@@ -93,9 +93,10 @@ if [ "$FORCE_TIMESTAMPS" = True ] ; then
     canonicalise_all_files_timestamp
 fi
 
+shopt -s extglob
 if [ "$UPDATE_CHECKSUMS" = True ] ; then
     pushd /usr/src/repo
-    sha256sum -- * | tee "${SOURCES}/SHA256SUMS.pkgs"
+    sha256sum -- !(*-repodata) | tee "${SOURCES}/SHA256SUMS.pkgs"
     popd
 fi
 
