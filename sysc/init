@@ -9,6 +9,12 @@ set -e
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 
+export PATH=/usr/bin:/usr/sbin
+export PREFIX=/usr
+export SOURCES=/usr/src
+export DESTDIR=/tmp/destdir
+export DISTFILES=/distfiles
+
 echo
 echo "Installing packages into sysc"
 

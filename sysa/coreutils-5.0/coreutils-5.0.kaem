@@ -28,6 +28,7 @@ patch -Np0 -i ../../patches/modechange.patch
 patch -Np0 -i ../../patches/mbstate.patch
 patch -Np0 -i ../../patches/ls-strcmp.patch
 patch -Np0 -i ../../patches/touch-getdate.patch
+patch -Np0 -i ../../patches/touch-dereference.patch
 
 # Build and install
 make -f Makefile PREFIX=${prefix}

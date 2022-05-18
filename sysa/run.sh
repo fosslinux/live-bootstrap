@@ -135,7 +135,7 @@ build grep-2.4
 build diffutils-2.7
 
 # Rebuild coreutils using musl
-build coreutils-5.0 coreutils-5.0.sh
+build coreutils-5.0 coreutils-5.0.sh patches-musl
 
 # Build only date, mktemp and sha256sum
 build coreutils-6.10
