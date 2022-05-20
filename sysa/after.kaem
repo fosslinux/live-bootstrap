@@ -18,9 +18,10 @@ prefix=/usr
 bindir=${prefix}/bin
 libdir=${prefix}/lib
 incdir=${prefix}/include
+srcdir=${prefix}/src
 TMPDIR=/tmp # tmpdir is needed for patch to work
 
-mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${TMPDIR}
+mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${srcdir} ${TMPDIR}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
 cp /${ARCH_DIR}/bin/blood-elf ${bindir}/blood-elf

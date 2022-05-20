@@ -44,4 +44,15 @@ install -m 644 ncform ${lexdir}
 cd ../../..
 
 # Checksums
-sha256sum -c ${pkg}.checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /usr/bin/yacc \
+        /usr/bin/lex \
+        /usr/lib/mes/libl.a \
+        /yaccpar \
+        /lex/ncform
+
+    install ${pkg}.checksums ${srcdir}
+else
+    sha256sum -c ${pkg}.checksums
+fi
