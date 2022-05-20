@@ -10,32 +10,6 @@
 # shellcheck source=/dev/null
 . bootstrap.cfg
 
-# Find a list of links
-get_links() {
-    original="${1:-${PWD}/}"
-    if [ -n "$(ls)" ]; then
-        for f in *; do
-            # Bash link detection is broken
-            # and we don't always have grep, hence this pretty dodgy solution
-            case "$(ls -ld "${f}")" in
-            *" -> "*)
-                fullpath="${PWD}/${f}"
-                # shellcheck disable=SC2001
-                echo "$(readlink "${f}") /$(echo "${fullpath}" | sed "s:^${original}::")"
-                rm "${f}" # Don't include in tarball
-                ;;
-            *)
-                if [ -d "${f}" ]; then
-                    cd "${f}"
-                    get_links "${original}"
-                    cd ..
-                fi
-                ;;
-            esac
-        done
-    fi
-}
-
 # Get a list of files
 get_files() {
     local prefix
@@ -253,29 +227,34 @@ default_src_install() {
 create_tarball_pkg() {
     # If grep is unavailable, then tar --sort is unavailable.
     # So this does not need a command -v grep.
+    tar_basename="${pkg}_${revision}.tar"
+    dest_tar="/usr/src/repo/${tar_basename}"
+    if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+        find . -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
+    fi
+    cd /usr/src/repo
+
     if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
         tar -C "${DESTDIR}" --sort=name --hard-dereference \
-            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
-            -cf "/usr/src/repo/${pkg}_${revision}.tar" .
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}" .
     elif command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
         cd "${DESTDIR}"
         tar --no-recursion --null -T /tmp/filelist.txt \
-            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
-            -cf "/usr/src/repo/${pkg}_${revision}.tar"
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}"
         cd -
     else
         echo -n > /dev/null
         tar --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
-            -cf "/usr/src/repo/${pkg}_${revision}.tar" -T /dev/null
+            -cf "${dest_tar}" -T /dev/null
         cd "${DESTDIR}"
         for f in $(get_files .); do
             tar --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
-                -rf "/usr/src/repo/${pkg}_${revision}.tar" "${f}"
+                -rf "${dest_tar}" "${f}"
         done
         cd -
     fi
-    touch -t 197001010000.00 "${pkg}_${revision}.tar"
-    bzip2 --best "${pkg}_${revision}.tar"
+    touch -t 197001010000.00 "${tar_basename}"
+    bzip2 --best "${tar_basename}"
 }
 
 src_pkg() {
@@ -287,13 +266,6 @@ src_pkg() {
         echo "${pkg}: adding package to repository."
         xbps-rindex --compression xz -a "/usr/src/repo/${pkg}_${revision}.${ARCH}.xbps"
     else
-        cd "${DESTDIR}"
-        # All symlinks are dereferenced, which is BAD
-        get_links > "/usr/src/repo/${pkg}_${revision}.links"
-        if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
-            find . -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
-        fi
-        cd /usr/src/repo
         create_tarball_pkg
     fi
 }
@@ -337,19 +309,6 @@ src_apply_tar() {
         tar -C / -xpf -
     unset BZIP2_PREFIX
     rm -f "/tmp/bzip2"
-
-    # shellcheck disable=SC2162
-    # ^ read -r unsupported in old bash
-    while read line; do
-        # shellcheck disable=SC2001
-        # ^ cannot use variable expansion here
-        fname="$(echo "${line}" | sed 's/.* //')"
-        rm -f "${fname}"
-        # shellcheck disable=SC2226,SC2086
-        # ^ ${line} expands into two arguments
-        ln -s ${line}
-        touch -t 197001010000.00 "${fname}"
-    done < "/usr/src/repo/${pkg}_${revision}.links"
 }
 
 # Check if bash function exists
