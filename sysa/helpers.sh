@@ -382,8 +382,8 @@ canonicalise_all_files_timestamp() {
 populate_device_nodes() {
     # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
     mkdir -p "${1}/dev"
-    rm "${1}/dev/null" -f
-    test -c "${1}/dev/null" || mknod -m 666 "${1}/dev/null" c 1 3
+    test -c "${1}/dev/null" || (rm -f "${1}/dev/null" &&
+                                mknod -m 666 "${1}/dev/null" c 1 3)
     test -c "${1}/dev/zero" || mknod -m 666 "${1}/dev/zero" c 1 5
     test -c "${1}/dev/random" || mknod -m 444 "${1}/dev/random" c 1 8
     test -c "${1}/dev/urandom" || mknod -m 444 "${1}/dev/urandom" c 1 9

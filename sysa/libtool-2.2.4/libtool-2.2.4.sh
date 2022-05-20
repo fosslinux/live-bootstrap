@@ -6,9 +6,9 @@
 src_prepare() {
     default
 
-    rm libltdl/config/ltmain.sh
+    rm -f libltdl/config/ltmain.sh
 
-    rm doc/*.info
+    rm -f doc/*.info
 
     ./bootstrap
 }
