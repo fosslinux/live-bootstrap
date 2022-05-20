@@ -102,5 +102,6 @@ fi
 
 echo "Bootstrapping completed."
 
-cd "${PREFIX}"
-exec env - PATH="${PREFIX}/bin" PS1="\w # " bash -i
+cd "/"
+
+exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" bash after.sh
