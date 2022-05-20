@@ -31,4 +31,4 @@ chmod 755 ${prefix}/bin/sed
 cd ../..
 
 # Checksums
-sha256sum -c checksums
+sha256sum -c ${pkg}.checksums

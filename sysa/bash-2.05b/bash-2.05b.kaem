@@ -51,4 +51,4 @@ ln -s ${prefix}/bin/bash ${prefix}/bin/sh
 cd ../..
 
 # Checksums
-sha256sum -c checksums
+sha256sum -c ${pkg}.checksums

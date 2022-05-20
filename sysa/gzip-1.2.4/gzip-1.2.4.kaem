@@ -37,4 +37,4 @@ chmod 755 ${bindir}/gunzip
 cd ../..
 
 # Checksums
-sha256sum -c checksums
+sha256sum -c ${pkg}.checksums

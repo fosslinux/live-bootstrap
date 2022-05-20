@@ -388,4 +388,4 @@ tcc -ar cr ${libdir}/libgetopt.a getopt.o
 cd ../..
 
 # Checksums
-sha256sum -c checksums
+sha256sum -c ${pkg}.checksums

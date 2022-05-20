@@ -35,4 +35,4 @@ bzip2 --help
 cd ../..
 
 # Checksums
-sha256sum -c checksums
+sha256sum -c ${pkg}.checksums

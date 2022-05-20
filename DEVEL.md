@@ -40,7 +40,7 @@ It then diverges based upon which driver is being used:
   There are default functions run which can be overridden by an optional script
   `package-version.sh` within the package-specific directory.
 
-In this folder, there are other folders/files. `src` and `checksums` are
+In this folder, there are other folders/files. `src` and `*.checksums` are
 required, others are optional.
 
 Permissable folders/files:
@@ -50,11 +50,8 @@ Permissable folders/files:
 - `patches`: patches for the source.
 - `src`: the upstream unmodified source code. This may be either a submodule or
   nonexistent.
-- `checksums`: the checksums for the resulting binaries and libraries that
-  are compiled and installed. This may be either a folder or a file. It should
-  be a folder when there are multiple checksumming files required (normally
-  multiple seperate passes) but a file when there is only one checksumming
-  file.
+- `*.checksums`: files containing the checksums for the resulting binaries and
+libraries that are compiled and installed.
   - Up to and including `patch`, `fletcher16` is used for the checksumming.
   - After `patch`, `sha-2` is built which contains an external implementation of
     `sha256sum`. We then use that currently for all remaining software.
