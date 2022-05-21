@@ -100,7 +100,8 @@ this script the next time")
             response = requests.get(url, allow_redirects=True, stream=True)
             if response.status_code == 200:
                 with open(abs_file_name, 'wb') as target_file:
-                    target_file.write(response.raw.read())
+                    for chunk in response.iter_content(chunk_size=None):
+                        target_file.write(chunk)
             else:
                 raise Exception("Download failed.")
 

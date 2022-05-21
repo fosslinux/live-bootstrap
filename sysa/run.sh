@@ -228,6 +228,8 @@ build gcc-4.0.4 pass2.sh
 
 build util-linux-2.19.1
 
+build e2fsprogs-1.45.7
+
 build kbd-1.15
 
 build make-3.82

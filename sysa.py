@@ -260,6 +260,19 @@ class SysA(SysGeneral):
         # util-linux 2.19.1
         self.get_file("https://mirrors.kernel.org/pub/linux/utils/util-linux/v2.19/util-linux-2.19.1.tar.gz")
 
+        # curl 7.83.0
+        self.get_file("https://curl.se/download/curl-7.83.0.tar.bz2")
+
+        # e2fsprogs 1.45.7
+        self.get_file(["https://mirrors.edge.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.45.7/e2fsprogs-1.45.7.tar.gz",
+            "https://www.unicode.org/Public/11.0.0/ucd/CaseFolding.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/DerivedAge.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/extracted/DerivedCombiningClass.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/DerivedCoreProperties.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/NormalizationCorrections.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/NormalizationTest.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/UnicodeData.txt"])
+
         # kexec-tools 2.0.22
         self.get_file("https://github.com/horms/kexec-tools/archive/refs/tags/v2.0.22.tar.gz",
                 output="kexec-tools-2.0.22.tar.gz")
@@ -269,9 +282,6 @@ class SysA(SysGeneral):
 
         # make 3.82
         self.get_file("https://mirrors.kernel.org/gnu/make/make-3.82.tar.gz")
-
-        # curl 7.83.0
-        self.get_file("https://curl.se/download/curl-7.83.0.tar.bz2")
 
         # linux kernel 2.6.16.62
         self.get_file(["https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.9.10.tar.gz",
