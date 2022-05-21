@@ -73,7 +73,7 @@ mkdir ${libdir}
 mes-tcc -version
 
 # Recompile the mes C library
-cd ../${MES_PKG}
+cd ../${MES_PKG_DIR}
 
 # Create unified libc file
 cd lib
@@ -136,7 +136,7 @@ mes-tcc \
 # Install
 cp boot0-tcc ${bindir}/
 chmod 755 ${bindir}/boot0-tcc
-cd ../${MES_PKG}
+cd ../${MES_PKG_DIR}
 # Recompile libc: crt{1,n,i}, libtcc.a, libc.a
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
@@ -181,7 +181,7 @@ boot0-tcc \
     tcc.c
 cp boot1-tcc ${bindir}
 chmod 755 ${bindir}/boot1-tcc
-cd ../${MES_PKG}
+cd ../${MES_PKG_DIR}
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
@@ -226,7 +226,7 @@ boot1-tcc \
     tcc.c
 cp boot2-tcc ${bindir}
 chmod 755 ${bindir}/boot2-tcc
-cd ../${MES_PKG}
+cd ../${MES_PKG_DIR}
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
@@ -271,7 +271,7 @@ boot2-tcc \
     tcc.c
 cp boot3-tcc ${bindir}
 chmod 755 ${bindir}/boot3-tcc
-cd ../${MES_PKG}
+cd ../${MES_PKG_DIR}
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
@@ -316,7 +316,7 @@ boot3-tcc \
     tcc.c
 cp boot4-tcc ${bindir}
 chmod 755 ${bindir}/boot4-tcc
-cd ../${MES_PKG}
+cd ../${MES_PKG_DIR}
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
@@ -361,7 +361,7 @@ boot4-tcc \
     tcc.c
 cp boot5-tcc ${bindir}
 chmod 755 ${bindir}/boot5-tcc
-cd ../${MES_PKG}
+cd ../${MES_PKG_DIR}
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
 boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
