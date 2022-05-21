@@ -16,19 +16,18 @@ export PREFIX="${prefix}"
 export SOURCES="${sysa}"
 export DISTFILES="${sysa}/distfiles"
 export DESTDIR=/tmp/destdir
-export REPO="${PREFIX}/src/repo"
+# shellcheck disable=SC2154
+export SRCDIR="${srcdir}"
 
 create_sysb() {
     # Copy everything in
     echo "Creating sysb rootfs"
     mkdir -p "/sysb${PREFIX}"
-    for d in bin include lib libexec share; do
+    for d in bin include lib libexec share src; do
         # Minimise RAM (storage) use - use hard links
         cp -rl "${PREFIX}/${d}" "/sysb${PREFIX}/${d}"
     done
-    mkdir /sysb/usr/src
-    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" /sysb/usr/src/
-    cp -rl "${REPO}" "/sysb/${REPO}"
+    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "/sysb/${SRCDIR}"
     populate_device_nodes /sysb
     echo "Creating sysb initramfs"
     gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb
@@ -101,7 +100,7 @@ echo "Thank you! All done."
 
 echo "ARCH=${ARCH}" >> "${SOURCES}/bootstrap.cfg"
 
-mkdir -p "${DESTDIR}" "${REPO}" /dev
+mkdir -p "${DESTDIR}" "${SRCDIR}/repo" /dev
 
 build flex-2.5.11
 

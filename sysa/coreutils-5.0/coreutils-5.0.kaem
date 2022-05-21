@@ -38,4 +38,64 @@ cd ../..
 rm -r src/
 
 # Checksums
-sha256sum -c checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /usr/bin/install \
+        /usr/bin/basename \
+        /usr/bin/cat \
+        /usr/bin/chmod \
+        /usr/bin/cksum \
+        /usr/bin/cp \
+        /usr/bin/csplit \
+        /usr/bin/cut \
+        /usr/bin/echo \
+        /usr/bin/expand \
+        /usr/bin/factor \
+        /usr/bin/false \
+        /usr/bin/fmt \
+        /usr/bin/fold \
+        /usr/bin/head \
+        /usr/bin/id \
+        /usr/bin/join \
+        /usr/bin/kill \
+        /usr/bin/link \
+        /usr/bin/ln \
+        /usr/bin/logname \
+        /usr/bin/mkfifo \
+        /usr/bin/mkdir \
+        /usr/bin/mknod \
+        /usr/bin/nl \
+        /usr/bin/od \
+        /usr/bin/paste \
+        /usr/bin/pathchk \
+        /usr/bin/printf \
+        /usr/bin/ptx \
+        /usr/bin/pwd \
+        /usr/bin/readlink \
+        /usr/bin/rmdir \
+        /usr/bin/seq \
+        /usr/bin/sleep \
+        /usr/bin/split \
+        /usr/bin/sum \
+        /usr/bin/tail \
+        /usr/bin/tee \
+        /usr/bin/tr \
+        /usr/bin/tsort \
+        /usr/bin/unexpand \
+        /usr/bin/unlink \
+        /usr/bin/wc \
+        /usr/bin/whoami \
+        /usr/bin/test \
+        /usr/bin/touch \
+        /usr/bin/true \
+        /usr/bin/yes \
+        /usr/bin/ls \
+        /usr/bin/md5sum \
+        /usr/bin/mv \
+        /usr/bin/rm \
+        /usr/bin/sha1sum
+
+    install ${pkg}.checksums ${srcdir}
+else
+    sha256sum -c ${pkg}.checksums
+fi

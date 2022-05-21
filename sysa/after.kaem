@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2020-2022 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -17,123 +18,47 @@ prefix=/usr
 bindir=${prefix}/bin
 libdir=${prefix}/lib
 incdir=${prefix}/include
+srcdir=${prefix}/src
 TMPDIR=/tmp # tmpdir is needed for patch to work
 
-# Environmental variables needed for mes
-NYACC_PKG=nyacc-1.00.2
-MES_PKG=mes-0.24
-MES_PREFIX=${sysa}/${MES_PKG}/build/${MES_PKG}
-GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sysa}/${MES_PKG}/build/${NYACC_PKG}/module
-mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${TMPDIR}
-cd ${prefix}
+mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${srcdir} ${TMPDIR}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
-cp /${ARCH_DIR}/bin/blood-elf bin/blood-elf
-cp /${ARCH_DIR}/bin/catm bin/catm
-cp /${ARCH_DIR}/bin/chmod bin/chmod
-cp /${ARCH_DIR}/bin/get_machine bin/get_machine
-cp /${ARCH_DIR}/bin/hex2 bin/hex2
-cp /${ARCH_DIR}/bin/kaem bin/kaem
-cp /${ARCH_DIR}/bin/match bin/match
-cp /${ARCH_DIR}/bin/M1 bin/M1
-cp /${ARCH_DIR}/bin/M2-Planet bin/M2-Planet
-cp /${ARCH_DIR}/bin/mkdir bin/mkdir
-cp /${ARCH_DIR}/bin/sha256sum bin/sha256sum
-cp /${ARCH_DIR}/bin/ungz bin/ungz
-cp /${ARCH_DIR}/bin/untar bin/untar
-cp /${ARCH_DIR}/bin/cp bin/cp
+cp /${ARCH_DIR}/bin/blood-elf ${bindir}/blood-elf
+cp /${ARCH_DIR}/bin/catm ${bindir}/catm
+cp /${ARCH_DIR}/bin/chmod ${bindir}/chmod
+cp /${ARCH_DIR}/bin/get_machine ${bindir}/get_machine
+cp /${ARCH_DIR}/bin/hex2 ${bindir}/hex2
+cp /${ARCH_DIR}/bin/kaem ${bindir}/kaem
+cp /${ARCH_DIR}/bin/match ${bindir}/match
+cp /${ARCH_DIR}/bin/M1 ${bindir}/M1
+cp /${ARCH_DIR}/bin/M2-Planet ${bindir}/M2-Planet
+cp /${ARCH_DIR}/bin/mkdir ${bindir}/mkdir
+cp /${ARCH_DIR}/bin/sha256sum ${bindir}/sha256sum
+cp /${ARCH_DIR}/bin/ungz ${bindir}/ungz
+cp /${ARCH_DIR}/bin/untar ${bindir}/untar
+cp /${ARCH_DIR}/bin/cp ${bindir}/cp
 
-chmod 755 bin/blood-elf
-chmod 755 bin/catm
-chmod 755 bin/chmod
-chmod 755 bin/cp
-chmod 755 bin/get_machine
-chmod 755 bin/hex2
-chmod 755 bin/kaem
-chmod 755 bin/match
-chmod 755 bin/M1
-chmod 755 bin/M2-Planet
-chmod 755 bin/mkdir
-chmod 755 bin/sha256sum
-chmod 755 bin/ungz
-chmod 755 bin/untar
+chmod 755 ${bindir}/blood-elf
+chmod 755 ${bindir}/catm
+chmod 755 ${bindir}/chmod
+chmod 755 ${bindir}/cp
+chmod 755 ${bindir}/get_machine
+chmod 755 ${bindir}/hex2
+chmod 755 ${bindir}/kaem
+chmod 755 ${bindir}/match
+chmod 755 ${bindir}/M1
+chmod 755 ${bindir}/M2-Planet
+chmod 755 ${bindir}/mkdir
+chmod 755 ${bindir}/sha256sum
+chmod 755 ${bindir}/ungz
+chmod 755 ${bindir}/untar
 
 PATH=${bindir}
 
 cd ${sysa}
 
-# mes
-pkg=${MES_PKG}
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
+catm run2.kaem bootstrap.cfg run.kaem
+chmod +x run2.kaem
 
-# tcc 0.9.26
-pkg="tcc-0.9.26"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-libdir=${libdir}/mes
-
-# make
-pkg="make-3.80"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# gzip
-pkg="gzip-1.2.4"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# tar
-pkg="tar-1.12"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# sed
-pkg="sed-4.0.9"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# patch
-pkg="patch-2.5.9"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# bzip2
-pkg="bzip2-1.0.8"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# tcc 0.9.27
-pkg="tcc-0.9.27"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# coreutils
-pkg="coreutils-5.0"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# heirloom-devtools
-pkg="heirloom-devtools-070527"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# bash
-pkg="bash-2.05b"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-exec bash run.sh
+kaem --file run2.kaem
