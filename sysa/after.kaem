@@ -59,6 +59,6 @@ PATH=${bindir}
 cd ${sysa}
 
 catm run2.kaem bootstrap.cfg run.kaem
-chmod +x run2.kaem
+chmod 755 run2.kaem
 
 kaem --file run2.kaem
