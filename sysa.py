@@ -92,9 +92,10 @@ class SysA(SysGeneral):
     def get_packages(self):
         """Prepare remaining sources"""
 
-        # mes-0.24
-        self.get_file(["https://mirrors.kernel.org/gnu/mes/mes-0.24.tar.gz",
-                       "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"])
+        # mes-0.24 snapshot
+        self.get_file(["http://git.savannah.gnu.org/cgit/mes.git/snapshot/mes-aa5f1533e1736a89e60d2c34c2a0ab3b01f8d037.tar.gz",
+                       "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
+                       output=["mes-0.24.tar.gz", "nyacc-1.00.2.tar.gz"])
 
         # tcc 0.9.26 patched by janneke
         self.get_file("https://lilypond.org/janneke/tcc/tcc-0.9.26-1136-g5bba73cc.tar.gz", output="tcc-0.9.26.tar.gz")
