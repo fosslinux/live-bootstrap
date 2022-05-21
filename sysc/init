@@ -59,6 +59,10 @@ mv run*.sh /usr/src
 mv helpers.sh SHA256SUMS.pkgs bootstrap.cfg /usr/src
 mv /*-* /usr/src # build scripts
 
+# Check tarballs
+cd "${DISTFILES}"
+sha256sum -c /SHA256SUMS.sources
+
 # Begin sysc bootstrapping process
-cd /usr/src
+cd "${SOURCES}"
 exec ./run.sh
