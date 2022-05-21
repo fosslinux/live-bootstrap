@@ -24,8 +24,7 @@ sysa
 │   ├── somepackage-version.kaem (or .sh)
 │   ├── files
 │   ├── mk
-│   ├── patches
-│   └── src
+│   └── patches
 └── tmp
 ```
 
@@ -40,30 +39,20 @@ It then diverges based upon which driver is being used:
   There are default functions run which can be overridden by an optional script
   `package-version.sh` within the package-specific directory.
 
-In this folder, there are other folders/files. `src` and `*.checksums` are
-required, others are optional.
+In this folder, there are other folders/files. `*.checksums` are
+required for early packages that are build with kaem, others are optional.
 
-Permissable folders/files:
+Permissible folders/files:
 
 - `files`: auxiliary files required for the build distributed by live-bootstrap.
 - `mk`: makefiles.
 - `patches`: patches for the source.
-- `src`: the upstream unmodified source code. This may be either a submodule or
-  nonexistent.
 - `*.checksums`: files containing the checksums for the resulting binaries and
 libraries that are compiled and installed.
-  - Up to and including `patch`, `fletcher16` is used for the checksumming.
-  - After `patch`, `sha-2` is built which contains an external implementation of
-    `sha256sum`. We then use that currently for all remaining software.
-  - To extract the binaries to get their checksums, use of chroot mode is
-    recommended (i.e. `./rootfs.py --chroot`).
-
-Furthermore, there is a special top-level dir `dev-utils`. In here are
-appropriate utilities that are often useful for development and not generally
-included on normal systems, or are specific to live-bootstrap. Each program
-should be contained within its own directory and include:
-
-- source code
+  - Up to and including `coreutils-6.10`, `sha256sum` from `stage0-posix`
+    is used for the checksumming. Later we switch to GNU version.
+  - To extract checksums of the binaries, use of qemu mode is recommended
+    (i.e. `./rootfs.py -q -qk $kernel --update-checksums`).
 - compilation script
 
 The directory m2-functions is used for M2-Planet functions (currently).
