@@ -48,7 +48,7 @@ class SysGeneral:
 
     def check_file(self, file_name):
         """Check hash of downloaded source file."""
-        checksum_store = os.path.join(self.git_dir, 'SHA256SUMS.sources')
+        checksum_store = os.path.join(self.sys_dir, 'SHA256SUMS.sources')
         with open(checksum_store, encoding="utf_8") as checksum_file:
             hashes = checksum_file.read().splitlines()
         for hash_line in hashes:

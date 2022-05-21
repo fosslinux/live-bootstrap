@@ -56,6 +56,10 @@ chmod 755 ${bindir}/untar
 
 PATH=${bindir}
 
+# Check packages
+cd ${distfiles}
+sha256sum -c ../SHA256SUMS.sources
+
 cd ${sysa}
 
 catm run2.kaem bootstrap.cfg run.kaem
