@@ -7,7 +7,7 @@
 set -e
 
 # shellcheck source=sysa/helpers.sh
-. helpers.sh
+. /usr/src/helpers.sh
 
 export PATH=/usr/bin:/usr/sbin
 export PREFIX=/usr
@@ -53,12 +53,6 @@ install_tar util-linux-2.19.1 0
 
 # Fix invocation of bash from perl
 ln -s /usr/bin/bash /usr/bin/sh
-
-# Prepare sysc directory structure
-mkdir -p /usr/src
-mv run*.sh /usr/src
-mv helpers.sh SHA256SUMS.pkgs bootstrap.cfg /usr/src
-mv /*-* /usr/src # build scripts
 
 # Check tarballs
 cd "${DISTFILES}"

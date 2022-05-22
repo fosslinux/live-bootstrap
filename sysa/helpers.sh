@@ -412,6 +412,7 @@ populate_device_nodes() {
 
 sys_transfer() {
     local dest=$1
+    local sys_sources=$2
 
     mkdir -p "${dest}/${PREFIX}/bin" "${dest}/${PREFIX}/src"
 
@@ -419,11 +420,13 @@ sys_transfer() {
     cp "${PREFIX}/bin/bash" "${PREFIX}/bin/tar" "${PREFIX}/bin/bzip2" "${dest}${PREFIX}/bin/"
 
     # Transfer misc files
-    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "${dest}/"
+    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "${dest}/${PREFIX}/src"
 
-    cp -r "${PREFIX}/src/" "${dest}${PREFIX}/"
+    cp -r "${sys_sources}/*" "${dest}/${PREFIX}/src"
+    cp -f "${sys_sources}/init" "${dest}/"
+    cp -r "${PREFIX}/src/repo" "${dest}/${PREFIX}/src"
 
-    shift
+    shift 2
     # Copy additional binaries
     set -- "${@/#/${PREFIX}/bin/}"
     cp "$@" "${dest}${PREFIX}/bin/"

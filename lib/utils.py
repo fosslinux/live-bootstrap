@@ -32,10 +32,11 @@ def create_disk(image, disk_type, fs_type, size):
     loop_dev = run('sudo', 'losetup', '-f', capture_output=True).stdout.decode().strip()
     run('sudo', 'losetup', '-P', loop_dev, image)
     # Create the partition
-    run('sudo', 'parted', '--script', image, 'mklabel', disk_type, 'mkpart',
-            'primary', 'ext4', '0%', '100%')
-    run('sudo', 'partprobe', loop_dev)
-    run('sudo', 'mkfs.' + fs_type, loop_dev + "p1")
+    if disk_type != "none":
+        run('sudo', 'parted', '--script', image, 'mklabel', disk_type, 'mkpart',
+                'primary', 'ext4', '0%', '100%')
+        run('sudo', 'partprobe', loop_dev)
+        run('sudo', 'mkfs.' + fs_type, loop_dev + "p1")
     return loop_dev
 
 def mount(source, target, fs_type, options='', **kwargs):

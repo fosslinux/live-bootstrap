@@ -7,7 +7,31 @@
 
 set -e
 
+. /usr/src/helpers.sh
+
+export PATH=/usr/bin
+export PREFIX=/usr
+export SOURCES=/usr/src
+
+echo 
+echo "Installing packages into sysb"
+
+install_tar() {
+    echo "${1}: installing package"
+    src_apply_tar "$@"
+}
+
+# Install needed packages.
+install_tar coreutils-5.0 0
+install_tar sed-4.0.9 0
+
+install_tar bzip2-1.0.8 0
+install_tar coreutils-6.10 0
+install_tar e2fsprogs-1.45.7 0
+install_tar grep-2.4 0
+install_tar kexec-tools-2.0.22 0
+install_tar util-linux-2.19.1 0
+
 # Begin sysb bootstrapping process
-mv ./run.sh /usr/src
 cd /usr/src
 ./run.sh

@@ -22,16 +22,11 @@ export SRCDIR="${srcdir}"
 create_sysb() {
     # Copy everything in
     echo "Creating sysb rootfs"
-    mkdir -p "/sysb${PREFIX}"
-    for d in bin include lib libexec share src; do
-        # Minimise RAM (storage) use - use hard links
-        cp -rl "${PREFIX}/${d}" "/sysb${PREFIX}/${d}"
-    done
-    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "/sysb/${SRCDIR}"
-    populate_device_nodes /sysb
+    sys_transfer /sysb_image /sysb
+    cp -rl /sysc /sysb/sysc_src
     echo "Creating sysb initramfs"
     gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb
-    rm -rf /sysb # Cleanup
+    rm -rf /sysb /sysb_image # Cleanup
 }
 
 go_sysb() {
@@ -256,6 +251,6 @@ if [ "${CHROOT}" = False ]; then
 fi
 
 # In chroot mode transition directly into System C.
-SYSC=/sysc
-sys_transfer "${SYSC}" gzip patch
+SYSC=/sysc_image
+sys_transfer "${SYSC}" /sysc gzip patch
 exec chroot "${SYSC}" /init

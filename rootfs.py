@@ -33,7 +33,10 @@ def create_configuration_file(args):
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
-        config.write("DISK=sda1\n")
+        if args.external_sources:
+            config.write("DISK=sda1\n")
+        else:
+            config.write("DISK=sda\n")
 
 def main():
     """
@@ -57,6 +60,8 @@ def main():
     parser.add_argument("--update-checksums",
                         help="Update checksum files.",
                         action="store_true")
+    parser.add_argument("--external-sources",
+                        help="Download sources externally from live-bootstrap.")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
                         action="store_true")
@@ -116,7 +121,7 @@ def main():
             pass
 
     system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir)
+                    tmpdir=args.tmpdir, external_sources=args.external_sources)
     system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
                     tmpdir=args.tmpdir,
@@ -138,7 +143,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=False)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=True,
                          create_initramfs=False,
                          repo_path=args.repo)
 
@@ -151,7 +155,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=False,
                          create_disk_image=False)
         system_a.prepare(mount_tmpfs=False,
-                         copy_sysc=True,
                          create_initramfs=False,
                          repo_path=args.repo)
 
@@ -187,7 +190,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=False,
                          create_initramfs=True,
                          repo_path=args.repo)
 
@@ -211,7 +213,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=False,
                          create_initramfs=True,
                          repo_path=args.repo)
 
@@ -223,7 +224,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=False,
                          create_initramfs=True,
                          repo_path=args.repo)
 
@@ -232,6 +232,7 @@ print(shutil.which('chroot'))
             '-m', str(args.qemu_ram) + 'M',
             '-no-reboot',
             '-hda', system_c.dev_name,
+            '-nic', 'user,ipv6=off,model=e1000',
             '-kernel', args.kernel,
             '-initrd', system_a.initramfs_path,
             '-nographic',

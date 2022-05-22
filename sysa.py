@@ -18,7 +18,7 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, tmpdir, sysb_dir, sysc_tmp):
+    def __init__(self, arch, preserve_tmp, tmpdir, sysb_dir, sysc_dir):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -32,9 +32,9 @@ class SysA(SysGeneral):
         self.base_dir = self.sysa_dir
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         self.sysb_dir = sysb_dir
-        self.sysc_tmp = sysc_tmp
+        self.sysc_dir = sysc_dir
 
-    def prepare(self, mount_tmpfs, copy_sysc, create_initramfs, repo_path):
+    def prepare(self, mount_tmpfs, create_initramfs, repo_path):
         """
         Prepare directory structure for System A.
         We create an empty tmp directory, unpack stage0-posix.
@@ -51,8 +51,7 @@ class SysA(SysGeneral):
         # sysb must be added to sysa as it is another initramfs stage
         self.sysb()
 
-        if copy_sysc:
-            self.sysc()
+        self.sysc()
 
         if repo_path:
             repo_dir = os.path.join(self.tmp_dir, 'usr', 'src', 'repo-preseeded')
@@ -66,17 +65,17 @@ class SysA(SysGeneral):
         self.get_packages()
 
         shutil.copytree(self.sys_dir, os.path.join(self.tmp_dir, 'sysa'),
-                shutil.ignore_patterns('tmp'))
+                ignore=shutil.ignore_patterns('tmp'))
 
     def sysb(self):
         """Copy in sysb files for sysb."""
         shutil.copytree(self.sysb_dir, os.path.join(self.tmp_dir, 'sysb'),
-                shutil.ignore_patterns('tmp'))
+                ignore=shutil.ignore_patterns('tmp'))
 
     def sysc(self):
         """Copy in sysc files for sysc."""
-        shutil.copytree(self.sysc_tmp, os.path.join(self.tmp_dir, 'sysc'),
-                shutil.ignore_patterns('tmp'))
+        shutil.copytree(self.sysc_dir, os.path.join(self.tmp_dir, 'sysc'),
+                ignore=shutil.ignore_patterns('tmp', 'distfiles'))
 
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
