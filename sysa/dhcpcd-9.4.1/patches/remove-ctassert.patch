@@ -1,0 +1,134 @@
+diff --color -ru src/arp.c src/arp.c
+--- src/arp.c	2022-05-22 13:55:30.103757852 +1000
++++ src/arp.c	2022-05-22 13:55:43.692407546 +1000
+@@ -63,9 +63,6 @@
+ /* ARP debugging can be quite noisy. Enable this for more noise! */
+ //#define	ARP_DEBUG
+ 
+-/* Assert the correct structure size for on wire */
+-__CTASSERT(sizeof(struct arphdr) == 8);
+-
+ static ssize_t
+ arp_request(const struct arp_state *astate,
+     const struct in_addr *sip)
+diff --color -ru src/auth.c src/auth.c
+--- src/auth.c	2022-05-22 13:52:30.219151581 +1000
++++ src/auth.c	2022-05-22 13:53:24.729760674 +1000
+@@ -343,9 +343,6 @@
+ 
+ 	/* RFC3318, section 5.2 - zero giaddr and hops */
+ 	if (mp == 4) {
+-		/* Assert the bootp structure is correct size. */
+-		__CTASSERT(sizeof(struct bootp) == 300);
+-
+ 		*(mm + offsetof(struct bootp, hops)) = '\0';
+ 		memset(mm + offsetof(struct bootp, giaddr), 0, 4);
+ 	}
+diff --color -ru src/dhcp6.c src/dhcp6.c
+--- src/dhcp6.c	2022-05-22 13:52:30.219151581 +1000
++++ src/dhcp6.c	2022-05-22 13:53:33.455178213 +1000
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: BSD-2-Clause */
++	/* SPDX-License-Identifier: BSD-2-Clause */
+ /*
+  * dhcpcd - DHCP client daemon
+  * Copyright (c) 2006-2021 Roy Marples <roy@marples.name>
+@@ -84,33 +84,28 @@
+ 	uint8_t xid[3];
+ 	/* followed by options */
+ };
+-__CTASSERT(sizeof(struct dhcp6_message) == 4);
+ 
+ struct dhcp6_option {
+ 	uint16_t code;
+ 	uint16_t len;
+ 	/* followed by data */
+ };
+-__CTASSERT(sizeof(struct dhcp6_option) == 4);
+ 
+ struct dhcp6_ia_na {
+ 	uint8_t iaid[4];
+ 	uint32_t t1;
+ 	uint32_t t2;
+ };
+-__CTASSERT(sizeof(struct dhcp6_ia_na) == 12);
+ 
+ struct dhcp6_ia_ta {
+ 	uint8_t iaid[4];
+ };
+-__CTASSERT(sizeof(struct dhcp6_ia_ta) == 4);
+ 
+ struct dhcp6_ia_addr {
+ 	struct in6_addr addr;
+ 	uint32_t pltime;
+ 	uint32_t vltime;
+ };
+-__CTASSERT(sizeof(struct dhcp6_ia_addr) == 16 + 8);
+ 
+ /* XXX FIXME: This is the only packed structure and it does not align.
+  * Maybe manually decode it? */
+@@ -120,7 +115,6 @@
+ 	uint8_t prefix_len;
+ 	struct in6_addr prefix;
+ } __packed;
+-__CTASSERT(sizeof(struct dhcp6_pd_addr) == 8 + 1 + 16);
+ 
+ struct dhcp6_op {
+ 	uint16_t type;
+diff --color -ru src/dhcp.c src/dhcp.c
+--- src/dhcp.c	2022-05-22 13:52:30.219151581 +1000
++++ src/dhcp.c	2022-05-22 13:53:08.074963614 +1000
+@@ -98,11 +98,6 @@
+ #define IP_RECVPKTINFO IP_PKTINFO
+ #endif
+ 
+-/* Assert the correct structure size for on wire */
+-__CTASSERT(sizeof(struct ip)		== 20);
+-__CTASSERT(sizeof(struct udphdr)	== 8);
+-__CTASSERT(sizeof(struct bootp)		== 300);
+-
+ struct dhcp_op {
+ 	uint8_t value;
+ 	const char *name;
+diff --color -ru src/if-bsd.c src/if-bsd.c
+--- src/if-bsd.c	2022-05-22 13:52:30.219151581 +1000
++++ src/if-bsd.c	2022-05-22 13:53:31.686093557 +1000
+@@ -1589,7 +1589,6 @@
+ #endif
+ }
+ 
+-__CTASSERT(offsetof(struct rt_msghdr, rtm_msglen) == 0);
+ int
+ if_handlelink(struct dhcpcd_ctx *ctx)
+ {
+diff --color -ru src/ipv6nd.c src/ipv6nd.c
+--- src/ipv6nd.c	2022-05-22 13:52:30.219151581 +1000
++++ src/ipv6nd.c	2022-05-22 13:53:30.092017279 +1000
+@@ -80,7 +80,6 @@
+ 	uint32_t	nd_opt_rdnss_lifetime;
+         /* followed by list of IP prefixes */
+ };
+-__CTASSERT(sizeof(struct nd_opt_rdnss) == 8);
+ #endif
+ 
+ #ifndef ND_OPT_DNSSL
+@@ -92,7 +91,6 @@
+ 	uint32_t	nd_opt_dnssl_lifetime;
+ 	/* followed by list of DNS servers */
+ };
+-__CTASSERT(sizeof(struct nd_opt_rdnss) == 8);
+ #endif
+ 
+ /* Impossible options, so we can easily add extras */
+diff --color -ru src/privsep-root.c src/privsep-root.c
+--- src/privsep-root.c	2022-05-22 13:52:30.220151629 +1000
++++ src/privsep-root.c	2022-05-22 13:53:28.152924488 +1000
+@@ -56,8 +56,6 @@
+ #include "sa.h"
+ #include "script.h"
+ 
+-__CTASSERT(sizeof(ioctl_request_t) <= sizeof(unsigned long));
+-
+ struct psr_error
+ {
+ 	ssize_t psr_result;

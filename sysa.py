@@ -272,6 +272,9 @@ class SysA(SysGeneral):
             "https://www.unicode.org/Public/11.0.0/ucd/NormalizationTest.txt",
             "https://www.unicode.org/Public/11.0.0/ucd/UnicodeData.txt"])
 
+        # dhcpcd 9.4.1
+        self.get_file("https://roy.marples.name/git/dhcpcd/snapshot/dhcpcd-9.4.1.tar.gz")
+
         # kexec-tools 2.0.22
         self.get_file("https://github.com/horms/kexec-tools/archive/refs/tags/v2.0.22.tar.gz",
                 output="kexec-tools-2.0.22.tar.gz")

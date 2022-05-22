@@ -42,7 +42,7 @@ src_install() {
     done
 
     # Pick-and-choose asm-generic headers
-    for i in types ioctl termios termbits ioctls; do
+    for i in types ioctl termios termbits ioctls sockios socket; do
         cp "${DESTDIR}${PREFIX}/include/asm-generic/${i}.h" "${DESTDIR}${PREFIX}/include/asm/${i}.h"
     done
 

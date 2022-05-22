@@ -225,6 +225,8 @@ build util-linux-2.19.1
 
 build e2fsprogs-1.45.7
 
+build dhcpcd-9.4.1 '' '' dhcpcd-dhcpcd-9.4.1-1663155
+
 build kbd-1.15
 
 build make-3.82
