@@ -33,7 +33,7 @@ class SysC(SysGeneral):
             self.tmp_dir = os.path.join(tmpdir, 'sysc')
             os.mkdir(self.tmp_dir)
 
-        self.prepare(chroot)
+        self.prepare(not chroot)
 
     def __del__(self):
         if not self.preserve_tmp:
@@ -43,7 +43,7 @@ class SysC(SysGeneral):
 
         super().__del__()
 
-    def prepare(self, chroot):
+    def prepare(self, create_disk_image):
         """
         Prepare directory structure for System C.
         """
@@ -51,7 +51,7 @@ class SysC(SysGeneral):
 
         rootfs_dir = None
 
-        if not chroot:
+        if create_disk_image:
             # Create + mount a disk for QEMU to use
             disk_path = os.path.join(self.tmp_dir, 'disk.img')
             self.dev_name = create_disk(disk_path, "msdos", "ext4", '8G')
@@ -68,8 +68,8 @@ class SysC(SysGeneral):
 
         copytree(self.sys_dir, rootfs_dir, ignore=shutil.ignore_patterns("tmp"))
 
-        # Unmount tmp/mnt if it exists
-        if not chroot:
+        # Unmount tmp/mnt if it was mounted
+        if create_disk_image:
             umount(rootfs_dir)
 
     # pylint: disable=line-too-long,too-many-statements
