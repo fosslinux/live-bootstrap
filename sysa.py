@@ -36,9 +36,6 @@ class SysA(SysGeneral):
 
         self.prepare(chroot)
 
-        if not chroot:
-            self.make_initramfs()
-
     def prepare(self, chroot):
         """
         Prepare directory structure for System A.
@@ -55,6 +52,8 @@ class SysA(SysGeneral):
 
         if chroot:
             self.sysc()
+        else:
+            self.make_initramfs()
 
     def sysa(self):
         """Copy in sysa files for sysa."""
