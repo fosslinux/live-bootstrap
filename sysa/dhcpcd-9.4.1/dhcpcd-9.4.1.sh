@@ -11,6 +11,13 @@ src_prepare() {
 src_configure() {
     CC=gcc ./configure \
         --prefix="${PREFIX}" \
+        --sbindir="${PREFIX}/bin" \
         --disable-embedded \
         --disable-auth
+}
+
+src_install() {
+    default
+    mkdir -p "${DESTDIR}/var/db/dhcpcd"
+    mkdir -p "${DESTDIR}/var/run/dhcpcd"
 }

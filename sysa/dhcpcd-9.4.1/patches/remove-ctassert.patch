@@ -1,3 +1,9 @@
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: BSD-2-Clause
+
+__CTASSERT macro does not work properly on our older GCC.
+
 diff --color -ru src/arp.c src/arp.c
 --- src/arp.c	2022-05-22 13:55:30.103757852 +1000
 +++ src/arp.c	2022-05-22 13:55:43.692407546 +1000
@@ -27,12 +33,6 @@ diff --color -ru src/auth.c src/auth.c
 diff --color -ru src/dhcp6.c src/dhcp6.c
 --- src/dhcp6.c	2022-05-22 13:52:30.219151581 +1000
 +++ src/dhcp6.c	2022-05-22 13:53:33.455178213 +1000
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: BSD-2-Clause */
-+	/* SPDX-License-Identifier: BSD-2-Clause */
- /*
-  * dhcpcd - DHCP client daemon
-  * Copyright (c) 2006-2021 Roy Marples <roy@marples.name>
 @@ -84,33 +84,28 @@
  	uint8_t xid[3];
  	/* followed by options */

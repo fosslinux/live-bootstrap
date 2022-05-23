@@ -7,8 +7,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
-# shellcheck source=sysa/helpers.sh
-. helpers.sh
 
 # shellcheck disable=SC2154
 export PREFIX="${prefix}"
@@ -19,13 +17,16 @@ export DESTDIR=/tmp/destdir
 # shellcheck disable=SC2154
 export SRCDIR="${srcdir}"
 
+# shellcheck source=sysa/helpers.sh
+. helpers.sh
+
 create_sysb() {
     # Copy everything in
     echo "Creating sysb rootfs"
-    sys_transfer /sysb_image /sysb
-    cp -rl /sysc /sysb/sysc_src
+    sys_transfer /sysb_image /sysb gzip patch
+    cp -rl /sysc /sysb_image/sysc_src
     echo "Creating sysb initramfs"
-    gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb
+    gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb_image
     rm -rf /sysb /sysb_image # Cleanup
 }
 

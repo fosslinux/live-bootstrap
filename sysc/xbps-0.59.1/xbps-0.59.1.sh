@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# TODO: add mechanism to change output filename to something nicer
 urls="https://github.com/void-linux/xbps/archive/refs/tags/0.59.1.tar.gz"
 
 src_configure() {

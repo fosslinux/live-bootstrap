@@ -1,3 +1,11 @@
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+Our version of gawk does not seem to like printing, at least in the way that
+this attempts to use it. Instead, make it print to console and use working
+bash redirects.
+
 --- lib/et/compile_et.sh.in	2022-05-18 19:26:17.182054784 +1000
 +++ lib/et/compile_et.sh.in	2022-05-18 19:30:16.489294776 +1000
 @@ -44,14 +44,14 @@

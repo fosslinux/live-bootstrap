@@ -24,5 +24,6 @@ src_configure() {
     LDFLAGS="-static" ./configure \
         --prefix="${PREFIX}" \
         --with-openssl \
-        --with-ca-bundle=/etc/ssl/certs.pem
+        --with-ca-bundle=/etc/ssl/certs.pem \
+        --build=i386-unknown-linux-musl
 }

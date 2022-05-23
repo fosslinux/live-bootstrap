@@ -28,7 +28,7 @@ create_hdx() {
 
 # All the various structures that don't exist but needed to mount
 mkdir -p /etc /dev
-populate_device_nodes ""
+populate_device_nodes
 create_hdx
 
 ask_disk() {
@@ -62,13 +62,16 @@ if [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
     echo "DISK=${DISK}" >> /usr/src/bootstrap.cfg
 fi
 
-if [ -z "$(fdisk -l "/dev/${DISK}" | grep -E "${DISK}p?[0-9]")" ]; then
-    echo "Creating partition table and partition"
-    echo ";" | sfdisk "/dev/${DISK}"
-    mkfs.ext4 "/dev/${DISK}1"
-    DISK="${DISK}1"
+# Is it a full disk, and not a partition
+# shellcheck disable=SC2012
+if [ $(($(ls -l "/dev/${DISK}" | sed "s/.*, *//" | sed "s/ .*//") % 8)) -eq 0 ]; then
+    if ! fdisk -l "/dev/${DISK}" | grep -qE "${DISK}p?[0-9]" ; then
+        echo "Creating partition table and partition"
+        echo ";" | sfdisk "/dev/${DISK}"
+        mkfs.ext4 "/dev/${DISK}1"
+        DISK="${DISK}1"
+    fi
 fi
-
 echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
 
 PREFIX=/usr

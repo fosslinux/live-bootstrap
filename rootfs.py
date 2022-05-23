@@ -11,7 +11,7 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 
 import argparse
 import os
@@ -38,6 +38,7 @@ def create_configuration_file(args):
         else:
             config.write("DISK=sda\n")
 
+# pylint: disable=too-many-statements
 def main():
     """
     A few command line arguments to customize bootstrap.
@@ -61,7 +62,8 @@ def main():
                         help="Update checksum files.",
                         action="store_true")
     parser.add_argument("--external-sources",
-                        help="Download sources externally from live-bootstrap.")
+                        help="Download sources externally from live-bootstrap.",
+                        action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
                         action="store_true")
@@ -124,8 +126,8 @@ def main():
                     tmpdir=args.tmpdir, external_sources=args.external_sources)
     system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir,
-                    sysb_dir=system_b.sys_dir, sysc_tmp=system_c.tmp_dir)
+                    tmpdir=args.tmpdir, external_sources=args.external_sources,
+                    sysb_dir=system_b.sys_dir, sysc_dir=system_c.sys_dir)
 
     bootstrap(args, system_a, system_b, system_c)
 

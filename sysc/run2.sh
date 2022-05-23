@@ -108,4 +108,7 @@ echo "Bootstrapping completed."
 
 cd "/"
 
-exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" bash after.sh
+if [ -e after.sh ]; then
+    FILE=after.sh
+fi
+exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" bash ${FILE}

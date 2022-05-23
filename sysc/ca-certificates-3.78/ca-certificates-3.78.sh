@@ -5,7 +5,7 @@
 urls="http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/nss-3.78.tar.gz"
 
 src_compile() {
-    cp nss/lib/ckfw/builtins/certdata.txt .
+    cp -a nss/lib/ckfw/builtins/certdata.txt .
     mk-ca-bundle -n -s ALL -m
 }
 

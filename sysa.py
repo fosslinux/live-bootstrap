@@ -18,7 +18,7 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, tmpdir, sysb_dir, sysc_dir):
+    def __init__(self, arch, preserve_tmp, external_sources, tmpdir, sysb_dir, sysc_dir):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -33,6 +33,7 @@ class SysA(SysGeneral):
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         self.sysb_dir = sysb_dir
         self.sysc_dir = sysc_dir
+        self.external_sources = external_sources
 
     def prepare(self, mount_tmpfs, create_initramfs, repo_path):
         """
@@ -51,7 +52,7 @@ class SysA(SysGeneral):
         # sysb must be added to sysa as it is another initramfs stage
         self.sysb()
 
-        self.sysc()
+        self.sysc(create_initramfs)
 
         if repo_path:
             repo_dir = os.path.join(self.tmp_dir, 'usr', 'src', 'repo-preseeded')
@@ -72,10 +73,14 @@ class SysA(SysGeneral):
         shutil.copytree(self.sysb_dir, os.path.join(self.tmp_dir, 'sysb'),
                 ignore=shutil.ignore_patterns('tmp'))
 
-    def sysc(self):
+    def sysc(self, create_initramfs):
         """Copy in sysc files for sysc."""
+        if create_initramfs:
+            ignore = shutil.ignore_patterns('tmp', 'distfiles')
+        else:
+            ignore = shutil.ignore_patterns('tmp')
         shutil.copytree(self.sysc_dir, os.path.join(self.tmp_dir, 'sysc'),
-                ignore=shutil.ignore_patterns('tmp', 'distfiles'))
+                ignore=ignore)
 
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
@@ -94,7 +99,6 @@ class SysA(SysGeneral):
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
         """Prepare remaining sources"""
-
         # mes-0.24 snapshot
         self.get_file(["http://git.savannah.gnu.org/cgit/mes.git/snapshot/mes-aa5f1533e1736a89e60d2c34c2a0ab3b01f8d037.tar.gz",
                        "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
