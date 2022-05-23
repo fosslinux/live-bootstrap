@@ -49,26 +49,29 @@ class SysC(SysGeneral):
         Prepare directory structure for System C.
         """
         self.mount_tmpfs()
+
+        rootfs_dir = None
+
         if not self.chroot:
             # Create + mount a disk for QEMU to use
             disk_path = os.path.join(self.tmp_dir, 'disk.img')
             self.dev_name = create_disk(disk_path, "msdos", "ext4", '8G')
-            self.rootfs_dir = os.path.join(self.tmp_dir, 'mnt')
-            os.mkdir(self.rootfs_dir)
-            mount(self.dev_name + "p1", self.rootfs_dir, 'ext4')
+            rootfs_dir = os.path.join(self.tmp_dir, 'mnt')
+            os.mkdir(rootfs_dir)
+            mount(self.dev_name + "p1", rootfs_dir, 'ext4')
             # Use chown to allow executing user to access it
             run('sudo', 'chown', getpass.getuser(), self.dev_name)
-            run('sudo', 'chown', getpass.getuser(), self.rootfs_dir)
+            run('sudo', 'chown', getpass.getuser(), rootfs_dir)
         else:
-            self.rootfs_dir = self.tmp_dir
+            rootfs_dir = self.tmp_dir
 
         self.get_packages()
 
-        copytree(self.sys_dir, self.rootfs_dir, ignore=shutil.ignore_patterns("tmp"))
+        copytree(self.sys_dir, rootfs_dir, ignore=shutil.ignore_patterns("tmp"))
 
         # Unmount tmp/mnt if it exists
         if not self.chroot:
-            umount(self.rootfs_dir)
+            umount(rootfs_dir)
 
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
