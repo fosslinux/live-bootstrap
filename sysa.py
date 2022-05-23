@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """System A"""
 # SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
@@ -27,20 +28,22 @@ class SysA(SysGeneral):
             self.tmp_dir = os.path.join(self.git_dir, 'tmp')
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysa')
-            os.mkdir(self.tmp_dir)
         self.sysa_dir = os.path.join(self.tmp_dir, 'sysa')
         self.base_dir = self.sysa_dir
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         self.sysb_dir = sysb_dir
         self.sysc_tmp = sysc_tmp
 
-    def prepare(self, copy_sysc, create_initramfs):
+    def prepare(self, mount_tmpfs, copy_sysc, create_initramfs):
         """
         Prepare directory structure for System A.
-        We create an empty tmpfs, unpack stage0-posix.
+        We create an empty tmp directory, unpack stage0-posix.
         Rest of the files are unpacked into more structured directory /sysa
         """
-        self.mount_tmpfs()
+        if mount_tmpfs:
+            self.mount_tmpfs()
+        else:
+            os.mkdir(self.tmp_dir)
 
         self.stage0_posix()
         self.sysa()

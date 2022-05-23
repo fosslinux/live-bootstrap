@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """System C"""
 # SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 
@@ -31,7 +32,6 @@ class SysC(SysGeneral):
             self.tmp_dir = os.path.join(self.sys_dir, 'tmp')
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysc')
-            os.mkdir(self.tmp_dir)
 
     def __del__(self):
         if not self.preserve_tmp:
@@ -41,11 +41,14 @@ class SysC(SysGeneral):
 
         super().__del__()
 
-    def prepare(self, create_disk_image):
+    def prepare(self, mount_tmpfs, create_disk_image):
         """
         Prepare directory structure for System C.
         """
-        self.mount_tmpfs()
+        if mount_tmpfs:
+            self.mount_tmpfs()
+        else:
+            os.mkdir(self.tmp_dir)
 
         rootfs_dir = None
 

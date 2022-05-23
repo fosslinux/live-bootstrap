@@ -45,7 +45,7 @@ def main():
                         default="x86")
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
                         action="store_true")
-    parser.add_argument("-p", "--preserve", help="Do not unmount temporary dir",
+    parser.add_argument("-p", "--preserve", help="Do not remove temporary dir",
                         action="store_true")
     parser.add_argument("-t", "--tmpdir", help="Temporary directory")
     parser.add_argument("--force-timestamps",
@@ -128,8 +128,10 @@ print(shutil.which('chroot'))
         chroot_binary = run('sudo', 'python3', '-c', find_chroot,
                             capture_output=True).stdout.decode().strip()
 
-        system_c.prepare(create_disk_image=False)
-        system_a.prepare(copy_sysc=True,
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=False)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=True,
                          create_initramfs=False)
 
         # sysa
@@ -141,8 +143,10 @@ print(shutil.which('chroot'))
         if os.path.isdir('kritis-linux'):
             shutil.rmtree('kritis-linux')
 
-        system_c.prepare(create_disk_image=True)
-        system_a.prepare(copy_sysc=False,
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=True)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=False,
                          create_initramfs=True)
 
         run('git', 'clone',
@@ -162,8 +166,10 @@ print(shutil.which('chroot'))
             '--log', '/tmp/bootstrap.log')
 
     elif args.bare_metal:
-        system_c.prepare(create_disk_image=True)
-        system_a.prepare(copy_sysc=False,
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=True)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=False,
                          create_initramfs=True)
 
         print("Please:")
@@ -171,8 +177,10 @@ print(shutil.which('chroot'))
         print("  2. Take sysc/tmp/disk.img and put this on a writable storage medium.")
 
     else:
-        system_c.prepare(create_disk_image=True)
-        system_a.prepare(copy_sysc=False,
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=True)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=False,
                          create_initramfs=True)
 
         run(args.qemu_cmd,

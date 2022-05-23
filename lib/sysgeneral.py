@@ -3,11 +3,13 @@
 This file contains a few functions to be shared by all Sys* classes
 """
 
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
+import shutil
 import hashlib
 import glob
 import subprocess
@@ -33,10 +35,20 @@ class SysGeneral:
     mounted_tmpfs = False
 
     def __del__(self):
-        if self.mounted_tmpfs and not self.preserve_tmp:
+        if not self.preserve_tmp:
+            self.remove_tmp()
+
+    def remove_tmp(self):
+        """Remove the tmp directory"""
+        if self.tmp_dir is None:
+            return
+
+        if self.mounted_tmpfs:
             print(f"Unmounting tmpfs from {self.tmp_dir}")
             umount(self.tmp_dir)
-            os.rmdir(self.tmp_dir)
+
+        print(f"Removing {self.tmp_dir}")
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
 
     def mount_tmpfs(self):
         """Mount the tmpfs for this sysx"""
