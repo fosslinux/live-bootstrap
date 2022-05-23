@@ -109,10 +109,10 @@ def main():
             pass
 
     system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
-            tmpdir=args.tmpdir, chroot=args.chroot)
+                    tmpdir=args.tmpdir)
     system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir, chroot=args.chroot,
+                    tmpdir=args.tmpdir,
                     sysb_dir=system_b.sys_dir, sysc_tmp=system_c.tmp_dir)
 
     bootstrap(args, system_a, system_b, system_c)
@@ -128,6 +128,10 @@ print(shutil.which('chroot'))
         chroot_binary = run('sudo', 'python3', '-c', find_chroot,
                             capture_output=True).stdout.decode().strip()
 
+        system_c.prepare(create_disk_image=False)
+        system_a.prepare(copy_sysc=True,
+                         create_initramfs=False)
+
         # sysa
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
@@ -136,6 +140,10 @@ print(shutil.which('chroot'))
     elif args.minikernel:
         if os.path.isdir('kritis-linux'):
             shutil.rmtree('kritis-linux')
+
+        system_c.prepare(create_disk_image=True)
+        system_a.prepare(copy_sysc=False,
+                         create_initramfs=True)
 
         run('git', 'clone',
             '--depth', '1', '--branch', 'v0.7',
@@ -154,11 +162,19 @@ print(shutil.which('chroot'))
             '--log', '/tmp/bootstrap.log')
 
     elif args.bare_metal:
+        system_c.prepare(create_disk_image=True)
+        system_a.prepare(copy_sysc=False,
+                         create_initramfs=True)
+
         print("Please:")
         print("  1. Take sysa/tmp/initramfs and your kernel, boot using this.")
         print("  2. Take sysc/tmp/disk.img and put this on a writable storage medium.")
 
     else:
+        system_c.prepare(create_disk_image=True)
+        system_a.prepare(copy_sysc=False,
+                         create_initramfs=True)
+
         run(args.qemu_cmd,
             '-enable-kvm',
             '-m', str(args.qemu_ram) + 'M',

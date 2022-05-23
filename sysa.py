@@ -17,7 +17,7 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_dir, sysc_tmp):
+    def __init__(self, arch, preserve_tmp, tmpdir, sysb_dir, sysc_tmp):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -33,8 +33,6 @@ class SysA(SysGeneral):
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         self.sysb_dir = sysb_dir
         self.sysc_tmp = sysc_tmp
-
-        self.prepare(chroot, not chroot)
 
     def prepare(self, copy_sysc, create_initramfs):
         """

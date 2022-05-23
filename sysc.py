@@ -20,7 +20,7 @@ class SysC(SysGeneral):
     dev_name = None
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, arch, preserve_tmp, tmpdir, chroot):
+    def __init__(self, arch, preserve_tmp, tmpdir):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -32,8 +32,6 @@ class SysC(SysGeneral):
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysc')
             os.mkdir(self.tmp_dir)
-
-        self.prepare(not chroot)
 
     def __del__(self):
         if not self.preserve_tmp:
