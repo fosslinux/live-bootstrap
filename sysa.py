@@ -33,14 +33,13 @@ class SysA(SysGeneral):
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         self.sysb_dir = sysb_dir
         self.sysc_tmp = sysc_tmp
-        self.chroot = chroot
 
-        self.prepare()
+        self.prepare(chroot)
 
         if not chroot:
             self.make_initramfs()
 
-    def prepare(self):
+    def prepare(self, chroot):
         """
         Prepare directory structure for System A.
         We create an empty tmpfs, unpack stage0-posix.
@@ -54,7 +53,7 @@ class SysA(SysGeneral):
         # sysb must be added to sysa as it is another initramfs stage
         self.sysb()
 
-        if self.chroot:
+        if chroot:
             self.sysc()
 
     def sysa(self):

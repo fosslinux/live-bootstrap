@@ -110,8 +110,7 @@ def main():
 
     system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
             tmpdir=args.tmpdir, chroot=args.chroot)
-    system_b = SysB(arch=args.arch, preserve_tmp=args.preserve,
-            chroot=args.chroot)
+    system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
                     tmpdir=args.tmpdir, chroot=args.chroot,
                     sysb_dir=system_b.sys_dir, sysc_tmp=system_c.tmp_dir)
