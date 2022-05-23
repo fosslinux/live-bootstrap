@@ -16,6 +16,9 @@ class SysC(SysGeneral):
     """
     Class responsible for preparing sources for System C.
     """
+
+    dev_name = None
+
     # pylint: disable=too-many-instance-attributes
     def __init__(self, arch, preserve_tmp, tmpdir, chroot):
         self.git_dir = os.path.dirname(os.path.join(__file__))
@@ -35,8 +38,8 @@ class SysC(SysGeneral):
 
     def __del__(self):
         if not self.preserve_tmp:
-            if not self.chroot:
-                print(f"Deleting {self.dev_name}")
+            if self.dev_name is not None:
+                print(f"Detaching {self.dev_name}")
                 run('sudo', 'losetup', '-d', self.dev_name)
 
         super().__del__()
