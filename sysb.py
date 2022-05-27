@@ -12,10 +12,9 @@ class SysB(SysGeneral):
     """
     Class responsible for preparing sources for System B.
     """
-    def __init__(self, arch, preserve_tmp, chroot):
+    def __init__(self, arch, preserve_tmp):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
-        self.chroot = chroot
 
         self.sys_dir = os.path.join(self.git_dir, 'sysb')

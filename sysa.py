@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """System A"""
 # SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
@@ -17,7 +18,7 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, tmpdir, chroot, sysb_dir, sysc_tmp):
+    def __init__(self, arch, preserve_tmp, tmpdir, sysb_dir, sysc_tmp):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -27,26 +28,22 @@ class SysA(SysGeneral):
             self.tmp_dir = os.path.join(self.git_dir, 'tmp')
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysa')
-            os.mkdir(self.tmp_dir)
         self.sysa_dir = os.path.join(self.tmp_dir, 'sysa')
         self.base_dir = self.sysa_dir
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         self.sysb_dir = sysb_dir
         self.sysc_tmp = sysc_tmp
-        self.chroot = chroot
 
-        self.prepare()
-
-        if not chroot:
-            self.make_initramfs()
-
-    def prepare(self):
+    def prepare(self, mount_tmpfs, copy_sysc, create_initramfs):
         """
         Prepare directory structure for System A.
-        We create an empty tmpfs, unpack stage0-posix.
+        We create an empty tmp directory, unpack stage0-posix.
         Rest of the files are unpacked into more structured directory /sysa
         """
-        self.mount_tmpfs()
+        if mount_tmpfs:
+            self.mount_tmpfs()
+        else:
+            os.mkdir(self.tmp_dir)
 
         self.stage0_posix()
         self.sysa()
@@ -54,8 +51,11 @@ class SysA(SysGeneral):
         # sysb must be added to sysa as it is another initramfs stage
         self.sysb()
 
-        if self.chroot:
+        if copy_sysc:
             self.sysc()
+
+        if create_initramfs:
+            self.make_initramfs()
 
     def sysa(self):
         """Copy in sysa files for sysa."""

@@ -7,6 +7,7 @@ you can run bootstap inside chroot.
 """
 
 # SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
@@ -30,7 +31,7 @@ def create_configuration_file(args):
     config_path = os.path.join('sysa', 'bootstrap.cfg')
     with open(config_path, "w", encoding="utf_8") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
-        config.write("CHROOT=" + str(args.chroot) + "\n")
+        config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
         config.write("DISK=sda1\n")
 
@@ -45,7 +46,9 @@ def main():
                         default="x86")
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
                         action="store_true")
-    parser.add_argument("-p", "--preserve", help="Do not unmount temporary dir",
+    parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
+                        action="store_true")
+    parser.add_argument("-p", "--preserve", help="Do not remove temporary dir",
                         action="store_true")
     parser.add_argument("-t", "--tmpdir", help="Temporary directory")
     parser.add_argument("--force-timestamps",
@@ -81,6 +84,8 @@ def main():
             count += 1
         if args.chroot:
             count += 1
+        if args.bwrap:
+            count += 1
         if args.minikernel:
             count += 1
         if args.bare_metal:
@@ -109,11 +114,10 @@ def main():
             pass
 
     system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
-            tmpdir=args.tmpdir, chroot=args.chroot)
-    system_b = SysB(arch=args.arch, preserve_tmp=args.preserve,
-            chroot=args.chroot)
+                    tmpdir=args.tmpdir)
+    system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir, chroot=args.chroot,
+                    tmpdir=args.tmpdir,
                     sysb_dir=system_b.sys_dir, sysc_tmp=system_c.tmp_dir)
 
     bootstrap(args, system_a, system_b, system_c)
@@ -129,14 +133,58 @@ print(shutil.which('chroot'))
         chroot_binary = run('sudo', 'python3', '-c', find_chroot,
                             capture_output=True).stdout.decode().strip()
 
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=False)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=True,
+                         create_initramfs=False)
+
         # sysa
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
 
+    elif args.bwrap:
+        system_c.prepare(mount_tmpfs=False,
+                         create_disk_image=False)
+        system_a.prepare(mount_tmpfs=False,
+                         copy_sysc=True,
+                         create_initramfs=False)
+
+        # sysa
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+        run('bwrap', '--unshare-user',
+                     '--uid', '0',
+                     '--gid', '0',
+                     '--cap-add', 'CAP_SYS_CHROOT', # Required for chroot from sysa to sysc
+                     '--clearenv',
+                     '--setenv', 'PATH', '/usr/bin',
+                     '--bind', system_a.tmp_dir, '/',
+                     '--dir', '/dev',
+                     '--dev-bind', '/dev/null', '/dev/null',
+                     '--dev-bind', '/dev/zero', '/dev/zero',
+                     '--dev-bind', '/dev/random', '/dev/random',
+                     '--dev-bind', '/dev/urandom', '/dev/urandom',
+                     '--dir', '/sysc/dev',
+                     '--dev-bind', '/dev/null', '/sysc/dev/null',
+                     '--dev-bind', '/dev/zero', '/sysc/dev/zero',
+                     '--dev-bind', '/dev/random', '/sysc/dev/random',
+                     '--dev-bind', '/dev/urandom', '/sysc/dev/urandom',
+                     '--proc', '/sysc/proc',
+                     '--bind', '/sys', '/sysc/sys',
+                     '--tmpfs', '/sysc/tmp',
+                     init)
+
     elif args.minikernel:
         if os.path.isdir('kritis-linux'):
             shutil.rmtree('kritis-linux')
+
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=True)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=False,
+                         create_initramfs=True)
 
         run('git', 'clone',
             '--depth', '1', '--branch', 'v0.7',
@@ -155,11 +203,23 @@ print(shutil.which('chroot'))
             '--log', '/tmp/bootstrap.log')
 
     elif args.bare_metal:
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=True)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=False,
+                         create_initramfs=True)
+
         print("Please:")
         print("  1. Take sysa/tmp/initramfs and your kernel, boot using this.")
         print("  2. Take sysc/tmp/disk.img and put this on a writable storage medium.")
 
     else:
+        system_c.prepare(mount_tmpfs=True,
+                         create_disk_image=True)
+        system_a.prepare(mount_tmpfs=True,
+                         copy_sysc=False,
+                         create_initramfs=True)
+
         run(args.qemu_cmd,
             '-enable-kvm',
             '-m', str(args.qemu_ram) + 'M',
