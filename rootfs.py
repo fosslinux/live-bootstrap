@@ -60,6 +60,8 @@ def main():
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
                         action="store_true")
+    parser.add_argument("-r", "--repo",
+                        help="Path to prebuilt binary packages.", nargs=None)
 
     # QEMU arguments
     parser.add_argument("-q", "--qemu", help="Use QEMU",
@@ -137,7 +139,8 @@ print(shutil.which('chroot'))
                          create_disk_image=False)
         system_a.prepare(mount_tmpfs=True,
                          copy_sysc=True,
-                         create_initramfs=False)
+                         create_initramfs=False,
+                         repo_path=args.repo)
 
         # sysa
         arch = stage0_arch_map.get(args.arch, args.arch)
