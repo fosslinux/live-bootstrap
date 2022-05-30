@@ -73,6 +73,47 @@ _grep() {
     fi
 }
 
+get_revision() {
+    local pkg=$1
+    cd "${SRCDIR}/repo"
+    # Get revision (n time this package has been built)
+    revision="$(echo "${pkg}"*)"
+    # Different versions of bash
+    if [ "${revision}" = "${pkg}*" ] || [ -z "${revision}" ]; then
+        revision=0
+    else
+        revision="${revision##*_}"
+        revision="${revision%%.*}"
+        revision=$((++revision))
+    fi
+}
+
+# Installs binary packages from an earlier run
+# This is useful to speed up development cycle
+bin_preseed() {
+    if [ -d "${SRCDIR}/repo-preseeded" ]; then
+        get_revision "${pkg}"
+        cd "${SRCDIR}/repo-preseeded"
+        if src_checksum "${pkg}" $((revision)); then
+            echo "${pkg}: installing prebuilt package."
+            if [[ "${pkg}" == bash-* ]]; then
+                # tar does not like overwriting running bash
+                # shellcheck disable=SC2153
+                rm -f "${PREFIX}/bin/bash" "${PREFIX}/bin/sh"
+            fi
+            mv "${pkg}_${revision}"* ../repo
+            # shellcheck disable=SC2144
+            if [ -f *-repodata ]; then
+                mv -- *-repodata ../repo
+            fi
+            cd "${SRCDIR}/repo"
+            src_apply "${pkg}" $((revision))
+            cd "${SOURCES}"
+            return
+        fi
+    fi
+}
+
 # Common build steps
 # Build function provides a few common stages with default implementation
 # that can be overridden on per package basis in the build script.
@@ -85,6 +126,8 @@ build() {
     pkg=$1
     script_name=${2:-${pkg}.sh}
     dirname=${4:-${pkg}}
+
+    bin_preseed
 
     cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
@@ -126,23 +169,12 @@ build() {
     build_stage=src_install
     call $build_stage
 
-    cd /usr/src/repo
-    # Get revision (n time this package has been built)
-    revision="$(echo "${pkg}"*)"
-    # Different versions of bash
-    if [ "${revision}" = "${pkg}*" ] || [ -z "${revision}" ]; then
-        revision=0
-    else
-        revision="${revision##*_}"
-        revision="${revision%%.*}"
-        revision=$((++revision))
-    fi
-
     echo "${pkg}: creating package."
+    get_revision "${pkg}"
     cd "${DESTDIR}"
     src_pkg
 
-    src_checksum
+    src_checksum "${pkg}" "${revision}"
 
     echo "${pkg}: cleaning up."
     rm -rf "${SOURCES}/${pkg}/build"
@@ -150,7 +182,7 @@ build() {
     mkdir -p "${DESTDIR}"
 
     echo "${pkg}: installing package."
-    src_apply
+    src_apply "${pkg}" "${revision}"
 
     echo "${pkg}: build successful"
 
@@ -271,17 +303,21 @@ src_pkg() {
 }
 
 src_checksum() {
+    local pkg=$1 revision=$2
+    local rval=0
     if ! [ "$UPDATE_CHECKSUMS" = True ] ; then
-        echo "${pkg}: checksumming created package."
         # We avoid using pipes as that is not supported by initial sha256sum from mescc-tools-extra
         local checksum_file=/tmp/checksum
         _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" > "${checksum_file}"
-        sha256sum -c "${checksum_file}"
+        echo "${pkg}: checksumming created package."
+        sha256sum -c "${checksum_file}" || rval=$?
         rm "${checksum_file}"
     fi
+    return "${rval}"
 }
 
 src_apply() {
+    local pkg="${1}" revision="${2}"
     if command -v xbps-install >/dev/null 2>&1; then
         xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
     else

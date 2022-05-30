@@ -34,7 +34,7 @@ class SysA(SysGeneral):
         self.sysb_dir = sysb_dir
         self.sysc_tmp = sysc_tmp
 
-    def prepare(self, mount_tmpfs, copy_sysc, create_initramfs):
+    def prepare(self, mount_tmpfs, copy_sysc, create_initramfs, repo_path):
         """
         Prepare directory structure for System A.
         We create an empty tmp directory, unpack stage0-posix.
@@ -53,6 +53,10 @@ class SysA(SysGeneral):
 
         if copy_sysc:
             self.sysc()
+
+        if repo_path:
+            repo_dir = os.path.join(self.tmp_dir, 'usr', 'src', 'repo-preseeded')
+            shutil.copytree(repo_path, repo_dir)
 
         if create_initramfs:
             self.make_initramfs()
