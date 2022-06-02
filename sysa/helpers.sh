@@ -109,9 +109,10 @@ bin_preseed() {
             cd "${SRCDIR}/repo"
             src_apply "${pkg}" $((revision))
             cd "${SOURCES}"
-            return
+            return 0
         fi
     fi
+    return 1
 }
 
 # Common build steps
@@ -127,7 +128,7 @@ build() {
     script_name=${2:-${pkg}.sh}
     dirname=${4:-${pkg}}
 
-    bin_preseed
+    bin_preseed && return
 
     cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
