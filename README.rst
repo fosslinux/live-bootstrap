@@ -166,8 +166,20 @@ Python is no longer a requirement to set up the build system. The
 repository is almost completely in a form where it can be used as the
 source of a build.
 
-1. Copy sysa/stage0-posix/src/* to the root of the repository.
-2. Copy sysa/stage0-posix/src/bootstrap-seeds/POSIX/x86/kaem-optional-seed
+1. Download required tarballs into ``sysa/distfiles`` and ``sysc/distfiles``.
+2. Copy sysa/stage0-posix/src/* to the root of the repository.
+3. Copy sysa/stage0-posix/src/bootstrap-seeds/POSIX/x86/kaem-optional-seed
    to init in the root of the repository.
-3. Create a CPIO archive (eg, ``cpio --format newc --create --directory . > ../initramfs``).
-4. Boot your initramfs and kernel.
+4. Copy sysa/after.kaem to after.kaem
+5. Create a CPIO archive (eg, ``cpio --format newc --create --directory . > ../initramfs``).
+6. Boot your initramfs and kernel.
+
+chroot builds
+~~~~~~~~~~~~~
+
+For chroot  based bootstraps you can skip creation of initramfs and instead start bootstrap with
+
+``sudo chroot . bootstrap-seeds/POSIX/x86/kaem-optional-seed``
+
+It is also recommended to copy everything to a new directory as bootstrapping messes up with files
+in git repository and cannot be re-run again.
