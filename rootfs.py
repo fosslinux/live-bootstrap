@@ -152,7 +152,8 @@ print(shutil.which('chroot'))
                          create_disk_image=False)
         system_a.prepare(mount_tmpfs=False,
                          copy_sysc=True,
-                         create_initramfs=False)
+                         create_initramfs=False,
+                         repo_path=args.repo)
 
         # sysa
         arch = stage0_arch_map.get(args.arch, args.arch)
