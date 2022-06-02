@@ -19,17 +19,15 @@ TCC_PKG=tcc-0.9.26-1136-g5bba73cc
 
 # Unpack
 mkdir src build
-cp ${distfiles}/${TCC_TAR}.tar.gz src
-cp ${distfiles}/${MES_PKG}.tar.gz src
 
 cd src
-ungz ${TCC_TAR}.tar.gz
-ungz ${MES_PKG}.tar.gz
+ungz --file ${distfiles}/${TCC_TAR}.tar.gz --output ${TCC_TAR}.tar
+ungz --file ${distfiles}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
 cd ..
 
 cd build
-untar ../src/${TCC_TAR}.tar
-untar ../src/${MES_PKG}.tar
+untar --file ../src/${TCC_TAR}.tar
+untar --non-strict --file ../src/${MES_PKG}.tar
 
 # Create config.h
 cd ${TCC_PKG}

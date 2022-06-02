@@ -19,11 +19,9 @@ diff -r -N -U3 Makefile Makefile
  
  # Where you want it installed when you do 'make install'
  PREFIX=/usr/local
-@@ -44,13 +44,7 @@
- 	$(CC) $(CFLAGS) $(LDFLAGS) -o bzip2recover bzip2recover.o
+@@ -44,11 +44,6 @@
  
  libbz2.a: $(OBJS)
--	rm -f libbz2.a
  	$(AR) cq libbz2.a $(OBJS)
 -	@if ( test -f $(RANLIB) -o -f /usr/bin/ranlib -o \
 -		-f /bin/ranlib -o -f /usr/ccs/bin/ranlib ) ; then \

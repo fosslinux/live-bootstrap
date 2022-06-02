@@ -10,9 +10,9 @@ mkdir build src
 cd build 
 
 # Extract
-cp ${distfiles}/${pkg}.tar.gz ../src/
-ungz ../src/${pkg}.tar.gz
-untar ../src/${pkg}.tar
+ungz --file ${distfiles}/${pkg}.tar.gz --output ../src/${pkg}.tar
+untar --file ../src/${pkg}.tar
+rm ../src/${pkg}.tar
 cd ${pkg}
 
 # Create .h files
