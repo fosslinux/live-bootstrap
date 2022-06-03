@@ -131,9 +131,9 @@ this script the next time")
         else:
             raise TypeError("url must be either a string or a list of strings")
         # Install base files
-        for i, _ in enumerate(urls):
+        for i, uri in enumerate(urls):
             # Download files into cache directory
-            self.download_file(urls[i], outputs[i])
+            self.download_file(uri, outputs[i])
 
     def make_initramfs(self):
         """Package binary bootstrap seeds and sources into initramfs."""
