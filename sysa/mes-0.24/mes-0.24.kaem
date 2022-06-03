@@ -34,6 +34,9 @@ cp ../files/config.h ${MES_PREFIX}/include/mes
 
 cd ${MES_PREFIX}
 
+# Remove pregenerated files
+rm mes/module/mes/psyntax.pp mes/module/mes/psyntax.pp.header
+
 # These files are symlinked in the repo
 cp mes/module/srfi/srfi-9-struct.mes mes/module/srfi/srfi-9.mes
 cp mes/module/srfi/srfi-9/gnu-struct.mes mes/module/srfi/srfi-9/gnu.mes
