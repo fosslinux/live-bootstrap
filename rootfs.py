@@ -188,7 +188,8 @@ print(shutil.which('chroot'))
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
                          copy_sysc=False,
-                         create_initramfs=True)
+                         create_initramfs=True,
+                         repo_path=args.repo)
 
         run('git', 'clone',
             '--depth', '1', '--branch', 'v0.7',
@@ -211,7 +212,8 @@ print(shutil.which('chroot'))
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
                          copy_sysc=False,
-                         create_initramfs=True)
+                         create_initramfs=True,
+                         repo_path=args.repo)
 
         print("Please:")
         print("  1. Take sysa/tmp/initramfs and your kernel, boot using this.")
@@ -222,7 +224,8 @@ print(shutil.which('chroot'))
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
                          copy_sysc=False,
-                         create_initramfs=True)
+                         create_initramfs=True,
+                         repo_path=args.repo)
 
         run(args.qemu_cmd,
             '-enable-kvm',
