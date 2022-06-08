@@ -50,7 +50,6 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/cut \
         /usr/bin/echo \
         /usr/bin/expand \
-        /usr/bin/factor \
         /usr/bin/false \
         /usr/bin/fmt \
         /usr/bin/fold \
