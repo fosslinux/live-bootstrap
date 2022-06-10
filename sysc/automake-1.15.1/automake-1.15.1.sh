@@ -11,6 +11,8 @@ src_prepare() {
     ./bootstrap
 
     rm doc/automake-history.info doc/automake.info*
+
+    cp "${PREFIX}/bin/help2man" doc/
 }
 
 src_configure() {
