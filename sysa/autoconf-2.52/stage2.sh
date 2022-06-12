@@ -6,6 +6,10 @@ src_prepare() {
     rm doc/standards.info doc/autoconf.info
     rm -- Makefile.in */Makefile.in
     rm configure
+
+    # Do not use pregenerated manpages
+    sed -i '/SUBDIRS/s/ man//' Makefile.am
+
     autoconf-2.52
     automake-1.4
 

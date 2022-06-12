@@ -6,6 +6,9 @@ src_prepare() {
     rm bin/autoconf.in
     rm doc/standards.info
 
+    # Do not use pregenerated manpages
+    sed -i '/SUBDIRS/s/ man//' Makefile.am
+
     autoreconf-2.57 -f
 
     # Install autoconf data files into versioned directory

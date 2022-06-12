@@ -406,8 +406,7 @@ autoconf 2.53
 =============
 
 We now start bootstrapping newer versions of autoconf. Version 2.53 now uses ``perl``.
-In order to build it with ``autoconf-2.52`` we have to patch it a bit and then do
-a second unpatched build with newly built ``autoconf-2.53``.
+In order to build it with ``autoconf-2.52`` we have to patch it a bit.
 
 automake 1.7
 ============
@@ -419,11 +418,6 @@ autoconf 2.54
 =============
 
 More ``autoconf``.
-
-automake 1.7
-============
-
-Rebuild ``automake`` with ``autoconf-2.54``.
 
 autoconf 2.55
 =============
@@ -469,7 +463,7 @@ automake 1.9.6
 ==============
 
 Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
-to make it buildable with 1.8.5. Then we rebuild ``automake-1.9`` with itself.
+to make it buildable with 1.8.5.
 
 findutils 4.2.33
 ================

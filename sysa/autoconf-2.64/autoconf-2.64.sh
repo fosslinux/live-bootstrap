@@ -3,7 +3,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    rm doc/standards.info
+    rm doc/standards.info man/*.1
+
     autoreconf-2.61 -f
 
     # Install autoconf data files into versioned directory

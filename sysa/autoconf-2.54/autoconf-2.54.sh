@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021-2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -6,6 +6,10 @@ src_prepare() {
     rm bin/autoconf.in
     rm -- Makefile.in */Makefile.in */*/Makefile.in aclocal.m4 configure
     rm doc/standards.info doc/autoconf.info
+
+    # Do not use pregenerated manpages
+    sed -i '/SUBDIRS/s/ man//' Makefile.am
+
     aclocal-1.7
     sed -i 's/2.54/2.53/' aclocal.m4
     cat config/m4.m4 >> aclocal.m4
