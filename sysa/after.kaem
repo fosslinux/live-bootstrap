@@ -38,6 +38,7 @@ cp /${ARCH_DIR}/bin/sha256sum ${bindir}/sha256sum
 cp /${ARCH_DIR}/bin/ungz ${bindir}/ungz
 cp /${ARCH_DIR}/bin/untar ${bindir}/untar
 cp /${ARCH_DIR}/bin/cp ${bindir}/cp
+cp /${ARCH_DIR}/bin/replace ${bindir}/replace
 cp /${ARCH_DIR}/bin/rm ${bindir}/rm
 
 chmod 755 ${bindir}/blood-elf
@@ -54,6 +55,7 @@ chmod 755 ${bindir}/mkdir
 chmod 755 ${bindir}/sha256sum
 chmod 755 ${bindir}/ungz
 chmod 755 ${bindir}/untar
+chmod 755 ${bindir}/replace
 chmod 755 ${bindir}/rm
 
 PATH=${bindir}
