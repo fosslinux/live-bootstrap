@@ -150,7 +150,7 @@ class SysC(SysGeneral):
         self.get_file("https://artfiles.org/openssl.org/source/old/1.1.1/openssl-1.1.1l.tar.gz")
 
         # curl 7.83.0
-        self.get_file("https://master.dl.sourceforge.net/project/curl.mirror/curl-7_83_0/curl-7.83.0.tar.xz?viasf=1")
+        self.get_file("https://master.dl.sourceforge.net/project/curl.mirror/curl-7_83_0/curl-7.83.0.tar.xz")
 
         # ca-certificates-3.78
         self.get_file("https://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/nss-3.78.tar.gz")

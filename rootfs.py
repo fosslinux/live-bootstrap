@@ -175,14 +175,14 @@ print(shutil.which('chroot'))
                      '--dev-bind', '/dev/zero', '/dev/zero',
                      '--dev-bind', '/dev/random', '/dev/random',
                      '--dev-bind', '/dev/urandom', '/dev/urandom',
-                     '--dir', '/sysc/dev',
-                     '--dev-bind', '/dev/null', '/sysc/dev/null',
-                     '--dev-bind', '/dev/zero', '/sysc/dev/zero',
-                     '--dev-bind', '/dev/random', '/sysc/dev/random',
-                     '--dev-bind', '/dev/urandom', '/sysc/dev/urandom',
-                     '--proc', '/sysc/proc',
-                     '--bind', '/sys', '/sysc/sys',
-                     '--tmpfs', '/sysc/tmp',
+                     '--dir', '/sysc_image/dev',
+                     '--dev-bind', '/dev/null', '/sysc_image/dev/null',
+                     '--dev-bind', '/dev/zero', '/sysc_image/dev/zero',
+                     '--dev-bind', '/dev/random', '/sysc_image/dev/random',
+                     '--dev-bind', '/dev/urandom', '/sysc_image/dev/urandom',
+                     '--proc', '/sysc_image/proc',
+                     '--bind', '/sys', '/sysc_image/sys',
+                     '--tmpfs', '/sysc_image/tmp',
                      init)
 
     elif args.minikernel:
