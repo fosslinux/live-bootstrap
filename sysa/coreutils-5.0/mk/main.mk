@@ -86,6 +86,13 @@ LIB_SRC = acl posixtm posixver strftime getopt getopt1 hash hash-pjw addext argm
 
 LIB_OBJECTS = $(addprefix $(LIB_DIR)/, $(addsuffix .o, $(LIB_SRC)))
 
+$(SRC_DIR)/false.c: $(SRC_DIR)/true.c
+	cp $< $@
+	sed -i -e s/true/false/g \
+          -e s/success/failure/g \
+          -e 's/(EXIT_SUCCESS)/(EXIT_FAILURE)/g' \
+          $@
+
 $(LIB_DIR)/libfettish.a: $(LIB_OBJECTS)
 	$(AR) cr $@ $^
 
