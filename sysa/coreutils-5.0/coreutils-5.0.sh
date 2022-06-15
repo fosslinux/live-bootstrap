@@ -15,6 +15,8 @@ src_prepare() {
     # Rebuild pregenerated file
     rm -f src/false.c
 
+    rm -f src/dircolors.h
+
     # Bison pre-generated file
     rm lib/getdate.c
 
