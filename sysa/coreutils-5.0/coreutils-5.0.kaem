@@ -24,6 +24,11 @@ cp lib/ftw_.h lib/ftw.h
 cp lib/search_.h lib/search.h
 catm config.h
 
+# We will rebuild it
+rm src/false.c
+
+rm src/dircolors.h
+
 patch -Np0 -i ../../patches/modechange.patch
 patch -Np0 -i ../../patches/mbstate.patch
 patch -Np0 -i ../../patches/ls-strcmp.patch

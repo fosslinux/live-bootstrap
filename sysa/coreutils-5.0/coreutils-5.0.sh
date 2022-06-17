@@ -12,6 +12,11 @@ src_prepare() {
     cp lib/search_.h lib/search.h
     touch config.h
 
+    # Rebuild pregenerated file
+    rm -f src/false.c
+
+    rm -f src/dircolors.h
+
     # Bison pre-generated file
     rm lib/getdate.c
 
