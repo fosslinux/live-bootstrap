@@ -28,16 +28,21 @@ create_hdx() {
 
 # All the various structures that don't exist but needed to mount
 mkdir -p /etc /dev
-populate_device_nodes ""
+populate_device_nodes
 create_hdx
 
 ask_disk() {
     echo
     echo "What disk would you like to use for live-bootstrap?"
-    echo "(live-bootstrap assumes you have pre-prepared the disk)."
-    echo "Please provide in format sdxx (as you would find under /dev)."
+    echo "This disk may have pre-prepared sources on it."
+    echo "If there is no partition we will make one".
+    echo "Please provide in format sdxx (as you would find under /dev),"
+    echo "or sdx if it is a blank disk. An ext4 partition is expected on"
+    echo "existing disks."
     echo "You can type 'list' to get a list of disks to help you figure"
     echo "out which is the right disk."
+    echo "NO WARRANTY IS PROVIDED FOR BUGGY BEHAVIOUR, INCLUDING THAT"
+    echo "REGARDING DISKS & DATA."
     echo
     read -r DISK
 
@@ -57,6 +62,18 @@ if [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
     echo "DISK=${DISK}" >> /usr/src/bootstrap.cfg
 fi
 
+# Is it a full disk, and not a partition
+# shellcheck disable=SC2012
+if [ $(($(ls -l "/dev/${DISK}" | sed "s/.*, *//" | sed "s/ .*//") % 8)) -eq 0 ]; then
+    if ! fdisk -l "/dev/${DISK}" | grep -qE "${DISK}p?[0-9]" ; then
+        echo "Creating partition table and partition"
+        echo ";" | sfdisk "/dev/${DISK}"
+        mkfs.ext4 "/dev/${DISK}1"
+        DISK="${DISK}1"
+    fi
+fi
+echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
+
 PREFIX=/usr
 SOURCES="${PREFIX}/src"
 SYSC=/sysc
@@ -68,7 +85,7 @@ mount -t ext4 "/dev/${DISK}" /sysc
 
 # Copy over appropriate data
 echo "Copying data into sysc"
-sys_transfer "${SYSC}" gzip patch
+sys_transfer "${SYSC}" /sysc_src gzip patch
 sync
 
 # switch_root into sysc 1. for simplicity 2. to avoid kexecing again

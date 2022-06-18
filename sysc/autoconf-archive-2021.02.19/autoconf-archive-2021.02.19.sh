@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://mirrors.kernel.org/gnu/autoconf-archive/autoconf-archive-2021.02.19.tar.xz"
+
 src_prepare() {
     autoreconf-2.69 -fi
 }

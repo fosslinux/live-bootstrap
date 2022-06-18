@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="https://www.hboehm.info/gc/gc_source/gc-8.0.4.tar.gz"
+
 src_prepare() {
     autoreconf-2.71 -fi
 }

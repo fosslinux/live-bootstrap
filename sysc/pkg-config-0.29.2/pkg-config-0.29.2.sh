@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://gentoo.osuosl.org/distfiles/pkg-config-0.29.2.tar.gz"
+
 src_prepare() {
     autoreconf -fi
 }

@@ -51,13 +51,17 @@ build bison-3.4.2
 
 build perl-5.10.1
 
-build dist-3.5-236 '' '' dist-d1de81f
+build dist-3.5-236
 
 build perl-5.32.1
 
 build libarchive-3.5.2
 
 build openssl-1.1.1l
+
+build ca-certificates-3.78 '' '' nss-3.78
+
+build curl-7.83.0
 
 build zlib-1.2.12
 
@@ -104,4 +108,7 @@ echo "Bootstrapping completed."
 
 cd "/"
 
-exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" bash after.sh
+if [ -e after.sh ]; then
+    FILE=after.sh
+fi
+exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" bash ${FILE}

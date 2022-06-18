@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="https://mirrors.kernel.org/gnu/gperf/gperf-3.1.tar.gz"
+
 src_prepare() {
     find . -name '*.info*' -delete
 

@@ -3,7 +3,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_DISTFILES="perl-5f2dc80.tar.bz2"
+urls="http://www.cpan.org/src/5.0/perl-5.32.1.tar.xz
+  http://deb.debian.org/debian/pool/main/p/perl/perl_5.32.1.orig-regen-configure.tar.gz"
 
 src_prepare() {
     default
@@ -26,8 +27,8 @@ src_prepare() {
 
     # Regenerate configure + config_h.SH
     rm -f Configure config_h.SH
-    ln -s ../perl-5f2dc80/regen-configure/.package .
-    ln -s ../perl-5f2dc80/regen-configure/U .
+    ln -s ../metaconfig-5.32.1\~rc1/.package .
+    ln -s ../metaconfig-5.32.1\~rc1/U .
     metaconfig -m
 }
 

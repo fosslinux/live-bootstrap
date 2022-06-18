@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="http://ixpeering.dl.sourceforge.net/project/lzmautils/xz-5.0.5.tar.bz2"
+
 src_prepare() {
     default
 

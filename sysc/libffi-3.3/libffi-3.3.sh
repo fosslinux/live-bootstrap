@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz"
+
 src_prepare() {
     find . -name '*.info*' -delete
 

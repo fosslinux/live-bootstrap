@@ -18,7 +18,7 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, tmpdir, sysb_dir, sysc_tmp):
+    def __init__(self, arch, preserve_tmp, external_sources, tmpdir, sysb_dir, sysc_dir):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
@@ -32,9 +32,10 @@ class SysA(SysGeneral):
         self.base_dir = self.sysa_dir
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         self.sysb_dir = sysb_dir
-        self.sysc_tmp = sysc_tmp
+        self.sysc_dir = sysc_dir
+        self.external_sources = external_sources
 
-    def prepare(self, mount_tmpfs, copy_sysc, create_initramfs, repo_path):
+    def prepare(self, mount_tmpfs, create_initramfs, repo_path):
         """
         Prepare directory structure for System A.
         We create an empty tmp directory, unpack stage0-posix.
@@ -51,8 +52,7 @@ class SysA(SysGeneral):
         # sysb must be added to sysa as it is another initramfs stage
         self.sysb()
 
-        if copy_sysc:
-            self.sysc()
+        self.sysc(create_initramfs)
 
         if repo_path:
             repo_dir = os.path.join(self.tmp_dir, 'usr', 'src', 'repo-preseeded')
@@ -66,17 +66,21 @@ class SysA(SysGeneral):
         self.get_packages()
 
         shutil.copytree(self.sys_dir, os.path.join(self.tmp_dir, 'sysa'),
-                shutil.ignore_patterns('tmp'))
+                ignore=shutil.ignore_patterns('tmp'))
 
     def sysb(self):
         """Copy in sysb files for sysb."""
         shutil.copytree(self.sysb_dir, os.path.join(self.tmp_dir, 'sysb'),
-                shutil.ignore_patterns('tmp'))
+                ignore=shutil.ignore_patterns('tmp'))
 
-    def sysc(self):
+    def sysc(self, create_initramfs):
         """Copy in sysc files for sysc."""
-        shutil.copytree(self.sysc_tmp, os.path.join(self.tmp_dir, 'sysc'),
-                shutil.ignore_patterns('tmp'))
+        if create_initramfs:
+            ignore = shutil.ignore_patterns('tmp', 'distfiles')
+        else:
+            ignore = shutil.ignore_patterns('tmp')
+        shutil.copytree(self.sysc_dir, os.path.join(self.tmp_dir, 'sysc'),
+                ignore=ignore)
 
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
@@ -95,7 +99,6 @@ class SysA(SysGeneral):
     # pylint: disable=line-too-long,too-many-statements
     def get_packages(self):
         """Prepare remaining sources"""
-
         # mes-0.24 snapshot
         self.get_file(["http://git.savannah.gnu.org/cgit/mes.git/snapshot/mes-aa5f1533e1736a89e60d2c34c2a0ab3b01f8d037.tar.gz",
                        "https://download.savannah.gnu.org/releases/nyacc/nyacc-1.00.2.tar.gz"],
@@ -259,6 +262,22 @@ class SysA(SysGeneral):
 
         # util-linux 2.19.1
         self.get_file("https://mirrors.kernel.org/pub/linux/utils/util-linux/v2.19/util-linux-2.19.1.tar.gz")
+
+        # curl 7.83.0
+        self.get_file("https://curl.se/download/curl-7.83.0.tar.bz2")
+
+        # e2fsprogs 1.45.7
+        self.get_file(["https://mirrors.edge.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.45.7/e2fsprogs-1.45.7.tar.gz",
+            "https://www.unicode.org/Public/11.0.0/ucd/CaseFolding.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/DerivedAge.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/extracted/DerivedCombiningClass.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/DerivedCoreProperties.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/NormalizationCorrections.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/NormalizationTest.txt",
+            "https://www.unicode.org/Public/11.0.0/ucd/UnicodeData.txt"])
+
+        # dhcpcd 9.4.1
+        self.get_file("https://roy.marples.name/git/dhcpcd/snapshot/dhcpcd-9.4.1.tar.gz")
 
         # kexec-tools 2.0.22
         self.get_file("https://github.com/horms/kexec-tools/archive/refs/tags/v2.0.22.tar.gz",

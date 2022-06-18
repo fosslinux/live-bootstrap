@@ -7,8 +7,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 set -e
-# shellcheck source=sysa/helpers.sh
-. helpers.sh
 
 # shellcheck disable=SC2154
 export PREFIX="${prefix}"
@@ -19,19 +17,17 @@ export DESTDIR=/tmp/destdir
 # shellcheck disable=SC2154
 export SRCDIR="${srcdir}"
 
+# shellcheck source=sysa/helpers.sh
+. helpers.sh
+
 create_sysb() {
     # Copy everything in
     echo "Creating sysb rootfs"
-    mkdir -p "/sysb${PREFIX}"
-    for d in bin include lib libexec share src; do
-        # Minimise RAM (storage) use - use hard links
-        cp -rl "${PREFIX}/${d}" "/sysb${PREFIX}/${d}"
-    done
-    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "/sysb/${SRCDIR}"
-    populate_device_nodes /sysb
+    sys_transfer /sysb_image /sysb gzip patch
+    cp -rl /sysc /sysb_image/sysc_src
     echo "Creating sysb initramfs"
-    gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb
-    rm -rf /sysb # Cleanup
+    gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb_image
+    rm -rf /sysb /sysb_image # Cleanup
 }
 
 go_sysb() {
@@ -222,9 +218,15 @@ build gcc-4.0.4 pass2.sh
 
 build util-linux-2.19.1
 
+build e2fsprogs-1.45.7
+
+build dhcpcd-9.4.1 '' '' dhcpcd-dhcpcd-9.4.1-1663155
+
 build kbd-1.15
 
 build make-3.82
+
+build curl-7.83.0
 
 # Clear up some RAM space
 grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/"$//' | while read -r p ; do
@@ -246,6 +248,6 @@ if [ "${CHROOT}" = False ]; then
 fi
 
 # In chroot mode transition directly into System C.
-SYSC=/sysc
-sys_transfer "${SYSC}" gzip patch
+SYSC=/sysc_image
+sys_transfer "${SYSC}" /sysc gzip patch
 exec chroot "${SYSC}" /init

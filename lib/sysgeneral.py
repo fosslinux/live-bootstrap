@@ -95,9 +95,13 @@ this script the next time")
             os.mkdir(self.cache_dir)
 
         # Actually download the file
+        headers = {
+                "Accept-Encoding": "identity"
+        }
         if not os.path.isfile(abs_file_name):
             print(f"Downloading: {file_name}")
-            response = requests.get(url, allow_redirects=True, stream=True)
+            response = requests.get(url, allow_redirects=True, stream=True,
+                    headers=headers)
             if response.status_code == 200:
                 with open(abs_file_name, 'wb') as target_file:
                     target_file.write(response.raw.read())

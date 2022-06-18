@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+Disable gettext, which we do not have at this time, along with pkg-config.
+
+--- configure.ac	2022-05-18 15:12:53.633061872 +1000
++++ configure.ac	2022-05-18 19:09:13.351790066 +1000
+@@ -860,20 +860,7 @@
+ dnl
+ MAKEFILE_LIBRARY=$srcdir/lib/Makefile.library
+ AC_SUBST_FILE(MAKEFILE_LIBRARY)
+-dnl
+-dnl Add internationalization support, using gettext.
+-dnl
+-GETTEXT_PACKAGE=e2fsprogs
+-PACKAGE=e2fsprogs
+-VERSION="$E2FSPROGS_VERSION"
+-VERSION=0.14.1
+-AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [package name for gettext])
+-AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [version for gettext])
+-AC_SUBST(GETTEXT_PACKAGE)
+-AC_SUBST(PACKAGE)
+-AC_SUBST(VERSION)
+ 
+-AM_GNU_GETTEXT
+ dnl
+ dnl End of configuration options
+ dnl
+@@ -1637,15 +1624,6 @@
+   [with_udev_rules_dir=yes])
+ AS_IF([test "x${with_udev_rules_dir}" != "xno"],
+   [
+-	AS_IF([test "x${with_udev_rules_dir}" = "xyes"],
+-	  [
+-		PKG_CHECK_MODULES([udev], [udev],
+-		  [
+-			with_udev_rules_dir="$($PKG_CONFIG --variable=udevdir udev)/rules.d"
+-		  ], [
+-			with_udev_rules_dir=""
+-		  ])
+-	  ])
+ 	AC_MSG_CHECKING([for udev rules dir])
+ 	pkg_udev_rules_dir="${with_udev_rules_dir}"
+ 	AS_IF([test -n "${pkg_udev_rules_dir}"],
+@@ -1708,16 +1686,6 @@
+   [with_systemd_unit_dir=yes])
+ AS_IF([test "x${with_systemd_unit_dir}" != "xno"],
+   [
+-	AS_IF([test "x${with_systemd_unit_dir}" = "xyes"],
+-	  [
+-		PKG_CHECK_MODULES([systemd], [systemd],
+-		  [
+-			with_systemd_unit_dir="$($PKG_CONFIG --variable=systemdsystemunitdir systemd)"
+-		  ], [
+-			with_systemd_unit_dir=""
+-		  ])
+-		m4_pattern_allow([^PKG_(MAJOR|MINOR|BUILD|REVISION)$])
+-	  ])
+ 	AC_MSG_CHECKING([for systemd system unit dir])
+ 	systemd_system_unit_dir="${with_systemd_unit_dir}"
+ 	AS_IF([test -n "${systemd_system_unit_dir}"],
+--- Makefile.in	2022-05-18 19:41:37.596959349 +1000
++++ Makefile.in	2022-05-18 19:41:41.109050161 +1000
+@@ -20,7 +20,7 @@
+ @ALL_CMT@EXT2FS_LIB_SUBDIR= lib/ext2fs
+ 
+ LIB_SUBDIRS=lib/et lib/ss $(E2P_LIB_SUBDIR) $(UUID_LIB_SUBDIR) \
+-	$(BLKID_LIB_SUBDIR) $(SUPPORT_LIB_SUBDIR) $(EXT2FS_LIB_SUBDIR) intl
++	$(BLKID_LIB_SUBDIR) $(SUPPORT_LIB_SUBDIR) $(EXT2FS_LIB_SUBDIR)
+ 
+ PROG_SUBDIRS=e2fsck $(DEBUGFS_DIR) misc $(RESIZE_DIR) tests/progs po \
+ 	$(E2SCRUB_DIR)
+@@ -22,7 +22,7 @@
+ LIB_SUBDIRS=lib/et lib/ss $(E2P_LIB_SUBDIR) $(UUID_LIB_SUBDIR) \
+ 	$(BLKID_LIB_SUBDIR) $(SUPPORT_LIB_SUBDIR) $(EXT2FS_LIB_SUBDIR)
+ 
+-PROG_SUBDIRS=e2fsck $(DEBUGFS_DIR) misc $(RESIZE_DIR) tests/progs po \
++PROG_SUBDIRS=e2fsck $(DEBUGFS_DIR) misc $(RESIZE_DIR) tests/progs \
+ 	$(E2SCRUB_DIR)
+ 
+ SUBDIRS=util $(LIB_SUBDIRS) $(PROG_SUBDIRS) tests

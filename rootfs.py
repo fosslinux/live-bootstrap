@@ -11,7 +11,7 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 
 import argparse
 import os
@@ -33,8 +33,12 @@ def create_configuration_file(args):
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
-        config.write("DISK=sda1\n")
+        if args.external_sources:
+            config.write("DISK=sda1\n")
+        else:
+            config.write("DISK=sda\n")
 
+# pylint: disable=too-many-statements
 def main():
     """
     A few command line arguments to customize bootstrap.
@@ -56,6 +60,9 @@ def main():
                         action="store_true")
     parser.add_argument("--update-checksums",
                         help="Update checksum files.",
+                        action="store_true")
+    parser.add_argument("--external-sources",
+                        help="Download sources externally from live-bootstrap.",
                         action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
@@ -116,11 +123,11 @@ def main():
             pass
 
     system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir)
+                    tmpdir=args.tmpdir, external_sources=args.external_sources)
     system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir,
-                    sysb_dir=system_b.sys_dir, sysc_tmp=system_c.tmp_dir)
+                    tmpdir=args.tmpdir, external_sources=args.external_sources,
+                    sysb_dir=system_b.sys_dir, sysc_dir=system_c.sys_dir)
 
     bootstrap(args, system_a, system_b, system_c)
 
@@ -138,7 +145,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=False)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=True,
                          create_initramfs=False,
                          repo_path=args.repo)
 
@@ -151,7 +157,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=False,
                          create_disk_image=False)
         system_a.prepare(mount_tmpfs=False,
-                         copy_sysc=True,
                          create_initramfs=False,
                          repo_path=args.repo)
 
@@ -170,14 +175,14 @@ print(shutil.which('chroot'))
                      '--dev-bind', '/dev/zero', '/dev/zero',
                      '--dev-bind', '/dev/random', '/dev/random',
                      '--dev-bind', '/dev/urandom', '/dev/urandom',
-                     '--dir', '/sysc/dev',
-                     '--dev-bind', '/dev/null', '/sysc/dev/null',
-                     '--dev-bind', '/dev/zero', '/sysc/dev/zero',
-                     '--dev-bind', '/dev/random', '/sysc/dev/random',
-                     '--dev-bind', '/dev/urandom', '/sysc/dev/urandom',
-                     '--proc', '/sysc/proc',
-                     '--bind', '/sys', '/sysc/sys',
-                     '--tmpfs', '/sysc/tmp',
+                     '--dir', '/sysc_image/dev',
+                     '--dev-bind', '/dev/null', '/sysc_image/dev/null',
+                     '--dev-bind', '/dev/zero', '/sysc_image/dev/zero',
+                     '--dev-bind', '/dev/random', '/sysc_image/dev/random',
+                     '--dev-bind', '/dev/urandom', '/sysc_image/dev/urandom',
+                     '--proc', '/sysc_image/proc',
+                     '--bind', '/sys', '/sysc_image/sys',
+                     '--tmpfs', '/sysc_image/tmp',
                      init)
 
     elif args.minikernel:
@@ -187,7 +192,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=False,
                          create_initramfs=True,
                          repo_path=args.repo)
 
@@ -211,7 +215,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=False,
                          create_initramfs=True,
                          repo_path=args.repo)
 
@@ -223,7 +226,6 @@ print(shutil.which('chroot'))
         system_c.prepare(mount_tmpfs=True,
                          create_disk_image=True)
         system_a.prepare(mount_tmpfs=True,
-                         copy_sysc=False,
                          create_initramfs=True,
                          repo_path=args.repo)
 
@@ -232,6 +234,7 @@ print(shutil.which('chroot'))
             '-m', str(args.qemu_ram) + 'M',
             '-no-reboot',
             '-hda', system_c.dev_name,
+            '-nic', 'user,ipv6=off,model=e1000',
             '-kernel', args.kernel,
             '-initrd', system_a.initramfs_path,
             '-nographic',

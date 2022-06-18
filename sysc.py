@@ -6,13 +6,13 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 
 import os
-import shutil
 import getpass
 
 from lib.utils import mount, umount, create_disk, run, copytree
 from lib.sysgeneral import SysGeneral
 
 # pylint: disable=consider-using-with
+# pylint: disable=too-many-instance-attributes
 class SysC(SysGeneral):
     """
     Class responsible for preparing sources for System C.
@@ -20,11 +20,11 @@ class SysC(SysGeneral):
 
     dev_name = None
 
-    # pylint: disable=too-many-instance-attributes
-    def __init__(self, arch, preserve_tmp, tmpdir):
+    def __init__(self, arch, preserve_tmp, tmpdir, external_sources):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
+        self.external_sources = external_sources
 
         self.sys_dir = os.path.join(self.git_dir, 'sysc')
         self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
@@ -55,22 +55,26 @@ class SysC(SysGeneral):
         if create_disk_image:
             # Create + mount a disk for QEMU to use
             disk_path = os.path.join(self.tmp_dir, 'disk.img')
-            self.dev_name = create_disk(disk_path, "msdos", "ext4", '8G')
-            rootfs_dir = os.path.join(self.tmp_dir, 'mnt')
-            os.mkdir(rootfs_dir)
-            mount(self.dev_name + "p1", rootfs_dir, 'ext4')
+            if self.external_sources:
+                self.dev_name = create_disk(disk_path, "msdos", "ext4", '8G')
+                rootfs_dir = os.path.join(self.tmp_dir, 'mnt')
+                os.mkdir(rootfs_dir)
+                mount(self.dev_name + "p1", rootfs_dir, 'ext4')
+            else:
+                self.dev_name = create_disk(disk_path, "none", "ext4", '8G')
             # Use chown to allow executing user to access it
             run('sudo', 'chown', getpass.getuser(), self.dev_name)
-            run('sudo', 'chown', getpass.getuser(), rootfs_dir)
+            if self.external_sources:
+                run('sudo', 'chown', getpass.getuser(), rootfs_dir)
         else:
             rootfs_dir = self.tmp_dir
 
-        self.get_packages()
-
-        copytree(self.sys_dir, rootfs_dir, ignore=shutil.ignore_patterns("tmp"))
+        if self.external_sources:
+            self.get_packages()
+            copytree(self.cache_dir, os.path.join(rootfs_dir, "distfiles"))
 
         # Unmount tmp/mnt if it was mounted
-        if create_disk_image:
+        if create_disk_image and self.external_sources:
             umount(rootfs_dir)
 
     # pylint: disable=line-too-long,too-many-statements
@@ -80,7 +84,7 @@ class SysC(SysGeneral):
         self.get_file("https://mirrors.kernel.org/gnu/bash/bash-5.1.tar.gz")
 
         # xz 5.0.5
-        self.get_file("https://tukaani.org/xz/xz-5.0.5.tar.bz2")
+        self.get_file("https://ixpeering.dl.sourceforge.net/project/lzmautils/xz-5.0.5.tar.bz2")
 
         # automake 1.11.2
         self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.11.2.tar.bz2")
@@ -100,7 +104,7 @@ class SysC(SysGeneral):
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
 
         # pkg-config 0.29.2
-        self.get_file("https://pkgconfig.freedesktop.org/releases/pkg-config-0.29.2.tar.gz")
+        self.get_file("http://gentoo.osuosl.org/distfiles/pkg-config-0.29.2.tar.gz")
 
         # make 4.2.1
         self.get_file("https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz")
@@ -133,22 +137,26 @@ class SysC(SysGeneral):
 
         # dist 3.5-236
         # Debian's version is used because upstream is not to be found (dead?)
-        self.get_file("https://salsa.debian.org/perl-team/interpreter/dist/-/archive/d1de81f/dist-d1de81f.tar.gz",
-                      output="dist-3.5-236.tar.gz")
+        self.get_file("http://deb.debian.org/debian/pool/main/d/dist/dist_3.5-236.orig.tar.gz")
 
         # perl 5.32.1
         self.get_file(["https://www.cpan.org/src/5.0/perl-5.32.1.tar.xz",
-                       "https://salsa.debian.org/perl-team/interpreter/perl/-/archive/5f2dc80/perl-5f2dc80.tar.bz2"])
+                       "http://deb.debian.org/debian/pool/main/p/perl/perl_5.32.1.orig-regen-configure.tar.gz"])
 
         # libarchive-3.5.2
         self.get_file("https://libarchive.org/downloads/libarchive-3.5.2.tar.xz")
 
         # openssl-1.1.1l
-        self.get_file("https://www.openssl.org/source/openssl-1.1.1l.tar.gz")
+        self.get_file("https://artfiles.org/openssl.org/source/old/1.1.1/openssl-1.1.1l.tar.gz")
+
+        # curl 7.83.0
+        self.get_file("https://master.dl.sourceforge.net/project/curl.mirror/curl-7_83_0/curl-7.83.0.tar.xz")
+
+        # ca-certificates-3.78
+        self.get_file("https://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/nss-3.78.tar.gz")
 
         # xbps 0.59.1
-        self.get_file("https://github.com/void-linux/xbps/archive/refs/tags/0.59.1.tar.gz",
-                       output="xbps-0.59.1.tar.gz")
+        self.get_file("https://github.com/void-linux/xbps/archive/refs/tags/0.59.1.tar.gz")
 
         # autoconf 2.71
         self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.71.tar.xz")
@@ -193,5 +201,4 @@ class SysC(SysGeneral):
         # guile 3.0.7
         self.get_file(["https://mirrors.kernel.org/gnu/guile/guile-3.0.7.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-901694b9.tar.gz",
-                       "https://github.com/schierlm/guile-psyntax-bootstrapping/archive/refs/tags/guile-3.0.7.tar.gz"],
-                       output=["guile-3.0.7.tar.xz", "gnulib-901694b9.tar.gz", "guile-psyntax-bootstrapping.tar.gz"])
+                       "https://github.com/schierlm/guile-psyntax-bootstrapping/archive/refs/tags/guile-3.0.7.tar.gz"])

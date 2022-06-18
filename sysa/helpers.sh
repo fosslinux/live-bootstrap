@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # shellcheck source=/dev/null
-. bootstrap.cfg
+. "${SOURCES}/bootstrap.cfg"
 
 # Get a list of files
 get_files() {
@@ -147,6 +147,10 @@ build() {
         . "${build_script}"
     fi
 
+    echo "${pkg}: getting sources."
+    build_stage=src_get
+    call $build_stage
+
     echo "${pkg}: unpacking source."
     build_stage=src_unpack
     call $build_stage
@@ -192,13 +196,36 @@ build() {
     unset -f src_unpack src_prepare src_configure src_compile src_install
 }
 
+# Default get function that downloads source tarballs.
+default_src_get() {
+    # shellcheck disable=SC2153
+    cd "${DISTFILES}"
+    # shellcheck disable=SC2154
+    if [ -n "${urls}" ] && command -v curl >/dev/null 2>&1; then
+        # shellcheck disable=SC2153
+        for i in ${urls}; do
+            if ! [ -e "$(basename "${i}")" ]; then
+                curl -L "${i}" --output "$(basename "${i}")"
+                grep "$(basename "${i}")" "${SOURCES}/SHA256SUMS.sources" | sha256sum -c
+            fi
+        done
+    fi
+    cd -
+}
+
 # Default unpacking function that unpacks all source tarballs.
 default_src_unpack() {
-    distfiles=${EXTRA_DISTFILES}
-    # shellcheck disable=SC2153
-    for f in "${DISTFILES}/${pkg}."*; do
-        distfiles="$(basename "$f") ${distfiles}"
-    done
+    distfiles="${EXTRA_DISTFILES}"
+    if [ -z "${urls}" ]; then
+        # shellcheck disable=SC2153
+        for f in "${DISTFILES}/${pkg}."*; do
+            distfiles="$(basename "$f") ${distfiles}"
+        done
+    else
+        for i in ${urls}; do
+            distfiles="$(basename "${i}") ${distfiles}"
+        done
+    fi
 
     # Check for new tar
     # shellcheck disable=SC2153
@@ -377,22 +404,23 @@ canonicalise_all_files_timestamp() {
 
 populate_device_nodes() {
     # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
-    mkdir -p "${1}/dev"
-    test -c "${1}/dev/null" || (rm -f "${1}/dev/null" &&
-                                mknod -m 666 "${1}/dev/null" c 1 3)
-    test -c "${1}/dev/zero" || mknod -m 666 "${1}/dev/zero" c 1 5
-    test -c "${1}/dev/random" || mknod -m 444 "${1}/dev/random" c 1 8
-    test -c "${1}/dev/urandom" || mknod -m 444 "${1}/dev/urandom" c 1 9
+    mkdir -p "/dev"
+    test -c "/dev/null" || (rm -f "/dev/null" &&
+                                mknod -m 666 "/dev/null" c 1 3)
+    test -c "/dev/zero" || mknod -m 666 "/dev/zero" c 1 5
+    test -c "/dev/random" || mknod -m 444 "/dev/random" c 1 8
+    test -c "/dev/urandom" || mknod -m 444 "/dev/urandom" c 1 9
 
     if [ "${CHROOT}" = False ]; then
-        test -c "${1}/dev/ptmx" || mknod -m 666 "${1}/dev/ptmx" c 5 2
-        test -c "${1}/dev/tty" || mknod -m 666 "${1}/dev/tty" c 5 0
-        test -c "${1}/dev/console" || mknod -m 666 "${1}/dev/console" c 5 1
+        test -c "/dev/ptmx" || mknod -m 666 "/dev/ptmx" c 5 2
+        test -c "/dev/tty" || mknod -m 666 "/dev/tty" c 5 0
+        test -c "/dev/console" || mknod -m 666 "/dev/console" c 5 1
     fi
 }
 
 sys_transfer() {
     local dest=$1
+    local sys_sources=$2
 
     mkdir -p "${dest}/${PREFIX}/bin" "${dest}/${PREFIX}/src"
 
@@ -400,11 +428,13 @@ sys_transfer() {
     cp "${PREFIX}/bin/bash" "${PREFIX}/bin/tar" "${PREFIX}/bin/bzip2" "${dest}${PREFIX}/bin/"
 
     # Transfer misc files
-    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "${dest}/"
+    cp "${SOURCES}/helpers.sh" "${SOURCES}/SHA256SUMS.pkgs" "${SOURCES}/bootstrap.cfg" "${dest}/${PREFIX}/src"
 
-    cp -r "${PREFIX}/src/" "${dest}${PREFIX}/"
+    cp -r "${sys_sources}/"* "${dest}/${PREFIX}/src"
+    cp -f "${sys_sources}/init" "${dest}/"
+    cp -r "${PREFIX}/src/repo" "${dest}/${PREFIX}/src"
 
-    shift
+    shift 2
     # Copy additional binaries
     set -- "${@/#/${PREFIX}/bin/}"
     cp "$@" "${dest}${PREFIX}/bin/"

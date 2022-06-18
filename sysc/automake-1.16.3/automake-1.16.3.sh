@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+urls="https://mirrors.kernel.org/gnu/automake/automake-1.16.3.tar.xz"
+
 src_prepare() {
     ./bootstrap
 
