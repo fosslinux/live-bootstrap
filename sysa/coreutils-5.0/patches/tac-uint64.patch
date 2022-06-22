@@ -1,0 +1,27 @@
+SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+uint64_t is not supported in tcc 0.9.27
+--- lib/tempname.c     2002-12-01 10:40:32.000000000 +0000
++++ lib/tempname.c     2022-06-22 20:57:37.449423973 +0100
+@@ -231,8 +231,8 @@
+ {
+   int len;
+   char *XXXXXX;
+-  static uint64_t value;
+-  uint64_t random_time_bits;
++  static unsigned long long value;
++  unsigned long long random_time_bits;
+   unsigned int count;
+   int fd = -1;
+   int save_errno = errno;
+@@ -278,7 +278,7 @@
+ 
+   for (count = 0; count < attempts; value += 7777, ++count)
+     {
+-      uint64_t v = value;
++      unsigned long long v = value;
+ 
+       /* Fill in the random bits.  */
+       XXXXXX[0] = letters[v % 62];
