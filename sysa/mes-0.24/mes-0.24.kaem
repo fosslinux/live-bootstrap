@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# SPDX-FileCopyrightText: 2020-2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2020-2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2020-2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -13,9 +13,6 @@ MES_MAX_ARENA=20000000
 MES_STACK=6000000
 MES=${bindir}/mes-m2
 libdir=${MES_PREFIX}/lib
-
-cp files/mescc.scm ${bindir}/
-chmod 755 ${bindir}/mescc.scm
 
 # Unpack
 mkdir src build
@@ -47,6 +44,18 @@ mkdir bin m2
 kaem --verbose --strict --file kaem.run
 cp bin/mes-m2 ${bindir}/mes-m2
 chmod 755 ${bindir}/mes-m2
+
+# Create mescc.scm
+mescc_in=scripts/mescc.scm.in
+replace --file ${mescc_in} --output ${mescc_in} --match-on @prefix@ --replace-with ${prefix}
+replace --file ${mescc_in} --output ${mescc_in} --match-on @VERSION@ --replace-with ${MES_VERSION}
+replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_cpu@ --replace-with ${ARCH}
+replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_kernel@ --replace-with linux
+
+mescc_scm=${bindir}/mescc.scm
+cp ${mescc_in} ${mescc_scm}
+chmod 755 ${mescc_scm}
+
 
 # Recompile Mes and Mes C library using mes-m2 bootstrapped Mes
 
@@ -231,7 +240,7 @@ mescc src/symbol.c
 mescc src/vector.c
 
 # Link everything into new mes executable
-${MES} -e main ${bindir}/mescc.scm -- -L ${libdir} -nostdlib -o ${bindir}/mes -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
+${MES} -e main ${mescc_scm} -- -L ${libdir} -nostdlib -o ${bindir}/mes -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
 
 # Make directories
 mkdir ${prefix}/lib/linux ${incdir}/mes ${incdir}/sys ${incdir}/linux
