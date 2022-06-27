@@ -34,6 +34,7 @@ patch -Np0 -i ../../patches/mbstate.patch
 patch -Np0 -i ../../patches/ls-strcmp.patch
 patch -Np0 -i ../../patches/touch-getdate.patch
 patch -Np0 -i ../../patches/touch-dereference.patch
+patch -Np0 -i ../../patches/tac-uint64.patch
 
 # Build and install
 make -f Makefile PREFIX=${prefix}
@@ -89,6 +90,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/unlink \
         /usr/bin/wc \
         /usr/bin/whoami \
+        /usr/bin/tac \
         /usr/bin/test \
         /usr/bin/touch \
         /usr/bin/true \

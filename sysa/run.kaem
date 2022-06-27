@@ -11,7 +11,8 @@ set -ex
 
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
-MES_PKG=mes-0.24
+MES_VERSION=0.24
+MES_PKG=mes-${MES_VERSION}
 MES_PKG_DIR=mes-aa5f1533e1736a89e60d2c34c2a0ab3b01f8d037
 MES_PREFIX=${sysa}/${MES_PKG}/build/${MES_PKG_DIR}
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${sysa}/${MES_PKG}/build/${NYACC_PKG}/module
