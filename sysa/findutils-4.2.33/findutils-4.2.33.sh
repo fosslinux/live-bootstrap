@@ -10,7 +10,7 @@ src_prepare() {
 
     default
 
-    autoreconf-2.61 -f
+    AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 autoreconf-2.61 -f
 
     # Pre-built texinfo files
     rm doc/find.info

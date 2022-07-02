@@ -6,7 +6,7 @@
 src_prepare() {
     default
 
-    autoreconf -fi
+    AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {

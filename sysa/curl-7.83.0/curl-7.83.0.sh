@@ -15,7 +15,7 @@ src_prepare() {
     rm config.guess config.sub ltmain.sh
     libtoolize
 
-    autoreconf -fi
+    AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {

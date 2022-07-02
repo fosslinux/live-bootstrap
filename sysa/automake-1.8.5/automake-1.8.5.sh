@@ -5,11 +5,11 @@
 src_prepare() {
     rm doc/automake.info*
 
-    autoreconf-2.59 -f
+    AUTOCONF=autoconf-2.59 autoreconf-2.59 -f
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}"
+    AUTOCONF=autoconf-2.59 ./configure --prefix="${PREFIX}"
 }
 
 src_compile() {

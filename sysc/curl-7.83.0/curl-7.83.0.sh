@@ -17,7 +17,7 @@ src_prepare() {
     rm config.guess config.sub ltmain.sh
     libtoolize
 
-    autoreconf -fi
+    autoreconf-2.69 -fi
 }
 
 src_configure() {

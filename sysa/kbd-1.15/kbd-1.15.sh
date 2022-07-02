@@ -12,7 +12,7 @@ src_prepare() {
     sed -i -e 's/u_char/unsigned char/g' \
         -e 's/u_short/unsigned short/g' src/dumpkeys.c src/loadkeys.y
 
-    AUTOPOINT=true autoreconf -fi
+    AUTOPOINT=true AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {

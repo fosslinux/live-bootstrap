@@ -8,13 +8,13 @@ urls="http://mirrors.kernel.org/gnu/automake/automake-1.11.2.tar.bz2"
 src_prepare() {
     default
 
-    rm doc/amhello-1.0.tar.gz doc/automake.info*
+    rm -f doc/amhello-1.0.tar.gz doc/automake.info* doc/aclocal-1.11.1 doc/automake-1.11.1
 
-    ./bootstrap
+    AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 ./bootstrap
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}"
+    AUTORECONF=autoreconf-2.64 AUTOM4TE=autom4te-2.64 AUTOHEADER=autoheader-2.64 AUTOCONF=autoconf-2.64 ./configure --prefix="${PREFIX}"
 }
 
 src_compile() {

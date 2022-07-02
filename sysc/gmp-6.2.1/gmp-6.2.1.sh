@@ -10,7 +10,7 @@ src_prepare() {
     # Remove bison and flex generated files
     rm demos/calc/calc.{c,h} demos/calc/calclex.c
 
-    autoreconf -f -i
+    autoreconf-2.69 -fi
 
     # Pre-built texinfo files
     find . -name '*.info*' -delete

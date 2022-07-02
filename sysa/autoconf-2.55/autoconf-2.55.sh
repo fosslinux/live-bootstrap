@@ -10,7 +10,7 @@ src_prepare() {
     # Do not use pregenerated manpages
     sed -i '/SUBDIRS/s/ man//' Makefile.am
 
-    autoreconf-2.54
+    AUTOCONF=autoconf-2.54 autoreconf-2.54
 
     # Install autoconf data files into versioned directory
     for file in */*/Makefile.in */Makefile.in Makefile.in; do
@@ -32,9 +32,4 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
-
-    ln -sf "${PREFIX}/bin/autoconf-2.55" "${DESTDIR}${PREFIX}/bin/autoconf"
-    ln -sf "${PREFIX}/bin/autoheader-2.55" "${DESTDIR}${PREFIX}/bin/autoheader"
-    ln -sf "${PREFIX}/bin/autom4te-2.55" "${DESTDIR}${PREFIX}/bin/autom4te"
-    ln -sf "${PREFIX}/bin/autoreconf-2.55" "${DESTDIR}${PREFIX}/bin/autoreconf"
 }

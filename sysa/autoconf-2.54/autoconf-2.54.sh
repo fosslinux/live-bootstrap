@@ -38,6 +38,4 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
-
-    ln -sf "${PREFIX}"/bin/autoconf-2.54 "${DESTDIR}${PREFIX}"/bin/autoconf
 }

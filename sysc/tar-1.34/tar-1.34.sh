@@ -12,7 +12,7 @@ src_prepare() {
     . ../../import-gnulib.sh
 
     # We don't have autopoint from gettext yet
-    AUTOPOINT=true autoreconf -fi
+    AUTOPOINT=true autoreconf-2.69 -fi
 
     # Remove bison pregenerated file
     rm gnu/parse-datetime.c

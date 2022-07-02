@@ -20,7 +20,7 @@ src_prepare() {
     for dir in intl libcpp; do
         cd $dir
         rm aclocal.m4
-        aclocal-1.9 --acdir=../config
+        AUTOM4TE=autom4te-2.61 aclocal-1.9 --acdir=../config
         cd ..
     done
     for dir in fixincludes gcc intl libcpp libiberty; do

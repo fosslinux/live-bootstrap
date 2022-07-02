@@ -6,7 +6,7 @@ src_prepare() {
     default
 
     # We don't have gettext (autopoint) yet.
-    AUTOPOINT=true autoreconf -fi
+    AUTOPOINT=true AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {

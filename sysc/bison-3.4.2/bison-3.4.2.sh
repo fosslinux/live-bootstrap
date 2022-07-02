@@ -20,7 +20,7 @@ src_prepare() {
 
     ../../import-gnulib.sh
 
-    AUTOPOINT=true autoreconf -fi
+    AUTOPOINT=true autoreconf-2.69 -fi
 }
 
 src_configure() {

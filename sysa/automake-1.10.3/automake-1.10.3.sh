@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -8,15 +8,16 @@ src_prepare() {
 
     rm doc/amhello-1.0.tar.gz doc/automake.info*
 
-    ./bootstrap
+    sed -i 's/autoreconf/autoreconf-2.61/' doc/Makefile.am
+    AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 AUTOHEADER=autoheader-2.61 AUTORECONF=autoreconf-2.61 ./bootstrap
 }
 
 src_configure() {
-    ./configure CC=tcc --prefix="${PREFIX}"
+    AUTORECONF=autoreconf-2.61 AUTOHEADER=autoheader-2.61 AUTOCONF=autoconf-2.61 AUTOM4TE=autom4te-2.61 ./configure CC=tcc --prefix="${PREFIX}"
 }
 
 src_compile() {
-    make MAKEINFO=true CC=tcc
+    AUTOM4TE=autom4te-2.61 make MAKEINFO=true CC=tcc
 }
 
 src_install() {

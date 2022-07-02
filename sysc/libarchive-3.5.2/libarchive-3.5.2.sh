@@ -7,7 +7,7 @@ urls="http://libarchive.org/downloads/libarchive-3.5.2.tar.xz"
 src_prepare() {
     default
 
-    autoreconf -fi
+    autoreconf-2.69 -fi
 }
 
 src_configure() {
