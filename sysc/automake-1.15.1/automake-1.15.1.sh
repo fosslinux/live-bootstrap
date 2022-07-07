@@ -27,5 +27,6 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
+    rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
     rm "${DESTDIR}${PREFIX}/share/doc/automake/amhello-1.0.tar.gz"
 }

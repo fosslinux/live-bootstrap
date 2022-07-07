@@ -7,7 +7,7 @@ urls="http://download.nust.na/pub2/openpkg1/sources/DST/flex/flex-2.5.33.tar.gz"
 src_prepare() {
     default
 
-    AUTOPOINT=true autoreconf-2.69 -fi
+    AUTOPOINT=true AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 
     # Remove pregenerated files
     rm parse.c parse.h scan.c 

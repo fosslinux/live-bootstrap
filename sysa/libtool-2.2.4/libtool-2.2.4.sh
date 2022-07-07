@@ -10,7 +10,7 @@ src_prepare() {
 
     rm -f doc/*.info
 
-    AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 AUTOHEADER=autoheader-2.61 AUTORECONF=autoreconf-2.61 ./bootstrap
+    AUTOMAKE=automake-1.9 ACLOCAL=aclocal-1.9 AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 AUTOHEADER=autoheader-2.61 AUTORECONF=autoreconf-2.61 ./bootstrap
 }
 
 src_configure() {

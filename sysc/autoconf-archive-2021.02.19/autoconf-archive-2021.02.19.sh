@@ -5,7 +5,7 @@
 urls="http://mirrors.kernel.org/gnu/autoconf-archive/autoconf-archive-2021.02.19.tar.xz"
 
 src_prepare() {
-    autoreconf-2.69 -fi
+    AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 }
 
 src_configure() {

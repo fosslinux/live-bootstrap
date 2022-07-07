@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -20,5 +20,5 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
+    rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
 }
-

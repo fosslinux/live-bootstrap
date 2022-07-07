@@ -5,7 +5,7 @@
 src_prepare() {
     rm doc/standards.info man/*.1
 
-    AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 autoreconf-2.61 -f
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 autoreconf-2.61 -f
 
     # Install autoconf data files into versioned directory
     for file in */*/Makefile.in */Makefile.in Makefile.in; do

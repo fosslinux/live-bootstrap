@@ -6,7 +6,7 @@
 src_prepare() {
     default
 
-    autoreconf-2.59 -f
+    ACLOCAL=aclocal-1.8 AUTOMAKE=automeke-1.8 autoreconf-2.59 -f
 
     rm help2man.info
     touch help2man.info

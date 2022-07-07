@@ -7,7 +7,7 @@ urls="http://libarchive.org/downloads/libarchive-3.5.2.tar.xz"
 src_prepare() {
     default
 
-    autoreconf-2.69 -fi
+    AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 }
 
 src_configure() {
