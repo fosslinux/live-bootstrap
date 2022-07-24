@@ -16,7 +16,7 @@ src_prepare() {
     rm config/config.guess config/config.sub config/ltmain.sh
     libtoolize -i
 
-    autoreconf -fi
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 
     # Remove bison parser generated
     rm intl/plural.y

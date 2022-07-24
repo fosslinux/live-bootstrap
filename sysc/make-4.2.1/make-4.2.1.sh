@@ -11,7 +11,7 @@ src_prepare() {
     touch doc/make.info
 
     # We don't have autopoint from gettext yet
-    AUTOPOINT=true autoreconf -fi
+    AUTOPOINT=true AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15  autoreconf-2.69 -fi
 }
 
 src_configure() {

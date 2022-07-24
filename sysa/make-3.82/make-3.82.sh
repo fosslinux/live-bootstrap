@@ -9,7 +9,7 @@ src_prepare() {
     touch doc/make.info
 
     # We don't have autopoint from gettext yet
-    AUTOPOINT=true autoreconf -fi
+    AUTOPOINT=true AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {

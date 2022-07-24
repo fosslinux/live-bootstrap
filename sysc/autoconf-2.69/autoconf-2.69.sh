@@ -7,7 +7,7 @@ urls="http://mirrors.kernel.org/gnu/autoconf/autoconf-2.69.tar.xz"
 
 src_prepare() {
     rm doc/standards.info man/*.1
-    autoreconf-2.64 -f
+    AUTOMAKE=automake-1.11 ACLOCAL=aclocal-1.11 autoreconf-2.64 -f
 
     # Install autoconf data files into versioned directory
     for file in */*/Makefile.in */Makefile.in Makefile.in; do
@@ -25,9 +25,4 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
-
-    ln -sf "${PREFIX}/bin/autoconf-2.69" "${DESTDIR}${PREFIX}/bin/autoconf"
-    ln -sf "${PREFIX}/bin/autoheader-2.69" "${DESTDIR}${PREFIX}/bin/autoheader"
-    ln -sf "${PREFIX}/bin/autom4te-2.69" "${DESTDIR}${PREFIX}/bin/autom4te"
-    ln -sf "${PREFIX}/bin/autoreconf-2.69" "${DESTDIR}${PREFIX}/bin/autoreconf"
 }

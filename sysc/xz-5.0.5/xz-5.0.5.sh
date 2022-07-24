@@ -7,7 +7,7 @@ urls="http://ixpeering.dl.sourceforge.net/project/lzmautils/xz-5.0.5.tar.bz2"
 src_prepare() {
     default
 
-    autoreconf-2.64 -f
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -f
 }
 
 src_configure() {

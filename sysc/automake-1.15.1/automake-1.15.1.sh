@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -10,7 +10,7 @@ src_prepare() {
 
     rm doc/amhello-1.0.tar.gz
 
-    ./bootstrap
+    AUTOCONF=autoconf-2.69 AUTOM4TE=autom4te-2.69 ./bootstrap
 
     rm doc/automake-history.info doc/automake.info*
 
@@ -18,7 +18,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}"
+    AUTORECONF=autoreconf-2.69 AUTOM4TE=autom4te-2.69 AUTOHEADER=autoheader-2.69 AUTOCONF=autoconf-2.69 ./configure --prefix="${PREFIX}"
 }
 
 src_compile() {
@@ -27,5 +27,6 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
+    rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
     rm "${DESTDIR}${PREFIX}/share/doc/automake/amhello-1.0.tar.gz"
 }

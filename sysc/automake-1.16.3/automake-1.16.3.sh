@@ -5,7 +5,7 @@
 urls="https://mirrors.kernel.org/gnu/automake/automake-1.16.3.tar.xz"
 
 src_prepare() {
-    ./bootstrap
+    AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 AUTOCONF=autoconf-2.69 AUTOM4TE=autom4te-2.69 ./bootstrap
 
     rm doc/automake-history.info doc/automake.info*
 
@@ -13,7 +13,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}"
+    AUTOCONF=autoconf-2.69 ./configure --prefix="${PREFIX}"
 }
 
 src_compile() {
