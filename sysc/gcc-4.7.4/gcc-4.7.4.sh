@@ -127,7 +127,9 @@ src_install() {
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}" MAKEINFO=true
     make -C build/libgcc install DESTDIR="${DESTDIR}" host_subdir=build
     make -C build/libstdc++-v3 install DESTDIR="${DESTDIR}"
+    ln -s gcc "${DESTDIR}${PREFIX}/bin/cc"
     cp gcc/gsyslimits.h "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/syslimits.h"
+
     # Very strange mis-versoning error
     mkdir -p "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/"
     mv "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include/"* "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/"
