@@ -56,7 +56,7 @@ src_prepare() {
     for dir in $(find . -mindepth 2 -maxdepth 2 -name Makefile.am | sed 's#/Makefile.am##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
         pushd "$dir"
         rm Makefile.in
-        AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 automake-1.11
+        AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 automake-1.11 --add-missing
         popd
     done
 
