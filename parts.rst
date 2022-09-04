@@ -785,6 +785,13 @@ GCC 4.7.4 is the last version written in C. This time we build both C and C++ ba
 C++ backend has some dependency on ``gperf`` which is written in C++. Fortunately, it is
 easy to patch it out and resulting ``g++`` compiler is capable of building ``gperf``.
 
+binutils 2.38
+=============
+
+This version of binutils provides a more comprehensive set of programming tools for
+creating and managing binary programs. It also includes modern versions of the ``ld``
+linker, the ``as`` assembler and the ``ar`` program.
+
 gperf 3.1
 =========
 

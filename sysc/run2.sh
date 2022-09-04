@@ -82,6 +82,8 @@ build texinfo-6.7
 
 build gcc-4.7.4
 
+build binutils-2.38
+
 build gperf-3.1
 
 build libunistring-0.9.10

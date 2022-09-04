@@ -186,6 +186,9 @@ class SysC(SysGeneral):
         # gcc 4.7.4
         self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2")
 
+        # binutils 2.38
+        self.get_file("https://mirrors.kernel.org/gnu/binutils/binutils-2.38.tar.xz")
+
         # gperf 3.1
         self.get_file("https://mirrors.kernel.org/gnu/gperf/gperf-3.1.tar.gz")
 

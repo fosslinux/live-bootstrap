@@ -5,6 +5,7 @@ e8a6eb9d28ddcba8ffef3fa211653239e9bf239aba6a01a6b7cfc7ceaec69cbd  autoconf-archi
 af6ba39142220687c500f79b4aa2f181d9b24e4f8d8ec497cea4ba26c64bedaf  automake-1.15.1.tar.xz
 ff2bf7656c4d1c6fdda3b8bebb21f09153a736bcba169aaf65eab25fa113bf3a  automake-1.16.3.tar.xz
 cc012bc860406dcf42f64431bcd3d2fa7560c02915a601aba9cd597a39329baa  bash-5.1.tar.gz
+e316477a914f567eccc34d5d29785b8b0f5a10208d36bbacedcc39048ecfe024  binutils-2.38.tar.xz
 b10d7e9e354be72aee4e4911cf19dd27b5c527d4e7200857365b5fcdeea0dffb  bison-2.3.tar.bz2
 27d05534699735dc69e86add5b808d6cb35900ad3fd63fa82e3eb644336abfa0  bison-3.4.2.tar.xz
 6f7cfc0ac6717afb6ba1f41b0da43a713ba0dd97dec1227e32effc12d79f08c1  coreutils-8.32.tar.gz
