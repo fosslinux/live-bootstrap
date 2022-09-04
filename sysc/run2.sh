@@ -23,6 +23,8 @@ build xz-5.0.5
 
 build automake-1.11.2
 
+build libtool-2.4.7
+
 build autoconf-2.69
 
 build automake-1.15.1
