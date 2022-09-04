@@ -16,6 +16,9 @@ src_prepare() {
     # but it is not essential for building gcc.
     rm configure Makefile.in fixincludes/fixincl.x
 
+    # Remove unused generated files
+    rm libgo/aclocal.m4 libgo/configure libgo/Makefile.in
+
     # Regenerate aclocal.m4 files
     # grep "generated automatically by aclocal" */aclocal.m4  -l | sed -e 's#/aclocal.m4##'  | tr "\n" " " | sed -e 's/ $/\n/'
     for dir in intl libcpp libdecnumber; do
@@ -32,19 +35,21 @@ src_prepare() {
     rm aclocal.m4
     AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 aclocal-1.11 --acdir=../gcc
     cd ..
-    for dir in boehm-gc libffi libgfortran libgo libgomp libitm libjava libmudflap libobjc libquadmath libssp lto-plugin zlib; do
+    for dir in boehm-gc libffi libgfortran libgomp libitm libjava libmudflap libobjc libquadmath libssp lto-plugin zlib; do
         cd $dir
         rm aclocal.m4
         AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 aclocal-1.11
         cd ..
     done
+
     cd libstdc++-v3
     ACLOCAL=aclocal-1.11 AUTOMAKE=automake-1.11 AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
     cd ..
+
     # Regenerate configure scripts
     # Find all folders with configure script and rebuild them. At the moment we exclude boehm-gc folder due to
     # an error but we don't use that directory anyway (it's only needed for Objective C)
-    for dir in $(find . -mindepth 2 -maxdepth 2 -name configure.ac | sed 's#/configure.ac##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
+    for dir in $(find . -mindepth 2 -maxdepth 2 -name configure.ac | sed 's#/configure.ac##' | grep -v -x './libgo' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
         pushd "$dir"
         rm configure
         autoconf-2.64 || autoconf-2.64
@@ -53,7 +58,7 @@ src_prepare() {
 
     # Regenerate Makefile.in
     # Find all folders with Makefile.am and rebuild them. At the moment we exclude boehm-gc folder.
-    for dir in $(find . -mindepth 2 -maxdepth 2 -name Makefile.am | sed 's#/Makefile.am##' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
+    for dir in $(find . -mindepth 2 -maxdepth 2 -name Makefile.am | sed 's#/Makefile.am##' | grep -v -x './libgo' | tr "\n" " " | sed -e 's/ $/\n/' -e 's/^boehm-gc //'); do
         pushd "$dir"
         rm Makefile.in
         AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 automake-1.11 --add-missing
