@@ -30,7 +30,7 @@ The following steps are taken here:
 -  M2-Planet (final) compiles mescc-tools-extra (see next step)
 
 This seems very intimidating, but becomes clearer when reading the
-source: https://github.com/oriansj/stage0-posix/blob/master/x86/
+source: https://github.com/oriansj/stage0-posix-x86
 (start at mescc-tools-seed-kaem.kaem).
 
 From here, we can move on from the lowest level stuff.
