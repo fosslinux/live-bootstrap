@@ -792,6 +792,12 @@ This version of binutils provides a more comprehensive set of programming tools 
 creating and managing binary programs. It also includes modern versions of the ``ld``
 linker, the ``as`` assembler and the ``ar`` program.
 
+musl 1.2.3
+==========
+
+With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
+with support for dynamic linking.
+
 gperf 3.1
 =========
 
