@@ -101,7 +101,7 @@ this script the next time")
         if not os.path.isfile(abs_file_name):
             print(f"Downloading: {file_name}")
             response = requests.get(url, allow_redirects=True, stream=True,
-                    headers=headers)
+                    headers=headers, timeout=20)
             if response.status_code == 200:
                 with open(abs_file_name, 'wb') as target_file:
                     target_file.write(response.raw.read())
