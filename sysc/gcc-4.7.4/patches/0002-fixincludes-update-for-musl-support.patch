@@ -1,0 +1,27 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2015 Gregor Richards <gregor.richards@uwaterloo.ca>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Backported from upstream commit 218213dfd01e22b7c9f1be3119e32d970fa348bf
+
+fixincludes update for musl support
+
+2015-04-22  Gregor Richards  <gregor.richards@uwaterloo.ca>
+
+	* mkfixinc.sh: Add *-musl* with no fixes.
+
+From-SVN: r222327
+
+--- fixincludes/mkfixinc.sh
++++ fixincludes/mkfixinc.sh
+@@ -20,7 +20,8 @@ case $machine in
+     powerpc-*-eabi*    | \
+     powerpc-*-rtems*   | \
+     powerpcle-*-eabisim* | \
+-    powerpcle-*-eabi* )
++    powerpcle-*-eabi* | \
++    *-musl* )
+ 	#  IF there is no include fixing,
+ 	#  THEN create a no-op fixer and exit
+ 	(echo "#! /bin/sh" ; echo "exit 0" ) > ${target}

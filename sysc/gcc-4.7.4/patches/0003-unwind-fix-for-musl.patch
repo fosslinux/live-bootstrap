@@ -1,0 +1,35 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2015 Gregor Richards <gregor.richards@uwaterloo.ca>
+SPDX-FileCopyrightText: 2015 Szabolcs Nagy <szabolcs.nagy@arm.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Backported from upstream commit 15aa7b447218e45da835472bbf4740ae00db9982
+
+unwind fix for musl
+
+2015-04-22  Gregor Richards  <gregor.richards@uwaterloo.ca>
+	    Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	* unwind-dw2-fde-dip.c (USE_PT_GNU_EH_FRAME): Define it on
+	Linux if target provides dl_iterate_phdr.
+
+Co-Authored-By: Szabolcs Nagy <szabolcs.nagy@arm.com>
+
+From-SVN: r222328
+
+--- libgcc/unwind-dw2-fde-dip.c
++++ libgcc/unwind-dw2-fde-dip.c
+@@ -53,6 +53,12 @@
+ # define USE_PT_GNU_EH_FRAME
+ #endif
+ 
++#if !defined(inhibit_libc) && defined(HAVE_LD_EH_FRAME_HDR) \
++    && defined(TARGET_DL_ITERATE_PHDR) \
++    && defined(__linux__)
++# define USE_PT_GNU_EH_FRAME
++#endif
++
+ #if !defined(inhibit_libc) && defined(HAVE_LD_EH_FRAME_HDR) \
+     && defined(__FreeBSD__) && __FreeBSD__ >= 7
+ # define ElfW __ElfN
