@@ -129,6 +129,9 @@ def main():
                     tmpdir=args.tmpdir, external_sources=args.external_sources,
                     sysb_dir=system_b.sys_dir, sysc_dir=system_c.sys_dir)
 
+    if args.tmpdir is not None:
+        os.makedirs(args.tmpdir, exist_ok=True)
+
     bootstrap(args, system_a, system_b, system_c)
 
 def bootstrap(args, system_a, system_b, system_c):
