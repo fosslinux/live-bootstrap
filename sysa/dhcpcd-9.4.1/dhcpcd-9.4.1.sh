@@ -11,6 +11,7 @@ src_prepare() {
 src_configure() {
     CC=gcc ./configure \
         --prefix="${PREFIX}" \
+        --libdir="${PREFIX}/lib/musl" \
         --sbindir="${PREFIX}/bin" \
         --disable-embedded \
         --disable-auth
