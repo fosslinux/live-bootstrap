@@ -44,12 +44,12 @@ src_prepare() {
 src_configure() {
     MACHDEP=linux ac_sys_system=Linux \
     CFLAGS="-U__DATE__ -U__TIME__" \
-    LDFLAGS="-L/usr/lib/musl" \
+    LDFLAGS="-L${LIBDIR}" \
         ./configure \
         --build=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --with-system-ffi
 }
 
@@ -74,7 +74,7 @@ src_compile() {
 
 src_install() {
     default
-    ln --symbolic --relative "${DESTDIR}${PREFIX}/lib/musl/python3.3/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.3/lib-dynload"
+    ln --symbolic --relative "${DESTDIR}${LIBDIR}/python3.3/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.3/lib-dynload"
     ln --symbolic --relative "${DESTDIR}${PREFIX}/bin/python3.3" "${DESTDIR}${PREFIX}/bin/python"
 
     # Remove non-reproducible .pyc/o files

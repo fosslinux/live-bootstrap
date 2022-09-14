@@ -20,7 +20,7 @@ src_prepare() {
 src_configure() {
     LEX=flex-2.5.33 ./configure \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --program-suffix=-2.3 \
         --datarootdir="${PREFIX}/share/bison-2.3"
 }

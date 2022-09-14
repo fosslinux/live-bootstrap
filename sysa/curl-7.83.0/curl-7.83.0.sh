@@ -21,7 +21,7 @@ src_prepare() {
 src_configure() {
     LDFLAGS="-static" ./configure \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --build=i386-unknown-linux-gnu \
         --enable-ipv6 \
         --without-ssl \

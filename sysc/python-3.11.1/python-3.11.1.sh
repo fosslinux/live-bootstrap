@@ -53,13 +53,13 @@ src_configure() {
     mv Setup.local Modules
     MACHDEP=linux ac_sys_system=Linux \
     CPPFLAGS="-U__DATE__ -U__TIME__" \
-    PKG_CONFIG_PATH="${PREFIX}/lib/musl/pkgconfig/" \
+    PKG_CONFIG_PATH="${LIBDIR}/pkgconfig/" \
     LDFLAGS="-static" \
         ./configure \
         --build=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --with-system-ffi \
         --disable-shared
 }
@@ -97,6 +97,6 @@ src_compile() {
 
 src_install() {
     default
-    ln --symbolic --relative "${DESTDIR}${PREFIX}/lib/musl/python3.11/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.11/lib-dynload"
+    ln --symbolic --relative "${DESTDIR}${LIBDIR}/python3.11/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.11/lib-dynload"
     ln --symbolic --relative "${DESTDIR}${PREFIX}/bin/python3.11" "${DESTDIR}${PREFIX}/bin/python"
 }

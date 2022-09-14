@@ -8,6 +8,7 @@
 set -e
 
 PREFIX=/usr
+LIBDIR="${PREFIX}/lib/musl"
 SOURCES="${PREFIX}/src"
 DESTDIR=/tmp/destdir
 DISTFILES=/distfiles
@@ -65,6 +66,7 @@ cd "${SOURCES}"
 
 echo "PREFIX=${PREFIX}" > .env
 # shellcheck disable=SC2129
+echo "LIBDIR=${LIBDIR}" >> .env
 echo "SOURCES=${SOURCES}" >> .env
 echo "DESTDIR=${DESTDIR}" >> .env
 echo "DISTFILES=${DISTFILES}" >> .env

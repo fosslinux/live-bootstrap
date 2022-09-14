@@ -13,7 +13,7 @@ src_configure() {
     ./configure --prefix="${PREFIX}" \
         --bindir="${PREFIX}/bin" \
         --sbindir="${PREFIX}/bin" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --build=i386-unknown-linux-gnu \
         --disable-libuuid \
         --without-ncurses \

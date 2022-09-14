@@ -97,7 +97,7 @@ src_configure() {
         cd $dir
         ../../$dir/configure \
             --prefix="${PREFIX}" \
-            --libdir="${PREFIX}"/lib/musl \
+            --libdir="${LIBDIR}" \
             --build=i386-unknown-linux-musl \
             --target=i386-unknown-linux-musl \
             --host=i386-unknown-linux-musl \
@@ -131,11 +131,11 @@ src_install() {
     make -C build/libgcc install DESTDIR="${DESTDIR}" host_subdir=build
     make -C build/libstdc++-v3 install DESTDIR="${DESTDIR}"
     ln -s gcc "${DESTDIR}${PREFIX}/bin/cc"
-    cp gcc/gsyslimits.h "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/syslimits.h"
+    cp gcc/gsyslimits.h "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/include/syslimits.h"
 
     # Very strange mis-versoning error
-    mkdir -p "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/"
-    mv "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include/"* "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/include/"
-    rmdir "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include"
-    mv "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/"* "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.7.4/"
+    mkdir -p "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/include/"
+    mv "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include/"* "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/include/"
+    rmdir "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include"
+    mv "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/"* "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/"
 }

@@ -73,7 +73,7 @@ src_configure() {
         cd $dir
         ../../$dir/configure \
             --prefix="${PREFIX}" \
-            --libdir="${PREFIX}"/lib/musl \
+            --libdir="${LIBDIR}" \
             --build=i386-unknown-linux-musl \
             --target=i386-unknown-linux-musl \
             --host=i386-unknown-linux-musl \
@@ -92,7 +92,7 @@ src_compile() {
 }
 
 src_install() {
-    mkdir -p "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/install-tools/include"
+    mkdir -p "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/install-tools/include"
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
-    cp gcc/gsyslimits.h "${DESTDIR}${PREFIX}/lib/musl/gcc/i386-unknown-linux-musl/4.0.4/include/syslimits.h"
+    cp gcc/gsyslimits.h "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include/syslimits.h"
 }

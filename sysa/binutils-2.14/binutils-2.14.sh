@@ -122,7 +122,7 @@ src_configure() {
             --with-sysroot="${PREFIX}" \
             --disable-64-bit-bfd \
             --prefix="${PREFIX}" \
-            --libdir="${PREFIX}/lib/musl" \
+            --libdir="${LIBDIR}" \
             --srcdir=.
         cd ..
     done

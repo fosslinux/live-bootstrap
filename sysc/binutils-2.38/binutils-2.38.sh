@@ -75,7 +75,7 @@ src_configure() {
             --program-prefix="" \
             --with-sysroot="${PREFIX}" \
             --prefix="${PREFIX}" \
-            --libdir="${PREFIX}/lib/musl" \
+            --libdir="${LIBDIR}" \
             --srcdir=.
         cd ..
     done

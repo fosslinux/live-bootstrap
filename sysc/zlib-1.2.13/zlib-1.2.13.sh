@@ -3,5 +3,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_configure() {
-    ./configure --prefix="${PREFIX}" --libdir="${PREFIX}/lib/musl" --static
+    ./configure --prefix="${PREFIX}" --libdir="${LIBDIR}" --static
 }

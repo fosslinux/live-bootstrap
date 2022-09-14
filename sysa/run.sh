@@ -10,6 +10,8 @@ set -e
 
 # shellcheck disable=SC2154
 PREFIX="${prefix}"
+# shellcheck disable=SC2034
+LIBDIR="${prefix}/lib/musl"
 # shellcheck disable=SC2154
 SOURCES="${sysa}"
 DISTFILES="${sysa}/distfiles"
