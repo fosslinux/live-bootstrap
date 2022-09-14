@@ -23,6 +23,7 @@ src_prepare() {
 src_configure() {
     LDFLAGS="-static" ./configure \
         --prefix="${PREFIX}" \
+        --libdir="${PREFIX}/lib/musl" \
         --with-openssl \
         --with-ca-bundle=/etc/ssl/certs.pem \
         --build=i386-unknown-linux-musl
