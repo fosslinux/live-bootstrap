@@ -90,6 +90,10 @@ src_prepare() {
 
     # Remove prebuilt texinfo files
     rm -- */*.info* */*/*.info*
+
+    # Remove pregenerated opcodes files
+    rm opcodes/ia64-asmtab.c
+    rm opcodes/z8k-opc.h
 }
 
 src_configure() {
