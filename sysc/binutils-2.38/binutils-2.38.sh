@@ -1,0 +1,96 @@
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+urls="https://mirrors.kernel.org/gnu/binutils/binutils-2.38.tar.xz"
+
+src_prepare() {
+    default
+
+    # Remove unused generated files
+    rm etc/Makefile.in etc/configure
+
+    rm zlib/aclocal.m4 zlib/configure
+
+    # Regenerate files
+    for dir in bfd binutils gas gold gprof intl ld libctf libiberty opcodes; do
+        cd $dir
+        AUTOPOINT=true ACLOCAL=aclocal-1.15 AUTOMAKE=automake-1.15 autoreconf-2.69 -fi
+        cd ..
+    done
+
+    ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
+
+    # Rebuild bison files
+    touch -- */*.y
+    rm binutils/arparse.c binutils/arparse.h
+    rm binutils/defparse.c binutils/defparse.h
+    rm binutils/mcparse.c binutils/mcparse.h
+    rm binutils/rcparse.c binutils/rcparse.h
+    rm binutils/sysinfo.c binutils/sysinfo.h
+    rm gas/config/bfin-parse.c gas/config/bfin-parse.h
+    rm gas/config/loongarch-parse.c gas/config/loongarch-parse.h
+    rm gas/config/m68k-parse.c gas/config/rl78-parse.c
+    rm gas/config/rl78-parse.h gas/config/rx-parse.c
+    rm gas/config/rx-parse.h gas/itbl-parse.c
+    rm gas/itbl-parse.h gold/yyscript.c
+    rm gold/yyscript.h intl/plural.c
+    rm ld/deffilep.c ld/deffilep.h
+    rm ld/ldgram.c ld/ldgram.h
+
+    # Rebuild flex generated files
+    touch -- */*.l */*/*.l
+    rm binutils/arlex.c binutils/deflex.c binutils/syslex.c
+    rm gas/config/bfin-lex.c gas/config/loongarch-lex.c gas/itbl-lex.c
+    rm ld/ldlex.c
+
+    # Remove prebuilt texinfo files
+    find . -type f -name '*.info*' \
+                   -not -wholename './binutils/sysroff.info' \
+                   -delete
+
+    # Remove pregenerated opcodes files
+    rm opcodes/i386-init.h opcodes/i386-tbl.h
+    rm opcodes/ia64-asmtab.c
+    rm opcodes/z8k-opc.h
+    rm opcodes/aarch64-asm-2.c opcodes/aarch64-opc-2.c opcodes/aarch64-dis-2.c
+
+    # Regenerate MeP sections
+    ./bfd/mep-relocs.pl
+}
+
+src_configure() {
+    for dir in intl libctf libiberty opcodes bfd binutils gas gprof ld; do
+        cd $dir
+
+        ./configure \
+            --disable-nls \
+            --enable-install-libiberty \
+            --enable-deterministic-archives \
+            --with-system-zlib \
+            --build=i386-unknown-linux-gnu \
+            --host=i386-unknown-linux-gnu \
+            --target=i386-unknown-linux-gnu \
+            --program-prefix="" \
+            --with-sysroot="${PREFIX}" \
+            --prefix="${PREFIX}" \
+            --libdir="${PREFIX}/lib/musl" \
+            --srcdir=.
+        cd ..
+    done
+}
+
+src_compile() {
+    make -C bfd headers
+    for dir in libiberty bfd opcodes libctf binutils gas gprof ld; do
+        make -C $dir tooldir=${PREFIX} CFLAGS="-std=c99"
+    done
+}
+
+src_install() {
+    for dir in libiberty bfd opcodes libctf binutils gas gprof ld; do
+        make -C $dir tooldir=${PREFIX} DESTDIR="${DESTDIR}" install
+    done
+}

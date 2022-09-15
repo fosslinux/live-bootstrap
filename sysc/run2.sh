@@ -23,6 +23,8 @@ build xz-5.0.5
 
 build automake-1.11.2
 
+build libtool-2.4.7
+
 build autoconf-2.69
 
 build automake-1.15.1
@@ -79,6 +81,8 @@ build gettext-0.21
 build texinfo-6.7
 
 build gcc-4.7.4
+
+build binutils-2.38
 
 build gperf-3.1
 

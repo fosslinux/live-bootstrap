@@ -89,6 +89,10 @@ class SysC(SysGeneral):
         # automake 1.11.2
         self.get_file("https://mirrors.kernel.org/gnu/automake/automake-1.11.2.tar.bz2")
 
+        # libtool 2.4.7
+        self.get_file(["https://mirrors.kernel.org/gnu/libtool/libtool-2.4.7.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-a521820.tar.gz"])
+
         # autoconf 2.69
         self.get_file("https://mirrors.kernel.org/gnu/autoconf/autoconf-2.69.tar.xz")
 
@@ -181,6 +185,9 @@ class SysC(SysGeneral):
 
         # gcc 4.7.4
         self.get_file("https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2")
+
+        # binutils 2.38
+        self.get_file("https://mirrors.kernel.org/gnu/binutils/binutils-2.38.tar.xz")
 
         # gperf 3.1
         self.get_file("https://mirrors.kernel.org/gnu/gperf/gperf-3.1.tar.gz")

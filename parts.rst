@@ -1,4 +1,5 @@
 .. sectnum::
+.. SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 .. SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 .. SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 .. SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
@@ -609,6 +610,12 @@ automake 1.11.2
 GNU Automake from 1.11 series. This is not the latest point release as newer ones
 need Autoconf 2.68.
 
+libtool 2.4.7
+=============
+
+A modern version of libtool with better compatiblitiy with newer versions of GNU
+Autotools.
+
 autoconf 2.69
 =============
 
@@ -777,6 +784,13 @@ gcc 4.7.4
 GCC 4.7.4 is the last version written in C. This time we build both C and C++ backends.
 C++ backend has some dependency on ``gperf`` which is written in C++. Fortunately, it is
 easy to patch it out and resulting ``g++`` compiler is capable of building ``gperf``.
+
+binutils 2.38
+=============
+
+This version of binutils provides a more comprehensive set of programming tools for
+creating and managing binary programs. It also includes modern versions of the ``ld``
+linker, the ``as`` assembler and the ``ar`` program.
 
 gperf 3.1
 =========
