@@ -1,0 +1,39 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2015 Gregor Richards <gregor.richards@uwaterloo.ca>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Backported from upstream commit cf57e99350d0b44876979c71986d8ca29c361f83
+
+x86 musl support
+
+2015-05-15  Gregor Richards  <gregor.richards@uwaterloo.ca>
+
+	* config/i386/linux.h (MUSL_DYNAMIC_LINKER): Define.
+	* config/i386/linux64.h (MUSL_DYNAMIC_LINKER32): Define.
+	(MUSL_DYNAMIC_LINKER64, MUSL_DYNAMIC_LINKERX32): Define.
+
+From-SVN: r223218
+
+--- gcc/config/i386/linux.h
++++ gcc/config/i386/linux.h
+@@ -22,3 +22,6 @@ along with GCC; see the file COPYING3.  If not see
+ 
+ #define GNU_USER_LINK_EMULATION "elf_i386"
+ #define GLIBC_DYNAMIC_LINKER "/lib/ld-linux.so.2"
++
++#undef MUSL_DYNAMIC_LINKER
++#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-i386.so.1"
+--- gcc/config/i386/linux64.h
++++ gcc/config/i386/linux64.h
+@@ -31,3 +31,10 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
+ #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"
+ #define GLIBC_DYNAMIC_LINKERX32 "/libx32/ld-linux-x32.so.2"
++
++#undef MUSL_DYNAMIC_LINKER32
++#define MUSL_DYNAMIC_LINKER32 "/lib/ld-musl-i386.so.1"
++#undef MUSL_DYNAMIC_LINKER64
++#define MUSL_DYNAMIC_LINKER64 "/lib/ld-musl-x86_64.so.1"
++#undef MUSL_DYNAMIC_LINKERX32
++#define MUSL_DYNAMIC_LINKERX32 "/lib/ld-musl-x32.so.1"

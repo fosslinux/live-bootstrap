@@ -1,0 +1,58 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2015 Gregor Richards <gregor.richards@uwaterloo.ca>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Backported from upstream commit 96ce40cbce449cb5f434425d148a9bcf02270c96
+
+libitm fixes for musl support
+
+2015-04-22  Gregor Richards  <gregor.richards@uwaterloo.ca>
+
+       * config/arm/hwcap.cc: Use fcntl.h instead of sys/fcntl.h.
+       * config/linux/x86/tls.h: Only use __GLIBC_PREREQ if defined.
+
+From-SVN: r222325
+
+--- libitm/config/arm/hwcap.cc
++++ libitm/config/arm/hwcap.cc
+@@ -40,7 +40,7 @@ int GTM_hwcap HIDDEN = 0
+ 
+ #ifdef __linux__
+ #include <unistd.h>
+-#include <sys/fcntl.h>
++#include <fcntl.h>
+ #include <elf.h>
+ 
+ static void __attribute__((constructor))
+--- libitm/config/linux/x86/tls.h
++++ libitm/config/linux/x86/tls.h
+@@ -25,16 +25,19 @@
+ #ifndef LIBITM_X86_TLS_H
+ #define LIBITM_X86_TLS_H 1
+ 
+-#if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 10)
++#if defined(__GLIBC_PREREQ)
++#if __GLIBC_PREREQ(2, 10)
+ /* Use slots in the TCB head rather than __thread lookups.
+    GLIBC has reserved words 10 through 13 for TM.  */
+ #define HAVE_ARCH_GTM_THREAD 1
+ #define HAVE_ARCH_GTM_THREAD_DISP 1
+ #endif
++#endif
+ 
+ #include "config/generic/tls.h"
+ 
+-#if defined(__GLIBC_PREREQ) && __GLIBC_PREREQ(2, 10)
++#if defined(__GLIBC_PREREQ)
++#if __GLIBC_PREREQ(2, 10)
+ namespace GTM HIDDEN {
+ 
+ #ifdef __x86_64__
+@@ -101,5 +104,6 @@ static inline void set_abi_disp(struct abi_dispatch *x)
+ 
+ } // namespace GTM
+ #endif /* >= GLIBC 2.10 */
++#endif
+ 
+ #endif // LIBITM_X86_TLS_H

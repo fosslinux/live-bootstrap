@@ -1,0 +1,41 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2015 Szabolcs Nagy <szabolcs.nagy@arm.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Backported from upstream commit 85da5c3024f731e719c4093314da8edcd1056527
+
+libstdc++ gthr workaround for musl
+
+[libstdc++-v3/]
+2015-04-22  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	* config/os/generic/os_defines.h (_GLIBCXX_GTHREAD_USE_WEAK): Define.
+	* configure.host (os_include_dir): Set to "os/generic" for linux-musl*.
+
+From-SVN: r222329
+
+--- libstdc++-v3/config/os/generic/os_defines.h
++++ libstdc++-v3/config/os/generic/os_defines.h
+@@ -33,4 +33,9 @@
+ // System-specific #define, typedefs, corrections, etc, go here.  This
+ // file will come before all others.
+ 
++// Disable the weak reference logic in gthr.h for os/generic because it
++// is broken on every platform unless there is implementation specific
++// workaround in gthr-posix.h and at link-time for static linking.
++#define _GLIBCXX_GTHREAD_USE_WEAK 0
++
+ #endif
+--- libstdc++-v3/configure.host
++++ libstdc++-v3/configure.host
+@@ -242,6 +242,9 @@ case "${host_os}" in
+   freebsd*)
+     os_include_dir="os/bsd/freebsd"
+     ;;
++  linux-musl*)
++    os_include_dir="os/generic"
++    ;;
+   gnu* | linux* | kfreebsd*-gnu | knetbsd*-gnu)
+     if [ "$uclibc" = "yes" ]; then
+       os_include_dir="os/uclibc"

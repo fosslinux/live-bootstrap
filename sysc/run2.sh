@@ -84,6 +84,8 @@ build gcc-4.7.4
 
 build binutils-2.38
 
+build musl-1.2.3
+
 build gperf-3.1
 
 build libunistring-0.9.10

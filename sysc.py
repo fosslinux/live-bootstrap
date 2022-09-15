@@ -189,6 +189,9 @@ class SysC(SysGeneral):
         # binutils 2.38
         self.get_file("https://mirrors.kernel.org/gnu/binutils/binutils-2.38.tar.xz")
 
+        # musl 1.2.3
+        self.get_file("https://musl.libc.org/releases/musl-1.2.3.tar.gz")
+
         # gperf 3.1
         self.get_file("https://mirrors.kernel.org/gnu/gperf/gperf-3.1.tar.gz")
 

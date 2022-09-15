@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2015 Doug Evans <dje@google.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Backported from upstream commit 755658a56b57beca14b5fb70afdf1e588a058f7f
+
+config/linux.h (INCLUDE_DEFAULTS): Add INCLUDE_DEFAULTS_MUSL_LOCAL.
+
+From-SVN: r229392
+
+--- gcc/config/linux.h
++++ gcc/config/linux.h
+@@ -184,6 +184,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #define INCLUDE_DEFAULTS				\
+   {							\
+     INCLUDE_DEFAULTS_MUSL_GPP				\
++    INCLUDE_DEFAULTS_MUSL_LOCAL				\
+     INCLUDE_DEFAULTS_MUSL_PREFIX			\
+     INCLUDE_DEFAULTS_MUSL_CROSS				\
+     INCLUDE_DEFAULTS_MUSL_TOOL				\
