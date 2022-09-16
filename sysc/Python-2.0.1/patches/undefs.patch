@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Python-2.0.1
+
+Python 2.0.1's Makefile does not support custom CFLAGS for some
+reason, so we have to patch our __DATE__ __TIME__ undefs in.
+
+--- Makefile.in	2022-12-23 18:33:56.486325025 +1100
++++ Makefile.in	2022-12-23 18:46:05.910387214 +1100
+@@ -127,7 +127,7 @@
+ DIST=		$(DISTFILES) $(DISTDIRS)
+ 
+ # Compilation flags for getbuildinfo.c only
+-CFLAGS=		$(OPT) -I. $(DEFS)
++CFLAGS=		$(OPT) -I. $(DEFS) -U__DATE__ -U__TIME__
+ 
+ LIBRARY=	libpython$(VERSION).a
+ LDLIBRARY=      @LDLIBRARY@

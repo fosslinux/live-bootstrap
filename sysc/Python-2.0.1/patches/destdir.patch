@@ -1,0 +1,206 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Python-2.0.1
+
+Python 2.0 does not support DESTDIR, so add it in.
+
+--- Makefile.in	2022-10-21 17:56:48.034287578 +1100
++++ Makefile.in	2022-10-21 18:07:54.267542882 +1100
+@@ -224,16 +224,16 @@
+ 
+ # Install the interpreter (by creating a hard link to python$(VERSION))
+ bininstall:	altbininstall
+-		-if test -f $(BINDIR)/python$(EXE); \
+-		then rm -f $(BINDIR)/python$(EXE); \
++		-if test -f $(DESTDIR)$(BINDIR)/python$(EXE); \
++		then rm -f $(DESTDIR)$(BINDIR)/python$(EXE); \
+ 		else true; \
+ 		fi
+-		(cd $(BINDIR); $(LN) python$(VERSION)$(EXE) python$(EXE))
++		(cd $(DESTDIR)$(BINDIR); $(LN) python$(VERSION)$(EXE) python$(EXE))
+ 
+ # Install the interpreter with $(VERSION) affixed
+ # This goes into $(exec_prefix)
+ altbininstall:	python$(EXE)
+-		@for i in $(BINDIR); \
++		@for i in $(DESTDIR)$(BINDIR); \
+ 		do \
+ 			if test ! -d $$i; then \
+ 				echo "Creating directory $$i"; \
+@@ -242,15 +242,15 @@
+ 			else	true; \
+ 			fi; \
+ 		done
+-		$(INSTALL_PROGRAM) python$(EXE) $(BINDIR)/python$(VERSION)$(EXE)
++		$(INSTALL_PROGRAM) python$(EXE) $(DESTDIR)$(BINDIR)/python$(VERSION)$(EXE)
+ 		if test -f libpython$(VERSION).so; then \
+-			$(INSTALL_DATA) libpython$(VERSION).so $(LIBDIR); \
++			$(INSTALL_DATA) libpython$(VERSION).so $(DESTDIR)$(LIBDIR); \
+ 		else	true; \
+ 		fi
+ 
+ # Install the manual page
+ maninstall:
+-		@for i in $(MANDIR) $(MANDIR)/man1; \
++		@for i in $(DESTDIR)$(MANDIR) $(DESTDIR)$(MANDIR)/man1; \
+ 		do \
+ 			if test ! -d $$i; then \
+ 				echo "Creating directory $$i"; \
+@@ -260,7 +260,7 @@
+ 			fi; \
+ 		done
+ 		$(INSTALL_DATA) $(srcdir)/Misc/python.man \
+-			$(MANDIR)/man1/python.1
++			$(DESTDIR)$(MANDIR)/man1/python.1
+ 
+ # Install the library
+ PLATDIR=	plat-$(MACHDEP)
+@@ -269,7 +269,7 @@
+ LIBSUBDIRS=	lib-old lib-tk site-packages test test/output encodings \
+ 		distutils distutils/command $(XMLLIBSUBDIRS) curses $(MACHDEPS)
+ libinstall:	python $(srcdir)/Lib/$(PLATDIR)
+-		@for i in $(SCRIPTDIR) $(LIBDEST); \
++		@for i in $(DESTDIR)$(SCRIPTDIR) $(DESTDIR)$(LIBDEST); \
+ 		do \
+ 			if test ! -d $$i; then \
+ 				echo "Creating directory $$i"; \
+@@ -278,11 +278,11 @@
+ 			else	true; \
+ 			fi; \
+ 		done
+-		@for d in $(LIBSUBDIRS); \
++		@for d in $(DESTDIR)$(LIBSUBDIRS); \
+ 		do \
+ 			a=$(srcdir)/Lib/$$d; \
+ 			if test ! -d $$a; then continue; else true; fi; \
+-			b=$(LIBDEST)/$$d; \
++			b=$(DESTDIR)$(LIBDEST)/$$d; \
+ 			if test ! -d $$b; then \
+ 				echo "Creating directory $$b"; \
+ 				mkdir $$b; \
+@@ -293,18 +293,18 @@
+ 		@for i in $(srcdir)/Lib/*.py $(srcdir)/Lib/*.doc; \
+ 		do \
+ 			if test -x $$i; then \
+-				$(INSTALL_PROGRAM) $$i $(LIBDEST); \
+-				echo $(INSTALL_PROGRAM) $$i $(LIBDEST); \
++				$(INSTALL_PROGRAM) $$i $(DESTDIR)$(LIBDEST); \
++				echo $(INSTALL_PROGRAM) $$i $(DESTDIR)$(LIBDEST); \
+ 			else \
+-				$(INSTALL_DATA) $$i $(LIBDEST); \
+-				echo $(INSTALL_DATA) $$i $(LIBDEST); \
++				$(INSTALL_DATA) $$i $(DESTDIR)$(LIBDEST); \
++				echo $(INSTALL_DATA) $$i $(DESTDIR)$(LIBDEST); \
+ 			fi; \
+ 		done
+ 		@for d in $(LIBSUBDIRS); \
+ 		do \
+ 			a=$(srcdir)/Lib/$$d; \
+ 			if test ! -d $$a; then continue; else true; fi; \
+-			b=$(LIBDEST)/$$d; \
++			b=$(DESTDIR)$(LIBDEST)/$$d; \
+ 			for i in $$a/*; \
+ 			do \
+ 				case $$i in \
+@@ -324,11 +324,11 @@
+ 				esac; \
+ 			done; \
+ 		done
+-		$(INSTALL_DATA) $(srcdir)/LICENSE $(LIBDEST)/LICENSE.txt
+-		PYTHONPATH=$(LIBDEST) \
+-			./python$(EXE) -tt $(LIBDEST)/compileall.py $(LIBDEST)
+-		PYTHONPATH=$(LIBDEST) \
+-			./python$(EXE) -O $(LIBDEST)/compileall.py $(LIBDEST)
++		$(INSTALL_DATA) $(srcdir)/LICENSE $(DESTDIR)$(LIBDEST)/LICENSE.txt
++		PYTHONPATH=$(DESTDIR)$(LIBDEST) \
++			./python$(EXE) -tt $(DESTDIR)$(LIBDEST)/compileall.py $(DESTDIR)$(LIBDEST)
++		PYTHONPATH=$(DESTDIR)$(LIBDEST) \
++			./python$(EXE) -O $(DESTDIR)$(LIBDEST)/compileall.py $(DESTDIR)$(LIBDEST)
+ 
+ # Create the PLATDIR source directory, if one wasn't distributed..
+ $(srcdir)/Lib/$(PLATDIR):
+@@ -344,25 +344,25 @@
+ inclinstall:
+ 		@for i in $(INCLDIRSTOMAKE); \
+ 		do \
+-			if test ! -d $$i; then \
+-				echo "Creating directory $$i"; \
+-				mkdir $$i; \
+-				chmod $(DIRMODE) $$i; \
++			if test ! -d $(DESTDIR)$$i; then \
++				echo "Creating directory $(DESTDIR)$$i"; \
++				mkdir $(DESTDIR)$$i; \
++				chmod $(DIRMODE) $(DESTDIR)$$i; \
+ 			else	true; \
+ 			fi; \
+ 		done
+ 		@for i in $(srcdir)/Include/*.h; \
+ 		do \
+-			echo $(INSTALL_DATA) $$i $(INCLUDEPY); \
+-			$(INSTALL_DATA) $$i $(INCLUDEPY); \
++			echo $(INSTALL_DATA) $$i $(DESTDIR)$(INCLUDEPY); \
++			$(INSTALL_DATA) $$i $(DESTDIR)$(INCLUDEPY); \
+ 		done
+-		$(INSTALL_DATA) config.h $(CONFINCLUDEPY)/config.h
++		$(INSTALL_DATA) config.h $(DESTDIR)$(CONFINCLUDEPY)/config.h
+ 
+ # Install the library and miscellaneous stuff needed for extending/embedding
+ # This goes into $(exec_prefix)
+ LIBPL=		$(LIBP)/config
+ libainstall:	all
+-		@for i in $(LIBDIR) $(LIBP) $(LIBPL); \
++		@for i in $(DESTDIR)$(LIBDIR) $(DESTDIR)$(LIBP) $(DESTDIR)$(LIBPL); \
+ 		do \
+ 			if test ! -d $$i; then \
+ 				echo "Creating directory $$i"; \
+@@ -372,19 +372,19 @@
+ 			fi; \
+ 		done
+ 		@if test -d $(LIBRARY); then :; else \
+-			$(INSTALL_DATA) $(LIBRARY) $(LIBPL)/$(LIBRARY) ; \
+-			$(RANLIB) $(LIBPL)/$(LIBRARY) ; \
++			$(INSTALL_DATA) $(LIBRARY) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
++			$(RANLIB) $(DESTDIR)$(LIBPL)/$(LIBRARY) ; \
+ 		fi
+-		$(INSTALL_DATA) Modules/config.c $(LIBPL)/config.c
+-		$(INSTALL_DATA) Modules/python.o $(LIBPL)/python.o
+-		$(INSTALL_DATA) $(srcdir)/Modules/config.c.in $(LIBPL)/config.c.in
+-		$(INSTALL_DATA) Modules/Makefile $(LIBPL)/Makefile
+-		$(INSTALL_DATA) Modules/Setup $(LIBPL)/Setup
+-		$(INSTALL_DATA) Modules/Setup.local $(LIBPL)/Setup.local
+-		$(INSTALL_DATA) Modules/Setup.config $(LIBPL)/Setup.config
+-		$(INSTALL_PROGRAM) $(srcdir)/Modules/makesetup $(LIBPL)/makesetup
+-		$(INSTALL_PROGRAM) $(srcdir)/install-sh $(LIBPL)/install-sh
+-		$(INSTALL_DATA) $(srcdir)/Misc/Makefile.pre.in $(LIBPL)/Makefile.pre.in
++		$(INSTALL_DATA) Modules/config.c $(DESTDIR)$(LIBPL)/config.c
++		$(INSTALL_DATA) Modules/python.o $(DESTDIR)$(LIBPL)/python.o
++		$(INSTALL_DATA) $(srcdir)/Modules/config.c.in $(DESTDIR)$(LIBPL)/config.c.in
++		$(INSTALL_DATA) Modules/Makefile $(DESTDIR)$(LIBPL)/Makefile
++		$(INSTALL_DATA) Modules/Setup $(DESTDIR)$(LIBPL)/Setup
++		$(INSTALL_DATA) Modules/Setup.local $(DESTDIR)$(LIBPL)/Setup.local
++		$(INSTALL_DATA) Modules/Setup.config $(DESTDIR)$(LIBPL)/Setup.config
++		$(INSTALL_PROGRAM) $(srcdir)/Modules/makesetup $(DESTDIR)$(LIBPL)/makesetup
++		$(INSTALL_PROGRAM) $(srcdir)/install-sh $(DESTDIR)$(LIBPL)/install-sh
++		$(INSTALL_DATA) $(srcdir)/Misc/Makefile.pre.in $(DESTDIR)$(LIBPL)/Makefile.pre.in
+ 		@if [ -s Modules/python.exp -a \
+ 			"`echo $(MACHDEP) | sed 's/^\(...\).*/\1/'`" = "aix" ]; then \
+ 			echo; echo "Installing support files for building shared extension modules on AIX:"; \
+@@ -425,6 +425,7 @@
+ 			CCSHARED="$(CCSHARED)" \
+ 			LINKFORSHARED="$(LINKFORSHARED)" \
+ 			DESTSHARED="$(DESTSHARED)" \
++			DESTDIR="$(DESTDIR)" \
+ 			prefix="$(prefix)" \
+ 			exec_prefix="$(exec_prefix)" \
+ 			sharedinstall
+--- Modules/Makefile.pre.in	2022-10-21 17:56:44.635251486 +1100
++++ Modules/Makefile.pre.in	2022-10-21 17:57:00.124415957 +1100
+@@ -240,7 +240,7 @@
+ sharedinstall:	$(DESTSHARED) $(SHAREDMODS)
+ 		-for i in X $(SHAREDMODS); do \
+ 			if test $$i != X; \
+-			then $(INSTALL_SHARED) $$i $(DESTSHARED)/$$i; \
++			then $(INSTALL_SHARED) $$i $(DESTDIR)$(DESTSHARED)/$$i; \
+ 			fi; \
+ 		done
+ 

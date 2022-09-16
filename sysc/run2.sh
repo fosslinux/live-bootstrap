@@ -103,6 +103,10 @@ build autogen-5.18.16 autogen-5.18.16.sh
 
 build musl-1.2.3
 
+build Python-2.0.1 stage1.sh
+
+build Python-2.0.1 stage2.sh
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp
