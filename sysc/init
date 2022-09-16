@@ -7,12 +7,13 @@
 
 set -e
 
-export PATH=/usr/bin:/usr/sbin
-export PREFIX=/usr
-export SOURCES=/usr/src
-export DESTDIR=/tmp/destdir
-export DISTFILES=/distfiles
-export SRCDIR="${SOURCES}"
+PREFIX=/usr
+SOURCES="${PREFIX}/src"
+DESTDIR=/tmp/destdir
+DISTFILES=/distfiles
+SRCDIR="${SOURCES}"
+
+export PATH="${PREFIX}/bin:${PREFIX}/sbin"
 export HOME=/tmp
 export SOURCE_DATE_EPOCH=0
 
@@ -61,4 +62,12 @@ ln -s /usr/bin/bash /usr/bin/sh
 
 # Begin sysc bootstrapping process
 cd "${SOURCES}"
+
+# shellcheck disable=SC2129
+echo "PREFIX=${PREFIX}" >> .env
+echo "SOURCES=${SOURCES}" >> .env
+echo "DESTDIR=${DESTDIR}" >> .env
+echo "DISTFILES=${DISTFILES}" >> .env
+echo "SRCDIR=${SRCDIR}" >> .env
+
 exec ./run.sh

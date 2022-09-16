@@ -24,7 +24,4 @@ src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
     rm "${DESTDIR}${PREFIX}/share/doc/automake/amhello-1.0.tar.gz"
     rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
-
-    # Delete some stray directories
-    rm -r "${DESTDIR}${SOURCES}"
 }

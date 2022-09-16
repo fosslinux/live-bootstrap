@@ -8,6 +8,9 @@
 
 set -e
 
+# shellcheck source=/dev/null
+. .env
+
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 
@@ -55,4 +58,4 @@ fi
 
 build bash-5.1
 
-exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" SRCDIR="${SRCDIR}" HOME="${HOME}" SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}" bash run2.sh
+exec env -i PATH="${PATH}" HOME="${HOME}" SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}" bash run2.sh

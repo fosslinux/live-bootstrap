@@ -7,9 +7,10 @@
 
 set -e
 
-export PATH=/usr/bin
-export PREFIX=/usr
-export SOURCES=/usr/src
+PREFIX=/usr
+SOURCES="${PREFIX}/src"
+
+export PATH="${PREFIX}/bin"
 
 # shellcheck source=sysa/helpers.sh
 . /usr/src/helpers.sh
@@ -34,5 +35,10 @@ install_tar kexec-tools-2.0.22 0
 install_tar util-linux-2.19.1 0
 
 # Begin sysb bootstrapping process
-cd /usr/src
-./run.sh
+cd "${SOURCES}"
+
+# shellcheck disable=SC2129
+echo "PREFIX=${PREFIX}" >> .env
+echo "SOURCES=${SOURCES}" >> .env
+
+exec ./run.sh
