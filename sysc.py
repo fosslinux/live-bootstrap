@@ -212,3 +212,6 @@ class SysC(SysGeneral):
         self.get_file(["https://mirrors.kernel.org/gnu/guile/guile-3.0.7.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-901694b9.tar.gz",
                        "https://github.com/schierlm/guile-psyntax-bootstrapping/archive/refs/tags/guile-3.0.7.tar.gz"])
+
+        # which 2.21
+        self.get_file("https://carlowood.github.io/which/which-2.21.tar.gz")

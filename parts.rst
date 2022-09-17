@@ -836,3 +836,10 @@ of the programming language Scheme.
 
 We use ``guile-psyntax-bootstrapping`` project to bootstrap Guile's ``psyntax.pp``
 without relying on pre-expanded code.
+
+which 2.21
+==========
+
+``which`` shows the full path of (shell) commands. It mostly duplicates
+bash built-in ``command -v`` but some scripts call ``which`` instead.
+In particular, ``autogen`` scripts use it.
