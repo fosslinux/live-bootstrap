@@ -11,7 +11,7 @@ set -e
 # shellcheck disable=SC2154
 PREFIX="${prefix}"
 # shellcheck disable=SC2034
-LIBDIR="${prefix}/lib/musl"
+LIBDIR="${prefix}/lib/i386-unknown-linux-musl"
 # shellcheck disable=SC2154
 SOURCES="${sysa}"
 DISTFILES="${sysa}/distfiles"

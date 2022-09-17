@@ -43,7 +43,7 @@ src_compile() {
     # Specify timeout to avoid non-reproducibility
     ./configure \
 	--prefix="${FINALPREFIX}" \
-	--libdir="${FINALPREFIX}/lib/musl" \
+	--libdir="${FINALPREFIX}/lib/i386-unknown-linux-musl" \
 	--disable-shared \
 	--enable-timeout=15
     touch doc/agdoc.texi # build later

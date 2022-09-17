@@ -8,7 +8,7 @@
 set -e
 
 PREFIX=/usr
-LIBDIR="${PREFIX}/lib/musl"
+LIBDIR="${PREFIX}/lib/i386-unknown-linux-musl"
 SOURCES="${PREFIX}/src"
 DESTDIR=/tmp/destdir
 DISTFILES=/distfiles
