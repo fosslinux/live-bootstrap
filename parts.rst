@@ -843,3 +843,8 @@ which 2.21
 ``which`` shows the full path of (shell) commands. It mostly duplicates
 bash built-in ``command -v`` but some scripts call ``which`` instead.
 In particular, ``autogen`` scripts use it.
+
+grep 3.7
+========
+
+Newer ``grep`` will be needed to bootstrap ``autogen``.

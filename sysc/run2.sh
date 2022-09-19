@@ -100,6 +100,8 @@ build guile-3.0.7
 
 build which-2.21
 
+build grep-3.7
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp

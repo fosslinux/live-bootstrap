@@ -215,3 +215,7 @@ class SysC(SysGeneral):
 
         # which 2.21
         self.get_file("https://carlowood.github.io/which/which-2.21.tar.gz")
+
+        # grep 3.7
+        self.get_file(["https://mirrors.kernel.org/gnu/grep/grep-3.7.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-8f4538a5.tar.gz"])
