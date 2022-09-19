@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -15,7 +15,6 @@ src_configure() {
 	--prefix="${PREFIX}" \
 	--libdir="${PREFIX}/lib/musl" \
 	--build=i386-unknown-linux-musl \
-	--disable-shared \
 	--with-gcc-arch=generic \
 	--enable-pax_emutramp
 }

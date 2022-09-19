@@ -12,7 +12,7 @@ src_prepare() {
 }
 
 src_configure() {
-    CFLAGS="-static" ./configure --prefix="${PREFIX}"
+    LDFLAGS="-static" ./configure --prefix="${PREFIX}"
 }
 
 src_install() {
