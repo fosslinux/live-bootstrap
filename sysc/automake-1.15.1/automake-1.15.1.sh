@@ -22,7 +22,7 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true
+    AUTORECONF=autoreconf-2.69 AUTOM4TE=autom4te-2.69 AUTOHEADER=autoheader-2.69 AUTOCONF=autoconf-2.69 make MAKEINFO=true
 }
 
 src_install() {
