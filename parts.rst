@@ -848,3 +848,10 @@ grep 3.7
 ========
 
 Newer ``grep`` will be needed to bootstrap ``autogen``.
+
+sed 4.8
+=======
+
+Earlier ``sed`` was built with manual makefile with most features compiled out.
+Build a newer ``sed`` using GNU Autotools build system. In particular this will let
+sed keep executable bit on after in place editing.
