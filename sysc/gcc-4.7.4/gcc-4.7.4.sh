@@ -4,8 +4,6 @@
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="https://mirrors.kernel.org/gnu/gcc/gcc-4.7.4/gcc-4.7.4.tar.bz2"
-
 src_prepare() {
     default
 

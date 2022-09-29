@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://libarchive.org/downloads/libarchive-3.5.2.tar.xz"
-
 src_prepare() {
     default
 

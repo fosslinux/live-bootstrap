@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://mirrors.kernel.org/gnu/mpfr/mpfr-4.1.0.tar.xz"
-
 src_prepare() {
     default
 

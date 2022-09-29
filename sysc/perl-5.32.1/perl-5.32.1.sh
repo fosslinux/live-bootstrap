@@ -3,9 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://www.cpan.org/src/5.0/perl-5.32.1.tar.xz
-  http://deb.debian.org/debian/pool/main/p/perl/perl_5.32.1.orig-regen-configure.tar.gz"
-
 src_prepare() {
     default
 

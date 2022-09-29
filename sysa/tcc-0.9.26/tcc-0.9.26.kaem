@@ -17,6 +17,10 @@ MES=${bindir}/mes
 TCC_TAR=tcc-0.9.26
 TCC_PKG=tcc-0.9.26-1136-g5bba73cc
 
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
 # Unpack
 mkdir src build
 

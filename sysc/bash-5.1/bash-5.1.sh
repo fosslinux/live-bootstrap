@@ -5,8 +5,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://mirrors.kernel.org/gnu/bash/bash-5.1.tar.gz"
-
 src_prepare() {
     # Remove bison generated files
     rm y.tab.c y.tab.h

@@ -4,7 +4,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="https://mirrors.kernel.org/gnu/binutils/binutils-2.38.tar.xz"
 
 src_prepare() {
     default

@@ -4,8 +4,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://mirrors.kernel.org/gnu/libtool/libtool-2.4.7.tar.xz
- http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-a521820.tar.gz"
 
 src_prepare() {
     default

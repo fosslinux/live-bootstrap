@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://deb.debian.org/debian/pool/main/d/dist/dist_3.5-236.orig.tar.gz"
-
 # We manually compile here because ./Configure uses metaconfig itself
 # *sigh*
 

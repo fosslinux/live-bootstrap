@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://master.dl.sourceforge.net/project/curl.mirror/curl-7_83_0/curl-7.83.0.tar.xz"
-
 src_prepare() {
     default
 

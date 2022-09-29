@@ -58,28 +58,18 @@ class SysGeneral:
         mount('tmpfs', self.tmp_dir, 'tmpfs', 'size=8G')
         self.mounted_tmpfs = True
 
-    def check_file(self, file_name):
+    def check_file(self, file_name, expected_hash):
         """Check hash of downloaded source file."""
-        checksum_store = os.path.join(self.sys_dir, 'SHA256SUMS.sources')
-        with open(checksum_store, encoding="utf_8") as checksum_file:
-            hashes = checksum_file.read().splitlines()
-        for hash_line in hashes:
-            if os.path.basename(file_name) in hash_line:
-                # Hash is in store, check it
-                expected_hash = hash_line.split()[0]
-
-                with open(file_name, "rb") as downloaded_file:
-                    downloaded_content = downloaded_file.read() # read entire file as bytes
-                readable_hash = hashlib.sha256(downloaded_content).hexdigest()
-                if expected_hash == readable_hash:
-                    return
-                raise Exception(f"Checksum mismatch for file {os.path.basename(file_name)}:\n\
+        with open(file_name, "rb") as downloaded_file:
+            downloaded_content = downloaded_file.read() # read entire file as bytes
+        readable_hash = hashlib.sha256(downloaded_content).hexdigest()
+        if expected_hash == readable_hash:
+            return
+        raise Exception(f"Checksum mismatch for file {os.path.basename(file_name)}:\n\
 expected: {expected_hash}\n\
 actual:   {readable_hash}\n\
 When in doubt, try deleting the file in question -- it will be downloaded again when running \
 this script the next time")
-
-        raise Exception("File checksum is not yet recorded")
 
     def download_file(self, url, file_name=None):
         """
@@ -107,37 +97,24 @@ this script the next time")
                     target_file.write(response.raw.read())
             else:
                 raise Exception("Download failed.")
-
-        # Check SHA256 hash
-        self.check_file(abs_file_name)
         return abs_file_name
 
-    def get_file(self, url, output=None):
-        """
-        Download and prepare source packages
-
-        url can be either:
-          1. a single URL
-          2. list of URLs to download. In this case the first URL is the primary URL
-             from which we derive the name of package directory
-        output can be used to override file name of the downloaded file(s).
-        """
-        # Single URL
-        if isinstance(url, str):
-            assert output is None or isinstance(output, str)
-            urls = [url]
-            outputs = [output]
-        # Multiple URLs
-        elif isinstance(url, list):
-            assert output is None or len(output) == len(url)
-            urls = url
-            outputs = output if output is not None else [None] * len(url)
-        else:
-            raise TypeError("url must be either a string or a list of strings")
-        # Install base files
-        for i, uri in enumerate(urls):
-            # Download files into cache directory
-            self.download_file(uri, outputs[i])
+    def get_packages(self):
+        """Prepare remaining sources"""
+        # Find all source files
+        for file in os.listdir(self.sys_dir):
+            if os.path.isdir(os.path.join(self.sys_dir, file)):
+                sourcef = os.path.join(self.sys_dir, file, "sources")
+                if os.path.exists(sourcef):
+                    # Download sources in the source file
+                    with open(sourcef, "r", encoding="utf_8") as sources:
+                        for line in sources.readlines():
+                            line = line.strip().split(" ")
+                            if len(line) > 2:
+                                path = self.download_file(line[0], line[2])
+                            else:
+                                path = self.download_file(line[0])
+                            self.check_file(path, line[1])
 
     def make_initramfs(self):
         """Package binary bootstrap seeds and sources into initramfs."""

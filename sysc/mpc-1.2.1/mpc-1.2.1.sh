@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://mirrors.kernel.org/gnu/mpc/mpc-1.2.1.tar.gz"
-
 src_prepare() {
     default
 

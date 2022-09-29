@@ -2,9 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz
- https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz"
-
 src_prepare() {
     find . -name '*.info*' -delete
 

@@ -3,8 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="https://musl.libc.org/releases/musl-1.2.3.tar.gz"
-
 src_configure() {
     ./configure \
         --host=i386-unknown-linux-musl \
