@@ -219,3 +219,13 @@ class SysC(SysGeneral):
         # grep 3.7
         self.get_file(["https://mirrors.kernel.org/gnu/grep/grep-3.7.tar.xz",
                        "https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-8f4538a5.tar.gz"])
+
+        # sed 4.8
+        self.get_file(["https://mirrors.kernel.org/gnu/sed/sed-4.8.tar.xz",
+                       "http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d279bc.tar.gz"])
+
+        # autogen 5.18.16
+        self.get_file(["https://mirrors.kernel.org/gnu/autogen/rel5.18.16/autogen-5.18.16.tar.xz",
+                       "https://git.savannah.gnu.org/cgit/autogen.git/snapshot/autogen-5.18.16.tar.gz",
+                       "https://github.com/schierlm/gnu-autogen-bootstrapping/archive/refs/tags/autogen-5.18.16-v1.0.tar.gz",
+                       "http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-8f4538a5.tar.gz"])

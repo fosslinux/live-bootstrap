@@ -102,6 +102,10 @@ build which-2.21
 
 build grep-3.7
 
+build sed-4.8
+
+build autogen-5.18.16 autogen-5.18.16.sh '' gnu-autogen-bootstrapping-autogen-5.18.16-v1.0
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp

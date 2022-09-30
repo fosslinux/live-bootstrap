@@ -848,3 +848,18 @@ grep 3.7
 ========
 
 Newer ``grep`` will be needed to bootstrap ``autogen``.
+
+sed 4.8
+=======
+
+Earlier ``sed`` was built with manual makefile with most features compiled out.
+Build a newer ``sed`` using GNU Autotools build system. In particular this will let
+sed keep executable bit on after in place editing.
+
+autogen 5.18.16
+===============
+
+GNU Autogen is a tool designed to simplify the creation and maintenance of programs that contain large amounts of repetitious text. Unfortunately, the source is full of pregenerated files that require ``autogen`` to rebuild.
+
+We will use `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-bootstrapping>`_ project to rebuild
+those and create slightly crippled ``autogen`` that is then able to build full-featured version.
