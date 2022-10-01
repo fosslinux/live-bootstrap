@@ -14,6 +14,10 @@ MES_STACK=6000000
 MES=${bindir}/mes-m2
 libdir=${MES_PREFIX}/lib
 
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
 # Unpack
 mkdir src build
 cd src

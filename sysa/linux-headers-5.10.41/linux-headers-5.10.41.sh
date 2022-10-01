@@ -3,14 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-src_unpack() {
-    tarball="${DISTFILES}/linux-headers-5.10.41.tar.gz"
-    tar -xzf "${tarball}" "${dirname}/scripts"
-    tar -xzf "${tarball}" "${dirname}/include"
-    tar -xzf "${tarball}" "${dirname}/arch/x86/include"
-    tar -xzf "${tarball}" "${dirname}/arch/x86/entry"
-}
-
 src_prepare() {
     default
 

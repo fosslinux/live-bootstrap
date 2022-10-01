@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_78_RTM/src/nss-3.78.tar.gz"
-
 src_compile() {
     cp -a nss/lib/ckfw/builtins/certdata.txt .
     mk-ca-bundle -n -s ALL -m

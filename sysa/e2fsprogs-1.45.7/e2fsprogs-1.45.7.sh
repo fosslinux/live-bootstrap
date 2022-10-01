@@ -2,15 +2,11 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-src_unpack() {
-    default
-
-    # Get remaining utf files
-    cp ${DISTFILES}/*.txt ${pkg}/
-}
-
 src_prepare() {
     default
+
+    # Get UTF txt files
+    cp ../*.txt .
 
     # Rebuild libtool files
     rm config/config.guess config/config.sub config/ltmain.sh

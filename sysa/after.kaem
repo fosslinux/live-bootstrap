@@ -32,6 +32,7 @@ cp /${ARCH_DIR}/bin/hex2 ${bindir}/hex2
 cp /${ARCH_DIR}/bin/kaem ${bindir}/kaem
 cp /${ARCH_DIR}/bin/match ${bindir}/match
 cp /${ARCH_DIR}/bin/M1 ${bindir}/M1
+cp /${ARCH_DIR}/bin/M2-Mesoplanet ${bindir}/M2-Mesoplanet
 cp /${ARCH_DIR}/bin/M2-Planet ${bindir}/M2-Planet
 cp /${ARCH_DIR}/bin/mkdir ${bindir}/mkdir
 cp /${ARCH_DIR}/bin/sha256sum ${bindir}/sha256sum
@@ -50,6 +51,7 @@ chmod 755 ${bindir}/hex2
 chmod 755 ${bindir}/kaem
 chmod 755 ${bindir}/match
 chmod 755 ${bindir}/M1
+chmod 755 ${bindir}/M2-Mesoplanet
 chmod 755 ${bindir}/M2-Planet
 chmod 755 ${bindir}/mkdir
 chmod 755 ${bindir}/sha256sum
@@ -59,10 +61,6 @@ chmod 755 ${bindir}/replace
 chmod 755 ${bindir}/rm
 
 PATH=${bindir}
-
-# Check packages
-cd ${distfiles}
-sha256sum -c ../SHA256SUMS.sources
 
 cd ${sysa}
 

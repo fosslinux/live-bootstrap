@@ -3,9 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://mirrors.kernel.org/gnu/tar/tar-1.34.tar.xz
- http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-30820c.tar.gz"
-
 src_prepare() {
     default
 

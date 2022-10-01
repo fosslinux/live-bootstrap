@@ -196,55 +196,94 @@ build() {
     unset -f src_unpack src_prepare src_configure src_compile src_install
 }
 
+interpret_source_line() {
+    url="${1}"
+    checksum="${2}"
+    fname="${3}"
+    # Default to basename of url if not given
+    fname="${fname:-$(basename "${url}")}"
+    if ! [ -e "${fname}" ]; then
+        curl -L "${url}" --output "${fname}"
+    fi
+    echo "${checksum}  ${fname}" | sha256sum -c
+}
+
 # Default get function that downloads source tarballs.
 default_src_get() {
     # shellcheck disable=SC2153
     cd "${DISTFILES}"
-    # shellcheck disable=SC2154
-    if [ -n "${urls}" ] && command -v curl >/dev/null 2>&1; then
-        # shellcheck disable=SC2153
-        for i in ${urls}; do
-            if ! [ -e "$(basename "${i}")" ]; then
-                curl -L "${i}" --output "$(basename "${i}")"
-                grep "$(basename "${i}")" "${SOURCES}/SHA256SUMS.sources" | sha256sum -c
-            fi
-        done
-    fi
+    # shellcheck disable=SC2162
+    while read line; do
+        # This is intentional - we want to split out ${line} into separate arguments.
+        # shellcheck disable=SC2086
+        interpret_source_line ${line}
+    done < "${base_dir}/sources"
     cd -
 }
 
-# Default unpacking function that unpacks all source tarballs.
-default_src_unpack() {
-    distfiles="${EXTRA_DISTFILES}"
-    if [ -z "${urls}" ]; then
-        # shellcheck disable=SC2153
-        for f in "${DISTFILES}/${pkg}."*; do
-            distfiles="$(basename "$f") ${distfiles}"
-        done
+# Intelligently extracts a file based upon its filetype.
+extract_file() {
+    f="$(basename "${1}")"
+    if test $# -gt 3; then
+        shift 3
+        extract="$*"
     else
-        for i in ${urls}; do
-            distfiles="$(basename "${i}") ${distfiles}"
-        done
+        extract=
     fi
-
-    # Check for new tar
-    # shellcheck disable=SC2153
-    if test -e "${PREFIX}/libexec/rmt"; then
-        for i in ${distfiles}; do
-            tar --no-same-owner -xf "${DISTFILES}/${i}"
-        done
-    else
-        for i in ${distfiles}; do
-            case "$i" in
-            *.tar.gz) tar -xzf "${DISTFILES}/${i}" ;;
-            *.tar.bz2)
-                # Initial bzip2 built against meslibc has broken pipes
-                bzip2 -dc "${DISTFILES}/${i}" | tar -xf - ;;
-            *.tar.xz)
-                tar -xf "${DISTFILES}/${i}" --use-compress-program=xz ;;
+    # shellcheck disable=SC2154
+    case "${noextract}" in
+        *${f}*)
+            cp "${DISTFILES}/${f}" .
+            ;;
+        *)
+            case "${f}" in
+                *.tar*)
+                    if test -e "${PREFIX}/libexec/rmt"; then
+                        # Again, we want to split out into words.
+                        # shellcheck disable=SC2086
+                        tar --no-same-owner -xf "${DISTFILES}/${f}" -- ${extract}
+                    else
+                        # shellcheck disable=SC2086
+                        case "${f}" in
+                        *.tar.gz) tar -xzf "${DISTFILES}/${f}" -- ${extract} ;;
+                        *.tar.bz2)
+                            # Initial bzip2 built against meslibc has broken pipes
+                            bzip2 -dc "${DISTFILES}/${f}" | tar -xf - -- ${extract} ;;
+                        *.tar.xz)
+                            tar -xf "${DISTFILES}/${f}" --use-compress-program=xz -- ${extract} ;;
+                        esac
+                    fi
+                    ;;
+                *)
+                    cp "${DISTFILES}/${f}" .
+                    ;;
             esac
+            ;;
+    esac
+}
+
+# Default unpacking function that unpacks all sources.
+default_src_unpack() {
+    # Handle the first one differently
+    first_line=$(head -n 1 ../sources)
+    # Again, we want to split out into words.
+    # shellcheck disable=SC2086
+    extract_file ${first_line}
+    # This assumes there is only one directory in the tarball
+    # Get the dirname "smartly"
+    if ! [ -e "${dirname}" ]; then
+        for i in *; do
+            if [ -d "${i}" ]; then
+                dirname="${i}"
+                break
+            fi
         done
     fi
+    # shellcheck disable=SC2162
+    tail -n +2 ../sources | while read line; do
+        # shellcheck disable=SC2086
+        extract_file ${line}
+    done
 }
 
 # Default function to prepare source code.

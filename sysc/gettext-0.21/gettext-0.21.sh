@@ -3,9 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="https://mirrors.kernel.org/gnu/gettext/gettext-0.21.tar.xz
- https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-7daa86f.tar.gz"
-
 src_prepare() {
     find . -name '*.info*' -delete
     find . -name '*.gmo' -delete

@@ -7,6 +7,10 @@
 
 set -ex
 
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
 mkdir build src
 cd build 
 

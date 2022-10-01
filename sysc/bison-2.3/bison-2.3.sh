@@ -3,9 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="http://mirrors.kernel.org/gnu/bison/bison-2.3.tar.bz2
- http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b28236b.tar.gz"
-
 src_prepare() {
     default
 

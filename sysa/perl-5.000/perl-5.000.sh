@@ -3,12 +3,6 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-src_unpack() {
-    default
-
-    mv perl5-perl-5.000 perl-5.000
-}
-
 src_prepare() {
     default
 

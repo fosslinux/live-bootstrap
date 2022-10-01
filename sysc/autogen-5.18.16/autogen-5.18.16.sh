@@ -1,28 +1,15 @@
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="https://mirrors.kernel.org/gnu/autogen/rel5.18.16/autogen-5.18.16.tar.xz
- https://git.savannah.gnu.org/cgit/autogen.git/snapshot/autogen-5.18.16.tar.gz
- https://github.com/schierlm/gnu-autogen-bootstrapping/archive/refs/tags/autogen-5.18.16-v1.0.tar.gz
- http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-8f4538a5.tar.gz"
-
-src_unpack() {
-    tar --no-same-owner -xf "${DISTFILES}/autogen-5.18.16-v1.0.tar.gz"
-    tar --no-same-owner -xf "${DISTFILES}/gnulib-8f4538a5.tar.gz"
-    local build_dir=gnu-autogen-bootstrapping-autogen-5.18.16-v1.0/build
-    mkdir -p "${build_dir}"
-    cp "${DISTFILES}/autogen-5.18.16.tar.xz" "${build_dir}"
-    cp "${DISTFILES}/autogen-5.18.16.tar.gz" "${build_dir}"
-    pushd "${build_dir}"
-    tar --no-same-owner -xf autogen-5.18.16.tar.gz
-    mv autogen-5.18.16 src
-    rm -f src/add-on/char-mapper/cm.tar
-    popd
-}
+noextract="autogen-5.18.16.tar.xz"
 
 src_prepare() {
-    :
+    mkdir build
+    mv ../autogen-5.18.16 build/src
+    mv ../autogen-5.18.16.tar.xz build/
+    rm -f build/src/add-on/char-mapper/cm.tar
 }
 
 src_compile() {
