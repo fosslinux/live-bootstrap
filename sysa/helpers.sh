@@ -107,6 +107,7 @@ bin_preseed() {
                 mv -- *-repodata ../repo
             fi
             cd "${SRCDIR}/repo"
+            rm -f /tmp/filelist.txt
             src_apply "${pkg}" $((revision))
             cd "${SOURCES}"
             return 0
@@ -128,7 +129,7 @@ build() {
     script_name=${2:-${pkg}.sh}
     dirname=${4:-${pkg}}
 
-    bin_preseed && return
+    bin_preseed && return || true # Normal build if preseed fails
 
     cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
     echo "${pkg}: beginning build using script ${script_name}"
@@ -472,6 +473,9 @@ sys_transfer() {
     cp -r "${sys_sources}/"* "${dest}/${PREFIX}/src"
     cp -f "${sys_sources}/init" "${dest}/"
     cp -r "${PREFIX}/src/repo" "${dest}/${PREFIX}/src"
+    if [ -e "${PREFIX}/src/repo-preseeded" ]; then
+        cp -r "${PREFIX}/src/repo-preseeded" "${dest}/${PREFIX}/src"
+    fi
 
     shift 2
     # Copy additional binaries
