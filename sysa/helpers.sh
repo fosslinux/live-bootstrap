@@ -233,7 +233,7 @@ extract_file() {
             ;;
         *)
             case "${f}" in
-                *.tar*)
+                *.tar* | *.tgz)
                     if test -e "${PREFIX}/libexec/rmt"; then
                         # Again, we want to split out into words.
                         # shellcheck disable=SC2086
