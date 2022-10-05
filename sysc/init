@@ -13,6 +13,7 @@ export SOURCES=/usr/src
 export DESTDIR=/tmp/destdir
 export DISTFILES=/distfiles
 export SRCDIR="${SOURCES}"
+export HOME=/tmp
 
 # shellcheck source=sysa/helpers.sh
 . "${SOURCES}/helpers.sh"

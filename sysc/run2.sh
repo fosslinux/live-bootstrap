@@ -125,4 +125,5 @@ cd "/"
 if [ -e after.sh ]; then
     FILE=after.sh
 fi
-exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" bash ${FILE}
+
+exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" HOME="${HOME}" bash ${FILE}

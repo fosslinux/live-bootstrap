@@ -55,4 +55,4 @@ fi
 
 build bash-5.1
 
-exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" SRCDIR="${SRCDIR}" bash run2.sh
+exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" SRCDIR="${SRCDIR}" HOME="${HOME}" bash run2.sh
