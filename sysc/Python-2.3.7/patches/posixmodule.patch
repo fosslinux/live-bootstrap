@@ -1,0 +1,33 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+musl (correctly) implements the POSIX posix_close function, however
+this was added after Python 2.3.7 was released.
+
+--- Modules/posixmodule.c	2022-10-05 18:38:46.718131893 +1100
++++ Modules/posixmodule.c	2022-10-05 18:39:07.049250312 +1100
+@@ -5208,12 +5208,12 @@
+ }
+ 
+ 
+-PyDoc_STRVAR(posix_close__doc__,
++PyDoc_STRVAR(py_posix_close__doc__,
+ "close(fd)\n\n\
+ Close a file descriptor (for low level IO).");
+ 
+ static PyObject *
+-posix_close(PyObject *self, PyObject *args)
++py_posix_close(PyObject *self, PyObject *args)
+ {
+ 	int fd, res;
+ 	if (!PyArg_ParseTuple(args, "i:close", &fd))
+@@ -7371,7 +7371,7 @@
+ 	{"tcsetpgrp",	posix_tcsetpgrp, METH_VARARGS, posix_tcsetpgrp__doc__},
+ #endif /* HAVE_TCSETPGRP */
+ 	{"open",	posix_open, METH_VARARGS, posix_open__doc__},
+-	{"close",	posix_close, METH_VARARGS, posix_close__doc__},
++	{"close",	py_posix_close, METH_VARARGS, py_posix_close__doc__},
+ 	{"dup",		posix_dup, METH_VARARGS, posix_dup__doc__},
+ 	{"dup2",	posix_dup2, METH_VARARGS, posix_dup2__doc__},
+ 	{"lseek",	posix_lseek, METH_VARARGS, posix_lseek__doc__},
