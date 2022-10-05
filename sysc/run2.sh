@@ -84,8 +84,6 @@ build gcc-4.7.4
 
 build binutils-2.38
 
-build musl-1.2.3
-
 build gperf-3.1
 
 build libunistring-0.9.10
@@ -105,6 +103,8 @@ build grep-3.7
 build sed-4.8
 
 build autogen-5.18.16 autogen-5.18.16.sh '' gnu-autogen-bootstrapping-autogen-5.18.16-v1.0
+
+build musl-1.2.3
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'

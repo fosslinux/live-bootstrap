@@ -44,6 +44,7 @@ src_compile() {
     ./configure \
 	--prefix="${FINALPREFIX}" \
 	--libdir="${FINALPREFIX}/lib/musl" \
+	--disable-shared \
 	--enable-timeout=15
     touch doc/agdoc.texi # build later
     make CFLAGS=-Wno-error

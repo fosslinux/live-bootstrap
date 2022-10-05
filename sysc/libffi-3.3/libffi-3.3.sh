@@ -10,9 +10,10 @@ src_prepare() {
 
 src_configure() {
     ./configure \
-	--prefix="${PREFIX}" \
-	--libdir="${PREFIX}/lib/musl" \
-	--build=i386-unknown-linux-musl \
-	--with-gcc-arch=generic \
-	--enable-pax_emutramp
+        --prefix="${PREFIX}" \
+        --libdir="${PREFIX}/lib/musl" \
+        --build=i386-unknown-linux-musl \
+        --disable-shared \
+        --with-gcc-arch=generic \
+        --enable-pax_emutramp
 }
