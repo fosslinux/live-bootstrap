@@ -61,7 +61,7 @@ build libarchive-3.5.2
 
 build openssl-1.1.1l
 
-build ca-certificates-3.78 '' '' nss-3.78
+build ca-certificates-3.78
 
 build curl-7.83.0
 
@@ -102,7 +102,7 @@ build grep-3.7
 
 build sed-4.8
 
-build autogen-5.18.16 autogen-5.18.16.sh '' gnu-autogen-bootstrapping-autogen-5.18.16-v1.0
+build autogen-5.18.16 autogen-5.18.16.sh
 
 build musl-1.2.3
 
