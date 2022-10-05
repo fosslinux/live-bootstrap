@@ -792,12 +792,6 @@ This version of binutils provides a more comprehensive set of programming tools 
 creating and managing binary programs. It also includes modern versions of the ``ld``
 linker, the ``as`` assembler and the ``ar`` program.
 
-musl 1.2.3
-==========
-
-With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
-with support for dynamic linking.
-
 gperf 3.1
 =========
 
@@ -863,3 +857,9 @@ GNU Autogen is a tool designed to simplify the creation and maintenance of progr
 
 We will use `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-bootstrapping>`_ project to rebuild
 those and create slightly crippled ``autogen`` that is then able to build full-featured version.
+
+musl 1.2.3
+==========
+
+With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
+with support for dynamic linking.
