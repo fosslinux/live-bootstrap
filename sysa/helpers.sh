@@ -241,16 +241,16 @@ extract_file() {
                     if test -e "${PREFIX}/libexec/rmt"; then
                         # Again, we want to split out into words.
                         # shellcheck disable=SC2086
-                        tar --no-same-owner -xf "${DISTFILES}/${f}" -- ${extract}
+                        tar --no-same-owner -xf "${DISTFILES}/${f}" ${extract}
                     else
                         # shellcheck disable=SC2086
                         case "${f}" in
-                        *.tar.gz) tar -xzf "${DISTFILES}/${f}" -- ${extract} ;;
+                        *.tar.gz) tar -xzf "${DISTFILES}/${f}" ${extract} ;;
                         *.tar.bz2)
                             # Initial bzip2 built against meslibc has broken pipes
-                            bzip2 -dc "${DISTFILES}/${f}" | tar -xf - -- ${extract} ;;
+                            bzip2 -dc "${DISTFILES}/${f}" | tar -xf - ${extract} ;;
                         *.tar.xz)
-                            tar -xf "${DISTFILES}/${f}" --use-compress-program=xz -- ${extract} ;;
+                            tar -xf "${DISTFILES}/${f}" --use-compress-program=xz ${extract} ;;
                         esac
                     fi
                     ;;
