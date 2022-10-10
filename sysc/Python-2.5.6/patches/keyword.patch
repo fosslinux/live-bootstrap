@@ -1,0 +1,28 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+frozenset() is a feature only added in Python 2.5, but we are
+building Python 2.5, so we must bypass this logic. (It is not
+critical, so we can just remove it).
+
+--- Lib/keyword.py	2022-10-11 12:51:13.050744758 +1100
++++ Lib/keyword.py	2022-10-11 12:52:05.946372559 +1100
+@@ -10,7 +10,7 @@
+     python Lib/keyword.py
+ """
+ 
+-__all__ = ["iskeyword", "kwlist"]
++__all__ = ["kwlist"]
+ 
+ kwlist = [
+ #--start keywords--
+@@ -48,8 +48,6 @@
+ #--end keywords--
+         ]
+ 
+-iskeyword = frozenset(kwlist).__contains__
+-
+ def main():
+     import sys, re
+ 

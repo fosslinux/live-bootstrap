@@ -1,0 +1,31 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+There is a cycle in the build process. graminit.h requires
+parsetok.c to be built, but graminit.h is included in parsetok.c.
+Luckily the cycle can be broken by just NOP-ing the logic from
+graminit.h.
+
+We apply this patch before regen-ing graminit.h and revert it
+afterward.
+
+--- Parser/parsetok.c	2022-10-09 20:22:15.431229996 +1100
++++ Parser/parsetok.c	2022-10-09 20:22:57.981822483 +1100
+@@ -8,7 +8,6 @@
+ #include "parser.h"
+ #include "parsetok.h"
+ #include "errcode.h"
+-#include "graminit.h"
+ 
+ int Py_TabcheckFlag;
+ 
+@@ -239,7 +238,7 @@
+ 			err_ret->text = text;
+ 		}
+ 	} else if (tok->encoding != NULL) {
+-		node* r = PyNode_New(encoding_decl);
++		node* r = NULL;
+ 		if (!r) {
+ 			err_ret->error = E_NOMEM;
+ 			n = NULL;
