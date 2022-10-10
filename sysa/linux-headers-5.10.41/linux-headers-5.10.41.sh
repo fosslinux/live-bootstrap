@@ -3,6 +3,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+extract="linux-5.10.41/scripts linux-5.10.41/include linux-5.10.41/arch/x86/include linux-5.10.41/arch/x86/entry"
+
 src_prepare() {
     default
 
