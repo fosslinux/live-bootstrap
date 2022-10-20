@@ -65,7 +65,7 @@ build ca-certificates-3.78 '' '' nss-3.78
 
 build curl-7.83.0
 
-build zlib-1.2.12
+build zlib-1.2.13
 
 build xbps-0.59.1
 export XBPS_TARGET_ARCH="${ARCH}"
