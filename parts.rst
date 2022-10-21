@@ -736,7 +736,7 @@ OpenSSL is a C library for secure communications/cryptography. We do not
 strictly use any of the networking functions of this library but it is a hard dependency
 of XBPS.
 
-zlib 1.2.12
+zlib 1.2.13
 ===========
 
 zlib is a software library used for data compression and implements an abstraction of
