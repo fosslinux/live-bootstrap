@@ -57,12 +57,6 @@ install_tar util-linux-2.19.1 0
 # Fix invocation of bash from perl
 ln -s /usr/bin/bash /usr/bin/sh
 
-# Check tarballs
-if [ -d "${DISTFILES}" ]; then
-    cd "${DISTFILES}"
-    sha256sum -c "${SOURCES}/SHA256SUMS.sources"
-fi
-
 # Begin sysc bootstrapping process
 cd "${SOURCES}"
 exec ./run.sh
