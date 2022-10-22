@@ -1,0 +1,12 @@
+https://www.python.org/ftp/python/3.1.5/Python-3.1.5.tar.bz2 3a72a21528f0751e89151744350dd12004131d312d47b935ce8041b070c90361
+http://ftp.unicode.org/Public/3.2-Update/UnicodeData-3.2.0.txt 5e444028b6e76d96f9dc509609c5e3222bf609056f35e5fcde7e6fb8a58cd446
+http://ftp.unicode.org/Public/3.2-Update/CompositionExclusions-3.2.0.txt 1d3a450d0f39902710df4972ac4a60ec31fbcb54ffd4d53cd812fc1200c732cb
+http://ftp.unicode.org/Public/3.2-Update/EastAsianWidth-3.2.0.txt ce19f35ffca911bf492aab6c0d3f6af3d1932f35d2064cf2fe14e10be29534cb
+http://ftp.unicode.org/Public/3.2-Update/DerivedCoreProperties-3.2.0.txt 787419dde91701018d7ad4f47432eaa55af14e3fe3fe140a11e4bbf3db18bb4c
+http://ftp.unicode.org/Public/3.2-Update/DerivedNormalizationProps-3.2.0.txt bab49295e5f9064213762447224ccd83cea0cced0db5dcfc96f9c8a935ef67ee
+http://ftp.unicode.org/Public/5.1.0/ucd/UnicodeData.txt 8bd83e9c4e339728ecd532c5b174de5beb9cb4bab5db14e44fcd03ccb2e2c1b5 UnicodeData-5.1.0.txt
+http://ftp.unicode.org/Public/5.1.0/ucd/CompositionExclusions.txt 683b094f2bdd0ab132c0bac293a5404626dd858a53b5364b3b6b525323c5a5e4 CompositionExclusions-5.1.0.txt
+http://ftp.unicode.org/Public/5.1.0/ucd/EastAsianWidth.txt a0d8abf08d08f3e61875aed6011cb70c61dd8ea61089e6ad9b6cf524d8fba0f2 EastAsianWidth-5.1.0.txt
+http://ftp.unicode.org/Public/5.1.0/ucd/DerivedCoreProperties.txt 8f54c77587fee99facc2f28b94e748dfdda5da44f42adab31a65f88b63587ae0 DerivedCoreProperties-5.1.0.txt
+http://ftp.unicode.org/Public/5.1.0/ucd/DerivedNormalizationProps.txt 4fc8cbfa1eed578cdda0768fb4a4ace5443f807c1f652e36a6bd768e81c2c2a3 DerivedNormalizationProps-5.1.0.txt
+http://ftp.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/PC/CP437.TXT 6bad4dabcdf5940227c7d81fab130dcb18a77850b5d79de28b5dc4e047b0aaac
