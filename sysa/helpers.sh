@@ -94,14 +94,14 @@ bin_preseed() {
     if [ -d "${SRCDIR}/repo-preseeded" ]; then
         get_revision "${pkg}"
         cd "${SRCDIR}/repo-preseeded"
-        if src_checksum "${pkg}" $((revision)); then
+        if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
+            mv "${pkg}_${revision}"* ../repo || return 1
             if [[ "${pkg}" == bash-* ]]; then
                 # tar does not like overwriting running bash
                 # shellcheck disable=SC2153
                 rm -f "${PREFIX}/bin/bash" "${PREFIX}/bin/sh"
             fi
-            mv "${pkg}_${revision}"* ../repo
             # shellcheck disable=SC2144
             if [ -f *-repodata ]; then
                 mv -- *-repodata ../repo
