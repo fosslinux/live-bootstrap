@@ -96,7 +96,9 @@ bin_preseed() {
         cd "${SRCDIR}/repo-preseeded"
         if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
-            mv "${pkg}_${revision}"* ../repo || return 1
+            mv "${pkg}_${revision}"* ../repo || \
+                mv "${pkg%-*}${pkg##*-}-0_${revision}"* ../repo || \
+                return 1
             if [[ "${pkg}" == bash-* ]]; then
                 # tar does not like overwriting running bash
                 # shellcheck disable=SC2153
@@ -224,7 +226,7 @@ default_src_get() {
 
 # Intelligently extracts a file based upon its filetype.
 extract_file() {
-    f="$(basename "${1}")"
+    f="${3:-$(basename "${1}")}"
     if test $# -gt 3; then
         shift 3
         extract="$*"
@@ -362,9 +364,9 @@ src_pkg() {
     reset_timestamp
     if command -v xbps-create >/dev/null 2>&1; then
         cd /usr/src/repo
-        xbps-create -A "${ARCH}" -n "${pkg}_${revision}" -s "${pkg}" --compression xz "${DESTDIR}"
+        xbps-create -A "${ARCH}" -n "${pkg%-*}${pkg##*-}-0_${revision}" -s "${pkg}" --compression xz "${DESTDIR}"
         echo "${pkg}: adding package to repository."
-        xbps-rindex --compression xz -a "/usr/src/repo/${pkg}_${revision}.${ARCH}.xbps"
+        xbps-rindex --compression xz -a "/usr/src/repo/${pkg%-*}${pkg##*-}-0_${revision}.${ARCH}.xbps"
     else
         create_tarball_pkg
     fi
@@ -376,7 +378,14 @@ src_checksum() {
     if ! [ "$UPDATE_CHECKSUMS" = True ] ; then
         # We avoid using pipes as that is not supported by initial sha256sum from mescc-tools-extra
         local checksum_file=/tmp/checksum
-        _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" > "${checksum_file}"
+        _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" > "${checksum_file}" || true
+        # XBPS style;
+        _grep "${pkg%-*}${pkg##*-}-0_${revision}" "${SOURCES}/SHA256SUMS.pkgs" >> "${checksum_file}" || true
+        # Check there is something in checksum_file
+        if ! [ -s "${checksum_file}" ]; then
+            echo "${pkg}: no checksum stored!"
+            false
+        fi
         echo "${pkg}: checksumming created package."
         sha256sum -c "${checksum_file}" || rval=$?
         rm "${checksum_file}"
@@ -387,7 +396,7 @@ src_checksum() {
 src_apply() {
     local pkg="${1}" revision="${2}"
     if command -v xbps-install >/dev/null 2>&1; then
-        xbps-install -y -R /usr/src/repo "${pkg%%-[0-9]*}"
+        xbps-install -y -R /usr/src/repo "${pkg%-*}${pkg##*-}"
     else
         src_apply_tar "${pkg}" "${revision}"
     fi
