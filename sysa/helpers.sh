@@ -131,6 +131,7 @@ build() {
     script_name=${2:-${pkg}.sh}
     dirname=${4:-${pkg}}
 
+    # shellcheck ignore=SC2015
     bin_preseed && return || true # Normal build if preseed fails
 
     cd "${SOURCES}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
