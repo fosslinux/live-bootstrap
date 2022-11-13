@@ -77,15 +77,7 @@ get_revision() {
     local pkg=$1
     cd "${SRCDIR}/repo"
     # Get revision (n time this package has been built)
-    revision="$(echo "${pkg}"*)"
-    # Different versions of bash
-    if [ "${revision}" = "${pkg}*" ] || [ -z "${revision}" ]; then
-        revision=0
-    else
-        revision="${revision##*_}"
-        revision="${revision%%.*}"
-        revision=$((++revision))
-    fi
+    revision=$((ls -1 "${pkg}"* 2>/dev/null || true) | wc -l | sed 's/ *//g')
 }
 
 # Installs binary packages from an earlier run
@@ -96,9 +88,7 @@ bin_preseed() {
         cd "${SRCDIR}/repo-preseeded"
         if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
-            mv "${pkg}_${revision}"* ../repo || \
-                mv "${pkg%-*}${pkg##*-}-0_${revision}"* ../repo || \
-                return 1
+            mv "${pkg}_${revision}"* ../repo || return 1
             if [[ "${pkg}" == bash-* ]]; then
                 # tar does not like overwriting running bash
                 # shellcheck disable=SC2153
@@ -329,7 +319,10 @@ default_src_install() {
     make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}"
 }
 
-create_tarball_pkg() {
+src_pkg() {
+    touch -t 197001010000.00 .
+    reset_timestamp
+
     # If grep is unavailable, then tar --sort is unavailable.
     # So this does not need a command -v grep.
     tar_basename="${pkg}_${revision}.tar"
@@ -362,19 +355,6 @@ create_tarball_pkg() {
     bzip2 --best "${tar_basename}"
 }
 
-src_pkg() {
-    touch -t 197001010000.00 .
-    reset_timestamp
-    if command -v xbps-create >/dev/null 2>&1; then
-        cd /usr/src/repo
-        xbps-create -A "${ARCH}" -n "${pkg%-*}${pkg##*-}-0_${revision}" -s "${pkg}" --compression xz "${DESTDIR}"
-        echo "${pkg}: adding package to repository."
-        xbps-rindex --compression xz -a "/usr/src/repo/${pkg%-*}${pkg##*-}-0_${revision}.${ARCH}.xbps"
-    else
-        create_tarball_pkg
-    fi
-}
-
 src_checksum() {
     local pkg=$1 revision=$2
     local rval=0
@@ -382,8 +362,6 @@ src_checksum() {
         # We avoid using pipes as that is not supported by initial sha256sum from mescc-tools-extra
         local checksum_file=/tmp/checksum
         _grep "${pkg}_${revision}" "${SOURCES}/SHA256SUMS.pkgs" > "${checksum_file}" || true
-        # XBPS style;
-        _grep "${pkg%-*}${pkg##*-}-0_${revision}" "${SOURCES}/SHA256SUMS.pkgs" >> "${checksum_file}" || true
         # Check there is something in checksum_file
         if ! [ -s "${checksum_file}" ]; then
             echo "${pkg}: no checksum stored!"
@@ -398,15 +376,6 @@ src_checksum() {
 
 src_apply() {
     local pkg="${1}" revision="${2}"
-    if command -v xbps-install >/dev/null 2>&1; then
-        xbps-install -y -R /usr/src/repo "${pkg%-*}${pkg##*-}"
-    else
-        src_apply_tar "${pkg}" "${revision}"
-    fi
-}
-
-src_apply_tar() {
-    local pkg=$1 revision=$2
     # Overwriting files is mega busted, so do it manually
     # shellcheck disable=SC2162
     if [ -e /tmp/filelist.txt ]; then

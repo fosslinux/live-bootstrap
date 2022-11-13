@@ -744,13 +744,6 @@ zlib 1.2.13
 zlib is a software library used for data compression and implements an abstraction of
 DEFLATE algorithm that is also used in ``gzip``.
 
-xbps 0.59.1
-===========
-
-XBPS is the package manager used from Void Linux. It has a rather simple package
-creation and installation system, and is much more robust than the hand-rolled
-tar package system used previously. From here, all package archives use XBPS.
-
 automake 1.16.3
 ===============
 

@@ -67,9 +67,6 @@ build curl-7.83.0
 
 build zlib-1.2.13
 
-build xbps-0.59.1
-export XBPS_TARGET_ARCH="${ARCH}"
-
 build automake-1.16.3
 
 build autoconf-2.71
