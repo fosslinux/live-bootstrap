@@ -167,6 +167,7 @@ repository is almost completely in a form where it can be used as the
 source of a build.
 
 1. Download required tarballs into ``sysa/distfiles`` and ``sysc/distfiles``.
+   You can use the ``download-distfiles.sh`` script.
 2. Copy sysa/stage0-posix/src/* to the root of the repository.
 3. Copy sysa/stage0-posix/src/bootstrap-seeds/POSIX/x86/kaem-optional-seed
    to init in the root of the repository.
