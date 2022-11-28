@@ -31,8 +31,10 @@ download_for_sys() {
         [ -e "${entry}/sources" ] || continue
 
         local line
+        # shellcheck disable=SC2162
         while read line; do
             # This is intentional - we want to split out ${line} into separate arguments.
+            # shellcheck disable=SC2086
             download_source "${distfiles}" ${line}
         done < "${entry}/sources"
     done
