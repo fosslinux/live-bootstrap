@@ -120,11 +120,11 @@ index b8618e3..34a7e9a 100644
 +*/
 +int
 +wstrcpy(char const *destination, wchar_t const *source) {
-+	int i;
-+	for (i = 0; source[i] != 0; i++)
++	int i = 0;
++	do {
 +		destination[i]=source[i];
++	} while (source[i++] != 0);
 +}
-+
  int
  yylex(void)
  {
