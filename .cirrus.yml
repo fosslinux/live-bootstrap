@@ -24,7 +24,7 @@ shell_lint_task:
     - apt-get -y install shellcheck
     - apt-get -y clean
   check_script:
-    - shellcheck sysa/run.sh sysb/init sysb/run.sh sysc/init sysc/run.sh sysc/run2.sh sysa/helpers.sh
+    - shellcheck sysa/run.sh sysb/init sysb/run.sh sysc/init sysc/run.sh sysc/run2.sh sysa/helpers.sh download-distfiles.sh
 
 reuse_lint_task:
   container:
