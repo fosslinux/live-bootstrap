@@ -31,9 +31,14 @@ src_prepare() {
 src_configure() {
     # FORCE_UNSAFE_CONFIGURE disables "you should not run configure as root"
     # error from configuration system of coreutils.
+    # gl_cv_func_getcwd_path_max is set to improve reproducibility.
+    # In some environments, the configure script would set it to
+    # "no, but it is partly working", and in others it would set it
+    # to "yes", producing different build outputs.
     FORCE_UNSAFE_CONFIGURE=1 ./configure CFLAGS="-static" \
         --prefix="${PREFIX}" \
-        --build=i386-unknown-linux-musl
+        --build=i386-unknown-linux-musl \
+        gl_cv_func_getcwd_path_max="no, but it is partly working"
 }
 
 src_compile() {

@@ -16,9 +16,14 @@ src_prepare() {
 }
 
 src_configure() {
+    # gl_cv_func_getcwd_path_max is set to improve reproducibility.
+    # In some environments, the configure script would set it to
+    # "no, but it is partly working", and in others it would set it
+    # to "yes", producing different build outputs.
     FORCE_UNSAFE_CONFIGURE=1 ./configure \
         --prefix="${PREFIX}" \
-        --disable-nls
+        --disable-nls \
+        gl_cv_func_getcwd_path_max="no, but it is partly working"
 }
 
 src_compile() {
