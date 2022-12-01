@@ -86,12 +86,12 @@ CFLAGS  = -I . -I lib \
 
 SRC_DIR=src
 
-COREUTILS = date
+COREUTILS = date mktemp
 
 BINARIES = $(addprefix $(SRC_DIR)/, $(COREUTILS))
 
-ALL=$(BINARIES) $(SRC_DIR)/sha256sum $(SRC_DIR)/mktemp
-all: $(BINARIES) $(SRC_DIR)/sha256sum $(SRC_DIR)/mktemp
+ALL=$(BINARIES) $(SRC_DIR)/sha256sum
+all: $(BINARIES) $(SRC_DIR)/sha256sum
 
 LIB_DIR = lib
 LIB_SRC = acl alloca getdate fprintftime posixtm posixver strftime getopt hash hash-pjw argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode fpending file-type fnmatch fopen-safer full-read full-write getline gettime hard-locale human idcache imaxtostr linebuffer localcharset long-options mbswidth md5 memcasecmp memcoll modechange offtostr physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha256 stpcpy stripslash umaxtostr unicodeio userspec version-etc version-etc-fsf xgetcwd xgethostname xmalloc xmemcoll xnanosleep readlink xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist canonicalize mkstemp memrchr euidaccess obstack strverscmp strftime xalloc-die close-stream tempname filenamecat xstrndup randint randread rand-isaac gethrxtime
