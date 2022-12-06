@@ -209,7 +209,9 @@ interpret_source_line() {
     if ! [ -e "${fname}" ]; then
         curl -L "${url}" --output "${fname}"
     fi
-    echo "${checksum}  ${fname}" | sha256sum -c
+    echo "${checksum}  ${fname}" > "${fname}.sum"
+    sha256sum -c "${fname}.sum"
+    rm "${fname}.sum"
 }
 
 # Default get function that downloads source tarballs.
