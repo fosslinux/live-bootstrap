@@ -389,8 +389,13 @@ src_checksum() {
             echo "${pkg}: no checksum stored!"
             false
         fi
-        echo "${pkg}: checksumming created package."
-        sha256sum -c "${checksum_file}" || rval=$?
+        checkignore=$(cat ${checksum_file})
+        if [ "${checkignore:0:14}" = "IGNORECHECKSUM" ]; then
+                echo "${pkg}: IGNORING checksum for created package."
+        else
+                echo "${pkg}: checksumming created package."
+                sha256sum -c "${checksum_file}" || rval=$?
+        fi
         rm "${checksum_file}"
     fi
     return "${rval}"
