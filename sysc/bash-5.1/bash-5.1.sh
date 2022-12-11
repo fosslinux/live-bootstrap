@@ -21,11 +21,17 @@ src_prepare() {
 
 src_configure() {
     # --build argument needed for reproducibility
+    # bash_cv_dev_stdin and bash_cv_dev_fd are also used to
+    # improve reproducibility because they make configure
+    # skip checking for /dev/{fd,stdin,stdout,stderr} (build
+    # output is affected by their availability otherwise).
     ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
         --disable-nls \
         --build=i386-unknown-linux-musl \
-        --enable-static-link
+        --enable-static-link \
+        bash_cv_dev_stdin=absent \
+        bash_cv_dev_fd=whacky
 }
 
 src_install() {
