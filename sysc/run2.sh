@@ -61,7 +61,7 @@ build libarchive-3.5.2
 
 build openssl-1.1.1l
 
-build ca-certificates-3.78
+build ca-certificates-3.86
 
 build curl-7.83.0
 
