@@ -117,6 +117,8 @@ build Python-3.1.5 stage1.sh
 
 build Python-3.1.5 stage2.sh
 
+build Python-3.3.7
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp
