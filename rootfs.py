@@ -69,6 +69,8 @@ def main():
                         action="store_true")
     parser.add_argument("-r", "--repo",
                         help="Path to prebuilt binary packages.", nargs=None)
+    parser.add_argument("--early-preseed",
+                        help="Skip early stages of live-bootstrap.", nargs=None)
 
     # QEMU arguments
     parser.add_argument("-q", "--qemu", help="Use QEMU",
@@ -126,7 +128,8 @@ def main():
                     tmpdir=args.tmpdir, external_sources=args.external_sources)
     system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
     system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir, external_sources=args.external_sources,
+                    early_preseed=args.early_preseed, tmpdir=args.tmpdir,
+                    external_sources=args.external_sources,
                     sysb_dir=system_b.sys_dir, sysc_dir=system_c.sys_dir)
 
     if args.tmpdir is not None:

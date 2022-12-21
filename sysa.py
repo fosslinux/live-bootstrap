@@ -9,6 +9,7 @@
 import os
 from distutils.dir_util import copy_tree
 import shutil
+import tarfile
 
 from lib.sysgeneral import SysGeneral, stage0_arch_map
 
@@ -18,10 +19,11 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, external_sources, tmpdir, sysb_dir, sysc_dir):
+    def __init__(self, arch, preserve_tmp, external_sources, early_preseed, tmpdir, sysb_dir, sysc_dir):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
+        self.early_preseed = early_preseed
 
         self.sys_dir = os.path.join(self.git_dir, 'sysa')
         if tmpdir is None:
@@ -46,7 +48,15 @@ class SysA(SysGeneral):
         else:
             os.mkdir(self.tmp_dir)
 
-        self.stage0_posix()
+        if self.early_preseed:
+            # Extract tar containing preseed
+            with tarfile.open(self.early_preseed, "r") as seed:
+                seed.extractall(self.tmp_dir)
+            shutil.copy2(os.path.join(self.sys_dir, 'base-preseeded.kaem'),
+                         os.path.join(self.tmp_dir, 'kaem.x86'))
+        else:
+            self.stage0_posix()
+
         self.sysa()
 
         # sysb must be added to sysa as it is another initramfs stage
