@@ -42,9 +42,15 @@ rm mes/module/mes/psyntax.pp mes/module/mes/psyntax.pp.header
 cp mes/module/srfi/srfi-9-struct.mes mes/module/srfi/srfi-9.mes
 cp mes/module/srfi/srfi-9/gnu-struct.mes mes/module/srfi/srfi-9/gnu.mes
 
+# Fixes to support newer M2-Planet
+replace --file lib/m2/time.c --output lib/m2/time.c --match-on timeval --replace-with timeval*
+replace --file lib/m2/time.c --output lib/m2/time.c --match-on timezone --replace-with timezone*
+catm x86_defs.M1 /M2libc/x86/x86_defs.M1 lib/m2/x86/x86_defs.M1
+cp x86_defs.M1 lib/m2/x86/x86_defs.M1
+rm x86_defs.M1
+
 # Build mes-m2
 mkdir bin m2
-#kaem --verbose --strict --file kaem.${ARCH} # Restore once mes adds arch specific kaem files
 kaem --verbose --strict --file kaem.run
 cp bin/mes-m2 ${bindir}/mes-m2
 chmod 755 ${bindir}/mes-m2
