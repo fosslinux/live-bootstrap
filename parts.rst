@@ -183,7 +183,7 @@ workarounds to avoid some flex advanced features).
 tcc 0.9.27 (patched)
 ====================
 
-We recompile ``tcc`` against with some patches needed to build musl.
+We recompile ``tcc`` with some patches needed to build musl.
 
 musl 1.1.24
 ===========
