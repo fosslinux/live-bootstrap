@@ -181,7 +181,7 @@ project (the required modifications are mostly syntactical, plus a few
 workarounds to avoid some flex advanced features).
 
 tcc 0.9.27 (patched)
-=================
+====================
 
 We recompile ``tcc`` against with some patches needed to build musl.
 
