@@ -36,6 +36,7 @@ cp /${ARCH_DIR}/bin/M2-Mesoplanet ${bindir}/M2-Mesoplanet
 cp /${ARCH_DIR}/bin/M2-Planet ${bindir}/M2-Planet
 cp /${ARCH_DIR}/bin/mkdir ${bindir}/mkdir
 cp /${ARCH_DIR}/bin/sha256sum ${bindir}/sha256sum
+cp /${ARCH_DIR}/bin/unbz2 ${bindir}/unbz2
 cp /${ARCH_DIR}/bin/ungz ${bindir}/ungz
 cp /${ARCH_DIR}/bin/untar ${bindir}/untar
 cp /${ARCH_DIR}/bin/cp ${bindir}/cp
@@ -55,6 +56,7 @@ chmod 755 ${bindir}/M2-Mesoplanet
 chmod 755 ${bindir}/M2-Planet
 chmod 755 ${bindir}/mkdir
 chmod 755 ${bindir}/sha256sum
+chmod 755 ${bindir}/unbz2
 chmod 755 ${bindir}/ungz
 chmod 755 ${bindir}/untar
 chmod 755 ${bindir}/replace

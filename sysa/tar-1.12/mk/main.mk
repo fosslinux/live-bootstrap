@@ -15,8 +15,8 @@ CPPFLAGS = -DHAVE_FCNTL_H \
          -DVERSION=\"1.12\" \
          -DPACKAGE=\"tar\"
 
-CFLAGS = -I . -I lib -static
-LDFLAGS = -L. -ltar
+CFLAGS = -I . -I lib
+LDFLAGS = -L . -ltar -static
 
 .PHONY: all
 

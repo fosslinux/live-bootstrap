@@ -5,14 +5,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 CFLAGS = -DVERSION=\"2.5.11\"
+LDFLAGS = -static
 
 all: flex
 
 flex: ccl.o dfa.o ecs.o gen.o main.o misc.o nfa.o parse.o scan.o skel.o sym.o tblcmp.o yylex.o options.o scanopt.o buf.o
-	tcc -o $@ $^ -ll
+	tcc -o $@ $^ -ll $(LDFLAGS)
 
 flex-tmp: ccl.o dfa.o ecs.o gen.o main.o misc.o nfa.o parse.o scan-tmp.o skel.o sym.o tblcmp.o yylex.o options.o scanopt.o buf.o
-	tcc -o $@ $^ -ll
+	tcc -o $@ $^ -ll $(LDFLAGS)
 
 %.o: %.c
 	tcc -g -c $(CFLAGS) -o $@ $<

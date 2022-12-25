@@ -100,6 +100,9 @@ mkdir -p "${DESTDIR}" "${SRCDIR}/repo" /dev
 
 build flex-2.5.11
 
+# Rebuild tcc with some patches
+build tcc-0.9.27 tcc-mes-pass2.sh
+
 build musl-1.1.24
 
 # Rebuild tcc using musl

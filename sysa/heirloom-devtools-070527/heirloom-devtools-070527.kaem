@@ -29,7 +29,7 @@ patch -Np0 -i ../../patches/lex_remove_wchar.patch
 
 # Build yacc
 cd yacc
-make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DMAXPATHLEN=100\ -DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt RANLIB=true
+make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DMAXPATHLEN=100\ -DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
 
 # Install yacc
 install yacc ${bindir}
@@ -37,7 +37,7 @@ install -m 644 yaccpar /
 
 # Build lex
 cd ../lex
-make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt RANLIB=true
+make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
 
 # Install lex
 mkdir ${lexdir}

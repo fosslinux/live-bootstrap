@@ -5,12 +5,11 @@
 CC = tcc
 AR = tcc -ar
 
-# -DSIZEOF_UNSIGNED_LONG=4 forces use of simulated arithmetic
-# This is to avoid running configure test to determine sizeof(long long)
 CPPFLAGS = -DNO_UTIME \
          -Dstrlwr=unused
 
-CFLAGS = -I . -static
+CFLAGS = -I .
+LDFLAGS = -static
 
 .PHONY: all
 
@@ -20,4 +19,4 @@ GZIP_OBJ = $(addsuffix .o, $(GZIP_SRC))
 all: gzip
 
 gzip: $(GZIP_OBJ)
-	$(CC) $^ -o $@
+	$(CC) $(LDFLAGS) $^ -o $@

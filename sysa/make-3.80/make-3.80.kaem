@@ -14,7 +14,7 @@ mkdir build src
 cd build 
 
 # Extract
-ungz --file ${distfiles}/${pkg}.tar.gz --output ../src/${pkg}.tar
+unbz2 --file ${distfiles}/${pkg}.tar.bz2 --output ../src/${pkg}.tar
 untar --file ../src/${pkg}.tar
 rm ../src/${pkg}.tar
 cd ${pkg}
@@ -51,7 +51,7 @@ tcc -c -Iglob -DSTDC_HEADERS glob/fnmatch.c
 tcc -c -Iglob -DHAVE_STRDUP -DHAVE_DIRENT_H glob/glob.c
 
 # Link
-tcc -o ${bindir}/make getopt.o getopt1.o ar.o arscan.o commands.o default.o dir.o expand.o file.o function.o implicit.o job.o main.o misc.o read.o remake.o rule.o signame.o variable.o version.o vpath.o hash.o remote-stub.o getloadavg.o fnmatch.o glob.o
+tcc -static -o ${bindir}/make getopt.o getopt1.o ar.o arscan.o commands.o default.o dir.o expand.o file.o function.o implicit.o job.o main.o misc.o read.o remake.o rule.o signame.o variable.o version.o vpath.o hash.o remote-stub.o getloadavg.o fnmatch.o glob.o
 
 # Test
 make --version

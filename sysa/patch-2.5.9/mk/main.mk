@@ -11,5 +11,5 @@ LDFLAGS = -static
 .PHONY: all
 all: patch
 
-patch: error.o getopt.o getopt1.o addext.o argmatch.o backupfile.o basename.o dirname.o inp.o maketime.o partime.o patch.o pch_patched.o quote.o quotearg.o quotesys.o util.o version.o xmalloc.o
+patch: error.o getopt.o getopt1.o addext.o argmatch.o backupfile.o basename.o dirname.o inp.o maketime.o partime.o patch.o pch.o quote.o quotearg.o quotesys.o util.o version.o xmalloc.o
 	$(CC) $^ $(LDFLAGS) -o $@

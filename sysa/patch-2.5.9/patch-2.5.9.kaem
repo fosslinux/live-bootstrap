@@ -24,10 +24,6 @@ cp ../../mk/main.mk Makefile
 catm config.h
 catm patchlevel.h
 
-# Patch
-cp pch.c pch_patched.c
-sed -i 841,848d pch_patched.c
-
 # Build
 make -f Makefile PREFIX=${prefix}
 

@@ -11,21 +11,18 @@ set -ex
 checksum-transcriber sources
 sha256sum -c sources.SHA256SUM
 
-mkdir build src
-cd build
-
 # Extract
-cp ${distfiles}/${pkg}.tar.bz2 ../src/
-bunzip2 -f ../src/${pkg}.tar.bz2
-tar xf ../src/${pkg}.tar
+mkdir build src
+cd src
+unbz2 --file ${distfiles}/${pkg}.tar.bz2 --output ${pkg}.tar
+cd ..
+
+cd build
+untar --file ../src/${pkg}.tar
 cd ${pkg}
 
 # Create config.h
 catm config.h
-
-# Patch
-patch -Np0 -i ../../patches/static-link.patch
-patch -Np0 -i ../../patches/ignore-static-inside-array.patch
 
 # Compile
 tcc-0.9.26 \

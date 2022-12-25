@@ -12,8 +12,8 @@ CPPFLAGS = -DENABLE_NLS=0 \
          -DSED_FEATURE_VERSION=\"4.0\" \
          -DVERSION=\"4.0.9\" \
          -DPACKAGE=\"sed\"
-CFLAGS = -I . -I lib -static
-LDFLAGS = -L. -lsed
+CFLAGS = -I . -I lib
+LDFLAGS = -L . -lsed -static
 
 .PHONY: all
 

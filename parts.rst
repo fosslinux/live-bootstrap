@@ -86,6 +86,15 @@ recompiled 5(!) times to add new features that are required for other
 features, namely ``long long`` and ``float``. Each time, the libc is
 also recompiled.
 
+tinycc 0.9.27
+=============
+
+Now, we compile upstream tcc 0.9.27, the latest release of tinycc, using
+the final version of tcc 0.9.26.
+
+From this point onwards, until further notice, all programs are compiled
+using tinycc 0.9.27.
+
 Note that now we begin to delve into the realm of old GNU software,
 using older versions compilable by tinycc. Prior to this point, all tools
 have been adapted significantly for the bootstrap; now, we will be using
@@ -120,24 +129,12 @@ patch 2.5.9
 
 ``patch`` is a very useful tool at this stage, allowing us to make
 significantly more complex edits, including just changes to lines.
-Luckily, we are able to patch ``patch`` using ``sed`` only.
 
 bzip2 1.0.8
 ===========
 
 ``bzip2`` is a compression format that compresses more than ``gzip``. It
 is preferred where we can use it, and makes source code sizes smaller.
-
-tinycc 0.9.27
-=============
-
-Now, we compile upstream tcc 0.9.27, the latest release of tinycc, using
-the final version of tcc 0.9.26.
-
-From this point onwards, until further notice, all programs are compiled
-using tinycc 0.9.27.
-
-We patch tinycc to force static linking.
 
 coreutils 5.0
 =============
@@ -182,6 +179,11 @@ scanner, so first flex 2.5.11 is compiled, with its scanner definition
 manually modified so that it can be processed by lex from the Heirloom
 project (the required modifications are mostly syntactical, plus a few
 workarounds to avoid some flex advanced features).
+
+tcc 0.9.27 (patched)
+=================
+
+We recompile ``tcc`` against with some patches needed to build musl.
 
 musl 1.1.24
 ===========

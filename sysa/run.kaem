@@ -36,6 +36,12 @@ cd ..
 
 libdir=${libdir}/mes
 
+# tcc 0.9.27
+pkg="tcc-0.9.27"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
 # make
 pkg="make-3.80"
 cd ${pkg}
@@ -68,12 +74,6 @@ cd ..
 
 # bzip2
 pkg="bzip2-1.0.8"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# tcc 0.9.27
-pkg="tcc-0.9.27"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..

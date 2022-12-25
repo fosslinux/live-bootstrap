@@ -25,7 +25,7 @@ patch -Np0 -i ../../patches/mes-libc.patch
 patch -Np0 -i ../../patches/coreutils.patch
 
 # Build
-make CC=tcc AR="tcc -ar" bzip2
+make CC=tcc AR="tcc -ar" LDFLAGS="-static" bzip2
 
 # Install
 cp bzip2 ${prefix}/bin/bzip2

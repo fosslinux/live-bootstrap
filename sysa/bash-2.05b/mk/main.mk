@@ -13,7 +13,7 @@ CFLAGS  = \
 		  -Ibuiltins \
 		  $(COMMON_CFLAGS)
 
-LDFLAGS   = -L. -Lbuiltins
+LDFLAGS   = -L. -Lbuiltins -static
 LIBRARIES = libsh.a builtins/libbuiltins.a libglob.a libtilde.a
 
 SHLIB_FILES = clktck getcwd getenv oslib setlinebuf strcasecmp strerror strtod \

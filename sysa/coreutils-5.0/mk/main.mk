@@ -12,6 +12,7 @@ VERSION=5.0
 CC      = tcc
 LD      = tcc
 AR      = tcc -ar
+LDFLAGS = -static
 
 bindir=$(PREFIX)/bin
 
