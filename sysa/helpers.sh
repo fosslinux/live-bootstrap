@@ -309,7 +309,7 @@ default_src_prepare() {
     fi
 
     if test -d "${files_dir}"; then
-        cp "${files_dir}"/* "${PWD}/"
+        cp --no-preserve=mode "${files_dir}"/* "${PWD}/"
     fi
 }
 
