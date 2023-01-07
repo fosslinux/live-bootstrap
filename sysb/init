@@ -19,7 +19,7 @@ echo "Installing packages into sysb"
 
 install_tar() {
     echo "${1}: installing package"
-    src_apply_tar "$@"
+    src_apply "$@"
 }
 
 # Install needed packages.
