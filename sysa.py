@@ -19,7 +19,8 @@ class SysA(SysGeneral):
     Class responsible for preparing sources for System A.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
-    def __init__(self, arch, preserve_tmp, external_sources, early_preseed, tmpdir, sysb_dir, sysc_dir):
+    def __init__(self, arch, preserve_tmp, external_sources,
+                 early_preseed, tmpdir, sysb_dir, sysc_dir):
         self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp

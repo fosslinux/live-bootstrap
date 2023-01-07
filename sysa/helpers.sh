@@ -77,7 +77,7 @@ get_revision() {
     local pkg=$1
     cd "${SRCDIR}/repo"
     # Get revision (n time this package has been built)
-    revision=$((ls -1 "${pkg}"* 2>/dev/null || true) | wc -l | sed 's/ *//g')
+    revision=$( (ls -1 "${pkg}"* 2>/dev/null || true) | wc -l | sed 's/ *//g')
 }
 
 # Installs binary packages from an earlier run
