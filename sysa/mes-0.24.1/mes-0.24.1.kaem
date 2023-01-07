@@ -50,7 +50,6 @@ cp x86_defs.M1 lib/m2/x86/x86_defs.M1
 rm x86_defs.M1
 
 # Build mes-m2
-mkdir bin m2
 kaem --verbose --strict --file kaem.run
 cp bin/mes-m2 ${bindir}/mes-m2
 chmod 755 ${bindir}/mes-m2
