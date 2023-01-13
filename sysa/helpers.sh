@@ -376,6 +376,14 @@ src_checksum() {
 
 src_apply() {
     local pkg="${1}" revision="${2}"
+
+    # Make sure we have at least one copy of tar
+    if [[ "${pkg}" == tar-* ]]; then
+        mkdir -p /tmp
+        cp "${PREFIX}/bin/tar" "/tmp/tar"
+        TAR_PREFIX="/tmp/"
+    fi
+
     # Overwriting files is mega busted, so do it manually
     # shellcheck disable=SC2162
     if [ -e /tmp/filelist.txt ]; then
@@ -391,9 +399,10 @@ src_apply() {
         BZIP2_PREFIX="/tmp/"
     fi
     "${BZIP2_PREFIX}bzip2" -dc "/usr/src/repo/${pkg}_${revision}.tar.bz2" | \
-        tar -C / -xpf -
+        "${TAR_PREFIX}tar" -C / -xpf -
     unset BZIP2_PREFIX
-    rm -f "/tmp/bzip2"
+    unset TAR_PREFIX
+    rm -f "/tmp/bzip2" "/tmp/tar"
 }
 
 # Check if bash function exists

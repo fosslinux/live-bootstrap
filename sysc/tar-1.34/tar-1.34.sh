@@ -32,7 +32,4 @@ src_compile() {
 
 src_install() {
     make install PREFIX="${PREFIX}" MAKEINFO="true" DESTDIR="${DESTDIR}"
-    # Manually install tar (cannot replace tar while running)
-    cp "${DESTDIR}${PREFIX}/bin/tar" "${PREFIX}/bin/tar"
-    rm "${DESTDIR}${PREFIX}/bin/tar"
 }
