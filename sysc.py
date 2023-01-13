@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """System C"""
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+# SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 
@@ -70,7 +70,9 @@ class SysC(SysGeneral):
             rootfs_dir = self.tmp_dir
 
         if self.external_sources:
-            self.get_packages()
+            source_manifest = self.get_source_manifest()
+            self.get_packages(source_manifest)
+
             copytree(self.cache_dir, os.path.join(rootfs_dir, "distfiles"))
 
         # Unmount tmp/mnt if it was mounted

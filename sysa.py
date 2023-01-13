@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """System A"""
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+# SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
@@ -78,7 +78,8 @@ class SysA(SysGeneral):
 
     def sysa(self):
         """Copy in sysa files for sysa."""
-        self.get_packages()
+        source_manifest = self.get_source_manifest()
+        self.get_packages(source_manifest)
 
         shutil.copytree(self.sys_dir, os.path.join(self.tmp_dir, 'sysa'),
                 ignore=shutil.ignore_patterns('tmp'))

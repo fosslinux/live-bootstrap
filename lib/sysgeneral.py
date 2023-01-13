@@ -96,14 +96,28 @@ this script the next time")
                 raise Exception("Download failed.")
         return abs_file_name
 
-    def get_packages(self):
+    def get_packages(self, source_manifest):
         """Prepare remaining sources"""
+        for line in source_manifest.split("\n"):
+            line = line.strip().split(" ")
+
+            path = self.download_file(line[2], line[1], line[3])
+            self.check_file(path, line[0])
+
+    @classmethod
+    def get_source_manifest(cls):
+        """
+        Generage a source manifest for the system.
+        """
+        manifest_lines = []
+        directory = os.path.relpath(cls.cache_dir, cls.git_dir)
+
         # Find all source files
-        for file in os.listdir(self.sys_dir):
-            if os.path.isdir(os.path.join(self.sys_dir, file)):
-                sourcef = os.path.join(self.sys_dir, file, "sources")
+        for file in os.listdir(cls.sys_dir):
+            if os.path.isdir(os.path.join(cls.sys_dir, file)):
+                sourcef = os.path.join(cls.sys_dir, file, "sources")
                 if os.path.exists(sourcef):
-                    # Download sources in the source file
+                    # Read sources from the source file
                     with open(sourcef, "r", encoding="utf_8") as sources:
                         for line in sources.readlines():
                             line = line.strip().split(" ")
@@ -114,8 +128,9 @@ this script the next time")
                                 # Automatically determine file name based on URL.
                                 file_name = os.path.basename(line[0])
 
-                            path = self.download_file(line[0], self.cache_dir, file_name)
-                            self.check_file(path, line[1])
+                            manifest_lines.append(f"{line[1]} {directory} {line[0]} {file_name}")
+
+        return "\n".join(manifest_lines)
 
     def make_initramfs(self):
         """Package binary bootstrap seeds and sources into initramfs."""
