@@ -14,26 +14,30 @@ import tarfile
 from lib.sysgeneral import SysGeneral, stage0_arch_map
 
 # pylint: disable=consider-using-with
+# pylint: disable=too-many-instance-attributes
 class SysA(SysGeneral):
     """
     Class responsible for preparing sources for System A.
     """
-    # pylint: disable=too-many-instance-attributes,too-many-arguments
+
+    git_dir = os.path.dirname(os.path.join(__file__))
+    sys_dir = os.path.join(git_dir, 'sysa')
+    cache_dir = os.path.join(sys_dir, 'distfiles')
+
+    # pylint: disable=too-many-arguments
     def __init__(self, arch, preserve_tmp, external_sources,
                  early_preseed, tmpdir, sysb_dir, sysc_dir):
-        self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
         self.early_preseed = early_preseed
 
-        self.sys_dir = os.path.join(self.git_dir, 'sysa')
         if tmpdir is None:
             self.tmp_dir = os.path.join(self.git_dir, 'tmp')
         else:
             self.tmp_dir = os.path.join(tmpdir, 'sysa')
         self.sysa_dir = os.path.join(self.tmp_dir, 'sysa')
         self.base_dir = self.sysa_dir
-        self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
+
         self.sysb_dir = sysb_dir
         self.sysc_dir = sysc_dir
         self.external_sources = external_sources

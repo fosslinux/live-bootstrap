@@ -18,16 +18,16 @@ class SysC(SysGeneral):
     Class responsible for preparing sources for System C.
     """
 
+    git_dir = os.path.dirname(os.path.join(__file__))
+    sys_dir = os.path.join(git_dir, 'sysc')
+    cache_dir = os.path.join(sys_dir, 'distfiles')
     dev_name = None
 
     def __init__(self, arch, preserve_tmp, tmpdir, external_sources):
-        self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
         self.external_sources = external_sources
 
-        self.sys_dir = os.path.join(self.git_dir, 'sysc')
-        self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         if tmpdir is None:
             self.tmp_dir = os.path.join(self.sys_dir, 'tmp')
         else:
