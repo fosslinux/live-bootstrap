@@ -71,13 +71,10 @@ actual:   {readable_hash}\n\
 When in doubt, try deleting the file in question -- it will be downloaded again when running \
 this script the next time")
 
-    def download_file(self, url, directory, file_name=None):
+    def download_file(self, url, directory, file_name):
         """
         Download a single source archive.
         """
-        # Automatically determine file name based on URL.
-        if file_name is None:
-            file_name = os.path.basename(url)
         abs_file_name = os.path.join(directory, file_name)
 
         # Create a directory for downloaded file
@@ -110,10 +107,14 @@ this script the next time")
                     with open(sourcef, "r", encoding="utf_8") as sources:
                         for line in sources.readlines():
                             line = line.strip().split(" ")
+
                             if len(line) > 2:
-                                path = self.download_file(line[0], self.cache_dir, line[2])
+                                file_name = line[2]
                             else:
-                                path = self.download_file(line[0], self.cache_dir)
+                                # Automatically determine file name based on URL.
+                                file_name = os.path.basename(line[0])
+
+                            path = self.download_file(line[0], self.cache_dir, file_name)
                             self.check_file(path, line[1])
 
     def make_initramfs(self):
