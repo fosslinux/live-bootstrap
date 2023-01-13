@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """System C"""
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+# SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 
@@ -18,16 +18,16 @@ class SysC(SysGeneral):
     Class responsible for preparing sources for System C.
     """
 
+    git_dir = os.path.dirname(os.path.join(__file__))
+    sys_dir = os.path.join(git_dir, 'sysc')
+    cache_dir = os.path.join(sys_dir, 'distfiles')
     dev_name = None
 
     def __init__(self, arch, preserve_tmp, tmpdir, external_sources):
-        self.git_dir = os.path.dirname(os.path.join(__file__))
         self.arch = arch
         self.preserve_tmp = preserve_tmp
         self.external_sources = external_sources
 
-        self.sys_dir = os.path.join(self.git_dir, 'sysc')
-        self.cache_dir = os.path.join(self.sys_dir, 'distfiles')
         if tmpdir is None:
             self.tmp_dir = os.path.join(self.sys_dir, 'tmp')
         else:
@@ -70,7 +70,9 @@ class SysC(SysGeneral):
             rootfs_dir = self.tmp_dir
 
         if self.external_sources:
-            self.get_packages()
+            source_manifest = self.get_source_manifest()
+            self.get_packages(source_manifest)
+
             copytree(self.cache_dir, os.path.join(rootfs_dir, "distfiles"))
 
         # Unmount tmp/mnt if it was mounted

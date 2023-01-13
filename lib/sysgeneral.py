@@ -3,7 +3,7 @@
 This file contains a few functions to be shared by all Sys* classes
 """
 
-# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+# SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -71,18 +71,15 @@ actual:   {readable_hash}\n\
 When in doubt, try deleting the file in question -- it will be downloaded again when running \
 this script the next time")
 
-    def download_file(self, url, file_name=None):
+    def download_file(self, url, directory, file_name):
         """
         Download a single source archive.
         """
-        # Automatically determine file name based on URL.
-        if file_name is None:
-            file_name = os.path.basename(url)
-        abs_file_name = os.path.join(self.cache_dir, file_name)
+        abs_file_name = os.path.join(directory, file_name)
 
-        # Create a cache directory for downloaded sources
-        if not os.path.isdir(self.cache_dir):
-            os.mkdir(self.cache_dir)
+        # Create a directory for downloaded file
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
 
         # Actually download the file
         headers = {
@@ -99,22 +96,41 @@ this script the next time")
                 raise Exception("Download failed.")
         return abs_file_name
 
-    def get_packages(self):
+    def get_packages(self, source_manifest):
         """Prepare remaining sources"""
+        for line in source_manifest.split("\n"):
+            line = line.strip().split(" ")
+
+            path = self.download_file(line[2], line[1], line[3])
+            self.check_file(path, line[0])
+
+    @classmethod
+    def get_source_manifest(cls):
+        """
+        Generage a source manifest for the system.
+        """
+        manifest_lines = []
+        directory = os.path.relpath(cls.cache_dir, cls.git_dir)
+
         # Find all source files
-        for file in os.listdir(self.sys_dir):
-            if os.path.isdir(os.path.join(self.sys_dir, file)):
-                sourcef = os.path.join(self.sys_dir, file, "sources")
+        for file in os.listdir(cls.sys_dir):
+            if os.path.isdir(os.path.join(cls.sys_dir, file)):
+                sourcef = os.path.join(cls.sys_dir, file, "sources")
                 if os.path.exists(sourcef):
-                    # Download sources in the source file
+                    # Read sources from the source file
                     with open(sourcef, "r", encoding="utf_8") as sources:
                         for line in sources.readlines():
                             line = line.strip().split(" ")
+
                             if len(line) > 2:
-                                path = self.download_file(line[0], line[2])
+                                file_name = line[2]
                             else:
-                                path = self.download_file(line[0])
-                            self.check_file(path, line[1])
+                                # Automatically determine file name based on URL.
+                                file_name = os.path.basename(line[0])
+
+                            manifest_lines.append(f"{line[1]} {directory} {line[0]} {file_name}")
+
+        return "\n".join(manifest_lines)
 
     def make_initramfs(self):
         """Package binary bootstrap seeds and sources into initramfs."""
