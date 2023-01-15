@@ -156,8 +156,8 @@ sysc
 sysc is the (current) last 'system' of live-bootstrap. This is a continuation
 from sysb, executed through util-linux's ``switch_root`` command which moves
 the entire rootfs without a reboot. Every package from here on out is compiled
-under this system, taking binaries from sysa. Chroot mode skips sysb, as it
-is obviously irrelevant for a chroot.
+under this system, taking binaries from sysa. Chroot and bubblewrap modes skip
+sysb, as it is obviously irrelevant to them.
 
 Python-less build
 -----------------

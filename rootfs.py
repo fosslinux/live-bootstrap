@@ -104,9 +104,10 @@ def main():
         return count
 
     if check_types() > 1:
-        raise ValueError("No more than one of qemu, chroot, minikernel, bare metal may be used.")
+        raise ValueError("No more than one of qemu, chroot, bwrap, minikernel, bare metal "
+                         "may be used.")
     if check_types() == 0:
-        raise ValueError("One of qemu, chroot, minikernel or bare metal must be selected.")
+        raise ValueError("One of qemu, chroot, bwrap, minikernel or bare metal must be selected.")
 
     if args.bare_metal:
         args.no_create_config = True
