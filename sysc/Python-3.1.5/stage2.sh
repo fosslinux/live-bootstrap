@@ -40,11 +40,14 @@ src_prepare() {
 }
 
 src_configure() {
+    MACHDEP=linux ac_sys_system=Linux \
     CFLAGS="-U__DATE__ -U__TIME__" \
     LDFLAGS="-L/usr/lib/musl" \
         ./configure \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
+        --build=i386-unknown-linux-musl \
+        --host=i386-unknown-linux-musl \
         --with-pydebug \
         --with-system-ffi
 }

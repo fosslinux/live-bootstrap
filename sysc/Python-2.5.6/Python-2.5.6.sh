@@ -15,6 +15,7 @@ src_prepare() {
     rm Misc/Vim/python.vim
     mv Lib/plat-generic .
     rm -r Lib/plat-*
+    rm -r Modules/_ctypes/libffi
     mv plat-generic Lib/
     grep generated -r . -l | grep encodings | xargs rm
 
@@ -41,10 +42,15 @@ src_prepare() {
 }
 
 src_configure() {
+    MACHDEP=linux ac_sys_system=Linux \
     CFLAGS="-U__DATE__ -U__TIME__" \
+    LDFLAGS="-L/usr/lib/musl" \
         ./configure \
+        --build=i386-unknown-linux-musl \
+        --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl"
+        --libdir="${PREFIX}/lib/musl" \
+        --with-system-ffi
 }
 
 src_compile() {

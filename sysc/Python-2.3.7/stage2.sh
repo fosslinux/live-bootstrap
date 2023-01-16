@@ -37,6 +37,7 @@ src_prepare() {
 }
 
 src_configure() {
+    MACHDEP=linux ac_sys_system=Linux \
     CFLAGS="-U__DATE__ -U__TIME__" \
         ./configure \
         --prefix="${PREFIX}" \

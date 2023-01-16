@@ -442,7 +442,6 @@ populate_device_nodes() {
     test -c "/dev/urandom" || mknod -m 444 "/dev/urandom" c 1 9
 
     if [ "${CHROOT}" = False ]; then
-        test -c "/dev/ptmx" || mknod -m 666 "/dev/ptmx" c 5 2
         test -c "/dev/tty" || mknod -m 666 "/dev/tty" c 5 0
         test -c "/dev/console" || mknod -m 666 "/dev/console" c 5 1
     fi

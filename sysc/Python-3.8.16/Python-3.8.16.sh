@@ -39,9 +39,12 @@ src_prepare() {
 }
 
 src_configure() {
+    MACHDEP=linux ac_sys_system=Linux \
     CPPFLAGS="-U__DATE__ -U__TIME__" \
     LDFLAGS="-L/usr/lib/musl" \
         ./configure \
+        --build=i386-unknown-linux-musl \
+        --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
         --with-system-ffi
