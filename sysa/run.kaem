@@ -43,7 +43,7 @@ kaem --file ${pkg}.kaem
 cd ..
 
 # make
-pkg="make-3.80"
+pkg="make-3.82"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..

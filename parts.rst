@@ -100,7 +100,7 @@ using older versions compilable by tinycc. Prior to this point, all tools
 have been adapted significantly for the bootstrap; now, we will be using
 old tooling instead.
 
-make 3.80
+make 3.82
 =========
 
 GNU ``make`` is now built so we have a more robust building system.
@@ -535,9 +535,8 @@ that we do not have available.
 make 3.82
 =========
 
-GNU Make is updated by .02. The most notable thing is this is now built properly
-using the build system and GCC, which means that it does not randomly segfault
-while building the Linux kernel.
+GNU ``make`` is now rebuilt properly using the build system and GCC, which means that
+it does not randomly segfault while building the Linux kernel.
 
 kexec-tools 2.0.22
 ==================
