@@ -859,7 +859,7 @@ musl 1.2.3
 With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
 with support for dynamic linking.
 
-Python 2.0.1
+python 2.0.1
 ============
 
 Everything is in place to bootstrap the useful programming language/utility
@@ -880,7 +880,7 @@ Precompiled Python code at this point is highly unreproducible, so it is
 deleted (JIT compiled instead). This makes Python itself slower, but this is of
 little consequence.
 
-Python 2.3.7
+python 2.3.7
 ============
 
 Python 2.0.1 is sufficient to build Python 2.3.7.
@@ -894,7 +894,7 @@ Differences to 2.0.1:
 
 Python 2.3.7 is then rebuilt to include Unicode support.
 
-Python 2.5.6
+python 2.5.6
 ============
 
 Python 2.3.7 is sufficient to build Python 2.5.6, with a few minimal changes to
@@ -902,7 +902,7 @@ language constructs in scripts. This is the last 2.x version we build.
 
 Differences to 2.3.7 are very minimal.
 
-Python 3.1.5
+python 3.1.5
 ============
 
 Python 2.5.6 is new enough to be able to build Python 3.1.5, allowing us to move
@@ -921,7 +921,7 @@ Differences to 2.5.6:
 
 Python 3.1.5 is rebuilt, using Python 3 for the Python 3 scripts in the tree.
 
-Python 3.3.7
+python 3.3.7
 ============
 
 Python 3.1.5 is sufficient to build Python 3.3.7 (rapid language change = small
@@ -931,7 +931,7 @@ Differences to 3.1.5:
 
 * The ssl Python library can now be re-enabled, and ``_ssl_data.h`` regenerated.
 
-Python 3.4.10
+python 3.4.10
 =============
 
 Python 3.3.7 is sufficient to build Python 3.4.10.
@@ -944,7 +944,7 @@ Differences to 3.3.7:
 * The ssl library breaks in much more ugly ways than before, but unlike previous
   versions, it passes over this error silently.
 
-Python 3.8.16
+python 3.8.16
 =============
 
 Python 3.4.10 is sufficient to build Python 3.8.16.
@@ -958,7 +958,7 @@ Differences to 3.4.10:
 * The stringprep Python module, previously deleted, is now required, so it is
   regenerated.
 
-Python 3.11.1
+python 3.11.1
 =============
 
 The newest version of Python, Python 3.11.1 can now be built.
