@@ -1,0 +1,22 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+token is in the standard library which takes precedence over files
+in the path. Rename this file so we can actually import it.
+
+--- Lib/symbol.py	2022-12-19 21:52:07.101953334 +1100
++++ Lib/symbol.py	2022-12-19 21:52:14.752082879 +1100
+@@ -102,10 +102,10 @@
+ 
+ def main():
+     import sys
+-    import token
++    import _token
+     if len(sys.argv) == 1:
+         sys.argv = sys.argv + ["Include/graminit.h", "Lib/symbol.py"]
+-    token._main()
++    _token._main()
+ 
+ if __name__ == "__main__":
+     main()

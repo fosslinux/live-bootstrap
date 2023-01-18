@@ -1,0 +1,20 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+MAXGROUPS constant was introduced in this upgrade. Hardcode it
+from a "normal" system. This seems particularly unproblematic
+if it is wrong, since it does next to nothing.
+
+--- Lib/sre_constants.py	2022-12-20 12:05:01.176104156 +1100
++++ Lib/sre_constants.py	2022-12-20 12:05:21.710376396 +1100
+@@ -15,7 +15,8 @@
+ 
+ MAGIC = 20171005
+ 
+-from _sre import MAXREPEAT, MAXGROUPS
++from _sre import MAXREPEAT
++MAXGROUPS = 1073741823
+ 
+ # SRE standard exception (access as sre.error)
+ # should this really be here?

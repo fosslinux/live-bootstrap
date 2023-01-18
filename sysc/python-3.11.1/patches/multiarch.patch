@@ -1,0 +1,19 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+On x86_64 system our GCC has multiarch a little broken for Python's
+build system which doesn't really bother me so just pretend that
+there is no multiarch.
+
+--- configure.ac.bak	2022-12-21 19:35:44.560977616 +1100
++++ configure.ac	2022-12-21 19:36:00.735143246 +1100
+@@ -1096,7 +1096,7 @@
+ AS_CASE([$ac_sys_system],
+   [Darwin*], [MULTIARCH=""],
+   [FreeBSD*], [MULTIARCH=""],
+-  [MULTIARCH=$($CC --print-multiarch 2>/dev/null)]
++  [MULTIARCH=""]
+ )
+ AC_SUBST([MULTIARCH])
+ AC_MSG_RESULT([$MULTIARCH])

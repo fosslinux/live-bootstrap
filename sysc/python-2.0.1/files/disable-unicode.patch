@@ -1,0 +1,107 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Python-2.0.1
+
+unicodetype_db.h is a file that needs to be regened, but it not
+particularly trivial to regen. For the first build of Python,
+strip out any kind of unicode support that requires
+unicodetype_db.h indiscriminately.
+
+We are effectively restricted to ASCII characters with this change,
+but it works.
+
+--- Objects/unicodectype.c	2000-09-26 08:48:13.000000000 +1100
++++ Objects/unicodectype.c	2022-10-03 21:09:02.108869321 +1100
+@@ -29,30 +29,12 @@
+     const unsigned char digit;
+ } _PyUnicode_TypeRecord;
+ 
+-#include "unicodetype_db.h"
+-
+-static const _PyUnicode_TypeRecord *
+-gettyperecord(int code)
+-{
+-    int index;
+-
+-    if (code < 0 || code >= 65536)
+-        index = 0;
+-    else {
+-        index = index1[(code>>SHIFT)];
+-        index = index2[(index<<SHIFT)+(code&((1<<SHIFT)-1))];
+-    }
+-    return &_PyUnicode_TypeRecords[index];
+-}
+-
+ /* Returns 1 for Unicode characters having the category 'Zl' or type
+    'B', 0 otherwise. */
+ 
+ int _PyUnicode_IsLinebreak(register const Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & LINEBREAK_MASK) != 0;
++    return 0;
+ }
+ 
+ /* Returns the titlecase Unicode characters corresponding to ch or just
+@@ -60,12 +44,7 @@
+ 
+ Py_UNICODE _PyUnicode_ToTitlecase(register const Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    if (ctype->title)
+-        return ch + ctype->title;
+-
+-    return ch + ctype->upper;
++    return ch;
+ }
+ 
+ /* Returns 1 for Unicode characters having the category 'Lt', 0
+@@ -73,9 +52,7 @@
+ 
+ int _PyUnicode_IsTitlecase(register const Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & TITLE_MASK) != 0;
++    return 0;
+ }
+ 
+ /* Returns the integer decimal (0-9) for Unicode characters having
+@@ -83,15 +60,13 @@
+ 
+ int _PyUnicode_ToDecimalDigit(register const Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & DECIMAL_MASK) ? ctype->decimal : -1;
++    return -1;
+ }
+ 
+ int _PyUnicode_IsDecimalDigit(register const Py_UNICODE ch)
+ {
+     if (_PyUnicode_ToDecimalDigit(ch) < 0)
+-	return 0;
++    return 0;
+     return 1;
+ }
+ 
+@@ -100,15 +75,13 @@
+ 
+ int _PyUnicode_ToDigit(register const Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & DIGIT_MASK) ? ctype->digit : -1;
++    return -1;
+ }
+ 
+ int _PyUnicode_IsDigit(register const Py_UNICODE ch)
+ {
+     if (_PyUnicode_ToDigit(ch) < 0)
+-	return 0;
++    return 0;
+     return 1;
+ }
+ 

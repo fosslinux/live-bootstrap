@@ -1,0 +1,110 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+This is a nearly-equivalent patch to Python 2.0.1, with nearly
+identical reasoning.
+
+Python 2.3's unicode regeneration code is a bit too incompatible
+with Python 2.0.1.
+
+--- Objects/unicodectype.c	2022-10-05 18:11:21.989603599 +1100
++++ Objects/unicodectype.c	2022-10-05 18:14:57.335843857 +1100
+@@ -29,31 +29,12 @@
+     const unsigned char digit;
+ } _PyUnicode_TypeRecord;
+ 
+-#include "unicodetype_db.h"
+-
+-static const _PyUnicode_TypeRecord *
+-gettyperecord(Py_UNICODE code)
+-{
+-    int index;
+-
+-    if (code >= 0x110000)
+-        index = 0;
+-    else {
+-        index = index1[(code>>SHIFT)];
+-        index = index2[(index<<SHIFT)+(code&((1<<SHIFT)-1))];
+-    }
+-
+-    return &_PyUnicode_TypeRecords[index];
+-}
+-
+ /* Returns 1 for Unicode characters having the category 'Zl' or type
+    'B', 0 otherwise. */
+ 
+ int _PyUnicode_IsLinebreak(Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & LINEBREAK_MASK) != 0;
++    return 0;
+ }
+ 
+ /* Returns the titlecase Unicode characters corresponding to ch or just
+@@ -61,18 +42,7 @@
+ 
+ Py_UNICODE _PyUnicode_ToTitlecase(register Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-    int delta;
+-
+-    if (ctype->title)
+-        delta = ctype->title;
+-    else
+-	delta = ctype->upper;
+-
+-    if (delta >= 32768)
+-	    delta -= 65536;
+-
+-    return ch + delta;
++    return ch;
+ }
+ 
+ /* Returns 1 for Unicode characters having the category 'Lt', 0
+@@ -80,9 +50,7 @@
+ 
+ int _PyUnicode_IsTitlecase(Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & TITLE_MASK) != 0;
++    return 0;
+ }
+ 
+ /* Returns the integer decimal (0-9) for Unicode characters having
+@@ -90,9 +58,7 @@
+ 
+ int _PyUnicode_ToDecimalDigit(Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & DECIMAL_MASK) ? ctype->decimal : -1;
++    return -1;
+ }
+ 
+ int _PyUnicode_IsDecimalDigit(Py_UNICODE ch)
+@@ -107,9 +73,7 @@
+ 
+ int _PyUnicode_ToDigit(Py_UNICODE ch)
+ {
+-    const _PyUnicode_TypeRecord *ctype = gettyperecord(ch);
+-
+-    return (ctype->flags & DIGIT_MASK) ? ctype->digit : -1;
++    return -1;
+ }
+ 
+ int _PyUnicode_IsDigit(Py_UNICODE ch)
+--- Makefile.pre.in	2005-01-12 00:49:02.000000000 +1100
++++ Makefile.pre.in	2022-10-05 18:35:05.979846971 +1100
+@@ -456,8 +456,7 @@
+ Python/importdl.o: $(srcdir)/Python/importdl.c
+ 		$(CC) -c $(PY_CFLAGS) -I$(DLINCLDIR) -o $@ $(srcdir)/Python/importdl.c
+ 
+-Objects/unicodectype.o:	$(srcdir)/Objects/unicodectype.c \
+-				$(srcdir)/Objects/unicodetype_db.h
++Objects/unicodectype.o:	$(srcdir)/Objects/unicodectype.c
+ 
+ ############################################################################
+ # Header files

@@ -857,3 +857,127 @@ musl 1.2.3
 
 With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
 with support for dynamic linking.
+
+python 2.0.1
+============
+
+Everything is in place to bootstrap the useful programming language/utility
+Python. While Python is largely written in C, many parts of the codebase are
+generated from Python scripts, which only increases as Python matured over time.
+
+We begin with Python 2.0.1, which has minimal generated code, most of which can
+be removed. Lib/{keyword,token,symbol} scripts are rewritten in C and used to
+regenerate parts of the standard library. Unicode support and sre (regex)
+support is stripped out. 
+
+Using the stripped-down first version of Python 2.0.1, Python 2.0.1 is rebuilt,
+including Unicode and regex support (required for future Python builds). The
+first version is insufficient to run the Lib/{keyword,token,symbol} scripts, so
+those continue to use the C versions.
+
+Precompiled Python code at this point is highly unreproducible, so it is
+deleted (JIT compiled instead). This makes Python itself slower, but this is of
+little consequence.
+
+python 2.3.7
+============
+
+Python 2.0.1 is sufficient to build Python 2.3.7.
+
+Differences to 2.0.1:
+
+* The new "ast" module, performing parsing of Python, is generated from a
+  parsing specification using Python code.
+* 2.0.1 is insufficient to run 2.3.7's unicode regeneration, so Unicode
+  support is again stripped out.
+
+Python 2.3.7 is then rebuilt to include Unicode support.
+
+python 2.5.6
+============
+
+Python 2.3.7 is sufficient to build Python 2.5.6, with a few minimal changes to
+language constructs in scripts. This is the last 2.x version we build.
+
+Differences to 2.3.7 are very minimal.
+
+python 3.1.5
+============
+
+Python 2.5.6 is new enough to be able to build Python 3.1.5, allowing us to move
+into the modern 3.x series of Python. Various patching is required, as some
+scripts in the tree are still Python 2 while others are Python 3. We have to
+convert the Python 3 ones back to Python 2 to be able to use Python 2.5.6.
+
+Differences to 2.5.6:
+
+* An include cycle when a distributed file is removed arises, we have to jump
+  through some hoops to make this work.
+* At the second pass of building, various charset encodings can be regenerated &
+  used in the standard library (required in future Python 3.x).
+* The new ssl Python library is disabled due to our OpenSSL version being too
+  new.
+
+Python 3.1.5 is rebuilt, using Python 3 for the Python 3 scripts in the tree.
+
+python 3.3.7
+============
+
+Python 3.1.5 is sufficient to build Python 3.3.7 (rapid language change = small
+jumps).
+
+Differences to 3.1.5:
+
+* The ssl Python library can now be re-enabled, and ``_ssl_data.h`` regenerated.
+
+python 3.4.10
+=============
+
+Python 3.3.7 is sufficient to build Python 3.4.10.
+
+Differences to 3.3.7:
+
+* The clinic tool has been introduced, which unifies documentation with code.
+  Clinic creates many generated files. We run the clinic tool across all files
+  using clinic.
+* The ssl library breaks in much more ugly ways than before, but unlike previous
+  versions, it passes over this error silently.
+
+python 3.8.16
+=============
+
+Python 3.4.10 is sufficient to build Python 3.8.16.
+
+Differences to 3.4.10:
+
+* The build system has been significantly revamped (coming in line with modern
+  standards).
+* Many of our previous regenerations can be replaced with one ``make regen-all``
+  invocation.
+* The stringprep Python module, previously deleted, is now required, so it is
+  regenerated.
+
+python 3.11.1
+=============
+
+The newest version of Python, Python 3.11.1 can now be built.
+
+Differences to 3.8.16:
+
+* Unfortunately, the build system has regressed slightly. We must choose the
+  order to perform regenerations in the Makefile ourselves, as some
+  regenerations use other regenerations, but the Makefile does not include them
+  as dependencies.
+* The concept of "frozen" modules has been introduced, adding a layer of
+  complexity to regeneration.
+* ``stdlib_module_names.h`` is a new file that must be built using data from a
+  current Python binary. To achieve this, a dummy ``stdlib_module_names.h`` is used
+  for the build, then ``stdlib_module_names.h`` is created, and Python is
+  rebuilt using the proper ``stdlib_module_names.h``. Unfortunately this
+  greatly increases the time taken to build Python, but it is not trivial to
+  work around.
+* A new generated script ``Lib/re/_casefix.py`` is introduced.
+* The ssl module, now unbroken, can be built again.
+* Very recent Python versions allow for the use of ``SOURCE_DATE_EPOCH`` to
+  remove determinism from precompiled Python libraries (``.pyc``). Finally, we
+  can re-enable compiling of Python modules.

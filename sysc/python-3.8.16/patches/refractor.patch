@@ -1,0 +1,26 @@
+SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: PSF-2.0
+
+I'm not sure what was going on here when this was written, or how
+it ever worked! But this small simple fix works 0.0
+
+--- Lib/sre_constants.py	2022-12-20 18:30:21.883561534 +1100
++++ Lib/sre_constants.py	2022-12-20 18:31:23.209190748 +1100
+@@ -56,6 +56,7 @@
+ class _NamedIntConstant(int):
+     def __new__(cls, value, name):
+         self = super(_NamedIntConstant, cls).__new__(cls, value)
++        self.value = value
+         self.name = name
+         return self
+ 
+@@ -219,7 +220,7 @@
+     def dump(f, d, prefix):
+         items = sorted(d)
+         for item in items:
+-            f.write("#define %s_%s %d\n" % (prefix, item, item))
++            f.write("#define %s_%s %d\n" % (prefix, item.name, item.value))
+     with open("sre_constants.h", "w") as f:
+         f.write("""\
+ /*

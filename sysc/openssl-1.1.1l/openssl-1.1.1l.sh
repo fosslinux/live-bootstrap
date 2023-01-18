@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# XXX: If you change the version of this, you must update the corresponding
+# tarball in Python 3.11.
+
 src_prepare() {
     default
 
