@@ -107,7 +107,7 @@ this script the next time")
     @classmethod
     def get_source_manifest(cls):
         """
-        Generage a source manifest for the system.
+        Generate a source manifest for the system.
         """
         manifest_lines = []
         directory = os.path.relpath(cls.cache_dir, cls.git_dir)

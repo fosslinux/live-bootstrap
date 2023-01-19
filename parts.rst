@@ -1,4 +1,4 @@
-.. sectnum::
+.. sectnum:: :start: 0
 .. SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 .. SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 .. SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
@@ -7,43 +7,134 @@
 
 .. SPDX-License-Identifier: CC-BY-SA-4.0
 
-stage0-posix
-============
+bootstrap-seeds
+===============
 
-This is where all the magic begins. We start with our hex0 and kaem
-seeds and bootstrap our way up to M2-Planet, a subset of C.
-The following steps are taken here:
+This is where it all begins. We start with the two raw binary seeds ``hex0-seed`` and ``kaem-optional-seed``.
 
--  hex0 (seed)
--  hex0 compiles hex1
--  hex0 compiles catm
--  hex1 compiles hex2 (v1)
--  hex2 (v1) compiles M0
--  M0 compiles cc_x86
--  cc_x86 compiles M2-Planet (v1)
--  M2-Planet (v1) compiles blood-elf (v1)
--  M2-Planet (v1) compiles hex2 (final)
--  M2-Planet (v1) compiles M1
--  M2-Planet (v1) compiles kaem
--  M2-Planet (v1) compiles blood-elf (final)
--  M2-Planet (v1) compiles get_machine
--  M2-Planet (v1) compiles M2-Planet (final)
--  M2-Planet (final) compiles mescc-tools-extra (see next step)
+First, we use those seeds to rebuild themselves.
 
-This seems very intimidating, but becomes clearer when reading the
-source: https://github.com/oriansj/stage0-posix-x86
-(start at mescc-tools-seed-kaem.kaem).
+Note that all early steps before ``mes`` are part of `stage0-posix <https://github.com/oriansj/stage0-posix>`_.
+
+hex0
+====
+
+``hex0`` is fairly trivial to implement and for each pair of hexadecimals characters it outputs a byte. We have also added two types of line comments (``#`` and ``;``) to create a well commented lines like:
+
+.. code:: scheme
+
+    # :loop_options [_start + 0x6F]
+        39D3            ; cmp_ebx,edx                 # Check if we are done
+        74 14           ; je !loop_options_done       # We are done
+        83EB 02         ; sub_ebx, !2                 # --options
+
+In the first steps we use initial ``hex0`` binary seed to rebuild ``kaem-optional`` and ``hex0`` from their source.
+
+``hex0`` code is somewhat tedious to read and write as it is basically a well documented machine code. We have to manually calculate all jumps in the code.
+
+``hex0`` can be approximated with: ``sed 's/[;#].*$//g' $input_file | xxd -r -p > $output_file``
+
+kaem-optional
+=============
+
+``kaem-optional`` is a trivial shell that can read list of commands together with their command line arguments from a file and executes them. It also supports line comments but has no other features.
+
+hex1
+====
+
+This is the last program that has to be written in ``hex0`` language. ``hex1`` is a simple extension of ``hex0`` and adds a single character labels and allows calculating 32-bit offsets from current position in the code to the label. ``hex1`` code might look like:
+
+.. code:: scheme
+
+    :a #:loop_options
+        39D3            ; cmp_ebx,edx                 # Check if we are done
+        0F84 %b         ; je %loop_options_done       # We are done
+        83EB 02         ; sub_rbx, !2                 # --options
+
+hex2
+====
+
+``hex2`` is our final hex language that adds support for labels of arbitrary length. It also allows accessing them via 8, 16, 32-bit relative addresses (``!``, ``@``, ``%``) and via 16-bit or 32-bit (``$``, ``&``) absolute addresses:
+
+.. code:: scheme
+
+    :loop_options
+        39D3                  ; cmp_ebx,edx                        # Check if we are done
+        74 !loop_options_done ; je8 !loop_options_done             # We are done
+        83EB 02               ; sub_ebx, !2                        # --options
+
+catm
+====
+
+``catm`` allows concatenating files with ``catm output_file input1 input2 ... inputN``. This allows us to distribute common code in separate files. We will first use it to append ELF header to ``.hex2`` files. Before this step the ELF header had to be included in the source file itself.
+
+M0
+==
+
+The ``M0`` assembly language is the simplest assembly language you can create that enables the creation of more complicated programs. It includes only a single keyword: ``DEFINE`` and leverages the language properties of ``hex2`` along with extending the behavior to populate immediate values of various sizes and formats.
+
+Thus ``M0`` code looks like:
+
+.. code:: bash
+
+    DEFINE cmp_ebx,edx 39D3
+    DEFINE je 0F84
+    DEFINE sub_ebx, 81EB
+
+    :loop_options
+        cmp_ebx,edx                         # Check if we are done
+        je %loop_options_done               # We are done
+        sub_ebx, %2                         # --options
+
+cc_x86
+======
+
+The ``cc_x86`` implements a subset of the C language designed in ``M0`` assembly. It is a somewhat limited subset of C but complete enough to make it easy to write a more usable C compiler written in the C subset that ``cc_x86`` supports.
+
+At this stage we start using `M2libc <https://github.com/oriansj/M2libc/>`_ as our C library. In fact, ``M2libc`` ships two versions of C library. There is a single-file library that contains just enough to build ``M2-Planet`` and there is
+a full version that is rather well-featured.
+
+M2-Planet
+=========
+
+This is the only C program that we build with ``cc_x86``. `M2-Planet <https://github.com/oriansj/M2-Planet>`_ supports a larger subset of C than ``cc_x86`` and we are somewhat closer to C89 (it does not implement all C89 features but on the other hand it does have some C99 features). ``M2-Planet`` also includes a very basic preprocessor, so we can use stuff like ``#define``, ``#ifdef``.
+
+``M2-Planet`` is also capable of using full ``M2libc`` C library that has more features and optimizations compared to bootstrap version of ``M2libc``.
+
+``M2-Planet`` supports generating code for various architectures including ``x86``, ``amd64``, ``armv7``, ``aarch64``, ``riscv32`` and ``riscv64``. Up until this point bootstrap has been very architecture specific. From now on we still have platform specific bits of code but they are usually handled as conditionals in the same application rather than having completely different applications.
+
+mescc-tools
+===========
+
+Now we build ``blood-elf`` used to generate debug info, C version of ``hex2`` (also called ``hex2``) and C version of ``M0`` called ``M1``. These are more capable than their platform specific hex counterparts and are fully cross-platform. Thus we can now have the whole toolchain written in C.
+
+Then we rebuild ``mescc-tools`` again, so all our tools are using new toolchain written in C.
+
+Finally, we build `kaem` which is a more capable version of `kaem-optional` and adds support for variables, environmental variables, conditionals and aliases. It also has various built-ins such as `cd` and `echo`.
+
+M2-Mesoplanet
+=============
+
+``M2-Mesoplanet`` is a preprocessor that is more capable than ``M2-Planet`` and supports ``#include`` statements. It can also launch compiler, assembler and linker with the correct arguments, so we don't need to invoke them
+manually.
+
+At the moment it is only used to build ``mescc-tools-extra``.
+
+M2-Planet
+=========
+
+We rebuild ``M2-Planet`` with ``M2-Planet``.
 
 From here, we can move on from the lowest level stuff.
 
 mescc-tools-extra
 =================
 
-mescc-tools-extra contains some additional programs, namely filesystem
+``mescc-tools-extra`` contains some additional programs, namely filesystem
 utilities ``cp`` and ``chown``. This allows us to have one unified
 directory for our binaries. Futhermore, we also build ``sha256sum``, a
 checksumming tool, that we use to ensure reproducibility and authenticity
-of generated binaries. We also build initial ``untar`` and ``ungz``
+of generated binaries. We also build initial ``untar``, ``ungz`` and ``unbz2``
 utilities to deal with compressed archives.
 
 ``/sysa``
@@ -58,11 +149,10 @@ copying over all of the required binaries from ``/``.
 mes 0.24
 ========
 
-``mes`` is a scheme interpreter. It runs the sister project ``mescc``,
+GNU ``mes`` is a scheme interpreter. It runs the sister project ``mescc``,
 which is a C compiler written in scheme, which links against the Mes C
-Library. All 3 are included in this same repository. Note that we are
-using the experimental ``wip-m2`` branch to jump over the gap between
-``M2-Planet`` and ``mes``. There are two stages to this part:
+Library. All 3 are included in this same repository. There are two stages
+to this part:
 
 1. Compiling an initial mes using ``M2-Planet``. Note that this is
    *only* the Mes interpreter, not the libc or anything else.
