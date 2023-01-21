@@ -91,8 +91,7 @@ cc_x86
 
 The ``cc_x86`` implements a subset of the C language designed in ``M0`` assembly. It is a somewhat limited subset of C but complete enough to make it easy to write a more usable C compiler written in the C subset that ``cc_x86`` supports.
 
-At this stage we start using `M2libc <https://github.com/oriansj/M2libc/>`_ as our C library. In fact, ``M2libc`` ships two versions of C library. There is a single-file library that contains just enough to build ``M2-Planet`` and there is
-a full version that is rather well-featured.
+At this stage we start using `M2libc <https://github.com/oriansj/M2libc/>`_ as our C library. In fact, ``M2libc`` ships two versions of C library. There is a single-file library that contains just enough to build ``M2-Planet`` and there is a full version that is rather well-featured.
 
 M2-Planet
 =========
