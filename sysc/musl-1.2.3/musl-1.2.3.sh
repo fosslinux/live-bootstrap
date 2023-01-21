@@ -31,4 +31,9 @@ src_install() {
     # Add library search path configurtion
     mkdir -p "${DESTDIR}/etc"
     cp ld-musl-i386.path "${DESTDIR}/etc"
+
+    # Re-add /bin and /lib symlinks here so that binary package
+    # is self-contained and usable outside live-bootstrap
+    ln --symbolic --relative "${DESTDIR}/${PREFIX}/lib" "${DESTDIR}/lib"
+    ln --symbolic --relative "${DESTDIR}/${PREFIX}/bin" "${DESTDIR}/bin"
 }
