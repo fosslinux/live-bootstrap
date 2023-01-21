@@ -15,7 +15,7 @@ src_prepare() {
     rm config.guess config.sub ltmain.sh
     libtoolize
 
-    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 AUTOCONF=autoconf-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {
@@ -23,6 +23,7 @@ src_configure() {
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
         --build=i386-unknown-linux-gnu \
+        --enable-ipv6 \
         --without-ssl \
         --disable-hsts
 }
