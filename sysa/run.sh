@@ -232,11 +232,6 @@ build make-3.82
 build curl-7.83.0
 
 # Clear up some RAM space
-grep '^pkg=' /after.kaem | sed 's/pkg="//' | sed 's/"$//' | while read -r p ; do
-    rm -rf "${SOURCES:?}/${p:?}"
-done
-rm -rf "${SOURCES}/mes"
-
 grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"
 done
