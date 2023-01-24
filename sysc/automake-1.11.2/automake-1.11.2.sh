@@ -8,6 +8,10 @@ src_prepare() {
 
     rm -f doc/amhello-1.0.tar.gz doc/automake.info* doc/aclocal-1.11.1 doc/automake-1.11.1
 
+    # Building doc often causes race conditions, skip it
+    awk '/SUBDIRS/{sub("doc ", "", $0)} {print}' Makefile.am > Makefile.am.tmp
+    mv Makefile.am{.tmp,}
+
     AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 ./bootstrap
 }
 
@@ -22,5 +26,4 @@ src_compile() {
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
     rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
-    rm "${DESTDIR}${PREFIX}/share/doc/automake/amhello-1.0.tar.gz"
 }

@@ -8,11 +8,13 @@ src_prepare() {
 
     rm doc/amhello-1.0.tar.gz
 
+    # Building doc often causes race conditions, skip it
+    sed -i '/doc\/Makefile.inc/d' Makefile.am
+    sed -i '/t\/Makefile.inc/d' Makefile.am
+
     AUTOCONF=autoconf-2.69 AUTOM4TE=autom4te-2.69 ./bootstrap
 
     rm doc/automake-history.info doc/automake.info*
-
-    cp "${PREFIX}/bin/help2man" doc/
 }
 
 src_configure() {
@@ -26,5 +28,4 @@ src_compile() {
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
     rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
-    rm "${DESTDIR}${PREFIX}/share/doc/automake/amhello-1.0.tar.gz"
 }
