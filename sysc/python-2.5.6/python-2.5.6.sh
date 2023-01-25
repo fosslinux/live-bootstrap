@@ -50,7 +50,8 @@ src_configure() {
         --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
-        --with-system-ffi
+        --with-system-ffi \
+        --enable-ipv6
 }
 
 src_compile() {

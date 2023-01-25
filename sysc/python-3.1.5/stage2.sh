@@ -49,7 +49,8 @@ src_configure() {
         --build=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
         --with-pydebug \
-        --with-system-ffi
+        --with-system-ffi \
+        --enable-ipv6
 }
 
 src_compile() {

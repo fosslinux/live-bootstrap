@@ -40,7 +40,8 @@ src_configure() {
         ./configure \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
-        --with-wctype-functions
+        --with-wctype-functions \
+        --enable-ipv6
 }
 
 src_compile() {
