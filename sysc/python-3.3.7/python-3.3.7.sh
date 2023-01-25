@@ -74,8 +74,8 @@ src_compile() {
 
 src_install() {
     default
-    ln -s "${PREFIX}/lib/musl/python3.3/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.3/lib-dynload"
-    ln -s "${PREFIX}/bin/python3.3" "${DESTDIR}${PREFIX}/bin/python"
+    ln --symbolic --relative "${DESTDIR}${PREFIX}/lib/musl/python3.3/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.3/lib-dynload"
+    ln --symbolic --relative "${DESTDIR}${PREFIX}/bin/python3.3" "${DESTDIR}${PREFIX}/bin/python"
 
     # Remove non-reproducible .pyc/o files
     find "${DESTDIR}" -name "*.pyc" -delete

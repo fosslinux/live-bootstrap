@@ -92,6 +92,6 @@ src_compile() {
 
 src_install() {
     default
-    ln -s "${PREFIX}/lib/musl/python3.11/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.11/lib-dynload"
-    ln -s "${PREFIX}/bin/python3.11" "${DESTDIR}${PREFIX}/bin/python"
+    ln --symbolic --relative "${DESTDIR}${PREFIX}/lib/musl/python3.11/lib-dynload" "${DESTDIR}${PREFIX}/lib/python3.11/lib-dynload"
+    ln --symbolic --relative "${DESTDIR}${PREFIX}/bin/python3.11" "${DESTDIR}${PREFIX}/bin/python"
 }
