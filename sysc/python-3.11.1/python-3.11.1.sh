@@ -12,6 +12,8 @@ src_prepare() {
     # Regenerate ssl_data for ssl module
     rm Modules/_ssl_data_300.h Modules/_ssl_data.h
     python Tools/ssl/make_ssl_data.py ../openssl-1.1.1l Modules/_ssl_data_111.h
+    sed -i 's#$(srcdir)/Modules/_ssl_data.h ##' Makefile.pre.in
+    sed -i 's#$(srcdir)/Modules/_ssl_data_300.h ##' Makefile.pre.in
 
     # Regenerate encodings
     grep generated -r . -l | grep encodings | xargs rm
@@ -48,15 +50,18 @@ src_prepare() {
 }
 
 src_configure() {
+    mv Setup.local Modules
     MACHDEP=linux ac_sys_system=Linux \
     CPPFLAGS="-U__DATE__ -U__TIME__" \
-    LDFLAGS="-L/usr/lib/musl" \
+    PKG_CONFIG_PATH="${PREFIX}/lib/musl/pkgconfig/" \
+    LDFLAGS="-static" \
         ./configure \
         --build=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
         --libdir="${PREFIX}/lib/musl" \
-        --with-system-ffi
+        --with-system-ffi \
+        --disable-shared
 }
 
 src_compile() {
