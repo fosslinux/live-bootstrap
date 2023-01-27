@@ -1,0 +1,120 @@
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2022 Christophe Lyon <christophe.lyon@arm.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+In our context, some construct has decided that we don't support
+XF mode (which is not true for the architecture, in general, as
+this patch supports, but is sufficient for our strange environment).
+
+Backport of commit 43ccb7e445329dd9557b42e7289a87a8071ab0f7.
+
+[PATCH] libgcc: Enable XF mode conversions to/from DFP modes only if
+ supported
+
+Some targets do not support XF mode (eg AArch64), so don't build the
+corresponding to/from DFP modes convertion routines if
+__LIBGCC_HAS_XF_MODE__ is not defined.
+
+diff --git libgcc/config/libbid/_dd_to_xf.c libgcc/config/libbid/_dd_to_xf.c
+index 5a2abbbb1f4..e4b12e8ac4f 100644
+--- libgcc/config/libbid/_dd_to_xf.c
++++ libgcc/config/libbid/_dd_to_xf.c
+@@ -25,6 +25,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #include "bid_functions.h"
+ #include "bid_gcc_intrinsics.h"
+ 
++#ifdef __LIBGCC_HAS_XF_MODE__
+ XFtype
+ __bid_extendddxf (_Decimal64 x) {
+   XFtype res;
+@@ -34,3 +35,4 @@ __bid_extendddxf (_Decimal64 x) {
+   res = __bid64_to_binary80 (ux.i);
+   return (res);
+ }
++#endif
+diff --git libgcc/config/libbid/_sd_to_xf.c libgcc/config/libbid/_sd_to_xf.c
+index 9af09913684..288ccb25075 100644
+--- libgcc/config/libbid/_sd_to_xf.c
++++ libgcc/config/libbid/_sd_to_xf.c
+@@ -25,6 +25,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #include "bid_functions.h"
+ #include "bid_gcc_intrinsics.h"
+ 
++#ifdef __LIBGCC_HAS_XF_MODE__
+ XFtype
+ __bid_extendsdxf (_Decimal32 x) {
+   XFtype res;
+@@ -34,3 +35,4 @@ __bid_extendsdxf (_Decimal32 x) {
+   res = __bid32_to_binary80 (ux.i);
+   return (res);
+ }
++#endif
+diff --git libgcc/config/libbid/_td_to_xf.c libgcc/config/libbid/_td_to_xf.c
+index b0c76a71497..e990282162d 100644
+--- libgcc/config/libbid/_td_to_xf.c
++++ libgcc/config/libbid/_td_to_xf.c
+@@ -25,6 +25,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #include "bid_functions.h"
+ #include "bid_gcc_intrinsics.h"
+ 
++#ifdef __LIBGCC_HAS_XF_MODE__
+ XFtype
+ __bid_trunctdxf (_Decimal128 x) {
+   XFtype res;
+@@ -34,3 +35,4 @@ __bid_trunctdxf (_Decimal128 x) {
+   res = __bid128_to_binary80 (ux.i);
+   return (res);
+ }
++#endif
+diff --git libgcc/config/libbid/_xf_to_dd.c libgcc/config/libbid/_xf_to_dd.c
+index 9feb0f2c3d6..e3246a1c2e1 100644
+--- libgcc/config/libbid/_xf_to_dd.c
++++ libgcc/config/libbid/_xf_to_dd.c
+@@ -25,9 +25,11 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #include "bid_functions.h"
+ #include "bid_gcc_intrinsics.h"
+ 
++#ifdef __LIBGCC_HAS_XF_MODE__
+ _Decimal64
+ __bid_truncxfdd (XFtype x) {
+   union decimal64 res;
+   res.i = __binary80_to_bid64 (x);
+   return (res.d);
+ }
++#endif
+diff --git libgcc/config/libbid/_xf_to_sd.c libgcc/config/libbid/_xf_to_sd.c
+index 7d46548af6c..9147e979182 100644
+--- libgcc/config/libbid/_xf_to_sd.c
++++ libgcc/config/libbid/_xf_to_sd.c
+@@ -25,9 +25,11 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #include "bid_functions.h"
+ #include "bid_gcc_intrinsics.h"
+ 
++#ifdef __LIBGCC_HAS_XF_MODE__
+ _Decimal32
+ __bid_truncxfsd (XFtype x) {
+   union decimal32 res;
+   res.i = __binary80_to_bid32 (x);
+   return (res.d);
+ }
++#endif
+diff --git libgcc/config/libbid/_xf_to_td.c libgcc/config/libbid/_xf_to_td.c
+index 07987fdcc3a..c8d102b0b7f 100644
+--- libgcc/config/libbid/_xf_to_td.c
++++ libgcc/config/libbid/_xf_to_td.c
+@@ -25,9 +25,11 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ #include "bid_functions.h"
+ #include "bid_gcc_intrinsics.h"
+ 
++#ifdef __LIBGCC_HAS_XF_MODE__
+ _Decimal128
+ __bid_extendxftd (XFtype x) {
+   union decimal128 res;
+   res.i = __binary80_to_bid128 (x);
+   return (res.d);
+ }
++#endif
+-- 
+2.31.1
+

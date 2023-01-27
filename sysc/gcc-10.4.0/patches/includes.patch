@@ -1,0 +1,25 @@
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Two fold issue.
+
+https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63966
+Pre-5.0 GCC does not have a cpuid.h header installed on the system, so
+we use the one from this source tree.
+
+https://stackoverflow.com/questions/22160093/inconsistent-operand-constraints-in-an-asm
+Pre-5.0 GCC does not support PIC inline ASM that touches ebx (as
+presumably the cpuid call does); so we must disable PIC.
+
+--- libgcc/Makefile.in	2023-01-25 16:03:45.928059755 +1100
++++ libgcc/Makefile.in	2023-01-25 16:04:06.711464255 +1100
+@@ -282,7 +282,7 @@
+ # subdirectory rather than in the source directory.
+ # -I$(@D) and -I$(srcdir)/$(@D) cause the subdirectory of the file
+ # currently being compiled, in both source trees, to be examined as well.
+-INCLUDES = -I. -I$(@D) -I$(gcc_objdir) \
++INCLUDES = -I. -I$(@D) -I$(gcc_objdir) -I../../gcc/include -fno-pic \
+ 	   -I$(srcdir) -I$(srcdir)/$(@D) -I$(srcdir)/../gcc \
+ 	   -I$(srcdir)/../include $(DECNUMINC)
+ 

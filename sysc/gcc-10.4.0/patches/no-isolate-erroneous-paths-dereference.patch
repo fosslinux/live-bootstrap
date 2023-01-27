@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+GCC 4.7 doesn't have fisolate-erroneous-paths-dereference. Hence
+this line does nothing.
+
+--- libgcc/generic-morestack.c	2023-01-25 16:52:35.382471998 +1100
++++ libgcc/generic-morestack.c	2023-01-25 16:52:40.773585043 +1100
+@@ -23,8 +23,6 @@
+ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+ <http://www.gnu.org/licenses/>.  */
+ 
+-#pragma GCC optimize ("no-isolate-erroneous-paths-dereference")
+-
+ /* powerpc 32-bit not supported.  */
+ #if !defined __powerpc__ || defined __powerpc64__
+ 

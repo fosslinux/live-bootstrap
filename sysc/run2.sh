@@ -130,6 +130,8 @@ build python-3.8.16
 
 build python-3.11.1
 
+build gcc-10.4.0
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp

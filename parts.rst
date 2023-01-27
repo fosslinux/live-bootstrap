@@ -1074,3 +1074,13 @@ Differences to 3.8.16:
 * Very recent Python versions allow for the use of ``SOURCE_DATE_EPOCH`` to
   remove determinism from precompiled Python libraries (``.pyc``). Finally, we
   can re-enable compiling of Python modules.
+
+GCC 10.4.0
+==========
+
+GCC 10.x series is the last version of GCC that is able to be built with the
+C/C++ standards available in GCC 4.7. Instead of manually configuring & compiling
+every subdirectory, since we now have ``autogen`` available we are able to use
+the top-level configure to build the project. We do not use GCC's bootstrap mode,
+where GCC is recompiled with itself after being built, since we're just going
+to use this GCC to compile GCC 12, it adds build time for little benefit.
