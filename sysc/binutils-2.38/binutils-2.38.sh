@@ -92,4 +92,11 @@ src_install() {
     for dir in libiberty bfd opcodes libctf binutils gas gprof ld; do
         make -C $dir tooldir=${PREFIX} DESTDIR="${DESTDIR}" install
     done
+
+    # Create triplet symlinks
+    pushd "${DESTDIR}${PREFIX}/bin"
+    for f in *; do
+        ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
+    done
+    popd
 }
