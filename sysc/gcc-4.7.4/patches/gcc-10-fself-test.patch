@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+In GCC 10, fself-test is run on every GCC used in the
+build process to ensure correctness. However this is not
+yet introduced in GCC 4.7, so we no-op it.
+
+--- gcc/common.opt	2023-01-23 21:22:23.630919284 +1100
++++ gcc/common.opt	2023-01-23 21:23:33.030143958 +1100
+@@ -1701,6 +1701,10 @@
+ Common Report Var(flag_selective_scheduling2) Optimization 
+ Run selective scheduling after reload
+ 
++fself-test=
++Common Undocumented Joined Var(flag_self_test)
++Run no-op self-tests.
++
+ fsel-sched-pipelining
+ Common Report Var(flag_sel_sched_pipelining) Init(0) Optimization
+ Perform software pipelining of inner loops during selective scheduling

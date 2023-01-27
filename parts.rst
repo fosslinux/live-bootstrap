@@ -867,6 +867,10 @@ gcc 4.7.4
 GCC 4.7.4 is the last version written in C. This time we build both C and C++ backends.
 C++ backend has some dependency on ``gperf`` which is written in C++. Fortunately, it is
 easy to patch it out and resulting ``g++`` compiler is capable of building ``gperf``.
+We also add in two patchsets to the compiler;
+
+* one to add support for musl shared library support
+* one providing a few compiler flags/features that are required later to build GCC 10
 
 binutils 2.38
 =============
