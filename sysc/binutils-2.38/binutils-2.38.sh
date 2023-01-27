@@ -69,9 +69,9 @@ src_configure() {
             --enable-install-libiberty \
             --enable-deterministic-archives \
             --with-system-zlib \
-            --build=i386-unknown-linux-gnu \
-            --host=i386-unknown-linux-gnu \
-            --target=i386-unknown-linux-gnu \
+            --build=i386-unknown-linux-musl \
+            --host=i386-unknown-linux-musl \
+            --target=i386-unknown-linux-musl \
             --program-prefix="" \
             --with-sysroot="${PREFIX}" \
             --prefix="${PREFIX}" \
