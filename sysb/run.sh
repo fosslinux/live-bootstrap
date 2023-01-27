@@ -6,6 +6,9 @@
 
 set -e
 
+# shellcheck source=/dev/null
+. .env
+
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 
@@ -74,8 +77,6 @@ if [ $(($(ls -l "/dev/${DISK}" | sed "s/.*, *//" | sed "s/ .*//") % 8)) -eq 0 ];
 fi
 echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
 
-PREFIX=/usr
-SOURCES="${PREFIX}/src"
 SYSC=/sysc
 
 # Otherwise, add stuff from sysa to sysb

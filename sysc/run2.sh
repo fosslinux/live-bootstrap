@@ -9,6 +9,9 @@
 
 set -e
 
+# shellcheck source=/dev/null
+. .env
+
 # shellcheck disable=SC2153
 trap 'env - PATH=${PREFIX}/bin PS1="\w # " bash -i' EXIT
 
@@ -140,4 +143,4 @@ fi
 echo "Bootstrapping completed."
 
 cd "/"
-exec env -i PATH="${PATH}" PREFIX="${PREFIX}" SOURCES="${SOURCES}" DESTDIR="${DESTDIR}" DISTFILES="${DISTFILES}" HOME="${HOME}" SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}" bash "${SOURCES}/after.sh"
+exec env -i PATH="${PATH}" HOME="${HOME}" SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}" bash "${SOURCES}/after.sh"

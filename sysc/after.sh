@@ -5,4 +5,6 @@
 
 # Replace this hook if you wish to do more
 
+. /usr/src/.env
+
 exec env - PATH="${PREFIX}/bin" PS1="\w # " bash -i

@@ -9,13 +9,13 @@
 set -e
 
 # shellcheck disable=SC2154
-export PREFIX="${prefix}"
+PREFIX="${prefix}"
 # shellcheck disable=SC2154
-export SOURCES="${sysa}"
-export DISTFILES="${sysa}/distfiles"
-export DESTDIR=/tmp/destdir
+SOURCES="${sysa}"
+DISTFILES="${sysa}/distfiles"
+DESTDIR=/tmp/destdir
 # shellcheck disable=SC2154
-export SRCDIR="${srcdir}"
+SRCDIR="${srcdir}"
 
 # shellcheck source=sysa/helpers.sh
 . helpers.sh

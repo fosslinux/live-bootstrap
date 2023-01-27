@@ -24,10 +24,10 @@ src_configure() {
 }
 
 src_compile() {
-    make CROSS_COMPILE= CFLAGS="-DSYSCALL_NO_TLS" AS_CMD='as -o $@ $<'
+    make PREFIX="${PREFIX}" CROSS_COMPILE= CFLAGS="-DSYSCALL_NO_TLS" AS_CMD='as -o $@ $<'
 }
 
 src_install() {
     rm -rf "${PREFIX}/include"
-    make install
+    make PREFIX="${PREFIX}" DESTDIR="${DESTDIR}" install
 }
