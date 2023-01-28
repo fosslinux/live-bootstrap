@@ -116,7 +116,7 @@ def main():
 
     # Tmp validation
     if args.bwrap and args.tmpfs:
-        raise ValueError("tmpfs cannot be used writh bwrap.")
+        raise ValueError("tmpfs cannot be used with bwrap.")
 
     # bootstrap.cfg
     if args.bare_metal:
