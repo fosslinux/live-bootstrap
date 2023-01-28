@@ -63,8 +63,8 @@ ln -s /usr/bin/bash /usr/bin/sh
 # Begin sysc bootstrapping process
 cd "${SOURCES}"
 
+echo "PREFIX=${PREFIX}" > .env
 # shellcheck disable=SC2129
-echo "PREFIX=${PREFIX}" >> .env
 echo "SOURCES=${SOURCES}" >> .env
 echo "DESTDIR=${DESTDIR}" >> .env
 echo "DISTFILES=${DISTFILES}" >> .env
