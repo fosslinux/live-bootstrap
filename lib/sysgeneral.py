@@ -4,19 +4,16 @@ This file contains a few functions to be shared by all Sys* classes
 """
 
 # SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import os
-import shutil
 import hashlib
 import glob
 import subprocess
 
 import requests
-
-from lib.utils import mount, umount
 
 class SysGeneral:
     """
@@ -25,38 +22,12 @@ class SysGeneral:
     """
 
     # All of these are variables defined in the individual Sys* classes
-    preserve_tmp = None
-    tmp_dir = None
     cache_dir = None
     base_dir = None
     git_dir = None
     sys_dir = None
     initramfs_path = None
-    mounted_tmpfs = False
-
-    def __del__(self):
-        if not self.preserve_tmp:
-            self.remove_tmp()
-
-    def remove_tmp(self):
-        """Remove the tmp directory"""
-        if self.tmp_dir is None:
-            return
-
-        if self.mounted_tmpfs:
-            print(f"Unmounting tmpfs from {self.tmp_dir}")
-            umount(self.tmp_dir)
-
-        print(f"Removing {self.tmp_dir}")
-        shutil.rmtree(self.tmp_dir, ignore_errors=True)
-
-    def mount_tmpfs(self):
-        """Mount the tmpfs for this sysx"""
-        if not os.path.isdir(self.tmp_dir):
-            os.mkdir(self.tmp_dir)
-        print(f"Mounting tmpfs on {self.tmp_dir}")
-        mount('tmpfs', self.tmp_dir, 'tmpfs', 'size=8G')
-        self.mounted_tmpfs = True
+    tmp_dir = None
 
     def check_file(self, file_name, expected_hash):
         """Check hash of downloaded source file."""

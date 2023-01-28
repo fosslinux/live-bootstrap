@@ -13,6 +13,7 @@ from sysa import SysA
 from sysc import SysC
 
 def main():
+    """Generate a source manifest for a system"""
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-s", "--system",

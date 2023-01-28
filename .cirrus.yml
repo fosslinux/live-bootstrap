@@ -13,7 +13,7 @@ pylint_task:
     - apt-get -y clean
     - pip3 install pylint
   check_script:
-    - pylint rootfs.py sysa.py sysb.py sysc.py lib/utils.py lib/sysgeneral.py --disable=duplicate-code
+    - pylint rootfs.py sysa.py sysc.py lib/utils.py lib/sysgeneral.py lib/tmpdir.py --disable=duplicate-code
 
 shell_lint_task:
   container:
