@@ -11,17 +11,16 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 
 import argparse
 import os
-import shutil
 
 from sysa import SysA
-from sysb import SysB
 from sysc import SysC
 from lib.utils import run
 from lib.sysgeneral import stage0_arch_map
+from lib.tmpdir import Tmpdir
 
 def create_configuration_file(args):
     """
@@ -54,7 +53,12 @@ def main():
                         action="store_true")
     parser.add_argument("-p", "--preserve", help="Do not remove temporary dir",
                         action="store_true")
-    parser.add_argument("-t", "--tmpdir", help="Temporary directory")
+    parser.add_argument("-t", "--tmpdir", help="Temporary directory",
+                        default="tmp")
+    parser.add_argument("--tmpfs", help="Use a tmpfs on tmpdir",
+                        action="store_true")
+    parser.add_argument("--tmpfs-size", help="Size of the tmpfs",
+                        default="8G")
     parser.add_argument("--force-timestamps",
                         help="Force all files timestamps to be 0 unix time",
                         action="store_true")
@@ -82,13 +86,12 @@ def main():
     parser.add_argument("-qk", "--kernel", help="Kernel to use (default is ./kernel)",
                         default="kernel")
 
-    parser.add_argument("-m", "--minikernel", help="Use minikernel",
-                        action="store_true")
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
                         action="store_true")
 
     args = parser.parse_args()
 
+    # Mode validation
     def check_types():
         count = 0
         if args.qemu:
@@ -97,23 +100,27 @@ def main():
             count += 1
         if args.bwrap:
             count += 1
-        if args.minikernel:
-            count += 1
         if args.bare_metal:
             count += 1
         return count
 
     if check_types() > 1:
-        raise ValueError("No more than one of qemu, chroot, bwrap, minikernel, bare metal "
+        raise ValueError("No more than one of qemu, chroot, bwrap, bare metal"
                          "may be used.")
     if check_types() == 0:
-        raise ValueError("One of qemu, chroot, bwrap, minikernel or bare metal must be selected.")
+        raise ValueError("One of qemu, chroot, bwrap, or bare metal must be selected.")
 
-    if args.bare_metal:
-        args.no_create_config = True
-
+    # Arch validation
     if args.arch != "x86":
         raise ValueError("Only x86 is supported at the moment.")
+
+    # Tmp validation
+    if args.bwrap and args.tmpfs:
+        raise ValueError("tmpfs cannot be used writh bwrap.")
+
+    # bootstrap.cfg
+    if args.bare_metal:
+        args.no_create_config = True
 
     try:
         os.remove(os.path.join('sysa', 'bootstrap.cfg'))
@@ -125,20 +132,21 @@ def main():
         with open(os.path.join('sysa', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
             pass
 
-    system_c = SysC(arch=args.arch, preserve_tmp=args.preserve,
-                    tmpdir=args.tmpdir, external_sources=args.external_sources)
-    system_b = SysB(arch=args.arch, preserve_tmp=args.preserve)
-    system_a = SysA(arch=args.arch, preserve_tmp=args.preserve,
-                    early_preseed=args.early_preseed, tmpdir=args.tmpdir,
-                    external_sources=args.external_sources,
-                    sysb_dir=system_b.sys_dir, sysc_dir=system_c.sys_dir)
+    # tmpdir
+    tmpdir = Tmpdir(path=args.tmpdir, preserve=args.preserve)
+    if args.tmpfs:
+        tmpdir.tmpfs(size=args.tmpfs_size)
 
-    if args.tmpdir is not None:
-        os.makedirs(args.tmpdir, exist_ok=True)
+    # sys
+    system_c = SysC(arch=args.arch, tmpdir=tmpdir,
+                    external_sources=args.external_sources)
+    system_a = SysA(arch=args.arch, early_preseed=args.early_preseed,
+                    tmpdir=tmpdir, external_sources=args.external_sources,
+                    repo_path=args.repo)
 
-    bootstrap(args, system_a, system_b, system_c)
+    bootstrap(args, system_a, system_c, tmpdir)
 
-def bootstrap(args, system_a, system_b, system_c):
+def bootstrap(args, system_a, system_c, tmpdir):
     """Kick off bootstrap process."""
     print(f"Bootstrapping {args.arch} -- SysA")
     if args.chroot:
@@ -149,25 +157,17 @@ print(shutil.which('chroot'))
         chroot_binary = run('sudo', 'python3', '-c', find_chroot,
                             capture_output=True).stdout.decode().strip()
 
-        system_c.prepare(mount_tmpfs=True,
-                         create_disk_image=False)
-        system_a.prepare(mount_tmpfs=True,
-                         create_initramfs=False,
-                         repo_path=args.repo)
+        system_c.prepare(create_disk_image=False)
+        system_a.prepare(create_initramfs=False)
 
-        # sysa
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
 
     elif args.bwrap:
-        system_c.prepare(mount_tmpfs=False,
-                         create_disk_image=False)
-        system_a.prepare(mount_tmpfs=False,
-                         create_initramfs=False,
-                         repo_path=args.repo)
+        system_c.prepare(create_disk_image=False)
+        system_a.prepare(create_initramfs=False)
 
-        # sysa
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run('bwrap', '--unshare-user',
@@ -192,55 +192,23 @@ print(shutil.which('chroot'))
                      '--tmpfs', '/sysc_image/tmp',
                      init)
 
-    elif args.minikernel:
-        if os.path.isdir('kritis-linux'):
-            shutil.rmtree('kritis-linux')
-
-        system_c.prepare(mount_tmpfs=True,
-                         create_disk_image=True)
-        system_a.prepare(mount_tmpfs=True,
-                         create_initramfs=True,
-                         repo_path=args.repo)
-
-        run('git', 'clone',
-            '--depth', '1', '--branch', 'v0.7',
-            'https://github.com/bittorf/kritis-linux.git')
-        run('kritis-linux/ci_helper.sh',
-            '--private',
-            '--multi', '1',
-            '--repeat', '1',
-            '--arch', args.arch,
-            '--qemucpu', '486',
-            '--kernel', '3.18.140',
-            '--features', 'kflock,highrestimers',
-            # Hack to add -hda /dev/blah
-            '--ramsize', str(args.qemu_ram) + 'M -hda ' + system_b.dev_name,
-            '--initrd', system_a.initramfs_path,
-            '--log', '/tmp/bootstrap.log')
-
     elif args.bare_metal:
-        system_c.prepare(mount_tmpfs=True,
-                         create_disk_image=True)
-        system_a.prepare(mount_tmpfs=True,
-                         create_initramfs=True,
-                         repo_path=args.repo)
+        system_c.prepare(create_disk_image=True)
+        system_a.prepare(create_initramfs=True)
 
         print("Please:")
-        print("  1. Take sysa/tmp/initramfs and your kernel, boot using this.")
-        print("  2. Take sysc/tmp/disk.img and put this on a writable storage medium.")
+        print("  1. Take tmp/sysa/initramfs and your kernel, boot using this.")
+        print("  2. Take tmp/sysc/disk.img and put this on a writable storage medium.")
 
     else:
-        system_c.prepare(mount_tmpfs=True,
-                         create_disk_image=True)
-        system_a.prepare(mount_tmpfs=True,
-                         create_initramfs=True,
-                         repo_path=args.repo)
+        system_c.prepare(create_disk_image=True)
+        system_a.prepare(create_initramfs=True)
 
         run(args.qemu_cmd,
             '-enable-kvm',
             '-m', str(args.qemu_ram) + 'M',
             '-no-reboot',
-            '-hda', system_c.dev_name,
+            '-hda', tmpdir.get_disk("sysc"),
             '-nic', 'user,ipv6=off,model=e1000',
             '-kernel', args.kernel,
             '-initrd', system_a.initramfs_path,

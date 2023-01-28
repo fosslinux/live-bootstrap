@@ -4,7 +4,7 @@
 # SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 
 import os
 from distutils.dir_util import copy_tree
@@ -22,37 +22,26 @@ class SysA(SysGeneral):
 
     git_dir = os.path.dirname(os.path.join(__file__))
     sys_dir = os.path.join(git_dir, 'sysa')
+    sysb_dir = os.path.join(git_dir, 'sysb')
+    sysc_dir = os.path.join(git_dir, 'sysc')
     cache_dir = os.path.join(sys_dir, 'distfiles')
 
     # pylint: disable=too-many-arguments
-    def __init__(self, arch, preserve_tmp, external_sources,
-                 early_preseed, tmpdir, sysb_dir, sysc_dir):
+    def __init__(self, tmpdir, arch, external_sources,
+                 early_preseed, repo_path):
         self.arch = arch
-        self.preserve_tmp = preserve_tmp
         self.early_preseed = early_preseed
-
-        if tmpdir is None:
-            self.tmp_dir = os.path.join(self.git_dir, 'tmp')
-        else:
-            self.tmp_dir = os.path.join(tmpdir, 'sysa')
-        self.sysa_dir = os.path.join(self.tmp_dir, 'sysa')
-        self.base_dir = self.sysa_dir
-
-        self.sysb_dir = sysb_dir
-        self.sysc_dir = sysc_dir
         self.external_sources = external_sources
+        self.repo_path = repo_path
 
-    def prepare(self, mount_tmpfs, create_initramfs, repo_path):
+        self.tmp_dir = tmpdir.add_sys("sysa")
+
+    def prepare(self, create_initramfs):
         """
         Prepare directory structure for System A.
         We create an empty tmp directory, unpack stage0-posix.
         Rest of the files are unpacked into more structured directory /sysa
         """
-        if mount_tmpfs:
-            self.mount_tmpfs()
-        else:
-            os.mkdir(self.tmp_dir)
-
         if self.early_preseed:
             # Extract tar containing preseed
             with tarfile.open(self.early_preseed, "r") as seed:
@@ -69,9 +58,9 @@ class SysA(SysGeneral):
 
         self.sysc(create_initramfs)
 
-        if repo_path:
+        if self.repo_path:
             repo_dir = os.path.join(self.tmp_dir, 'usr', 'src', 'repo-preseeded')
-            shutil.copytree(repo_path, repo_dir)
+            shutil.copytree(self.repo_path, repo_dir)
 
         if create_initramfs:
             self.make_initramfs()
