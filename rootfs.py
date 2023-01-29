@@ -32,10 +32,7 @@ def create_configuration_file(args):
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
-        if args.external_sources:
-            config.write("DISK=sda1\n")
-        else:
-            config.write("DISK=sda\n")
+        config.write("DISK=sda1\n")
 
 # pylint: disable=too-many-statements
 def main():
