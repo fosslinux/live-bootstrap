@@ -17,7 +17,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}" --libdir="${PREFIX}/lib/musl" --enable-static --disable-shared --disable-java
+    ./configure --prefix="${PREFIX}" --libdir="${LIBDIR}" --enable-static --disable-shared --disable-java
 }
 
 src_compile() {

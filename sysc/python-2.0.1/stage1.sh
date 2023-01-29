@@ -29,7 +29,7 @@ src_configure() {
     MACHDEP=linux ac_sys_system=Linux \
     ./configure \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --with-wctype-functions
 }
 

@@ -18,7 +18,7 @@ src_prepare() {
 
 src_configure() {
     MACHINE=i386 ./config --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         no-shared
 }
 

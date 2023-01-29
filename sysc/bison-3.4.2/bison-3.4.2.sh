@@ -22,7 +22,7 @@ src_prepare() {
 
 src_configure() {
     ./configure --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --disable-nls
 }
 

@@ -37,8 +37,7 @@ install_tar util-linux-2.19.1 0
 # Begin sysb bootstrapping process
 cd "${SOURCES}"
 
-# shellcheck disable=SC2129
-echo "PREFIX=${PREFIX}" >> .env
+echo "PREFIX=${PREFIX}" > .env
 echo "SOURCES=${SOURCES}" >> .env
 
 exec ./run.sh

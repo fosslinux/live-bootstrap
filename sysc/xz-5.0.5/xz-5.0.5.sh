@@ -13,5 +13,5 @@ src_configure() {
         --prefix="${PREFIX}" \
         --disable-shared \
         --build=i386-unknown-linux-musl \
-        --libdir="${PREFIX}/lib/musl"
+        --libdir="${LIBDIR}"
 }

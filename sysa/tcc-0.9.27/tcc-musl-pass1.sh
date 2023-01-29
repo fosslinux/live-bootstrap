@@ -10,7 +10,7 @@ src_prepare() {
 }
 
 src_compile() {
-    export libdir=${PREFIX}/lib/musl
+    export libdir=${LIBDIR}
     export incdir=${PREFIX}/include/musl
     export bindir=${PREFIX}/bin
 

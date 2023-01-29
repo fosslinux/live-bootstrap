@@ -7,7 +7,7 @@ src_configure() {
     ./configure \
         --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --includedir="${PREFIX}/include/"
 }
 
@@ -22,7 +22,7 @@ src_install() {
     rm "${DESTDIR}/lib/ld-musl-i386.so.1"
     rmdir "${DESTDIR}/lib"
     mkdir -p "${DESTDIR}${PREFIX}/lib"
-    ln -sr "${DESTDIR}${PREFIX}/lib/musl/libc.so" "${DESTDIR}${PREFIX}/lib/ld-musl-i386.so.1"
+    ln -sr "${DESTDIR}${LIBDIR}/libc.so" "${DESTDIR}${PREFIX}/lib/ld-musl-i386.so.1"
 
     # Add symlink for ldd
     mkdir -p "${DESTDIR}${PREFIX}/bin"

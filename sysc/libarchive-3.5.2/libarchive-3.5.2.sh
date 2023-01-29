@@ -9,7 +9,7 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}" --libdir="${PREFIX}/lib/musl" \
+    ./configure --prefix="${PREFIX}" --libdir="${LIBDIR}" \
         --disable-shared
 }
 

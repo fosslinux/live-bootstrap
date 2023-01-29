@@ -15,7 +15,7 @@ src_prepare() {
 src_compile() {
 (
     set -e
-    export PKG_CONFIG_PATH="${PREFIX}/lib/musl/pkgconfig"
+    export PKG_CONFIG_PATH="${LIBDIR}/pkgconfig"
     sed -i "s/make install/make install DESTDIR=\${DESTDIR}/" bootstrap_tarball.sh
     sed -i "/make check/d" bootstrap_tarball.sh
     export FINALPREFIX="${PREFIX}"
@@ -43,7 +43,7 @@ src_compile() {
     # Specify timeout to avoid non-reproducibility
     ./configure \
 	--prefix="${FINALPREFIX}" \
-	--libdir="${FINALPREFIX}/lib/musl" \
+	--libdir="${FINALPREFIX}/lib/i386-unknown-linux-musl" \
 	--disable-shared \
 	--enable-timeout=15
     touch doc/agdoc.texi # build later

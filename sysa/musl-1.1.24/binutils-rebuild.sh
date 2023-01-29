@@ -14,7 +14,7 @@ src_configure() {
       --host=i386 \
       --disable-shared \
       --prefix="${PREFIX}" \
-      --libdir="${PREFIX}/lib/musl" \
+      --libdir="${LIBDIR}" \
       --includedir="${PREFIX}/include/"
 
     # configure script creates this file

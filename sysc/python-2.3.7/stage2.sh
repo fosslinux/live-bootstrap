@@ -41,7 +41,7 @@ src_configure() {
     CFLAGS="-U__DATE__ -U__TIME__" \
         ./configure \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --enable-ipv6
 }
 

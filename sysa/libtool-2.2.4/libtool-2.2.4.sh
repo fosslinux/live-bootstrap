@@ -16,7 +16,7 @@ src_prepare() {
 src_configure() {
     CC=tcc ./configure \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --disable-shared \
         --host=i386-unknown-linux \
         --target=i386-unknown-linux \

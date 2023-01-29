@@ -12,7 +12,7 @@ src_prepare() {
 src_configure() {
     ./configure \
         --prefix="${PREFIX}" \
-        --libdir="${PREFIX}/lib/musl" \
+        --libdir="${LIBDIR}" \
         --disable-shared
 
     # Disable tuning as that might cause non-reproducible build
