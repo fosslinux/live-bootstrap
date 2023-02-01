@@ -36,7 +36,7 @@ class SysGeneral:
         readable_hash = hashlib.sha256(downloaded_content).hexdigest()
         if expected_hash == readable_hash:
             return
-        raise Exception(f"Checksum mismatch for file {os.path.basename(file_name)}:\n\
+        raise ValueError(f"Checksum mismatch for file {os.path.basename(file_name)}:\n\
 expected: {expected_hash}\n\
 actual:   {readable_hash}\n\
 When in doubt, try deleting the file in question -- it will be downloaded again when running \
@@ -64,7 +64,7 @@ this script the next time")
                 with open(abs_file_name, 'wb') as target_file:
                     target_file.write(response.raw.read())
             else:
-                raise Exception("Download failed.")
+                raise requests.HTTPError("Download failed.")
         return abs_file_name
 
     def get_packages(self, source_manifest):
