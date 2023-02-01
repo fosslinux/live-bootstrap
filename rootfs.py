@@ -31,6 +31,7 @@ def create_configuration_file(args):
     with open(config_path, "w", encoding="utf_8") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
+        config.write("CHROOT_ONLY_SYSA=False\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
         config.write("DISK=sda1\n")
 
