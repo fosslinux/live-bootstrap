@@ -184,6 +184,7 @@ print(shutil.which('chroot'))
                      '--dev-bind', '/dev/zero', '/sysc_image/dev/zero',
                      '--dev-bind', '/dev/random', '/sysc_image/dev/random',
                      '--dev-bind', '/dev/urandom', '/sysc_image/dev/urandom',
+                     '--tmpfs', '/sysc_image/dev/shm',
                      '--proc', '/sysc_image/proc',
                      '--bind', '/sys', '/sysc_image/sys',
                      '--tmpfs', '/sysc_image/tmp',
