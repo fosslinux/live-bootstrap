@@ -22,7 +22,8 @@ get_files() {
         fs="${fs} $(echo .[0-z]*)"
     fi
     for f in ${fs}; do
-        if [ -d "${f}" ]; then
+        # Archive symlinks to directories as symlinks
+        if [ -d "${f}" ] && ! [ -h "${f}" ]; then
             cd "${f}"
             get_files "${prefix}/${f}"
             cd ..
