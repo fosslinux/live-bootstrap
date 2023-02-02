@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -119,7 +120,6 @@ src_configure() {
             --build=i386-unknown-linux-gnu \
             --host=i386-unknown-linux-gnu \
             --target=i386-unknown-linux-gnu \
-            --with-sysroot="${PREFIX}" \
             --disable-64-bit-bfd \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
