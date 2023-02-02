@@ -250,4 +250,6 @@ fi
 # In chroot mode transition directly into System C.
 SYSC=/sysc_image
 sys_transfer "${SYSC}" /sysc gzip patch
-exec chroot "${SYSC}" /init
+if [ "${CHROOT_ONLY_SYSA}" != True ]; then
+    exec chroot "${SYSC}" /init
+fi
