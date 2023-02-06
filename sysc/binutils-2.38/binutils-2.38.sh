@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -69,11 +70,10 @@ src_configure() {
             --enable-install-libiberty \
             --enable-deterministic-archives \
             --with-system-zlib \
-            --build=i386-unknown-linux-gnu \
-            --host=i386-unknown-linux-gnu \
-            --target=i386-unknown-linux-gnu \
+            --build=i386-unknown-linux-musl \
+            --host=i386-unknown-linux-musl \
+            --target=i386-unknown-linux-musl \
             --program-prefix="" \
-            --with-sysroot="${PREFIX}" \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
             --srcdir=.
@@ -92,4 +92,11 @@ src_install() {
     for dir in libiberty bfd opcodes libctf binutils gas gprof ld; do
         make -C $dir tooldir=${PREFIX} DESTDIR="${DESTDIR}" install
     done
+
+    # Create triplet symlinks
+    pushd "${DESTDIR}${PREFIX}/bin"
+    for f in *; do
+        ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
+    done
+    popd
 }

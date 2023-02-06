@@ -10,8 +10,7 @@ set -e
 
 # shellcheck disable=SC2154
 PREFIX="${prefix}"
-# shellcheck disable=SC2034
-LIBDIR="${prefix}/lib/i386-unknown-linux-musl"
+LIBDIR="${PREFIX}/lib/mes"
 # shellcheck disable=SC2154
 SOURCES="${sysa}"
 DISTFILES="${sysa}/distfiles"
@@ -104,6 +103,9 @@ build flex-2.5.11
 
 # Rebuild tcc with some patches
 build tcc-0.9.27 tcc-mes-pass2.sh
+
+# shellcheck disable=SC2034
+LIBDIR="${PREFIX}/lib/i386-unknown-linux-musl"
 
 build musl-1.1.24
 

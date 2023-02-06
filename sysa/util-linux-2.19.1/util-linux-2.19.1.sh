@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -22,4 +22,12 @@ src_configure() {
         --enable-shared=no \
         --disable-wall \
         ac_cv_type_loff_t=yes
+}
+
+src_install() {
+    default
+
+    # A weird behaviour I can't find the source of
+    mv "${DESTDIR}${PREFIX}/i386-unknown-linux-musl/"* "${DESTDIR}${LIBDIR}/"
+    rmdir "${DESTDIR}${PREFIX}/i386-unknown-linux-musl/"
 }
