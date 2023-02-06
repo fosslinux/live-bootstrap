@@ -76,6 +76,7 @@ src_configure() {
             --program-prefix="" \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
+            --with-sysroot= \
             --srcdir=.
         cd ..
     done
