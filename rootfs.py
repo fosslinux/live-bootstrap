@@ -31,7 +31,7 @@ def create_configuration_file(args):
     with open(config_path, "w", encoding="utf_8") as config:
         config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
         config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
-        config.write("CHROOT_ONLY_SYSA=False\n")
+        config.write("CHROOT_ONLY_SYSA=" + str(args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
         config.write("DISK=sda1\n")
 
@@ -171,7 +171,6 @@ print(shutil.which('chroot'))
         run('bwrap', '--unshare-user',
                      '--uid', '0',
                      '--gid', '0',
-                     '--cap-add', 'CAP_SYS_CHROOT', # Required for chroot from sysa to sysc
                      '--clearenv',
                      '--setenv', 'PATH', '/usr/bin',
                      '--bind', system_a.tmp_dir, '/',
@@ -180,16 +179,24 @@ print(shutil.which('chroot'))
                      '--dev-bind', '/dev/zero', '/dev/zero',
                      '--dev-bind', '/dev/random', '/dev/random',
                      '--dev-bind', '/dev/urandom', '/dev/urandom',
-                     '--dir', '/sysc_image/dev',
-                     '--dev-bind', '/dev/null', '/sysc_image/dev/null',
-                     '--dev-bind', '/dev/zero', '/sysc_image/dev/zero',
-                     '--dev-bind', '/dev/random', '/sysc_image/dev/random',
-                     '--dev-bind', '/dev/urandom', '/sysc_image/dev/urandom',
-                     '--tmpfs', '/sysc_image/dev/shm',
-                     '--proc', '/sysc_image/proc',
-                     '--bind', '/sys', '/sysc_image/sys',
-                     '--tmpfs', '/sysc_image/tmp',
                      init)
+
+        run('bwrap', '--unshare-user',
+                     '--uid', '0',
+                     '--gid', '0',
+                     '--clearenv',
+                     '--setenv', 'PATH', '/usr/bin',
+                     '--bind', system_a.tmp_dir + "/sysc_image", '/',
+                     '--dir', '/dev',
+                     '--dev-bind', '/dev/null', '/dev/null',
+                     '--dev-bind', '/dev/zero', '/dev/zero',
+                     '--dev-bind', '/dev/random', '/dev/random',
+                     '--dev-bind', '/dev/urandom', '/dev/urandom',
+                     '--tmpfs', '/dev/shm',
+                     '--proc', '/proc',
+                     '--bind', '/sys', '/sys',
+                     '--tmpfs', '/tmp',
+                     '/init')
 
     elif args.bare_metal:
         system_c.prepare(create_disk_image=True)
