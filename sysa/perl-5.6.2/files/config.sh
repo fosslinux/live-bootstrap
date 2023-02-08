@@ -10,5 +10,7 @@ libpth='/usr/lib/i386-unknown-linux-musl'
 path_sep=':'
 archname=''
 osvers=''
+startperl='#!/usr/bin/perl'
+perlpath='/usr/bin/perl'
 
 CONFIGDOTSH=true
