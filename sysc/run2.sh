@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 #
@@ -25,6 +25,8 @@ umask 0022
 build xz-5.0.5
 
 build automake-1.11.2
+
+build file-5.44
 
 build libtool-2.4.7
 
