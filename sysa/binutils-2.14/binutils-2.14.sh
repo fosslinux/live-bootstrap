@@ -123,6 +123,7 @@ src_configure() {
             --disable-64-bit-bfd \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
+            --with-sysroot= \
             --srcdir=.
         cd ..
     done

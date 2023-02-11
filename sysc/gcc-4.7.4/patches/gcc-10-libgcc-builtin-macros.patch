@@ -1,0 +1,45 @@
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2014 Joseph Myers <joseph@codesourcery.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+GCC 10 uses a variety of compiler builtin macros in libgcc.
+These macros do not exist in GCC 4.7, so we add them in.
+(Taken straight from GCC 10).
+
+(We could -D them in GCC 10, but this is a simpler unobtrusive
+solution, and is arguably more correct).
+
+--- gcc/c-family/c-cppbuiltin.c	2023-01-25 16:56:44.122222376 +1100
++++ gcc/c-family/c-cppbuiltin.c	2023-01-25 17:01:52.500855016 +1100
+@@ -850,6 +850,30 @@
+     builtin_define_with_int_value ("__LIBGCC_TRAMPOLINE_SIZE__",
+ 				   TRAMPOLINE_SIZE);
+ 
++  /* For libgcc unwinder code. */
++#ifdef DONT_USE_BUILTIN_SETJMP
++  cpp_define (pfile, "__LIBGCC_DONT_USE_BUILTIN_SETJMP__");
++#endif
++#ifdef DWARF_ALT_FRAME_RETURN_COLUMN
++  builtin_define_with_int_value ("__LIBGCC_DWARF_ALT_FRAME_RETURN_COLUMN__",
++		  DWARF_ALT_FRAME_RETURN_COLUMN);
++#endif
++  builtin_define_with_int_value ("__LIBGCC_DWARF_FRAME_REGISTERS__",
++		  DWARF_FRAME_REGISTERS);
++#ifdef EH_RETURN_STACKADJ_RTX
++  cpp_define (pfile, "__LIBGCC_EH_RETURN_STACKADJ_RTX__");
++#endif
++#ifdef JMP_BUF_SIZE
++  builtin_define_with_int_value ("__LIBGCC_JMP_BUF_SIZE__",
++		  JMP_BUF_SIZE);
++#endif
++  builtin_define_with_int_value ("__LIBGCC_STACK_POINTER_REGNUM__",
++		  STACK_POINTER_REGNUM);
++
++  /* For libgcov. */
++  builtin_define_with_int_value ("__LIBGCC_VTABLE_USES_DESCRIPTORS__",
++		  TARGET_VTABLE_USES_DESCRIPTORS);
++
+   /* For use in assembly language.  */
+   builtin_define_with_value ("__REGISTER_PREFIX__", REGISTER_PREFIX, 0);
+   builtin_define_with_value ("__USER_LABEL_PREFIX__", user_label_prefix, 0);

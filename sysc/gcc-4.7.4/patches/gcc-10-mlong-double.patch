@@ -1,0 +1,286 @@
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 H.J. Lu <hongjiu.lu@intel.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Backport of the commit:
+[PATCH] Add -mlong-double-64/-mlong-double-80 to i386
+to GCC 4.7.
+
+GCC 10 uses this argument to ensure some files are compiled with long
+double length = 80. This is almost universally true for i386, so it
+could be patched out; but the use of this flag is rather extensive,
+and if removed will break future added architectures anyway, so it
+makes more sense to simply add in support to GCC 4.7.
+
+diff --git gcc/config/i386/i386-c.c gcc/config/i386/i386-c.c
+index d00e0ba54b939..edd64ff7ae388 100644
+--- gcc/config/i386/i386-c.c
++++ gcc/config/i386/i386-c.c
+@@ -418,6 +418,9 @@
+       builtin_define_std ("i386");
+     }
+ 
++  if (TARGET_LONG_DOUBLE_64)
++    cpp_define (parse_in, "__LONG_DOUBLE_64__");
++
+   ix86_target_macros_internal (ix86_isa_flags,
+ 			       ix86_arch,
+ 			       ix86_tune,
+diff --git gcc/config/i386/i386.c gcc/config/i386/i386.c
+index a6fc45b047a94..da931ee153745 100644
+--- gcc/config/i386/i386.c
++++ gcc/config/i386/i386.c
+@@ -2786,6 +2786,7 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
+   static struct ix86_target_opts flag_opts[] =
+   {
+     { "-m128bit-long-double",		MASK_128BIT_LONG_DOUBLE },
++    { "-mlong-double-64",		MASK_LONG_DOUBLE_64 },
+     { "-m80387",			MASK_80387 },
+     { "-maccumulate-outgoing-args",	MASK_ACCUMULATE_OUTGOING_ARGS },
+     { "-malign-double",			MASK_ALIGN_DOUBLE },
+@@ -4084,6 +4085,11 @@ ix86_option_override_internal (bool main_args_p)
+   else if (target_flags_explicit & MASK_RECIP)
+     recip_mask &= ~(RECIP_MASK_ALL & ~recip_mask_explicit);
+ 
++  /* Default long double to 64-bit for Bionic.  */
++  if (TARGET_HAS_BIONIC
++      && !(target_flags_explicit & MASK_LONG_DOUBLE_64))
++    target_flags |= MASK_LONG_DOUBLE_64;
++
+   /* Save the initial options in case the user does function specific
+      options.  */
+   if (main_args_p)
+diff --git gcc/config/i386/i386.h gcc/config/i386/i386.h
+index 11f79e3f670af..3a41a43e308bf 100644
+--- gcc/config/i386/i386.h
++++ gcc/config/i386/i386.h
+@@ -671,9 +671,17 @@ enum target_cpu_default
+ #define LONG_LONG_TYPE_SIZE 64
+ #define FLOAT_TYPE_SIZE 32
+ #define DOUBLE_TYPE_SIZE 64
+-#define LONG_DOUBLE_TYPE_SIZE 80
++#define LONG_DOUBLE_TYPE_SIZE (TARGET_LONG_DOUBLE_64 ? 64 : 80)
+ 
+-#define WIDEST_HARDWARE_FP_SIZE LONG_DOUBLE_TYPE_SIZE
++/* Define this to set long double type size to use in libgcc2.c, which can
++   not depend on target_flags.  */
++#ifdef __LONG_DOUBLE_64__
++#define LIBGCC2_LONG_DOUBLE_TYPE_SIZE 64
++#else
++#define LIBGCC2_LONG_DOUBLE_TYPE_SIZE 80
++#endif
++
++#define WIDEST_HARDWARE_FP_SIZE 80
+ 
+ #if defined (TARGET_BI_ARCH) || TARGET_64BIT_DEFAULT
+ #define MAX_BITS_PER_WORD 64
+diff --git gcc/config/i386/i386.opt gcc/config/i386/i386.opt
+index e4f78f3ce50f3..6a389947d904e 100644
+--- gcc/config/i386/i386.opt
++++ gcc/config/i386/i386.opt
+@@ -86,6 +86,14 @@ m96bit-long-double
+ Target RejectNegative Report InverseMask(128BIT_LONG_DOUBLE) Save
+ sizeof(long double) is 12
+ 
++mlong-double-80
++Target Report RejectNegative InverseMask(LONG_DOUBLE_64) Save
++Use 80-bit long double
++
++mlong-double-64
++Target Report RejectNegative Mask(LONG_DOUBLE_64) Save
++Use 64-bit long double
++
+ maccumulate-outgoing-args
+ Target Report Mask(ACCUMULATE_OUTGOING_ARGS) Save
+ Reserve space for outgoing arguments in the function prologue
+diff --git gcc/testsuite/gcc.target/i386/long-double-64-1.c gcc/testsuite/gcc.target/i386/long-double-64-1.c
+new file mode 100644
+index 0000000000000..cf933796f8aea
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-64-1.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile } */
++/* { dg-options "-O2 -mlong-double-64" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler-not "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-64-2.c gcc/testsuite/gcc.target/i386/long-double-64-2.c
+new file mode 100644
+index 0000000000000..ddf4fe656d099
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-64-2.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile { target *-*-linux* } } */
++/* { dg-options "-O2 -mbionic" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler-not "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-64-3.c gcc/testsuite/gcc.target/i386/long-double-64-3.c
+new file mode 100644
+index 0000000000000..e748fab2edd3c
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-64-3.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile { target *-*-linux* } } */
++/* { dg-options "-O2 -mandroid" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler-not "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-64-4.c gcc/testsuite/gcc.target/i386/long-double-64-4.c
+new file mode 100644
+index 0000000000000..d9c25aaec080c
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-64-4.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile } */
++/* { dg-options "-O2 -mlong-double-80 -mlong-double-64" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler-not "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-80-1.c gcc/testsuite/gcc.target/i386/long-double-80-1.c
+new file mode 100644
+index 0000000000000..d3b75a0be21de
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-80-1.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile } */
++/* { dg-options "-O2 -mlong-double-80" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-80-2.c gcc/testsuite/gcc.target/i386/long-double-80-2.c
+new file mode 100644
+index 0000000000000..954dfd15d4271
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-80-2.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile { target *-*-linux* } } */
++/* { dg-options "-O2 -mlong-double-80 -mbionic" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-80-3.c gcc/testsuite/gcc.target/i386/long-double-80-3.c
+new file mode 100644
+index 0000000000000..e0e8365e32c4a
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-80-3.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile { target *-*-linux* } } */
++/* { dg-options "-O2 -mlong-double-80 -mandroid" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-80-4.c gcc/testsuite/gcc.target/i386/long-double-80-4.c
+new file mode 100644
+index 0000000000000..cac2d55bc166c
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-80-4.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile } */
++/* { dg-options "-O2 -mlong-double-64 -mlong-double-80" } */
++
++long double
++foo (long double x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-80-5.c gcc/testsuite/gcc.target/i386/long-double-80-5.c
+new file mode 100644
+index 0000000000000..4aa606fd1ba05
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-80-5.c
+@@ -0,0 +1,10 @@
++/* { dg-do compile } */
++/* { dg-options "-O2 -mlong-double-64" } */
++
++__float80
++foo (__float80 x)
++{
++  return x * x;
++}
++
++/* { dg-final { scan-assembler "fldt" } } */
+diff --git gcc/testsuite/gcc.target/i386/long-double-80-6.c gcc/testsuite/gcc.target/i386/long-double-80-6.c
+new file mode 100644
+index 0000000000000..a395a265942c1
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-80-6.c
+@@ -0,0 +1,11 @@
++/* { dg-do run } */
++/* { dg-options "-O0 -mlong-double-64 -mfpmath=387" } */
++
++int
++main ()
++{
++  __float80 a = -0.23456789;
++  if ((double) a >= 0)
++    __builtin_abort ();
++  return 0;
++}
+diff --git gcc/testsuite/gcc.target/i386/long-double-80-7.c gcc/testsuite/gcc.target/i386/long-double-80-7.c
+new file mode 100644
+index 0000000000000..9b30fe8856786
+--- /dev/null
++++ gcc/testsuite/gcc.target/i386/long-double-80-7.c
+@@ -0,0 +1,13 @@
++/* { dg-do run } */
++/* { dg-options "-O0 -mlong-double-64 -mfpmath=sse" } */
++/* { dg-require-effective-target sse2 } */
++
++#include "sse2-check.h"
++
++static void
++sse2_test (void)
++{
++  __float80 a = -0.23456789;
++  if ((double) a >= 0)
++    __builtin_abort ();
++}
+diff --git libgcc/config/i386/t-linux libgcc/config/i386/t-linux
+index 29b4c22398346..4f47f7bfa59cf 100644
+--- libgcc/config/i386/t-linux
++++ libgcc/config/i386/t-linux
+@@ -2,3 +2,5 @@
+ # Need to support TImode for x86.  Override the settings from
+ # t-slibgcc-elf-ver and t-linux
+ SHLIB_MAPFILES = libgcc-std.ver $(srcdir)/config/i386/libgcc-glibc.ver
++
++HOST_LIBGCC2_CFLAGS += -mlong-double-80

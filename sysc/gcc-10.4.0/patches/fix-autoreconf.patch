@@ -1,0 +1,37 @@
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2022 Thomas Schwinge <thomas@codesourcery.com>  
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Backport of commit 25861cf3a88a07c8dca3fb32d098c0ad756bbe38
+
+====
+
+[PATCH] Make 'autoreconf' work for 'gcc', 'libobjc'
+
+With that, we may then run plain 'autoreconf' for all of GCC's subpackages,
+instead of for some of those (that don't use Automake) manually having to run
+the applicable combination of 'aclocal', 'autoconf', 'autoheader'.
+
+See also 'AC_CONFIG_MACRO_DIRS'/'AC_CONFIG_MACRO_DIR' usage elsewhere.
+
+--- gcc/configure.ac	2023-01-22 16:22:57.833166450 +1100
++++ gcc/configure.ac	2023-01-22 16:23:08.971274603 +1100
+@@ -25,6 +25,7 @@
+ 
+ AC_INIT
+ AC_CONFIG_SRCDIR(tree.c)
++AC_CONFIG_MACRO_DIRS([../config] [..])
+ AC_CONFIG_HEADER(auto-host.h:config.in)
+ 
+ gcc_version=`cat $srcdir/BASE-VER`
+--- libobjc/configure.ac	2023-01-22 16:23:42.648601085 +1100
++++ libobjc/configure.ac	2023-01-22 16:23:28.937468262 +1100
+@@ -20,6 +20,7 @@
+ 
+ AC_INIT(package-unused, version-unused,, libobjc)
+ AC_CONFIG_SRCDIR([objc/objc.h])
++AC_CONFIG_MACRO_DIRS([../config] [..])
+ GCC_TOPLEV_SUBDIRS
+ 
+ # We need the following definitions because AC_PROG_LIBTOOL relies on them

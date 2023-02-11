@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -104,7 +104,8 @@ src_configure() {
             --disable-shared \
             --program-transform-name= \
             --enable-languages=c,c++ \
-            --disable-sjlj-exceptions
+            --disable-sjlj-exceptions \
+            --with-system-zlib
         cd ..
     done
     cd ..

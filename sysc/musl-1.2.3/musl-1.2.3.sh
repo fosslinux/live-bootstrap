@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -23,6 +24,12 @@ src_install() {
     rmdir "${DESTDIR}/lib"
     mkdir -p "${DESTDIR}${PREFIX}/lib"
     ln -sr "${DESTDIR}${LIBDIR}/libc.so" "${DESTDIR}${PREFIX}/lib/ld-musl-i386.so.1"
+
+    # Make startup objects available in /usr/lib
+    # Expected by GCC 10+
+    for i in crt1.o crti.o crtn.o Scrt1.o rcrt1.o; do
+        ln -sr "${DESTDIR}${LIBDIR}/${i}" "${DESTDIR}${PREFIX}/lib/${i}"
+    done
 
     # Add symlink for ldd
     mkdir -p "${DESTDIR}${PREFIX}/bin"

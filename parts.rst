@@ -2,7 +2,7 @@
 .. SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 .. SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 .. SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
-.. SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+.. SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 .. SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 
 .. SPDX-License-Identifier: CC-BY-SA-4.0
@@ -867,6 +867,10 @@ gcc 4.7.4
 GCC 4.7.4 is the last version written in C. This time we build both C and C++ backends.
 C++ backend has some dependency on ``gperf`` which is written in C++. Fortunately, it is
 easy to patch it out and resulting ``g++`` compiler is capable of building ``gperf``.
+We also add in two patchsets to the compiler;
+
+* one to add support for musl shared library support
+* one providing a few compiler flags/features that are required later to build GCC 10
 
 binutils 2.38
 =============
@@ -1070,3 +1074,13 @@ Differences to 3.8.16:
 * Very recent Python versions allow for the use of ``SOURCE_DATE_EPOCH`` to
   remove determinism from precompiled Python libraries (``.pyc``). Finally, we
   can re-enable compiling of Python modules.
+
+GCC 10.4.0
+==========
+
+GCC 10.x series is the last version of GCC that is able to be built with the
+C/C++ standards available in GCC 4.7. Instead of manually configuring & compiling
+every subdirectory, since we now have ``autogen`` available we are able to use
+the top-level configure to build the project. We do not use GCC's bootstrap mode,
+where GCC is recompiled with itself after being built, since we're just going
+to use this GCC to compile GCC 12, it adds build time for little benefit.

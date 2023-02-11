@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -36,7 +36,7 @@ src_install() {
     done
 
     # Pick-and-choose asm-generic headers
-    for i in types ioctl termios termbits ioctls sockios socket; do
+    for i in types ioctl termios termbits ioctls sockios socket param; do
         cp "${DESTDIR}${PREFIX}/include/asm-generic/${i}.h" "${DESTDIR}${PREFIX}/include/asm/${i}.h"
     done
 
