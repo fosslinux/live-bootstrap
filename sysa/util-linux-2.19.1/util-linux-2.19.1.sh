@@ -18,7 +18,7 @@ src_configure() {
         --disable-libuuid \
         --without-ncurses \
         --enable-static \
-        --enable-static-programs=losetup,mount,umount,fdsik,sfdisk,blkid \
+        --enable-static-programs=losetup,mount,umount,fdisk,sfdisk,blkid \
         --enable-shared=no \
         --disable-wall \
         ac_cv_type_loff_t=yes
