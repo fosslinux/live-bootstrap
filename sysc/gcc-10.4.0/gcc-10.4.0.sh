@@ -97,19 +97,3 @@ src_configure() {
         --enable-threads=posix \
         --disable-libsanitizer
 }
-
-src_install() {
-    default
-
-    # Reduce final size of GCC 10.
-    find "${DESTDIR}" -type f | while read f; do
-        case "$(file -bi "${f}")" in
-            application/x-executable*|\
-            application/x-sharedlib*|\
-            application/x-pie-executable*|\
-            application/x-archive*)
-                strip "${f}"
-                ;;
-        esac
-    done
-}
