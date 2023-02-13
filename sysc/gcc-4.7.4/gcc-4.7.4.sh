@@ -81,6 +81,16 @@ src_prepare() {
     # Rebuild flex generated files
     rm gcc/gengtype-lex.c
 
+    # Regenerate crc table in libiberty/crc32.c
+    pushd libiberty
+    sed -n -e '39,66p' crc32.c > crcgen.c
+    gcc -o crcgen crcgen.c
+    head -n 70 crc32.c > crc32.c.new
+    ./crcgen >> crc32.c.new
+    tail -n +139 crc32.c >> crc32.c.new
+    mv crc32.c.new crc32.c
+    popd
+
     # Remove translation catalogs
     find . -name '*.gmo' -delete
 
