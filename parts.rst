@@ -700,6 +700,12 @@ automake 1.11.2
 GNU Automake from 1.11 series. This is not the latest point release as newer ones
 need Autoconf 2.68.
 
+file 5.44
+=========
+
+file is a utility that is used to get information about files based upon their
+magic.
+
 libtool 2.4.7
 =============
 
