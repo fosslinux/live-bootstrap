@@ -466,34 +466,6 @@ autoconf 2.12
 
 Yet another old autoconf version that we will need for some parts of GNU Binutils.
 
-libtool 1.4
-===========
-
-GNU Libtool is the final part of GNU Autotools. It is a script used to hide away differences
-when compiling shared libraries on different platforms.
-
-binutils 2.14
-=============
-
-The GNU Binary Utilities, or binutils, are a set of programming tools for creating and
-managing binary programs, object files, libraries, profile data, and assembly source code.
-
-In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
-the GNU linker ``ld``, which allows us building shared libraries,
-and the GNU assembler ``as``.
-
-musl 1.1.24 (v3)
-================
-
-We rebuild musl for the third time. This time we use GNU ar rather than ``tcc -ar``,
-so we can drop weak symbols patch. Also, we can use GNU as to build assembly source files,
-so those assembly files that tcc failed to compile no longer have to be patched.
-
-tcc 0.9.27 (musl v3)
-====================
-
-We rebuild tcc against new musl and without a patch to ignore duplicate symbols.
-
 autoconf 2.53
 =============
 
@@ -557,17 +529,6 @@ automake 1.9.6
 Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
 to make it buildable with 1.8.5.
 
-findutils 4.2.33
-================
-
-GNU Find Utilities can be used to search for files. We are mainly interested
-in ``find`` and ``xargs`` that are often used in scripts.
-
-libtool 2.2.4
-=============
-
-Newer version of libtool which is more compatible with modern Autotools.
-
 automake 1.10.3
 ===============
 
@@ -579,6 +540,39 @@ autoconf 2.64
 
 Slightly newer version of GNU Autoconf. At this stage Autoconf is mostly
 backwards compatible but newer versions need newer ``automake``.
+
+libtool 1.4
+===========
+
+GNU Libtool is the final part of GNU Autotools. It is a script used to hide away differences
+when compiling shared libraries on different platforms.
+
+binutils 2.14
+=============
+
+The GNU Binary Utilities, or binutils, are a set of programming tools for creating and
+managing binary programs, object files, libraries, profile data, and assembly source code.
+
+In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
+the GNU linker ``ld``, which allows us building shared libraries,
+and the GNU assembler ``as``.
+
+libtool 2.2.4
+=============
+
+Newer version of libtool which is more compatible with modern Autotools.
+
+musl 1.1.24 (v3)
+================
+
+We rebuild musl for the third time. This time we use GNU ar rather than ``tcc -ar``,
+so we can drop weak symbols patch. Also, we can use GNU as to build assembly source files,
+so those assembly files that tcc failed to compile no longer have to be patched.
+
+tcc 0.9.27 (musl v3)
+====================
+
+We rebuild tcc against new musl and without a patch to ignore duplicate symbols.
 
 gcc 4.0.4
 =========
@@ -592,6 +586,12 @@ Only the C frontend is built at this stage.
 At this stage we are not yet able to regenerate top-level ``Makefile.in``
 which needs GNU Autogen and hence Guile. Luckily, building GCC without
 top-level ``Makefile`` is fairly easy.
+
+findutils 4.2.33
+================
+
+GNU Find Utilities can be used to search for files. We are mainly interested
+in ``find`` and ``xargs`` that are often used in scripts.
 
 musl 1.2.2
 ==========

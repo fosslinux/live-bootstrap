@@ -170,18 +170,6 @@ build autoconf-2.13
 
 build autoconf-2.12
 
-build libtool-1.4
-
-build binutils-2.14
-
-# Build musl with fewer patches
-build musl-1.1.24 binutils-rebuild.sh patches-pass3
-
-# Rebuild tcc-musl using new musl
-build tcc-0.9.27 tcc-musl-pass3.sh patches-musl-pass3
-
-populate_device_nodes
-
 build autoconf-2.53
 
 build automake-1.7
@@ -204,22 +192,34 @@ build autoconf-2.61
 
 build automake-1.9.6
 
-build findutils-4.2.33
-
-build libtool-2.2.4
-
 build automake-1.10.3
 
 build autoconf-2.64
 
+build libtool-1.4
+
+build binutils-2.14
+
+build libtool-2.2.4
+
+# Build musl with fewer patches
+build musl-1.1.24 binutils-rebuild.sh patches-pass3
+
+# Rebuild tcc-musl using new musl
+build tcc-0.9.27 tcc-musl-pass3.sh patches-musl-pass3
+
+populate_device_nodes
+
 build gcc-4.0.4 pass1.sh
+
+build findutils-4.2.33
+
+build musl-1.2.3
 
 # This hack fixes a strange bug in mes libc bash
 set -x
 build linux-headers-5.10.41 '' '' linux-5.10.41
 set +x
-
-build musl-1.2.3
 
 build gcc-4.0.4 pass2.sh
 
