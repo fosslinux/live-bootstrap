@@ -10,7 +10,7 @@ src_prepare() {
 
     # Building doc often causes race conditions, skip it
     awk '/SUBDIRS/{sub("doc ", "", $0)} {print}' Makefile.am > Makefile.am.tmp
-    mv Makefile.am{.tmp,}
+    mv Makefile.am.tmp Makefile.am
 
     AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 ./bootstrap
 }
@@ -25,5 +25,5 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
-    rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
+    rm "${DESTDIR}/usr/bin/automake"
 }
