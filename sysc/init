@@ -36,6 +36,7 @@ install_tar coreutils-5.0 0
 install_tar sed-4.0.9 0
 
 install_tar autoconf-2.64 0
+install_tar autoconf-2.69 0
 install_tar automake-1.11.2 0
 install_tar binutils-2.14 0
 install_tar bzip2-1.0.8 0

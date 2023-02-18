@@ -198,6 +198,8 @@ build autoconf-2.64
 
 build automake-1.11.2
 
+build autoconf-2.69
+
 build libtool-1.4
 
 build binutils-2.14
