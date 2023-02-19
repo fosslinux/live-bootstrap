@@ -12,23 +12,29 @@
 
 # Get a list of files
 get_files() {
+    echo "."
+    _get_files "${1}"
+}
+
+_get_files() {
     local prefix
     prefix="${1}"
     fs=
     if [ -n "$(ls 2>/dev/null)" ]; then
-        fs=$(echo ./*)
+        # This can be removed once Debian 12 is stable
+        # shellcheck disable=SC2035
+        fs=$(echo *)
     fi
     if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
         fs="${fs} $(echo .[0-z]*)"
     fi
     for f in ${fs}; do
         # Archive symlinks to directories as symlinks
+        echo "${prefix}/${f}"
         if [ -d "${f}" ] && ! [ -h "${f}" ]; then
             cd "${f}"
-            get_files "${prefix}/${f}"
+            _get_files "${prefix}/${f}"
             cd ..
-        else
-            echo -n "${prefix}/${f} "
         fi
     done
 }
@@ -324,33 +330,33 @@ src_pkg() {
     touch -t 197001010000.00 .
     reset_timestamp
 
+    local tar_basename="${pkg}_${revision}.tar"
+    local dest_tar="/usr/src/repo/${tar_basename}"
+    local filelist=/tmp/filelist.txt
+
+    cd /usr/src/repo
     # If grep is unavailable, then tar --sort is unavailable.
     # So this does not need a command -v grep.
-    tar_basename="${pkg}_${revision}.tar"
-    dest_tar="/usr/src/repo/${tar_basename}"
-    if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
-        find . -print0 | LC_ALL=C sort -z > /tmp/filelist.txt
-    fi
-    cd /usr/src/repo
-
     if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
         tar -C "${DESTDIR}" --sort=name --hard-dereference \
             --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}" .
-    elif command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
-        cd "${DESTDIR}"
-        tar --no-recursion --null -T /tmp/filelist.txt \
-            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}"
-        cd -
     else
-        echo -n > /dev/null
-        tar --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
-            -cf "${dest_tar}" -T /dev/null
+        local olddir
+        olddir=$PWD
         cd "${DESTDIR}"
-        for f in $(get_files .); do
-            tar --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s \
-                -rf "${dest_tar}" "${f}"
-        done
-        cd -
+        local null
+        if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+            find . -print0 | LC_ALL=C sort -z > "${filelist}"
+            null="--null"
+        elif command -v sort >/dev/null 2>&1; then
+            get_files .  | LC_ALL=C sort > "${filelist}"
+        else
+            get_files . > ${filelist}
+        fi
+        tar --no-recursion ${null} --files-from "${filelist}" \
+                --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}"
+        rm -f "$filelist"
+        cd "$olddir"
     fi
     touch -t 197001010000.00 "${tar_basename}"
     bzip2 --best "${tar_basename}"
@@ -377,6 +383,7 @@ src_checksum() {
 
 src_apply() {
     local pkg="${1}" revision="${2}"
+    local TAR_PREFIX BZIP2_PREFIX
 
     # Make sure we have at least one copy of tar
     if [[ "${pkg}" == tar-* ]]; then
@@ -401,8 +408,6 @@ src_apply() {
     fi
     "${BZIP2_PREFIX}bzip2" -dc "/usr/src/repo/${pkg}_${revision}.tar.bz2" | \
         "${TAR_PREFIX}tar" -C / -xpf -
-    unset BZIP2_PREFIX
-    unset TAR_PREFIX
     rm -f "/tmp/bzip2" "/tmp/tar"
 }
 
