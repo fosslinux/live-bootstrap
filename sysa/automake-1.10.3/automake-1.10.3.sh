@@ -8,7 +8,9 @@ src_prepare() {
 
     rm doc/amhello-1.0.tar.gz doc/automake.info*
 
-    sed -i 's/autoreconf/autoreconf-2.61/' doc/Makefile.am
+    awk '/SUBDIRS/{sub("doc ", "", $0)} {print}' Makefile.am > Makefile.am.tmp
+    mv Makefile.am.tmp Makefile.am
+
     AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 AUTOHEADER=autoheader-2.61 AUTORECONF=autoreconf-2.61 ./bootstrap
 }
 
@@ -22,6 +24,5 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
-    rm "${DESTDIR}${PREFIX}/share/doc/automake/amhello-1.0.tar.gz"
     rm "${DESTDIR}/usr/bin/automake" "${DESTDIR}/usr/bin/aclocal"
 }
