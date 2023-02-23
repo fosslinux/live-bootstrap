@@ -552,13 +552,13 @@ autoconf 2.69
 
 This is a much newer version of GNU Autoconf.
 
-libtool 1.4
-===========
+libtool 2.2.4
+=============
 
 GNU Libtool is the final part of GNU Autotools. It is a script used to hide away differences
 when compiling shared libraries on different platforms.
 
-binutils 2.14
+binutils 2.24
 =============
 
 The GNU Binary Utilities, or binutils, are a set of programming tools for creating and
@@ -567,11 +567,6 @@ managing binary programs, object files, libraries, profile data, and assembly so
 In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
 the GNU linker ``ld``, which allows us building shared libraries,
 and the GNU assembler ``as``.
-
-libtool 2.2.4
-=============
-
-Newer version of libtool which is more compatible with modern Autotools.
 
 musl 1.1.24 (v3)
 ================

@@ -200,11 +200,9 @@ build automake-1.11.2
 
 build autoconf-2.69
 
-build libtool-1.4
-
-build binutils-2.14
-
 build libtool-2.2.4
+
+build binutils-2.24
 
 # Build musl with fewer patches
 build musl-1.1.24 binutils-rebuild.sh patches-pass3
