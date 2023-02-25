@@ -580,7 +580,7 @@ findutils 4.2.33
 GNU Find Utilities can be used to search for files. We are mainly interested
 in ``find`` and ``xargs`` that are often used in scripts.
 
-musl 1.2.2
+musl 1.2.3
 ==========
 
 GCC can build the latest as of the time of writing musl version.
