@@ -156,19 +156,10 @@ build perl-5.6.2
 
 populate_device_nodes
 
-build autoconf-2.52 stage1.sh
+build autoconf-2.52
 
 build automake-1.6.3 stage1.sh
 build automake-1.6.3 stage2.sh
-build automake-1.6.3 stage3.sh
-
-build automake-1.4-p6
-
-build autoconf-2.52 stage2.sh
-
-build autoconf-2.13
-
-build autoconf-2.12
 
 build autoconf-2.53
 

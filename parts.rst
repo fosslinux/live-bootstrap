@@ -431,40 +431,21 @@ At this stage we still do not have a working autotools system, so we manually in
 Autoconf 2.52 is the newest version of ``autoconf`` that does not need ``perl``, and hence
 a bit easier to install.
 
+This is not a full featured autoconf install, it is missing other programs such as ``autoheader``
+but is sufficient to build autoconf 2.53.
+
 automake 1.6.3
 ==============
 
 GNU Automake is a tool for automatically generating Makefile.in files. It is another major
 part of GNU Autotools build system and consists of ``aclocal`` and ``automake`` scripts.
 
-We bootstrap it using a 3 stage process:
+We bootstrap it using a 2 stage process:
 
 1. Use ``sed`` to replace a few placeholder variables in ``aclocal.in`` script.
    Then we manually install ``aclocal`` script and its dependencies.
 2. Patch ``configure.in`` to create ``automake`` file but skip ``Makefile.in`` processing.
    Again we manually install ``automake`` script and its dependencies.
-3. We now use ``aclocal``, ``autoconf``, and ``automake`` to do a proper build and install.
-
-automake 1.4-p6
-===============
-
-This is an older version of GNU Automake. Various versions of GNU Autotools are not fully
-compatible, and we will need older ``automake`` to build some older software.
-
-autoconf 2.52
-=============
-
-We now properly rebuild ``autoconf`` using ``automake-1.4`` and manually installed ``autoconf``.
-
-autoconf 2.13
-=============
-
-An older ``autoconf`` will be necessary to build GNU Binutils.
-
-autoconf 2.12
-=============
-
-Yet another old autoconf version that we will need for some parts of GNU Binutils.
 
 autoconf 2.53
 =============
@@ -481,7 +462,7 @@ autoconf macros to make it build with ``autoconf-2.53``.
 autoconf 2.54
 =============
 
-More ``autoconf``.
+Never version of ``autoconf``.
 
 autoconf 2.55
 =============
