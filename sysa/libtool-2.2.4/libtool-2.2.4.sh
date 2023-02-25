@@ -6,18 +6,19 @@
 src_prepare() {
     default
 
-    rm -f libltdl/config/ltmain.sh
+    rm -f libltdl/config/ltmain.sh libtool
 
     rm -f doc/*.info
 
-    AUTOMAKE=automake-1.9 ACLOCAL=aclocal-1.9 AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 AUTOHEADER=autoheader-2.61 AUTORECONF=autoreconf-2.61 ./bootstrap
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 AUTOHEADER=autoheader-2.61 AUTORECONF=autoreconf-2.61 ./bootstrap
 }
 
 src_configure() {
-    CC=tcc ./configure \
+    LD=tcc CC=tcc AR="true" RANLIB=true ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --disable-shared \
+        --disable-ltdl-install \
         --host=i386-unknown-linux \
         --target=i386-unknown-linux \
         --build=i386-unknown-linux \
