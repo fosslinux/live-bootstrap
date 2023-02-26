@@ -804,9 +804,12 @@ libarchive 3.5.2
 openssl 1.1.1l
 ==============
 
-OpenSSL is a C library for secure communications/cryptography. We do not
-strictly use any of the networking functions of this library but it is a hard dependency
-of XBPS.
+OpenSSL is a C library for secure communications/cryptography.
+
+curl 7.83.0
+===========
+
+We rebuild curl with support for OpenSSL.
 
 zlib 1.2.13
 ===========
