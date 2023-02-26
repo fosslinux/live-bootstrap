@@ -56,9 +56,13 @@ src_prepare() {
     rm opcodes/ia64-asmtab.c
     rm opcodes/z8k-opc.h
     rm opcodes/aarch64-asm-2.c opcodes/aarch64-opc-2.c opcodes/aarch64-dis-2.c
+    rm $(grep -l 'MACHINE GENERATED' opcodes/*.c opcodes/*.h)
 
     # Regenerate MeP sections
     ./bfd/mep-relocs.pl
+
+    # Manpages
+    find . -type f -name '*.1' -or -name '*.man' -delete
 }
 
 src_configure() {
