@@ -9,9 +9,17 @@ src_prepare() {
     # Remove bison generated files
     rm y.tab.c y.tab.h
 
+    # Remove prebuilt translation catalogs
+    rm po/*.gmo
+
+    # Skip documentation
+    mv doc/Makefile.in Makefile.in.doc
+    rm doc/*
+    mv Makefile.in.doc doc/Makefile.in
+
     # Rebuild configure script
     rm configure
-    autoconf-2.64
+    autoconf-2.69
 
     # avoid non-deterministic build:
     printf '%s\n%s\n' \
@@ -25,7 +33,8 @@ src_configure() {
     # improve reproducibility because they make configure
     # skip checking for /dev/{fd,stdin,stdout,stderr} (build
     # output is affected by their availability otherwise).
-    ./configure --prefix="${PREFIX}" \
+    # size is part of binutils and is not yet available.
+    CC=tcc LD=tcc AR="tcc -ar" SIZE=true ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
         --disable-nls \
         --build=i386-unknown-linux-musl \
@@ -35,7 +44,6 @@ src_configure() {
 }
 
 src_install() {
-    # Do not install prebuilt .mo translation catalogs
     install -D bash "${DESTDIR}${PREFIX}/bin/bash"
     # Work around weird symlink bug
     install bash "${DESTDIR}${PREFIX}/bin/sh"
