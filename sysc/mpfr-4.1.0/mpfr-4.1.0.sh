@@ -26,3 +26,9 @@ src_compile() {
 src_install() {
     make MAKEINFO=true DESTDIR="${DESTDIR}" install
 }
+
+src_postprocess() {
+    # For some unexplainable reason, stripping mpfr breaks GCC 10 build.
+    # I cannot make any sense of the error, so skip for now.
+    :
+}

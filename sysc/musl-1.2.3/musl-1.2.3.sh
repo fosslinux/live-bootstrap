@@ -44,3 +44,8 @@ src_install() {
     ln --symbolic --relative "${DESTDIR}/${PREFIX}/lib" "${DESTDIR}/lib"
     ln --symbolic --relative "${DESTDIR}/${PREFIX}/bin" "${DESTDIR}/bin"
 }
+
+src_postprocess() {
+    # Stripping libc can cause some strange brokenness
+    :
+}

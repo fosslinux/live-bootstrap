@@ -175,6 +175,10 @@ build() {
     build_stage=src_install
     call $build_stage
 
+    echo "${pkg}: postprocess binaries."
+    build_stage=src_postprocess
+    call $build_stage
+
     echo "${pkg}: creating package."
     get_revision "${pkg}"
     cd "${DESTDIR}"
@@ -194,7 +198,7 @@ build() {
 
     cd "${SOURCES}"
 
-    unset -f src_unpack src_prepare src_configure src_compile src_install
+    unset -f src_unpack src_prepare src_configure src_compile src_install src_postprocess
 }
 
 interpret_source_line() {
@@ -324,6 +328,27 @@ default_src_compile() {
 # Note that upstream makefiles might ignore PREFIX and have to be configured in configure stage.
 default_src_install() {
     make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}"
+}
+
+# Default function for postprocessing binaries.
+default_src_postprocess() {
+    if (command -v find && command -v file && command -v strip) >/dev/null 2>&1; then
+        # Logic largely taken from void linux 06-strip-and-debug-pkgs.sh
+        # shellcheck disable=SC2162
+        find "${DESTDIR}" -type f | while read f; do
+            case "$(file -bi "${f}")" in
+                application/x-executable*) strip "${f}" ;;
+                application/x-sharedlib*|application/x-pie-executable*)
+                    machine_set="$(file -b "${f}")"
+                    case "${machine_set}" in
+                        *no\ machine*) ;; # don't strip ELF container-only
+                        *) strip --strip-unneeded "${f}" ;;
+                    esac
+                    ;;
+                application/x-archive*) strip --strip-debug "${f}" ;;
+            esac
+        done
+    fi
 }
 
 src_pkg() {
