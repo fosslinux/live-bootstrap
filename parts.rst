@@ -690,7 +690,7 @@ magic.
 libtool 2.4.7
 =============
 
-A modern version of libtool with better compatiblitiy with newer versions of GNU
+A modern version of libtool with better compatibility with newer versions of GNU
 Autotools.
 
 automake 1.15.1
