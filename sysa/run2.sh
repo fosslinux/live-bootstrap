@@ -34,6 +34,8 @@ go_sysb() {
     kexec -e
 }
 
+build automake-1.15.1
+
 build binutils-2.24
 
 # Build musl with fewer patches

@@ -526,7 +526,7 @@ automake 1.11.2
 ===============
 
 GNU Automake from 1.11 series. This is not the latest point release as newer ones
-need Autoconf 2.68.
+need Autoconf 2.68. Newer major version of ``automake`` also depends on a newer ``bash``.
 
 autoconf 2.69
 =============
@@ -547,6 +547,11 @@ interactively.  This new version of ``bash`` compiles without any patches,
 provides new features, and is built with GNU readline support so it can be used
 as an interactive shell. ``autoconf-2.69`` is used to regenerate the configure
 script and ``bison`` is used to recreate some included generated files.
+
+automake 1.15.1
+===============
+
+GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
 
 binutils 2.24
 =============
@@ -710,11 +715,6 @@ libtool 2.4.7
 
 A modern version of libtool with better compatibility with newer versions of GNU
 Autotools.
-
-automake 1.15.1
-===============
-
-GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
 
 tar 1.34
 ========
