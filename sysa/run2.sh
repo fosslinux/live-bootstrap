@@ -52,10 +52,7 @@ build findutils-4.2.33
 
 build musl-1.2.3
 
-# This hack fixes a strange bug in mes libc bash
-set -x
 build linux-headers-5.10.41 '' '' linux-5.10.41
-set +x
 
 build gcc-4.0.4 pass2.sh
 
