@@ -697,7 +697,7 @@ sysb is purely a transition to sysc, allowing binaries from sysa to get onto a
 disk (as sysa does not necessarily have hard disk support in the kernel).
 It populates device nodes, mounts sysc, copies over data, and executes sysc.
 
-xz 5.0.5
+xz 5.4.1
 ========
 
 XZ Utils is a set of free software command-line lossless data compressors,

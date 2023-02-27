@@ -64,7 +64,7 @@ else
     mkdir -p "${DISTFILES}"
 fi
 
-build xz-5.0.5
+build xz-5.4.1
 
 build file-5.44
 
