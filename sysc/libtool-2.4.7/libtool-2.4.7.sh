@@ -16,8 +16,8 @@ src_prepare() {
 
     LIBTOOLIZE=true AUTOPOINT=true ../../bootstrap-helper.sh
 
-    LIBTOOLIZE=true AUTOPOINT=true AUTOMAKE=automake-1.11 ACLOCAL=aclocal-1.11 AUTOCONF=autoconf-2.64 AUTOHEADER=autoheader-2.64 autoreconf-2.64 -fi
-    LIBTOOLIZE=true AUTOPOINT=true AUTOMAKE=automake-1.11 ACLOCAL=aclocal-1.11 AUTOCONF=autoconf-2.64 AUTOHEADER=autoheader-2.64 autoreconf-2.64 -fi libltdl
+    LIBTOOLIZE=true AUTOPOINT=true AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 AUTOCONF=autoconf-2.69 AUTOHEADER=autoheader-2.69 autoreconf-2.69 -fi
+    LIBTOOLIZE=true AUTOPOINT=true AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 AUTOCONF=autoconf-2.69 AUTOHEADER=autoheader-2.69 autoreconf-2.69 -fi libltdl
 }
 
 src_configure() {
@@ -35,7 +35,7 @@ src_configure() {
 }
 
 src_compile() {
-    make AUTOM4TE=autom4te-2.64 MAKEINFO=true
+    make AUTOM4TE=autom4te-2.69 MAKEINFO=true
 }
 
 src_install() {
