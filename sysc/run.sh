@@ -30,9 +30,9 @@ create_fhs() {
     echo 'nameserver 1.1.1.1' > /etc/resolv.conf
 }
 
-populate_device_nodes
-
 create_fhs
+
+populate_device_nodes
 
 # Obtain network connection
 if [ "${CHROOT}" = "False" ]; then
