@@ -614,6 +614,12 @@ make 3.82
 GNU ``make`` is now rebuilt properly using the build system and GCC, which means that
 it does not randomly segfault while building the Linux kernel.
 
+curl 7.83.0
+===========
+
+``curl`` is used to download files using various protocols including HTTP and HTTPS.
+However, this first build does not support encrypted HTTPS yet.
+
 kexec-tools 2.0.22
 ==================
 
