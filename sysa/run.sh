@@ -228,6 +228,8 @@ build make-3.82
 
 build curl-7.83.0
 
+build ed-1.4
+
 # Clear up some RAM space
 grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"

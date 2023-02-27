@@ -620,6 +620,12 @@ curl 7.83.0
 ``curl`` is used to download files using various protocols including HTTP and HTTPS.
 However, this first build does not support encrypted HTTPS yet.
 
+ed 1.4
+======
+
+``ed`` is a very basic line editor. This is the last version that is not distributed
+in ``.tar.lz`` format. ``ed`` is used by ``bc`` build scripts.
+
 kexec-tools 2.0.22
 ==================
 
