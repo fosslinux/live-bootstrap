@@ -553,7 +553,7 @@ automake 1.15.1
 
 GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
 
-binutils 2.24
+binutils 2.30
 =============
 
 The GNU Binary Utilities, or binutils, are a set of programming tools for creating and

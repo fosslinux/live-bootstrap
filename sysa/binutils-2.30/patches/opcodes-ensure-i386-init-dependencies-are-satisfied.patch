@@ -1,0 +1,17 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Ensure i386-init.h dependencies are satisfied.
+
+--- opcodes/Makefile.am	2022-01-22 14:14:09.000000000 +0200
++++ opcodes/Makefile.am	2022-09-13 21:09:04.353324699 +0300
+@@ -575,7 +575,7 @@ i386-gen.o: i386-gen.c i386-opc.h $(srcd
+ $(srcdir)/i386-tbl.h: $(srcdir)/i386-init.h
+ 	@echo $@
+ 
+-$(srcdir)/i386-init.h: @MAINT@ i386-gen$(EXEEXT_FOR_BUILD) i386-opc.tbl i386-reg.tbl
++$(srcdir)/i386-init.h: i386-gen$(EXEEXT_FOR_BUILD) i386-opc.tbl i386-reg.tbl
+ 	./i386-gen$(EXEEXT_FOR_BUILD) --srcdir $(srcdir)
+ 
+ i386-opc.lo: $(srcdir)/i386-tbl.h

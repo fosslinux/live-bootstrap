@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Add missing AC_CONFIG_MACRO_DIR.
+
+Required by autoreconf to create aclocal.m4 correctly.
+
+--- /libiberty/configure.ac	2022-01-22 14:14:09.000000000 +0200
++++ libiberty/configure.ac	2022-09-04 00:01:02.941738129 +0300
+@@ -2,6 +2,7 @@
+ 
+ AC_INIT
+ AC_CONFIG_SRCDIR([xmalloc.c])
++AC_CONFIG_MACRO_DIR(../config)
+ 
+ # This works around the fact that libtool configuration may change LD
+ # for this particular configuration, but some shells, instead of

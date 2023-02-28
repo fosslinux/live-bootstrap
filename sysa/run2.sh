@@ -36,7 +36,7 @@ go_sysb() {
 
 build automake-1.15.1
 
-build binutils-2.24
+build binutils-2.30
 
 # Build musl with fewer patches
 build musl-1.1.24 binutils-rebuild.sh patches-pass3
