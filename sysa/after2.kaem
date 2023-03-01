@@ -1,0 +1,11 @@
+prefix=/usr
+bindir=${prefix}/bin
+
+PATH=${bindir}
+
+cd sysa
+
+catm run2-after-fiwix.kaem bootstrap.cfg run-after-fiwix.kaem
+chmod 755 run2-after-fiwix.kaem
+
+kaem --file run2-after-fiwix.kaem

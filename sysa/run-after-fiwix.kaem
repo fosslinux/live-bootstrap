@@ -1,0 +1,90 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2020-2022 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+ARCH_DIR="x86"
+ARCH="x86"
+ARCH_DIR="x86"
+M2LIBC="M2libc"
+TOOLS="${ARCH_DIR}/bin"
+BLOOD_FLAG=" "
+BASE_ADDRESS="0x08048000"
+ENDIAN_FLAG="--little-endian"
+BINDIR="${ARCH_DIR}/bin"
+BUILDDIR="${ARCH_DIR}/artifact"
+
+sysa=/sysa
+distfiles=/sysa/distfiles
+prefix=/usr
+bindir=${prefix}/bin
+libdir=${prefix}/lib
+incdir=${prefix}/include
+srcdir=${prefix}/src
+TMPDIR=/tmp # tmpdir is needed for patch to work
+
+PATH=/usr/bin
+
+libdir=${libdir}/mes
+
+# make
+pkg="make-3.82"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# gzip
+pkg="gzip-1.2.4"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# tar
+pkg="tar-1.12"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# sed
+pkg="sed-4.0.9"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# patch
+pkg="patch-2.5.9"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# bzip2
+pkg="bzip2-1.0.8"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# coreutils
+pkg="coreutils-5.0"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# heirloom-devtools
+pkg="heirloom-devtools-070527"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+# bash
+pkg="bash-2.05b"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
+exec bash run.sh

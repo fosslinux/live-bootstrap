@@ -1,0 +1,7 @@
+    if ((fh = fopen(argv[i_lib], "wb")) == NULL)
+    {
+        fprintf(stderr, "tcc: ar: can't open file %s \n", argv[i_lib]);
+        goto the_end;
+    }
+
+    // write header

@@ -226,10 +226,16 @@ build kbd-1.15
 
 build make-3.82
 
-build curl-7.83.0
+if [ "${CHROOT}" = False ]; then
+    # Save because linux deletes all distfiles to save space
+    cp "${DISTFILES}"/musl-1.2.3.tar.gz "${SOURCES}"/musl-1.2.3
+fi
+
+mkdir -p /sysc/distfiles
+cp "${DISTFILES}"/curl-7.83.0.tar.bz2 /sysc/distfiles
 
 # Clear up some RAM space
-grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
+grep '^build' "${SOURCES}/run.sh" | grep -v musl-1.2.3 | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"
 done
 
@@ -238,13 +244,19 @@ if [ "${CHROOT}" = False ]; then
 
     build linux-4.9.10
 
-    create_sysb
-    go_sysb
-fi
+    build musl-1.2.3 '' no-patches
 
-# In chroot mode transition directly into System C.
-SYSC=/sysc_image
-sys_transfer "${SYSC}" /sysc gzip patch
-if [ "${CHROOT_ONLY_SYSA}" != True ]; then
-    exec chroot "${SYSC}" /init
+    create_sysb
+    if [ "${KERNEL_BOOTSTRAP}" = False ]; then
+        go_sysb
+    fi
+else
+    build musl-1.2.3 '' no-patches
+
+    # In chroot mode transition directly into System C.
+    SYSC=/sysc_image
+    sys_transfer "${SYSC}" /sysc gzip patch
+    if [ "${CHROOT_ONLY_SYSA}" != True ]; then
+        exec chroot "${SYSC}" /init
+    fi
 fi

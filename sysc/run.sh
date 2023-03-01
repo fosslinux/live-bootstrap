@@ -34,6 +34,17 @@ populate_device_nodes
 
 create_fhs
 
+if [ -e "${SOURCES}/distfiles" ]; then
+    mv "${SOURCES}/distfiles" /
+    echo "sysc: distfiles exists"
+    ls -l /distfiles
+else
+    echo "sysc: distfiles does not exist"
+    mkdir -p "${DISTFILES}"
+fi
+
+build curl-7.83.0 curl-7.83.0-pass1.sh
+
 # Obtain network connection
 if [ "${CHROOT}" = "False" ]; then
     dhcpcd --waitip=4
@@ -48,12 +59,6 @@ if [ "${CHROOT}" = "False" ]; then
             false
         fi
     done
-fi
-
-if [ -e "${SOURCES}/distfiles" ]; then
-    mv "${SOURCES}/distfiles" /
-else
-    mkdir -p "${DISTFILES}"
 fi
 
 build bash-5.1

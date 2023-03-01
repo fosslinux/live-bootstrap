@@ -28,6 +28,8 @@ cd ..
 cd build
 untar --file ../src/${NYACC_PKG}.tar
 untar --non-strict --file ../src/${MES_PKG}.tar # ignore symlinks
+/x86/bin/simple-patch /sysa/mes-0.24.2/build/mes-0.24.2/kaem.run \
+    /sysa/mes-0.24.2/simple-patches/mes-kaem.run-base-address.before /sysa/mes-0.24.2/simple-patches/mes-kaem.run-base-address.after
 
 rm ../src/${NYACC_PKG}.tar ../src/${MES_PKG}.tar
 
@@ -250,7 +252,7 @@ mescc src/symbol.c
 mescc src/vector.c
 
 # Link everything into new mes executable
-${MES} -e main ${mescc_scm} -- -L ${libdir} -nostdlib -o ${bindir}/mes -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
+${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${libdir} -nostdlib -o ${bindir}/mes -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
 
 # Make directories
 mkdir ${prefix}/lib/linux ${incdir}/mes ${incdir}/sys ${incdir}/linux ${incdir}/arch

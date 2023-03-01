@@ -1,0 +1,1 @@
+${mescc_scm} -- --base-address 0x08048000 -L
