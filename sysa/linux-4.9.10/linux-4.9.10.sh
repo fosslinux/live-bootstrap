@@ -51,6 +51,9 @@ src_compile() {
     export PATH=$PWD/usr:$PATH
     make ARCH=i386 prepare
     make ARCH=i386
+
+    # Clear up more space
+    find . -name '*.o' -delete
 }
 
 src_install() {

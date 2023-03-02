@@ -526,7 +526,7 @@ automake 1.11.2
 ===============
 
 GNU Automake from 1.11 series. This is not the latest point release as newer ones
-need Autoconf 2.68.
+need Autoconf 2.68. Newer major version of ``automake`` also depends on a newer ``bash``.
 
 autoconf 2.69
 =============
@@ -539,7 +539,21 @@ libtool 2.2.4
 GNU Libtool is the final part of GNU Autotools. It is a script used to hide away differences
 when compiling shared libraries on different platforms.
 
-binutils 2.24
+bash 5.2.15
+===========
+
+Up to this point, our build of ``bash`` could run scripts but could not be used
+interactively.  This new version of ``bash`` compiles without any patches,
+provides new features, and is built with GNU readline support so it can be used
+as an interactive shell. ``autoconf-2.69`` is used to regenerate the configure
+script and ``bison`` is used to recreate some included generated files.
+
+automake 1.15.1
+===============
+
+GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
+
+binutils 2.30
 =============
 
 The GNU Binary Utilities, or binutils, are a set of programming tools for creating and
@@ -614,6 +628,24 @@ make 3.82
 GNU ``make`` is now rebuilt properly using the build system and GCC, which means that
 it does not randomly segfault while building the Linux kernel.
 
+curl 7.83.0
+===========
+
+``curl`` is used to download files using various protocols including HTTP and HTTPS.
+However, this first build does not support encrypted HTTPS yet.
+
+ed 1.4
+======
+
+``ed`` is a very basic line editor. This is the last version that is not distributed
+in ``.tar.lz`` format. ``ed`` is used by ``bc`` build scripts.
+
+bc 1.07.1
+=========
+
+``bc`` is a console based calculator that is sometime used in scripts. We need ``bc``
+to rebuild some Linux kernel headers.
+
 kexec-tools 2.0.22
 ==================
 
@@ -665,16 +697,7 @@ sysb is purely a transition to sysc, allowing binaries from sysa to get onto a
 disk (as sysa does not necessarily have hard disk support in the kernel).
 It populates device nodes, mounts sysc, copies over data, and executes sysc.
 
-bash 5.1
-========
-
-Up to this point, our build of ``bash`` could run scripts but could not be used
-interactively.  This new version of ``bash`` compiles without any patches,
-provides new features, and is built with GNU readline support so it can be used
-as an interactive shell. ``autoconf-2.61`` is used to regenerate the configure
-script and ``bison`` is used to recreate some included generated files.
-
-xz 5.0.5
+xz 5.4.1
 ========
 
 XZ Utils is a set of free software command-line lossless data compressors,
@@ -692,11 +715,6 @@ libtool 2.4.7
 
 A modern version of libtool with better compatibility with newer versions of GNU
 Autotools.
-
-automake 1.15.1
-===============
-
-GNU Automake from 1.15 series. This is the last version that runs on Perl 5.6.
 
 tar 1.34
 ========

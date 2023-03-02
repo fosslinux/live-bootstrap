@@ -38,7 +38,8 @@ install_tar sed-4.0.9 0
 install_tar autoconf-2.64 0
 install_tar autoconf-2.69 0
 install_tar automake-1.11.2 0
-install_tar binutils-2.24 0
+install_tar automake-1.15.1 0
+install_tar binutils-2.30 0
 install_tar bzip2-1.0.8 0
 install_tar bison-3.4.1 2
 install_tar coreutils-6.10 0

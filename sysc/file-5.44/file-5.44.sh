@@ -5,7 +5,7 @@
 src_prepare() {
     default
 
-    AUTOMAKE=automake-1.11 ACLOCAL=aclocal-1.11 autoreconf-2.64 -fi
+    AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 }
 
 src_configure() {

@@ -193,58 +193,6 @@ build autoconf-2.69
 
 build libtool-2.2.4
 
-build binutils-2.24
+build bash-5.2.15
 
-# Build musl with fewer patches
-build musl-1.1.24 binutils-rebuild.sh patches-pass3
-
-# Rebuild tcc-musl using new musl
-build tcc-0.9.27 tcc-musl-pass3.sh patches-musl-pass3
-
-populate_device_nodes
-
-build gcc-4.0.4 pass1.sh
-
-build findutils-4.2.33
-
-build musl-1.2.3
-
-# This hack fixes a strange bug in mes libc bash
-set -x
-build linux-headers-5.10.41 '' '' linux-5.10.41
-set +x
-
-build gcc-4.0.4 pass2.sh
-
-build util-linux-2.19.1
-
-build e2fsprogs-1.45.7
-
-build dhcpcd-9.4.1 '' '' dhcpcd-dhcpcd-9.4.1-1663155
-
-build kbd-1.15
-
-build make-3.82
-
-build curl-7.83.0
-
-# Clear up some RAM space
-grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
-    rm -rf "${SOURCES:?}/${p:?}"
-done
-
-if [ "${CHROOT}" = False ]; then
-    build kexec-tools-2.0.22
-
-    build linux-4.9.10
-
-    create_sysb
-    go_sysb
-fi
-
-# In chroot mode transition directly into System C.
-SYSC=/sysc_image
-sys_transfer "${SYSC}" /sysc gzip patch
-if [ "${CHROOT_ONLY_SYSA}" != True ]; then
-    exec chroot "${SYSC}" /init
-fi
+exec env -i PATH="${PATH}" PREFIX="${PREFIX}" LIBDIR="${LIBDIR}" SOURCES="${SOURCES}" DISTFILES="${DISTFILES}" DESTDIR="${DESTDIR}" SRCDIR="${SRCDIR}" bash run2.sh

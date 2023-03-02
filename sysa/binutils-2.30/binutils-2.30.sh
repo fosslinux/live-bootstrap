@@ -13,10 +13,11 @@ src_prepare() {
     rm etc/Makefile.in etc/configure
 
     # Regenerate files
-    for dir in bfd binutils gas gold gprof intl ld libiberty opcodes; do
+    for dir in bfd binutils gas gprof intl ld libiberty opcodes zlib; do
+    (
         cd $dir
         AUTOPOINT=true ACLOCAL=aclocal-1.11 AUTOMAKE=automake-1.11 autoreconf-2.64 -fi
-        cd ..
+    )
     done
 
     ACLOCAL=aclocal-1.11 autoreconf-2.64 -fi
@@ -26,14 +27,14 @@ src_prepare() {
     rm binutils/arparse.c binutils/arparse.h
     rm binutils/defparse.c binutils/defparse.h
     rm binutils/mcparse.c binutils/mcparse.h
-    rm binutils/nlmheader.c binutils/nlmheader.h
     rm binutils/rcparse.c binutils/rcparse.h
     rm binutils/sysinfo.c binutils/sysinfo.h
     rm gas/bfin-parse.c gas/bfin-parse.h
     rm gas/m68k-parse.c gas/rl78-parse.c
     rm gas/rl78-parse.h gas/rx-parse.c
     rm gas/rx-parse.h gas/itbl-parse.c
-    rm gas/itbl-parse.h intl/plural.c
+    rm gas/itbl-parse.h gold/yyscript.c
+    rm gold/yyscript.h intl/plural.c
     rm ld/deffilep.c ld/deffilep.h
     rm ld/ldgram.c ld/ldgram.h
 
@@ -45,7 +46,6 @@ src_prepare() {
 
     # Remove prebuilt texinfo files
     rm bfd/doc/bfd.info binutils/doc/binutils.info
-    rm etc/configure.info etc/standards.info
     rm gas/doc/as.info gprof/gprof.info ld/ld.info
 
     # Remove pregenerated opcodes files
@@ -63,12 +63,14 @@ src_prepare() {
 }
 
 src_configure() {
-    for dir in intl libiberty opcodes bfd binutils gas gprof ld; do
+    for dir in intl libiberty opcodes bfd binutils gas gprof ld zlib; do
+    (
         cd $dir
 
-        LD="true" AR="tcc -ar" RANLIB="true" CC="tcc" ./configure \
+        LD="true" AR="tcc -ar" CC="tcc" ./configure \
             --disable-nls \
             --enable-deterministic-archives \
+            --enable-64-bit-bfd \
             --build=i386-unknown-linux-gnu \
             --host=i386-unknown-linux-gnu \
             --target=i386-unknown-linux-gnu \
@@ -76,32 +78,30 @@ src_configure() {
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
             --with-sysroot= \
-            --srcdir=.
-        cd ..
+            --srcdir=. \
+            --enable-compressed-debug-sections=all \
+            lt_cv_sys_max_cmd_len=32768
+    )
     done
 }
 
 src_compile() {
     make -C bfd headers
-    for dir in libiberty bfd; do
-        make -C $dir MAKEINFO=true
-    done
-    make -C opcodes i386-gen
-    for dir in opcodes binutils gas gprof ld; do
-        make -C $dir MAKEINFO=true
+    for dir in libiberty zlib bfd opcodes binutils gas gprof ld; do
+        make -C $dir tooldir=${PREFIX} CPPFLAGS="-DPLUGIN_LITTLE_ENDIAN" MAKEINFO=true
     done
 }
 
 src_install() {
-    for dir in libiberty bfd opcodes binutils gas gprof ld; do
-        make -C $dir tooldir=${PREFIX} MAKEINFO=true DESTDIR="${DESTDIR}" install
+    for dir in libiberty zlib bfd opcodes binutils gas gprof ld; do
+        make -C $dir tooldir=${PREFIX} DESTDIR="${DESTDIR}" install MAKEINFO=true
     done
 
     # Create triplet symlinks
-    local olddir=$PWD
-    cd "${DESTDIR}${PREFIX}/bin"
-    for f in *; do
-        ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
-    done
-    cd "$olddir"
+    (
+        cd "${DESTDIR}${PREFIX}/bin"
+        for f in *; do
+            ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
+        done
+    )
 }
