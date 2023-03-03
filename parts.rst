@@ -507,7 +507,7 @@ Yet another version of ``autoconf``.
 automake 1.9.6
 ==============
 
-Latest GNU Automake from 1.9 series. Slightly annoyingly depends itself but it is easy to patch
+Latest GNU Automake from 1.9 series. Slightly annoyingly depends on itself but it is easy to patch
 to make it buildable with 1.8.5.
 
 automake 1.10.3
