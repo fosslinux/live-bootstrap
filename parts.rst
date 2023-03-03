@@ -131,7 +131,7 @@ mescc-tools-extra
 
 ``mescc-tools-extra`` contains some additional programs, namely filesystem
 utilities ``cp`` and ``chown``. This allows us to have one unified
-directory for our binaries. Futhermore, we also build ``sha256sum``, a
+directory for our binaries. Furthermore, we also build ``sha256sum``, a
 checksumming tool, that we use to ensure reproducibility and authenticity
 of generated binaries. We also build initial ``untar``, ``ungz`` and ``unbz2``
 utilities to deal with compressed archives.
@@ -167,7 +167,7 @@ complies with all C89 and most of C99 standards.
 First, we compile janneke’s fork of tcc 0.9.26 using ``mescc``,
 containing 27 patches to make it operate well in the bootstrap
 environment and make it compilable using ``mescc``. This is a
-non-trivial process and as seen within tcc.kaem has many different parts
+non-trivial process and as seen within tcc. kaem has many different parts
 within it: a. tcc 0.9.26 is first compiled using ``mescc``. b. The mes
 libc is recompiled using tcc (``mescc`` has a non-standard ``.a``
 format), including some additions for later programs. c. tcc 0.9.26 is
@@ -200,7 +200,7 @@ gzip 1.2.4
 ==========
 
 ``gzip`` is the most common compression format used for software source
-code. It is more capble than ``ungz`` from ``stage0-posix`` and also supports
+code. It is more capable than ``ungz`` from ``stage0-posix`` and also supports
 compression.
 
 tar 1.12
@@ -669,7 +669,7 @@ is built. Firstly, Linux kernel version 4.9.x is used because newer versions
 require much more stringent requirements on the make, GCC, binutils versions.
 However, the docs are also wrong, as the latest of the 4.9.x series does not
 work with our version of binutils. However, a much earlier 4.9.10 does
-(selected arbitarily, could go newer but did not test), with a small amount
+(selected arbitrarily, could go newer but did not test), with a small amount
 of patching. This is also modern enough for most hardware and to cause few
 problems with software built in sysc. Secondly, the linux-libre scripts are used
 to deblob the kernel.  Every other pregenerated file is appended with ``_shipped``
@@ -868,8 +868,8 @@ gcc 4.7.4
 =========
 
 GCC 4.7.4 is the last version written in C. This time we build both C and C++ backends.
-C++ backend has some dependency on ``gperf`` which is written in C++. Fortunately, it is
-easy to patch it out and resulting ``g++`` compiler is capable of building ``gperf``.
+The C++ backend has a dependency on ``gperf``, which is written in C++. Fortunately, it is
+easy to patch it out; the resulting ``g++`` compiler is capable of building ``gperf``.
 We also add in two patchsets to the compiler;
 
 * one to add support for musl shared library support
@@ -943,10 +943,13 @@ sed keep executable bit on after in place editing.
 autogen 5.18.16
 ===============
 
-GNU Autogen is a tool designed to simplify the creation and maintenance of programs that contain large amounts of repetitious text. Unfortunately, the source is full of pregenerated files that require ``autogen`` to rebuild.
+GNU Autogen is a tool designed to simplify the creation and maintenance of
+programs that contain large amounts of repetitious text. Unfortunately, the
+source is full of pregenerated files that require ``autogen`` to rebuild.
 
-We will use `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-bootstrapping>`_ project to rebuild
-those and create slightly crippled ``autogen`` that is then able to build full-featured version.
+We use the `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-bootstrapping>`_
+project to rebuild those and create (slightly crippled) ``autogen`` that
+is then able to build a full-featured version.
 
 musl 1.2.3
 ==========
