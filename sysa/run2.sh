@@ -73,7 +73,7 @@ build ed-1.4
 build bc-1.07.1
 
 # Clear up some RAM space
-grep '^build' "${SOURCES}/run.sh" | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
+grep '^build' "${SOURCES}"/run*.sh | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"
 done
 
