@@ -8,6 +8,9 @@
 
 set -e
 
+# shellcheck source=/dev/null
+. .env
+
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 

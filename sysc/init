@@ -66,12 +66,16 @@ ln -s /usr/bin/bash /usr/bin/sh
 # Begin sysc bootstrapping process
 cd "${SOURCES}"
 
-echo "PREFIX=${PREFIX}" > .env
-# shellcheck disable=SC2129
-echo "LIBDIR=${LIBDIR}" >> .env
-echo "SOURCES=${SOURCES}" >> .env
-echo "DESTDIR=${DESTDIR}" >> .env
-echo "DISTFILES=${DISTFILES}" >> .env
-echo "SRCDIR=${SRCDIR}" >> .env
+cat > .env <<- EOF
+export PATH="${PREFIX}/bin:${PREFIX}/sbin"
+export HOME=/tmp
+export SOURCE_DATE_EPOCH=0
+PREFIX=${PREFIX}
+LIBDIR=${LIBDIR}
+SOURCES=${SOURCES}
+DESTDIR=${DESTDIR}
+DISTFILES=${DISTFILES}
+SRCDIR=${SRCDIR}
+EOF
 
 exec ./run.sh

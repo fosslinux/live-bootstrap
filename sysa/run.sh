@@ -195,4 +195,14 @@ build libtool-2.2.4
 
 build bash-5.2.15
 
-exec env -i PATH="${PATH}" PREFIX="${PREFIX}" LIBDIR="${LIBDIR}" SOURCES="${SOURCES}" DISTFILES="${DISTFILES}" DESTDIR="${DESTDIR}" SRCDIR="${SRCDIR}" bash run2.sh
+cat > .env <<- EOF
+export PATH=${PATH}
+PREFIX=${PREFIX}
+LIBDIR=${LIBDIR}
+SOURCES=${SOURCES}
+DESTDIR=${DESTDIR}
+DISTFILES=${DISTFILES}
+SRCDIR=${SRCDIR}
+EOF
+
+exec env -i bash run2.sh

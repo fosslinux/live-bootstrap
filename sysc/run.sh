@@ -183,5 +183,5 @@ fi
 echo "Bootstrapping completed."
 
 cd "/"
-exec env -i PATH="${PATH}" HOME="${HOME}" SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}" bash "${SOURCES}/after.sh"
+exec env -i bash "${SOURCES}/after.sh"
 
