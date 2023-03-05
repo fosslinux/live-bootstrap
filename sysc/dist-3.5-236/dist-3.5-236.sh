@@ -23,7 +23,8 @@ src_compile() {
 }
 
 src_install() {
-    install mcon/metaconfig "${PREFIX}/bin/"
-    install kit/manifake "${PREFIX}/bin/"
-    cp -r mcon/U/ "${PREFIX}/lib/perl5/5.10.1/"
+    mkdir -p "${DESTDIR}${PREFIX}/bin/" "${DESTDIR}${PREFIX}/lib/perl5/5.10.1"
+    install mcon/metaconfig "${DESTDIR}${PREFIX}/bin/"
+    install kit/manifake "${DESTDIR}${PREFIX}/bin/"
+    cp -r mcon/U/ "${DESTDIR}${PREFIX}/lib/perl5/5.10.1/"
 }
