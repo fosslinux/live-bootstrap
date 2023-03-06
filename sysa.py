@@ -80,7 +80,7 @@ class SysA(SysGeneral):
 
     def sysc(self, create_initramfs):
         """Copy in sysc files for sysc."""
-        if create_initramfs:
+        if create_initramfs or not self.external_sources:
             ignore = shutil.ignore_patterns('tmp', 'distfiles')
         else:
             ignore = shutil.ignore_patterns('tmp')
