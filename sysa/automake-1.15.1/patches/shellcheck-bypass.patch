@@ -1,0 +1,35 @@
+SPDX-FileCopyrightText: © 2023 fosslinux <fosslinux@aussies.space>
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Fixes configure script to work with older bash
+
+
+--- configure.ac.bak	2023-03-08 14:34:57.009268432 +1100
++++ configure.ac	2023-03-08 14:35:27.947964581 +1100
+@@ -272,14 +272,6 @@
+       [], [am_score=1; break])
+ 
+     _AM_CHECK_SHELL_FEATURE([$1],
+-      [supports \${@%:@var}],
+-      [zero='' one='x' twelve=' foobar baz!' \
+-        && test ${@%:@zero} -eq 0 \
+-        && test ${@%:@one} -eq 1 \
+-        && test ${@%:@twelve} -eq 12],
+-      [], [am_score=1; break])
+-
+-    _AM_CHECK_SHELL_FEATURE([$1],
+       [supports \${var@%:@glob} and \${var%glob}],
+       [v=a/b/c \
+         && test ${v@%:@*/} = b/c \
+@@ -313,11 +305,6 @@
+ 
+     echo 'alias false=echo' > conftest-alias.sh
+     echo 'false && test "$(false 97)" = 97' >> conftest-alias.sh
+-    _AM_CHECK_SHELL_FEATURE([$1],
+-      [supports alias named like shell builtins],
+-      [. ./conftest-alias.sh],
+-      [rm -f conftest-alias.sh],
+-      [rm -f conftest-alias.sh; am_score=1; break])
+ 
+     _AM_CHECK_SHELL_FEATURE([$1],
+       [supports "test -e"],
