@@ -3,6 +3,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# XXX: Fix package after builder-hex0
+
 src_unpack() {
     mkdir "${pkg}"
     mv "${DISTFILES}/deblob-4.9" "${pkg}/"
@@ -48,7 +50,6 @@ src_compile() {
     generate_autoconf_h
 
     # Allow use of patched initramfs_list.sh (which is required anyway)
-    export PATH=$PWD/usr:$PATH
     make ARCH=i386 prepare
     make ARCH=i386
 
@@ -57,8 +58,7 @@ src_compile() {
 }
 
 src_install() {
-    mkdir -p "${PREFIX}/boot"
-    cp arch/i386/boot/bzImage "${PREFIX}/boot/linux-4.9.10"
-    cp usr/gen_init_cpio "${PREFIX}/bin"
-    cp scripts/gen_initramfs_list.sh "${PREFIX}/bin"
+    install -D -m 644 arch/i386/boot/bzImage "/boot/linux-4.9.10"
+    install -D -m 755 usr/gen_init_cpio "${PREFIX}/bin/gen_init_cpio"
+    install -D -m 755 scripts/gen_initramfs_list.sh "${PREFIX}/bin/gen_initramfs_list.sh"
 }

@@ -27,7 +27,7 @@ create_sysb() {
     sys_transfer /sysb_image /sysb gzip patch
     cp -rl /sysc /sysb_image/sysc_src
     echo "Creating sysb initramfs"
-    gen_initramfs_list.sh -o "${PREFIX}/boot/initramfs-sysb.cpio.gz" /sysb_image
+    gen_initramfs_list.sh -o "/boot/initramfs-sysb.cpio.gz" /sysb_image
     rm -rf /sysb /sysb_image # Cleanup
 }
 
@@ -37,8 +37,8 @@ go_sysb() {
     mount -t proc proc /proc
     # kexec time
     echo "Loading kernel + sysb initramfs using kexec"
-    kexec -l "${PREFIX}/boot/linux-4.9.10" --console-serial \
-        --initrd="${PREFIX}/boot/initramfs-sysb.cpio.gz" \
+    kexec -l "/boot/linux-4.9.10" --console-serial \
+        --initrd="/boot/initramfs-sysb.cpio.gz" \
         --append="init=/init console=ttyS0"
     echo "kexecing into sysb"
     kexec -e
