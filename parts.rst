@@ -539,14 +539,11 @@ libtool 2.2.4
 GNU Libtool is the final part of GNU Autotools. It is a script used to hide away differences
 when compiling shared libraries on different platforms.
 
-bash 5.2.15
-===========
+bash 2.05b
+==========
 
 Up to this point, our build of ``bash`` could run scripts but could not be used
-interactively.  This new version of ``bash`` compiles without any patches,
-provides new features, and is built with GNU readline support so it can be used
-as an interactive shell. ``autoconf-2.69`` is used to regenerate the configure
-script and ``bison`` is used to recreate some included generated files.
+interactively. Rebuilding bash makes this functionality work.
 
 automake 1.15.1
 ===============
@@ -696,6 +693,14 @@ sysb
 sysb is purely a transition to sysc, allowing binaries from sysa to get onto a
 disk (as sysa does not necessarily have hard disk support in the kernel).
 It populates device nodes, mounts sysc, copies over data, and executes sysc.
+
+bash 5.2.15
+===========
+
+This new version of ``bash`` compiles without any patches, provides new features,
+and is built with GNU readline support so it can be used as a fully-featured
+interactive shell. ``autoconf-2.69`` is used to regenerate the configure
+script and ``bison`` is used to recreate some included generated files.
 
 xz 5.4.1
 ========
