@@ -51,7 +51,7 @@ src_compile() {
 
     # Allow use of patched initramfs_list.sh (which is required anyway)
     make ARCH=i386 prepare
-    make ARCH=i386
+    PATH="${PWD}/usr:${PATH}" make ARCH=i386
 
     # Clear up more space
     find . -name '*.o' -delete

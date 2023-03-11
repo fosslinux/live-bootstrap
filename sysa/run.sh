@@ -21,29 +21,6 @@ SRCDIR="${srcdir}"
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 
-create_sysb() {
-    # Copy everything in
-    echo "Creating sysb rootfs"
-    sys_transfer /sysb_image /sysb gzip patch
-    cp -rl /sysc /sysb_image/sysc_src
-    echo "Creating sysb initramfs"
-    gen_initramfs_list.sh -o "/boot/initramfs-sysb.cpio.gz" /sysb_image
-    rm -rf /sysb /sysb_image # Cleanup
-}
-
-go_sysb() {
-    # Mount proc for kexec
-    mkdir /proc /etc
-    mount -t proc proc /proc
-    # kexec time
-    echo "Loading kernel + sysb initramfs using kexec"
-    kexec -l "/boot/linux-4.9.10" --console-serial \
-        --initrd="/boot/initramfs-sysb.cpio.gz" \
-        --append="init=/init console=ttyS0"
-    echo "kexecing into sysb"
-    kexec -e
-}
-
 # Ask some questions
 echo
 echo "Now that bash has been built, there are potentially some questions for you!"
