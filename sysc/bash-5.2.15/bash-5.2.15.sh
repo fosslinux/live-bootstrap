@@ -17,6 +17,10 @@ src_prepare() {
     rm doc/*
     mv Makefile.in.doc doc/Makefile.in
 
+    # Erroneously included file (configure checks do not work)
+    rm lib/sh/strtoimax.c
+    touch lib/sh/strtoimax.c
+
     # Rebuild configure script
     rm configure
     autoconf-2.69
@@ -34,7 +38,7 @@ src_configure() {
     # skip checking for /dev/{fd,stdin,stdout,stderr} (build
     # output is affected by their availability otherwise).
     # size is part of binutils and is not yet available.
-    CC=tcc LD=tcc AR="tcc -ar" SIZE=true ./configure --prefix="${PREFIX}" \
+    ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
         --disable-nls \
         --build=i386-unknown-linux-musl \
