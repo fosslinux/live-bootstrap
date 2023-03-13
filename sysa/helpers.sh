@@ -460,7 +460,7 @@ default() {
 # This function needs `touch` that supports --no-dereference
 # (at least coreutils 8.1).
 canonicalise_all_files_timestamp() {
-    find / -exec touch --no-dereference -t 197001010000.00 {} +
+    find / -xdev -exec touch --no-dereference -t 197001010000.00 {} +
 }
 
 populate_device_nodes() {
