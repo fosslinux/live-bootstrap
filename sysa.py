@@ -7,6 +7,7 @@
 # SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 
 import os
+# pylint: disable=deprecated-module
 from distutils.dir_util import copy_tree
 import shutil
 import tarfile
