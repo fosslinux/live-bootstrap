@@ -54,4 +54,7 @@ src_install() {
     # Improve reproducibility. hostcat might be empty or set to "cat /etc/hosts"
     # depending on whether /etc/hosts was available during the build.
     sed -i "s_^hostcat='.*'\$_hostcat=''_g" "${DESTDIR}${PREFIX}/lib/perl5/5.32.1/i386-linux/Config_heavy.pl"
+
+    # There are strange permissions on installed files.
+    find "${DESTDIR}${PREFIX}/lib" -type f  -exec chmod 644 {} \;
 }
