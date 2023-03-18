@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: Run under bubblewrap
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  run:
+    name: Run under bubblewrap
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install bubblewrap
+        run: sudo apt install bubblewrap
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Query cache for sources
+        id: cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            sysa/distfiles
+            sysc/distfiles
+          key: cache-${{ hashFiles('sys*/*/sources') }}
+      - name: Get sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: ./download-distfiles.sh
+      - name: Cache sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            sysa/distfiles
+            sysc/distfiles
+          key: cache-${{ hashFiles('sys*/*/sources') }}
+      - name: Run bootstrap
+        id: bootstrap
+        run: ./rootfs.py --bwrap --external-sources --preserve
+      - name: Archive created packages
+        if: steps.bootstrap.conclusion == 'success'
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: tmp/sysa/sysc_image/usr/src/repo/**

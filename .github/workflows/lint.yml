@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: Linters
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  pylint:
+    name: Lint Python files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Install pylint
+        run: sudo pip3 install pylint
+      - name: pylint
+        run: pylint rootfs.py sysa.py sysc.py lib/utils.py lib/sysgeneral.py lib/tmpdir.py --disable=duplicate-code
+
+  shellcheck:
+    name: Lint shell files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: shellcheck
+        run: shellcheck sysa/run.sh sysa/run2.sh sysb/init sysb/run.sh sysc/init sysc/run.sh sysa/helpers.sh download-distfiles.sh
+
+  reuse:
+    name: Lint reuse information
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Install reuse
+        run: sudo pip3 install reuse
+      - name: reuse
+        run: reuse lint
