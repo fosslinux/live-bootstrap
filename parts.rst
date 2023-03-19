@@ -625,7 +625,7 @@ make 3.82
 GNU ``make`` is now rebuilt properly using the build system and GCC, which means that
 it does not randomly segfault while building the Linux kernel.
 
-curl 7.83.0
+curl 7.88.1
 ===========
 
 ``curl`` is used to download files using various protocols including HTTP and HTTPS.
@@ -829,7 +829,7 @@ openssl 1.1.1l
 
 OpenSSL is a C library for secure communications/cryptography.
 
-curl 7.83.0
+curl 7.88.1
 ===========
 
 We rebuild curl with support for OpenSSL.

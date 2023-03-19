@@ -69,7 +69,7 @@ build kbd-1.15
 
 build make-3.82
 
-build curl-7.83.0
+build curl-7.88.1
 
 build ed-1.4
 

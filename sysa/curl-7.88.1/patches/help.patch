@@ -5,10 +5,10 @@
 Regenerating help is not trivial. Help is unnecessary.
 Disable help.
 
-diff --color -ru src/Makefile.inc src/Makefile.inc
---- src/Makefile.inc	2022-05-09 16:48:37.195346967 +1000
-+++ src/Makefile.inc	2022-05-09 16:49:46.503187644 +1000
-@@ -69,11 +69,9 @@
+diff -ru src/Makefile.inc src/Makefile.inc
+--- src/Makefile.inc
++++ src/Makefile.inc
+@@ -70,11 +70,9 @@
    tool_formparse.c \
    tool_getparam.c \
    tool_getpass.c \
@@ -28,10 +28,10 @@ diff --color -ru src/Makefile.inc src/Makefile.inc
    tool_helpers.h \
    tool_hugehelp.h \
    tool_libinfo.h \
-diff --color -ru src/tool_operate.c src/tool_operate.c
---- src/tool_operate.c	2022-05-09 16:48:37.196347022 +1000
-+++ src/tool_operate.c	2022-05-09 16:54:00.696271863 +1000
-@@ -78,7 +78,6 @@
+diff -ru src/tool_operate.c src/tool_operate.c
+--- src/tool_operate.c
++++ src/tool_operate.c
+@@ -80,7 +80,6 @@
  #include "tool_writeout.h"
  #include "tool_xattr.h"
  #include "tool_vms.h"
@@ -39,7 +39,7 @@ diff --color -ru src/tool_operate.c src/tool_operate.c
  #include "tool_hugehelp.h"
  #include "tool_progress.h"
  #include "dynbuf.h"
-@@ -2607,19 +2606,7 @@
+@@ -2703,19 +2702,7 @@
      if(res) {
        result = CURLE_OK;
  
