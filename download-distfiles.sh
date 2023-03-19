@@ -15,7 +15,7 @@ download_source() {
     local dest_path="${distfiles}/${fname}"
     if ! [ -e "${dest_path}" ]; then
         echo "Downloading ${fname}"
-        curl -L "${url}" --output "${dest_path}"
+        curl --fail --location "${url}" --output "${dest_path}"
     fi
     echo "${checksum}  ${dest_path}" | sha256sum -c
 }

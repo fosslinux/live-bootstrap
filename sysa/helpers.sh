@@ -208,7 +208,7 @@ interpret_source_line() {
     # Default to basename of url if not given
     fname="${fname:-$(basename "${url}")}"
     if ! [ -e "${fname}" ]; then
-        curl -L "${url}" --output "${fname}"
+        curl --fail --location "${url}" --output "${fname}"
     fi
     echo "${checksum}  ${fname}" > "${fname}.sum"
     sha256sum -c "${fname}.sum"
