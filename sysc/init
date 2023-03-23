@@ -43,7 +43,6 @@ install_tar binutils-2.30 0
 install_tar bzip2-1.0.8 0
 install_tar bison-3.4.1 2
 install_tar coreutils-6.10 0
-install_tar curl-7.88.1 0
 install_tar dhcpcd-9.4.1 0
 install_tar diffutils-2.7 0
 install_tar findutils-4.2.33 0

@@ -69,11 +69,12 @@ build kbd-1.15
 
 build make-3.82
 
-build curl-7.88.1
-
 build ed-1.4
 
 build bc-1.07.1
+
+mkdir -p /sysc/distfiles
+cp "${DISTFILES}"/curl-7.88.1.tar.bz2 /sysc/distfiles
 
 # Clear up some RAM space
 grep --no-filename '^build' "${SOURCES}"/run*.sh | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do

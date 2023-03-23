@@ -11,16 +11,11 @@ src_prepare() {
 
     rm src/tool_help.c src/tool_help.h src/tool_listhelp.c src/tool_hugehelp.c
 
-    # configure.ac uses the AM_COND_IF macro, which is not supported
-    # by automake 1.10. The place where it is used is only relevant
-    # for windows builds, so we can simply patch it away.
-    sed -i "659,662d" configure.ac
-
     # Rebuild libtool files
     rm config.guess config.sub ltmain.sh
     libtoolize
 
-    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 AUTOCONF=autoconf-2.64 autoreconf-2.64 -fi
+    AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 }
 
 src_configure() {

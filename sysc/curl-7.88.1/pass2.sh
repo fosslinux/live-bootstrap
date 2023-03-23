@@ -22,8 +22,8 @@ src_configure() {
     LDFLAGS="-static" ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
+        --build=i386-unknown-linux-musl \
         --enable-ipv6 \
         --with-openssl \
-        --with-ca-bundle=/etc/ssl/certs.pem \
-        --build=i386-unknown-linux-musl
+        --with-ca-bundle=/etc/ssl/certs.pem
 }
