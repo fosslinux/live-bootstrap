@@ -36,6 +36,14 @@ create_fhs
 
 populate_device_nodes
 
+if [ -e "${SOURCES}/distfiles" ]; then
+    mv "${SOURCES}/distfiles" /
+else
+    mkdir -p "${DISTFILES}"
+fi
+
+build curl-7.88.1 pass1.sh
+
 # Obtain network connection
 if [ "${CHROOT}" = "False" ]; then
     dhcpcd --waitip=4
@@ -50,12 +58,6 @@ if [ "${CHROOT}" = "False" ]; then
             false
         fi
     done
-fi
-
-if [ -e "${SOURCES}/distfiles" ]; then
-    mv "${SOURCES}/distfiles" /
-else
-    mkdir -p "${DISTFILES}"
 fi
 
 build bash-5.2.15

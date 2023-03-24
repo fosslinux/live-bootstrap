@@ -58,7 +58,7 @@ build openssl-1.1.1l
 
 build ca-certificates-3.88.1
 
-build curl-7.83.0
+build curl-7.88.1 pass2.sh
 
 build zlib-1.2.13
 

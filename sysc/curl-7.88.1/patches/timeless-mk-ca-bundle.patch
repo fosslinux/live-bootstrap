@@ -8,7 +8,7 @@ reproducible bundles.
 diff -ru scripts/mk-ca-bundle.pl scripts/mk-ca-bundle.pl
 --- scripts/mk-ca-bundle.pl
 +++ scripts/mk-ca-bundle.pl
-@@ -497,19 +497,7 @@
+@@ -499,19 +499,7 @@
      if($main_block) {
        push @precert, $_ if not /^#$/;
        if(/^# Not Valid After : (.*)/) {
@@ -29,7 +29,7 @@ diff -ru scripts/mk-ca-bundle.pl scripts/mk-ca-bundle.pl
        }
      }
      next;
-@@ -571,24 +559,6 @@
+@@ -573,24 +561,6 @@
          if($timestamp[12] ne "Z") {
            report "distrust date stamp is not using UTC";
          }
