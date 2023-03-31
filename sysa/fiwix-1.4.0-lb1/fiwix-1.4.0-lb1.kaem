@@ -1,0 +1,550 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
+# SPDX-License-Identifier: MIT
+
+set -ex
+
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
+# Extract
+mkdir build src
+cd src
+ungz --file ${distfiles}/${pkg}.tar.gz --output ${pkg}.tar
+cd ..
+
+cd build
+untar --file ../src/${pkg}.tar
+cd ${pkg}
+
+cd kernel
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -traditional -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -c -o boot.o boot.S
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -traditional -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -c -o core386.o core386.S
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc2\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o main.o main.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o init.o init.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o gdt.o gdt.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o idt.o idt.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o syscalls.o syscalls.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o pic.o pic.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o pit.o pit.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o irq.o irq.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o traps.o traps.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o cpu.o cpu.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o cmos.o cmos.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o timer.o timer.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sched.o sched.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sleep.o sleep.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o signal.o signal.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o process.o process.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o multiboot.o multiboot.c
+
+cd syscalls
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o umount.o umount.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getgid.o getgid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getppid.o getppid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fstatfs.o fstatfs.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getgroups.o getgroups.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fsync.o fsync.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setreuid.o setreuid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o newuname.o newuname.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fork.o fork.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setitimer.o setitimer.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fdatasync.o fdatasync.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o chmod.o chmod.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o mmap2.o mmap2.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o msgsnd.o msgsnd.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o madvise.o madvise.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o exit.o exit.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o readlink.o readlink.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o socketcall.o socketcall.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o stat64.o stat64.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o readv.o readv.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sigaction.o sigaction.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fstat.o fstat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o waitpid.o waitpid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setfsgid.o setfsgid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o chown.o chown.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o flock.o flock.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o uname.o uname.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o lseek.o lseek.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setsid.o setsid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o settimeofday.o settimeofday.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o unlink.o unlink.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sigprocmask.o sigprocmask.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ustat.o ustat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o open.o open.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sync.o sync.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o iopl.o iopl.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o msgget.o msgget.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o pipe.o pipe.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o shmdt.o shmdt.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getsid.o getsid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setfsuid.o setfsuid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o signal.o signal.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o newfstat.o newfstat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o mkdir.o mkdir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getcwd.o getcwd.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o link.o link.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o msgctl.o msgctl.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sethostname.o sethostname.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o semctl.o semctl.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sysinfo.o sysinfo.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setdomainname.o setdomainname.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getegid.o getegid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o personality.o personality.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setregid.o setregid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setgid.o setgid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o lstat.o lstat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getuid.o getuid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o llseek.o llseek.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o select.o select.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ftruncate.o ftruncate.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getpgid.o getpgid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o brk.o brk.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getrusage.o getrusage.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sigsuspend.o sigsuspend.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o writev.o writev.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o times.o times.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ssetmask.o ssetmask.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o stat.o stat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fchdir.o fchdir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o chdir.o chdir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setgroups.o setgroups.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o newstat.o newstat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o creat.o creat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getdents64.o getdents64.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getpid.o getpid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o read.o read.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o dup.o dup.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o utimes.o utimes.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o semget.o semget.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o mount.o mount.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o rmdir.o rmdir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setrlimit.o setrlimit.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sgetmask.o sgetmask.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o pause.o pause.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o utime.o utime.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o statfs.o statfs.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ioperm.o ioperm.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o exit_group.o exit_group.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ftime.o ftime.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o truncate.o truncate.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o pipe2.o pipe2.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o old_mmap.o old_mmap.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o olduname.o olduname.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o kill.o kill.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o gettimeofday.o gettimeofday.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fchmod.o fchmod.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fcntl64.o fcntl64.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o mprotect.o mprotect.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getitimer.o getitimer.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o old_select.o old_select.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o symlink.o symlink.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o mknod.o mknod.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o write.o write.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o rename.o rename.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o shmat.o shmat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ipc.o ipc.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o lstat64.o lstat64.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o access.o access.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getrlimit.o getrlimit.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sigreturn.o sigreturn.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ioctl.o ioctl.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o umask.o umask.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o geteuid.o geteuid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o munmap.o munmap.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o alarm.o alarm.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o nanosleep.o nanosleep.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o close.o close.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o chroot.o chroot.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ftruncate64.o ftruncate64.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o msgrcv.o msgrcv.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o umount2.o umount2.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o time.o time.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o stime.o stime.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o semop.o semop.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o newlstat.o newlstat.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sigpending.o sigpending.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o reboot.o reboot.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setuid.o setuid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o wait4.o wait4.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o chown32.o chown32.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fcntl.o fcntl.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fstat64.o fstat64.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o shmctl.o shmctl.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o dup2.o dup2.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o setpgid.o setpgid.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getdents.o getdents.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o getpgrp.o getpgrp.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fchown.o fchown.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o execve.o execve.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o shmget.o shmget.c
+cd ../..
+
+cd mm
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o bios_map.o bios_map.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o buddy_low.o buddy_low.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o memory.o memory.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o page.o page.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o alloc.o alloc.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fault.o fault.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o mmap.o mmap.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o swapper.o swapper.c
+cd ..
+
+cd fs
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o filesystems.o filesystems.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o devices.o devices.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o buffer.o buffer.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fd.o fd.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o locks.o locks.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o super.o super.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o inode.o inode.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o namei.o namei.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o elf.o elf.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o script.o script.c
+
+cd minix
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o super.o super.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o bitmaps.o bitmaps.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o inode.o inode.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o namei.o namei.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o symlink.o symlink.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o dir.o dir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o file.o file.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o v1_inode.o v1_inode.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o v2_inode.o v2_inode.c
+cd ..
+
+cd ext2
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o inode.o inode.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o super.o super.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o namei.o namei.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o symlink.o symlink.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o dir.o dir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o file.o file.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o bitmaps.o bitmaps.c
+cd ..
+
+cd pipefs
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o super.o super.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fifo.o fifo.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o pipe.o pipe.c
+cd ..
+
+cd iso9660
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o inode.o inode.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o super.o super.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o namei.o namei.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o dir.o dir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o file.o file.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o rrip.o rrip.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o symlink.o symlink.c
+cd ..
+
+cd procfs
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o super.o super.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o inode.o inode.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o namei.o namei.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o dir.o dir.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o file.o file.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o symlink.o symlink.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o tree.o tree.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o data.o data.c
+cd ../..
+
+cd drivers/char
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o console.o console.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o tty.o tty.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o tty_queue.o tty_queue.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o vt.o vt.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o defkeymap.o defkeymap.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o keyboard.o keyboard.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o memdev.o memdev.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o serial.o serial.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o lp.o lp.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fb.o fb.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o sysrq.o sysrq.c
+cd ..
+
+cd block
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o dma.o dma.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o floppy.o floppy.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o part.o part.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ata.o ata.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ata_hd.o ata_hd.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o atapi.o atapi.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o atapi_cd.o atapi_cd.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ramdisk.o ramdisk.c
+cd ..
+
+cd pci
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o pci.o pci.c
+cd ..
+
+cd video
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o video.o video.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o vgacon.o vgacon.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fbcon.o fbcon.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o fonts.o fonts.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o bga.o bga.c
+cd ../..
+
+cd lib
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o ctype.o ctype.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o strings.o strings.c
+tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM="\"/init\"" -DUTS_SYSNAME="\"Linux\""  -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes  -c -o printk.o printk.c
+cd ..
+
+mkdir /boot
+tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
+	kernel/boot.o \
+       	kernel/core386.o \
+	kernel/main.o kernel/init.o \
+	kernel/gdt.o \
+	kernel/idt.o \
+	kernel/syscalls.o \
+	kernel/pic.o \
+	kernel/pit.o \
+	kernel/irq.o \
+	kernel/traps.o \
+	kernel/cpu.o \
+	kernel/cmos.o \
+	kernel/timer.o \
+	kernel/sched.o \
+	kernel/sleep.o \
+	kernel/signal.o \
+	kernel/process.o \
+	kernel/multiboot.o \
+	kernel/syscalls/umount.o \
+	kernel/syscalls/getgid.o \
+	kernel/syscalls/getppid.o \
+	kernel/syscalls/fstatfs.o \
+	kernel/syscalls/getgroups.o \
+	kernel/syscalls/fsync.o \
+	kernel/syscalls/setreuid.o \
+	kernel/syscalls/newuname.o \
+	kernel/syscalls/fork.o \
+	kernel/syscalls/setitimer.o \
+	kernel/syscalls/fdatasync.o \
+	kernel/syscalls/chmod.o \
+	kernel/syscalls/mmap2.o \
+	kernel/syscalls/msgsnd.o \
+	kernel/syscalls/madvise.o \
+	kernel/syscalls/exit.o \
+	kernel/syscalls/readlink.o \
+	kernel/syscalls/socketcall.o \
+	kernel/syscalls/stat64.o \
+	kernel/syscalls/readv.o \
+	kernel/syscalls/sigaction.o \
+	kernel/syscalls/fstat.o \
+	kernel/syscalls/waitpid.o \
+	kernel/syscalls/setfsgid.o \
+	kernel/syscalls/chown.o \
+	kernel/syscalls/flock.o \
+	kernel/syscalls/uname.o \
+	kernel/syscalls/lseek.o \
+	kernel/syscalls/setsid.o \
+	kernel/syscalls/settimeofday.o \
+	kernel/syscalls/unlink.o \
+	kernel/syscalls/sigprocmask.o \
+	kernel/syscalls/ustat.o \
+	kernel/syscalls/open.o \
+	kernel/syscalls/sync.o \
+	kernel/syscalls/iopl.o \
+	kernel/syscalls/msgget.o \
+	kernel/syscalls/pipe.o \
+	kernel/syscalls/shmdt.o \
+	kernel/syscalls/getsid.o \
+	kernel/syscalls/setfsuid.o \
+	kernel/syscalls/signal.o \
+	kernel/syscalls/newfstat.o \
+	kernel/syscalls/mkdir.o \
+	kernel/syscalls/getcwd.o \
+	kernel/syscalls/link.o \
+	kernel/syscalls/msgctl.o \
+	kernel/syscalls/sethostname.o \
+	kernel/syscalls/semctl.o \
+	kernel/syscalls/sysinfo.o \
+	kernel/syscalls/setdomainname.o \
+	kernel/syscalls/getegid.o \
+	kernel/syscalls/personality.o \
+	kernel/syscalls/setregid.o \
+	kernel/syscalls/setgid.o \
+	kernel/syscalls/lstat.o \
+	kernel/syscalls/getuid.o \
+	kernel/syscalls/llseek.o \
+	kernel/syscalls/select.o \
+	kernel/syscalls/ftruncate.o \
+	kernel/syscalls/getpgid.o \
+	kernel/syscalls/brk.o \
+	kernel/syscalls/getrusage.o \
+	kernel/syscalls/sigsuspend.o \
+	kernel/syscalls/writev.o \
+	kernel/syscalls/times.o \
+	kernel/syscalls/ssetmask.o \
+	kernel/syscalls/stat.o \
+	kernel/syscalls/fchdir.o \
+	kernel/syscalls/chdir.o \
+	kernel/syscalls/setgroups.o \
+	kernel/syscalls/newstat.o \
+	kernel/syscalls/creat.o \
+	kernel/syscalls/getdents64.o \
+	kernel/syscalls/getpid.o \
+	kernel/syscalls/read.o \
+	kernel/syscalls/dup.o \
+	kernel/syscalls/utimes.o \
+	kernel/syscalls/semget.o \
+	kernel/syscalls/mount.o \
+	kernel/syscalls/rmdir.o \
+	kernel/syscalls/setrlimit.o \
+	kernel/syscalls/sgetmask.o \
+	kernel/syscalls/pause.o \
+	kernel/syscalls/utime.o \
+	kernel/syscalls/statfs.o \
+	kernel/syscalls/ioperm.o \
+	kernel/syscalls/exit_group.o \
+	kernel/syscalls/ftime.o \
+	kernel/syscalls/truncate.o \
+	kernel/syscalls/pipe2.o \
+	kernel/syscalls/old_mmap.o \
+	kernel/syscalls/olduname.o \
+	kernel/syscalls/kill.o \
+	kernel/syscalls/gettimeofday.o \
+	kernel/syscalls/fchmod.o \
+	kernel/syscalls/fcntl64.o \
+	kernel/syscalls/mprotect.o \
+	kernel/syscalls/getitimer.o \
+	kernel/syscalls/old_select.o \
+	kernel/syscalls/symlink.o \
+	kernel/syscalls/mknod.o \
+	kernel/syscalls/write.o \
+	kernel/syscalls/rename.o \
+	kernel/syscalls/shmat.o \
+	kernel/syscalls/ipc.o \
+	kernel/syscalls/lstat64.o \
+	kernel/syscalls/access.o \
+	kernel/syscalls/getrlimit.o \
+	kernel/syscalls/sigreturn.o \
+	kernel/syscalls/ioctl.o \
+	kernel/syscalls/umask.o \
+	kernel/syscalls/geteuid.o \
+	kernel/syscalls/munmap.o \
+	kernel/syscalls/alarm.o \
+	kernel/syscalls/nanosleep.o \
+	kernel/syscalls/close.o \
+	kernel/syscalls/chroot.o \
+	kernel/syscalls/ftruncate64.o \
+	kernel/syscalls/msgrcv.o \
+	kernel/syscalls/umount2.o \
+	kernel/syscalls/time.o \
+	kernel/syscalls/stime.o \
+	kernel/syscalls/semop.o \
+	kernel/syscalls/newlstat.o \
+	kernel/syscalls/sigpending.o \
+	kernel/syscalls/reboot.o \
+	kernel/syscalls/setuid.o \
+	kernel/syscalls/wait4.o \
+	kernel/syscalls/chown32.o \
+	kernel/syscalls/fcntl.o \
+	kernel/syscalls/fstat64.o \
+	kernel/syscalls/shmctl.o \
+	kernel/syscalls/dup2.o \
+	kernel/syscalls/setpgid.o \
+	kernel/syscalls/getdents.o \
+	kernel/syscalls/getpgrp.o \
+	kernel/syscalls/fchown.o \
+	kernel/syscalls/execve.o \
+	kernel/syscalls/shmget.o \
+	mm/bios_map.o \
+	mm/buddy_low.o \
+	mm/memory.o \
+	mm/page.o \
+	mm/alloc.o \
+	mm/fault.o \
+	mm/mmap.o \
+	mm/swapper.o \
+	fs/filesystems.o \
+	fs/devices.o \
+	fs/buffer.o \
+	fs/fd.o \
+	fs/locks.o \
+	fs/super.o \
+	fs/inode.o \
+	fs/namei.o \
+	fs/elf.o \
+	fs/script.o \
+	fs/minix/super.o \
+	fs/minix/bitmaps.o \
+	fs/minix/inode.o \
+	fs/minix/namei.o \
+	fs/minix/symlink.o \
+	fs/minix/dir.o \
+	fs/minix/file.o \
+	fs/minix/v1_inode.o \
+	fs/minix/v2_inode.o \
+	fs/ext2/inode.o \
+	fs/ext2/super.o \
+	fs/ext2/namei.o \
+	fs/ext2/symlink.o \
+	fs/ext2/dir.o \
+	fs/ext2/file.o \
+	fs/ext2/bitmaps.o \
+	fs/pipefs/super.o \
+	fs/pipefs/fifo.o \
+	fs/pipefs/pipe.o \
+	fs/iso9660/inode.o \
+	fs/iso9660/super.o \
+	fs/iso9660/namei.o \
+	fs/iso9660/dir.o \
+	fs/iso9660/file.o \
+	fs/iso9660/rrip.o \
+	fs/iso9660/symlink.o \
+	fs/procfs/super.o \
+	fs/procfs/inode.o \
+	fs/procfs/namei.o \
+	fs/procfs/dir.o \
+	fs/procfs/file.o \
+	fs/procfs/symlink.o \
+	fs/procfs/tree.o \
+	fs/procfs/data.o \
+	drivers/char/console.o \
+	drivers/char/tty.o \
+	drivers/char/tty_queue.o \
+	drivers/char/vt.o \
+	drivers/char/defkeymap.o \
+	drivers/char/keyboard.o \
+	drivers/char/memdev.o \
+	drivers/char/serial.o \
+	drivers/char/lp.o \
+	drivers/char/fb.o \
+	drivers/char/sysrq.o \
+	drivers/block/dma.o \
+	drivers/block/floppy.o \
+	drivers/block/part.o \
+	drivers/block/ata.o \
+	drivers/block/ata_hd.o \
+	drivers/block/atapi.o \
+	drivers/block/atapi_cd.o \
+	drivers/block/ramdisk.o \
+	drivers/pci/pci.o \
+	drivers/video/video.o \
+	drivers/video/vgacon.o \
+	drivers/video/fbcon.o \
+	drivers/video/fonts.o \
+	drivers/video/bga.o \
+	lib/ctype.o \
+	lib/strings.o \
+	lib/printk.o \
+	-o /boot/fiwix
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /boot/fiwix
+
+    cp ${pkg}.checksums ${srcdir}
+else
+    sha256sum -c ${pkg}.checksums
+fi

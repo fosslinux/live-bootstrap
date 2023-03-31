@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
+# SPDX-License-Identifier: MIT
+diff -u -r musl-1.2.3.orig/arch/i386/pthread_arch.h musl-1.2.3/arch/i386/pthread_arch.h
+--- arch/i386/pthread_arch.h	2022-04-07 17:12:40.000000000 +0000
++++ arch/i386/pthread_arch.h	2022-12-19 23:39:10.890414014 +0000
+@@ -1,8 +1,14 @@
++#define BOOTSTRAP
++extern uintptr_t g_pthread;
+ static inline uintptr_t __get_tp()
+ {
++#ifndef BOOTSTRAP
+ 	uintptr_t tp;
+ 	__asm__ ("movl %%gs:0,%0" : "=r" (tp) );
+ 	return tp;
++#else
++	return g_pthread;
++#endif
+ }
+ 
+ #define MC_PC gregs[REG_EIP]
+diff -u -r musl-1.2.3.orig/arch/i386/syscall_arch.h musl-1.2.3/arch/i386/syscall_arch.h
+--- arch/i386/syscall_arch.h	2022-04-07 17:12:40.000000000 +0000
++++ arch/i386/syscall_arch.h	2022-12-20 17:28:21.734839560 +0000
+@@ -1,3 +1,4 @@
++#define SYSCALL_NO_TLS 1
+ #define __SYSCALL_LL_E(x) \
+ ((union { long long ll; long l[2]; }){ .ll = x }).l[0], \
+ ((union { long long ll; long l[2]; }){ .ll = x }).l[1]
+diff -u -r musl-1.2.3.orig/src/env/__init_tls.c musl-1.2.3/src/env/__init_tls.c
+--- src/env/__init_tls.c	2022-04-07 17:12:40.000000000 +0000
++++ src/env/__init_tls.c	2022-12-19 23:39:42.362414223 +0000
+@@ -10,20 +10,25 @@
+ #include "syscall.h"
+ 
+ volatile int __thread_list_lock;
++#define BOOTSTRAP
++uintptr_t g_pthread;
+ 
+ int __init_tp(void *p)
+ {
+ 	pthread_t td = p;
+ 	td->self = td;
++#ifndef BOOTSTRAP
+ 	int r = __set_thread_area(TP_ADJ(p));
+ 	if (r < 0) return -1;
+ 	if (!r) libc.can_do_threads = 1;
++#endif
+ 	td->detach_state = DT_JOINABLE;
+ 	td->tid = __syscall(SYS_set_tid_address, &__thread_list_lock);
+ 	td->locale = &libc.global_locale;
+ 	td->robust_list.head = &td->robust_list.head;
+ 	td->sysinfo = __sysinfo;
+ 	td->next = td->prev = td;
++	g_pthread = (uintptr_t) td;
+ 	return 0;
+ }
+ 

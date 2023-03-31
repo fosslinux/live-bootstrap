@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
+# SPDX-License-Identifier: MIT
+diff -u -r musl-1.2.3.orig/src/process/posix_spawn.c musl-1.2.3/src/process/posix_spawn.c
+--- src/process/posix_spawn.c	2022-04-07 17:12:40.000000000 +0000
++++ src/process/posix_spawn.c	2022-12-19 23:47:31.858417338 +0000
+@@ -190,8 +190,15 @@
+ 		goto fail;
+ 	}
+ 
++#if 0
+ 	pid = __clone(child, stack+sizeof stack,
+ 		CLONE_VM|CLONE_VFORK|SIGCHLD, &args);
++#endif
++	pid = fork();
++	if (pid == 0) {
++		_exit(child(&args));
++	}
++
+ 	close(args.p[1]);
+ 	UNLOCK(__abort_lock);
+ 

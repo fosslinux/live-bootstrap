@@ -47,6 +47,7 @@ Permissible folders/files:
 - `files`: auxiliary files required for the build distributed by live-bootstrap.
 - `mk`: makefiles.
 - `patches`: patches for the source.
+- `simple-patches`: patches for the source that use the before/after convention of simple-patch.c
 - `*.checksums`: files containing the checksums for the resulting binaries and
 libraries that are compiled and installed.
   - Up to and including `coreutils-6.10`, `sha256sum` from `stage0-posix`

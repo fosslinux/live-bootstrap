@@ -7,6 +7,7 @@
 
 .. SPDX-License-Identifier: CC-BY-SA-4.0
 
+
 bootstrap-seeds
 ===============
 
@@ -14,7 +15,10 @@ This is where it all begins. We start with the two raw binary seeds ``hex0-seed`
 
 First, we use those seeds to rebuild themselves.
 
-Note that all early steps before ``mes`` are part of `stage0-posix <https://github.com/oriansj/stage0-posix>`_.
+Note that all early compilers before ``mes`` are part of `stage0-posix <https://github.com/oriansj/stage0-posix>`_.
+
+A kernel boostrapping option is also available at the beginning. The ``hex0-seed`` can be used to compile the ``builder-hex0`` kernel which has its own built-in shell, ``hex0`` compiler and ``src`` tool to load files into its file system. ``builder-hex0`` runs stage0-posix and then builds ``mes`` and ``tcc``. It then builds and launches the `Fiwix <https://github.com/mikaku/Fiwix>` kernel which runs the build until Linux takes over.
+
 
 hex0
 ====
@@ -33,6 +37,12 @@ In the first steps we use initial ``hex0`` binary seed to rebuild ``kaem-optiona
 ``hex0`` code is somewhat tedious to read and write as it is basically a well documented machine code. We have to manually calculate all jumps in the code.
 
 ``hex0`` can be approximated with: ``sed 's/[;#].*$//g' $input_file | xxd -r -p > $output_file``
+
+
+builder-hex0 (kernel bootstrap)
+===============================
+If the kernel-bootstrap option is enabled then the ``builder-hex0`` kernel boots from a hard drive and loads an enormous shell script which embeds files (loaded with the ``src`` command) and the initial commands to build ``hex0-seed``, ``kaem-optional-seed``, and the command which launches stage0-posix using ``kaem-optional-seed`` and the stage0-posix launch script ``kaem.x86``. Builder-hex0 is written in hex0 and can be compiled with any one of ``hex0-seed``, ``sed``, the tiny ``builder-hex0-mini`` boot kernel or it can build itself.
+
 
 kaem-optional
 =============
@@ -188,6 +198,29 @@ Note that now we begin to delve into the realm of old GNU software,
 using older versions compilable by tinycc. Prior to this point, all tools
 have been adapted significantly for the bootstrap; now, we will be using
 old tooling instead.
+
+Fiwix 1.4.0-lb1 (kernel bootstrap)
+==================================
+
+If the kernel bootstrap option is enabled then the Fiwix kernel is built next.
+This is a Linux clone which is much simpler to understand and build than Linux.
+This version of Fiwix is a fork of 1.4.0 that contains many modifications and
+enhancements to support live-boostrap.
+
+lwext4 1.0.0 (kernel bootstrap)
+===============================
+
+If the kernel bootstrap option is enabled then `lwext4 <https://github.com/gkostka/lwext4>`
+is built next. This is a library for creating ext2/3/4 file systems from user land.
+This is combined with a program called ``make_fiwix_initrd.c`` which creates
+and populates an ext2 files system which Fiwix uses for an initial ram drive (initrd).
+This file system contains all of the files necessary to build Linux.
+
+kexec-fiwix (kernel bootstrap)
+==============================
+
+If the kernel bootstrap option is enabled then a C program `kexec-fiwix` is compiled
+and run which places the Fiwix ram drive in memory and launches the Fiwix kernel.
 
 make 3.82
 =========
@@ -597,6 +630,7 @@ musl 1.2.3
 GCC can build the latest as of the time of writing musl version.
 
 We also don't need any of the TCC patches that we used before.
+To accomodate Fiwix, there are patches to avoid syscalls set_thread_area and clone.
 
 gcc 4.0.4
 =========
@@ -652,6 +686,11 @@ The next step is not a package, but the creation of the sysb rootfs, containing
 all of the scripts for sysb (which merely move to sysc). Again, this is only
 done in non-chroot mode, because sysb does not exist in chroot mode.
 
+musl 1.2.3
+==========
+Prior to building and booting Linux, musl is rebuilt yet again with syscalls
+``clone`` and ``set_thread_area`` enabled for Linux thread support.
+
 Linux kernel 4.9.10
 ===================
 
@@ -701,6 +740,15 @@ This new version of ``bash`` compiles without any patches, provides new features
 and is built with GNU readline support so it can be used as a fully-featured
 interactive shell. ``autoconf-2.69`` is used to regenerate the configure
 script and ``bison`` is used to recreate some included generated files.
+
+curl 7.83.0
+===========
+
+Curl is built in sysc because Linux must be running with support for threads.
+Curl requires musl 1.2.3 with thread support which was built at the end of sysa.
+Curl is built first in sysc so the rest of the packages can be downloaded.
+Note that the tar file for curl itself was copied over from sysa because
+curl is not yet available to download it.
 
 xz 5.4.1
 ========

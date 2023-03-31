@@ -14,6 +14,9 @@ M2LIBC_PATH=/M2libc
 M2-Mesoplanet --architecture ${ARCH} -f checksum-transcriber.c -o ${bindir}/checksum-transcriber
 sha256sum -c checksum-transcriber.SHA256SUM
 
+# simple patch tool based on before and after chunks
+M2-Mesoplanet --architecture x86 -f simple-patch.c -o /x86/bin/simple-patch
+
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
 MES_VERSION=0.24.2
@@ -42,58 +45,26 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-# make
-pkg="make-3.82"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
+if match x${KERNEL_BOOTSTRAP} xTrue; then
+    # The Fiwix kernel
+    pkg="fiwix-1.4.0-lb1"
+    cd ${pkg}
+    kaem --verbose --file ${pkg}.kaem
+    cd ..
 
-# gzip
-pkg="gzip-1.2.4"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
+    # ext2 file system library for Fiwix
+    pkg="lwext4-1.0.0-lb1"
+    cd ${pkg}
+    kaem --verbose --file ${pkg}.kaem
+    # Build the ext2 image
+    cd build/${pkg}/src
+    ./make_fiwix_initrd
+    cd ../../../..
 
-# tar
-pkg="tar-1.12"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# sed
-pkg="sed-4.0.9"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# patch
-pkg="patch-2.5.9"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# bzip2
-pkg="bzip2-1.0.8"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# coreutils
-pkg="coreutils-5.0"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# heirloom-devtools
-pkg="heirloom-devtools-070527"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# bash
-pkg="bash-2.05b"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-exec bash run.sh
+    # Live boot loader for Fiwix
+    pkg="kexec-fiwix"
+    cd ${pkg}
+    kaem --verbose --file ${pkg}.kaem
+else
+    exec kaem --verbose --file run-after-fiwix.kaem
+fi

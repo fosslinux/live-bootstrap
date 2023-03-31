@@ -2,6 +2,17 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+src_get() {
+    # Before the last pass the tar file is moved before
+    # the linux build removes all distfiles to save space.
+    if [ -e "../${pkg}.tar.gz" ]; then
+        mkdir "${DISTFILES}"
+        mv "../${pkg}.tar.gz" "${DISTFILES}"
+    else
+        default
+    fi
+}
+
 src_configure() {
     CC=gcc ./configure \
         --host=i386-unknown-linux-musl \

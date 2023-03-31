@@ -31,6 +31,11 @@ cd ..
 
 cd build
 untar --file ../src/${TCC_TAR}.tar
+/x86/bin/simple-patch /sysa/tcc-0.9.26/build/tcc-0.9.26-1136-g5bba73cc/tcctools.c \
+    /sysa/tcc-0.9.26/simple-patches/remove-fileopen.before /sysa/tcc-0.9.26/simple-patches/remove-fileopen.after
+/x86/bin/simple-patch /sysa/tcc-0.9.26/build/tcc-0.9.26-1136-g5bba73cc/tcctools.c \
+    /sysa/tcc-0.9.26/simple-patches/addback-fileopen.before /sysa/tcc-0.9.26/simple-patches/addback-fileopen.after
+
 untar --non-strict --file ../src/${MES_PKG}.tar
 
 # Create config.h
@@ -60,6 +65,7 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -D ONE_SOURCE=1 \
     tcc.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
+    --base-address 0x08048000 \
     -o mes-tcc \
     -L ${libdir} \
     tcc.s \
