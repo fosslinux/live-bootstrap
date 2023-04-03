@@ -77,7 +77,7 @@ int main() {
 	puts("Preparing multiboot info for kernel...");
 
 	char cmdline[256];
-	sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=image.ext2", INITRD_MB * 1024);
+	sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2", INITRD_MB * 1024);
 	char * boot_loader_name = "kexec-fiwix";
 
 	unsigned int next_avail_mem = 0x8000;
@@ -108,8 +108,8 @@ int main() {
 	pmultiboot_module->mod_end = 0x1C6000 + (INITRD_MB * 1024 * 1024);
 	next_avail_mem += sizeof(multiboot_module_t);
 	pmultiboot_module->cmdline = next_avail_mem;
-	strcpy((char *) next_avail_mem, "image.ext2");
-	next_avail_mem += (strlen("image.ext2") + 1);
+	strcpy((char *) next_avail_mem, "sysa.ext2");
+	next_avail_mem += (strlen("sysa.ext2") + 1);
 
 	/* Set memory map info */
 	pmultiboot_info->mmap_addr = next_avail_mem;
@@ -173,7 +173,7 @@ int main() {
 	int filenum;
 	unsigned int filename_addr;
 	for (filenum = 4, filename_addr = 0x201000; filenum <= 14335; filenum++, filename_addr += 1024) {
-		if (!strcmp((char *) filename_addr, "/sysa/lwext4-1.0.0-lb1/build/lwext4-1.0.0-lb1/src/image.ext2")) {
+		if (!strcmp((char *) filename_addr, "/boot/sysa.ext2")) {
 			printf("Found image at filenum %d\n", filenum);
 			break;
 		}

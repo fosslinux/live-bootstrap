@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015 Grzegorz Kostka (kostka.grzegorz@gmail.com)
+ * SPDX-FileCopyrightText: Copyright (c) 2015 Grzegorz Kostka (kostka.grzegorz@gmail.com)
+ * SPDX-License-Identifier: BSD-3-Clause
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -128,8 +129,10 @@ bool lwext4_umount(void)
 }
 
 
-bool copy_file(char *src_path, char *dest_path) {
+bool copy_file(char *src_path, char *dest_path)
+{
 
+	printf("copy_file: %s\n", src_path);
 	ext4_file dest_file;
 	FILE *src_file = fopen(src_path, "rb");
 	if (!src_file) {
@@ -173,7 +176,8 @@ bool copy_file(char *src_path, char *dest_path) {
 	free(src_mem);
 }
 
-bool copy_file_list(char *file_list_path) {
+bool copy_file_list(char *file_list_path)
+{
 	char src_filename[FILENAME_LENGTH];
 	char dst_filename[FILENAME_LENGTH];
 
@@ -201,10 +205,10 @@ int main(int argc, char **argv)
 	
 	next_file_address = *((unsigned int *) 0x7F8D);
 
-	printf("Starting image.ext at addr 0x%08x\n", next_file_address);
+	printf("Starting sysa.ext2 at addr 0x%08x\n", next_file_address);
 
 	/* Create zeroed out disk image file */
-	input_name = "image.ext2";
+	input_name = "/boot/sysa.ext2";
 
 	memset(zeros, 0, BLOCK_SIZE);
 	FILE *ext2file = fopen(input_name, "w");
@@ -267,8 +271,11 @@ int main(int argc, char **argv)
 	copy_file("/usr/bin/kaem", "/mp/init");
 	copy_file("/sysa/after2.kaem", "/mp/kaem.run");
 	copy_file_list("/sysa/lwext4-1.0.0-lb1/files/fiwix-file-list.txt");
+	printf("ext4_dir_mk /mp/tmp\n");
 	ext4_dir_mk("/mp/tmp");
+	printf("ext4_dir_mk /mp/usr\n");
 	ext4_dir_mk("/mp/usr");
+	printf("ext4_dir_mk /mp/usr/src\n");
 	ext4_dir_mk("/mp/usr/src");
 
 	if (!lwext4_umount())

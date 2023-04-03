@@ -56,15 +56,19 @@ if match x${KERNEL_BOOTSTRAP} xTrue; then
     pkg="lwext4-1.0.0-lb1"
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
+    cd ..
+
     # Build the ext2 image
-    cd build/${pkg}/src
-    ./make_fiwix_initrd
-    cd ../../../..
+    make_fiwix_initrd
 
     # Live boot loader for Fiwix
     pkg="kexec-fiwix"
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
+    cd ..
+
+    # Boot Fiwix
+    kexec-fiwix
 else
     exec kaem --verbose --file run-after-fiwix.kaem
 fi
