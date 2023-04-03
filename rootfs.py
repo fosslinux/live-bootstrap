@@ -34,10 +34,10 @@ def create_configuration_file(args):
         config.write("CHROOT_ONLY_SYSA=" + str(args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
         config.write("DISK=sda1\n")
-        if args.chroot or args.kernel:
-            config.write("KERNEL_BOOTSTRAP=False\n")
-        else:
+        if (args.bare_metal or args.qemu) and not args.kernel:
             config.write("KERNEL_BOOTSTRAP=True\n")
+        else:
+            config.write("KERNEL_BOOTSTRAP=False\n")
 
 # pylint: disable=too-many-statements
 def main():
