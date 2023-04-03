@@ -110,7 +110,7 @@ class SysA(SysGeneral):
 
     def add_fiwix_files(self, file_list_path, dirpath):
         """Add files to the list to populate Fiwix file system"""
-        for root, dirs, filepaths in os.walk(dirpath):
+        for root, _, filepaths in os.walk(dirpath):
             if 'stage0-posix' in root:
                 continue
             with open(file_list_path, 'a', encoding="utf-8") as file_list:
