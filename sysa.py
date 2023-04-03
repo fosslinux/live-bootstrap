@@ -108,31 +108,14 @@ class SysA(SysGeneral):
         shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
                      os.path.join(self.tmp_dir, 'after.kaem'))
 
-    def find_tree(self, dirpath):
-        """Find all sub dirs and files in a path"""
-        subdirs, files = [], []
-
-        for path in os.scandir(dirpath):
-            if path.is_dir():
-                subdirs.append(path.path)
-            if path.is_file():
-                files.append(path.path)
-
-        for subdir in list(subdirs):
-            more_dirs, more_files = self.find_tree(subdir)
-            subdirs.extend(more_dirs)
-            files.extend(more_files)
-
-        return subdirs, files
-
     def add_fiwix_files(self, file_list_path, dirpath):
         """Add files to the list to populate Fiwix file system"""
-        _, filepaths = self.find_tree(dirpath)
-        with open(file_list_path, 'a') as file_list:
-            for filepath in filepaths:
-                if 'stage0-posix' in filepath:
-                    continue
-                file_list.write(f"/{filepath}\n")
+        for root, dirs, filepaths in os.walk(dirpath):
+            if 'stage0-posix' in root:
+                continue
+            with open(file_list_path, 'a', encoding="utf-8") as file_list:
+                for filepath in filepaths:
+                    file_list.write(f"/{os.path.join(root, filepath)}\n")
 
     def create_fiwix_file_list(self):
         """Create a list of files to populate Fiwix file system"""
@@ -162,18 +145,21 @@ class SysA(SysGeneral):
         with open(filepath, 'rb') as srcfile:
             srcfs_file.write(srcfile.read())
 
-    def output_tree(self, srcfs_file, filepath):
-        self.output_dir(srcfs_file, filepath)
-        dirs, files = self.find_tree(filepath)
-        for dirpath in dirs:
-            if ".git" in dirpath:
+    def output_tree(self, srcfs_file, treepath):
+        """Add a tree of files to srcfs file system"""
+        self.output_dir(srcfs_file, treepath)
+        for root, dirs, files in os.walk(treepath):
+            if ".git" in root:
                 continue
-            self.output_dir(srcfs_file, dirpath)
+            for dirpath in dirs:
+                if ".git" in dirpath:
+                    continue
+                self.output_dir(srcfs_file, os.path.join(root, dirpath))
 
-        for filepath in files:
-            if ".git" in filepath:
-                continue
-            self.output_file(srcfs_file, filepath)
+            for filepath in files:
+                if ".git" in filepath:
+                    continue
+                self.output_file(srcfs_file, os.path.join(root, filepath))
 
     def append_srcfs(self, image_file):
         """Append srcfs file system to sysa disk image"""
