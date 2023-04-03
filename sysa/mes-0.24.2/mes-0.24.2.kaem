@@ -28,8 +28,8 @@ cd ..
 cd build
 untar --file ../src/${NYACC_PKG}.tar
 untar --non-strict --file ../src/${MES_PKG}.tar # ignore symlinks
-/x86/bin/simple-patch /sysa/mes-0.24.2/build/mes-0.24.2/kaem.run \
-    /sysa/mes-0.24.2/simple-patches/mes-kaem.run-base-address.before /sysa/mes-0.24.2/simple-patches/mes-kaem.run-base-address.after
+mes_run=/sysa/mes-0.24.2/build/mes-0.24.2/kaem.run
+replace --file ${mes_run} --output ${mes_run} --match-on 0x1000000 --replace-with 0x8048000
 
 rm ../src/${NYACC_PKG}.tar ../src/${MES_PKG}.tar
 
