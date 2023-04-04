@@ -1,0 +1,24 @@
+#!/usr/bin/expect
+
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set timeout -1
+
+spawn python3 rootfs.py --qemu-cmd qemu-system-x86_64 --qemu-ram 3500 --preserve
+
+expect {
+    "not syncing: Attempted to kill init" {
+        send -- "\x01"
+        send -- "x"
+        spawn false
+    }
+    "Bootstrapping completed." {
+        send -- "\x01"
+        send -- "x"
+        spawn true
+    }
+}
+catch wait result
+exit [lindex $result 3]
