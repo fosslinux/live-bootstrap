@@ -28,8 +28,7 @@ int memsame(char *search_buffer, int search_size,
             char *pattern_buffer, int pattern_size);
 
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     char *patch_file_before_buffer;
     int patch_file_before_size;
 
