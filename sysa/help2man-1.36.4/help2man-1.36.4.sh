@@ -17,6 +17,9 @@ src_configure() {
 }
 
 src_compile() {
+    # Ensure man page is not rebuilt which changes checksum
+    touch help2man.1
+
     make MAKEINFO=true
 }
 
