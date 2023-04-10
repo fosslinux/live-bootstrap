@@ -27,7 +27,7 @@ src_configure() {
 }
 
 src_compile() {
-    make PREFIX="${PREFIX}" MAKEINFO="true"
+    make "${MAKEJOBS}" PREFIX="${PREFIX}" MAKEINFO="true"
 }
 
 src_install() {

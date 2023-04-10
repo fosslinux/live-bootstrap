@@ -36,11 +36,11 @@ src_configure() {
 src_compile() {
     # Build pgen
     pushd Parser
-    make pgen
+    make -j1 pgen
     popd
     # Regen graminit.c and graminit.h
     pushd Grammar
-    make graminit.c
+    make -j1 graminit.c
     popd
 
     # Regenerate some Python scripts using the other regenerated files 
@@ -56,7 +56,7 @@ src_compile() {
     mv Lib/token.py.new Lib/token.py
 
     # Now build the main program
-    make
+    make -j1
 }
 
 src_install() {

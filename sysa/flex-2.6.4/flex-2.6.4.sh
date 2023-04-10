@@ -12,7 +12,7 @@ src_prepare() {
 
 src_compile() {
     cd src
-    default
+    make -j1 PREFIX="${PREFIX}"
     cd ..
 }
 

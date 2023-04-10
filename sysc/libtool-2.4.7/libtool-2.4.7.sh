@@ -35,7 +35,7 @@ src_configure() {
 }
 
 src_compile() {
-    make AUTOM4TE=autom4te-2.69 MAKEINFO=true
+    make "${MAKEJOBS}" AUTOM4TE=autom4te-2.69 MAKEINFO=true
 }
 
 src_install() {

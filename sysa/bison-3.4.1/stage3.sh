@@ -16,3 +16,7 @@ src_prepare() {
     cp ../../mk/lib.mk lib/Makefile
     cp ../../mk/src.mk src/Makefile
 }
+
+src_compile() {
+    make -j1 -f Makefile PREFIX="${PREFIX}"
+}

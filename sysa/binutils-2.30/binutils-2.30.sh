@@ -88,7 +88,7 @@ src_configure() {
 src_compile() {
     make -C bfd headers
     for dir in libiberty zlib bfd opcodes binutils gas gprof ld; do
-        make -C $dir tooldir=${PREFIX} CPPFLAGS="-DPLUGIN_LITTLE_ENDIAN" MAKEINFO=true
+        make "${MAKEJOBS}" -C $dir tooldir=${PREFIX} CPPFLAGS="-DPLUGIN_LITTLE_ENDIAN" MAKEINFO=true
     done
 }
 

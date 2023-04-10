@@ -19,7 +19,7 @@ src_configure() {
 }
 
 src_compile() {
-    AUTOM4TE=autom4te-2.61 make MAKEINFO=true CC=tcc
+    AUTOM4TE=autom4te-2.61 make "${MAKEJOBS}" MAKEINFO=true CC=tcc
 }
 
 src_install() {

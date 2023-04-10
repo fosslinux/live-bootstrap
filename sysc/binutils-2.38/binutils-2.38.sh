@@ -89,7 +89,7 @@ src_configure() {
 src_compile() {
     make -C bfd headers
     for dir in libiberty bfd opcodes libctf binutils gas gprof ld; do
-        make -C $dir tooldir=${PREFIX} CFLAGS="-std=c99"
+        make "${MAKEJOBS}" -C $dir tooldir=${PREFIX} CFLAGS="-std=c99"
     done
 }
 

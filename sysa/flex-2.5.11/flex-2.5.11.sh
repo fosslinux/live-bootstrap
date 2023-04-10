@@ -11,6 +11,10 @@ src_prepare() {
     rm parse.c parse.h scan.c skel.c
 }
 
+src_compile() {
+    make -j1 PREFIX="${PREFIX}"
+}
+
 src_install() {
     if test -d /lex; then
         # Remove lex, later make install will symlink lex to flex

@@ -9,7 +9,7 @@ src_prepare() {
 }
 
 src_compile() {
-   make CC=tcc AR="tcc -ar" bzip2
+   make "${MAKEJOBS}" CC=tcc AR="tcc -ar" bzip2
 }
 
 src_install() {

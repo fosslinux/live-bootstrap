@@ -47,9 +47,9 @@ src_configure() {
 
 src_compile() {
     # Build pgen
-    make Parser/pgen
+    make "${MAKEJOBS}" Parser/pgen
     # Regen graminit.c and graminit.h
-    make Include/graminit.h
+    make "${MAKEJOBS}" Include/graminit.h
 
     # Regenerate some Python scripts using the other regenerated files
     # Must move them out to avoid using Lib/ module files which are
@@ -60,7 +60,7 @@ src_compile() {
     python token.py
 
     # Now build the main program
-    make CFLAGS="-U__DATE__ -U__TIME__"
+    make "${MAKEJOBS}" CFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {

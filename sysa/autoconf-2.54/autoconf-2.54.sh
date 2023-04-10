@@ -33,7 +33,7 @@ src_compile() {
     # Workaround for racy make dependencies
     make -C bin autom4te
     make -C lib
-    make MAKEINFO=true
+    make "${MAKEJOBS}" MAKEINFO=true
 }
 
 src_install() {

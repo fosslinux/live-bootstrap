@@ -21,7 +21,7 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true CFLAGS="-I${PWD}/libtextstyle/lib"
+    make "${MAKEJOBS}" MAKEINFO=true CFLAGS="-I${PWD}/libtextstyle/lib"
 }
 
 src_install() {

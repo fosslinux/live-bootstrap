@@ -8,6 +8,10 @@ src_prepare() {
     touch config.h
 }
 
+src_compile() {
+    make -j1 PREFIX="${PREFIX}"
+}
+
 src_install() {
     default
 }

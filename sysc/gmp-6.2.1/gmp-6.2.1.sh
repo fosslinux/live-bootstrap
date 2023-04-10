@@ -23,7 +23,7 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true DESTDIR="${DESTDIR}"
+    make "${MAKEJOBS}" MAKEINFO=true DESTDIR="${DESTDIR}"
 }
 
 src_install() {

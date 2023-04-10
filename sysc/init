@@ -21,6 +21,8 @@ export SOURCE_DATE_EPOCH=0
 # shellcheck source=sysa/helpers.sh
 . "${SOURCES}/helpers.sh"
 
+MAKEJOBS="-j${JOBS}"
+
 echo
 echo "Installing packages into sysc"
 
@@ -75,6 +77,7 @@ SOURCES=${SOURCES}
 DESTDIR=${DESTDIR}
 DISTFILES=${DISTFILES}
 SRCDIR=${SRCDIR}
+MAKEJOBS=${MAKEJOBS}
 EOF
 
 exec ./run.sh

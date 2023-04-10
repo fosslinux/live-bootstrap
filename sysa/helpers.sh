@@ -321,7 +321,7 @@ default_src_configure() {
 
 # Default function for compiling source. It simply runs make without any parameters.
 default_src_compile() {
-    make -f Makefile PREFIX="${PREFIX}"
+    make "${MAKEJOBS}" -f Makefile PREFIX="${PREFIX}"
 }
 
 # Default installing function. PREFIX should be set by run.sh script.

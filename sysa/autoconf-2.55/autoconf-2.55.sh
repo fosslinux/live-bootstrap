@@ -27,7 +27,7 @@ src_compile() {
     make -C bin autom4te
     make -C lib
 
-    make MAKEINFO=true
+    make "${MAKEJOBS}" MAKEINFO=true
 }
 
 src_install() {
