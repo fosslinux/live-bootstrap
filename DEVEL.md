@@ -23,6 +23,7 @@ sysa
 ├── somepackage-version
 │   ├── somepackage-version.kaem (or .sh)
 │   ├── files
+│   ├── simple-patches
 │   ├── mk
 │   └── patches
 └── tmp
