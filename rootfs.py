@@ -85,7 +85,7 @@ def main():
                         default="qemu-system-x86_64")
     parser.add_argument("-qr", "--qemu-ram", help="Memory (in megabytes) allocated to QEMU VM",
                         default=4096)
-    parser.add_argument("-qk", "--kernel", help="Kernel to use (default is ./kernel)")
+    parser.add_argument("-qk", "--kernel", help="Custom sysa kernel to use")
 
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
                         action="store_true")
@@ -110,10 +110,6 @@ def main():
                          "may be used.")
     if check_types() == 0:
         raise ValueError("One of qemu, chroot, bwrap, or bare metal must be selected.")
-
-    if not args.kernel and os.path.isfile("kernel"):
-        print("WARNING: Implicit use of a provided kernel is DEPRECATED. Use the --kernel option!")
-        args.kernel = "kernel"
 
     # Arch validation
     if args.arch != "x86":
