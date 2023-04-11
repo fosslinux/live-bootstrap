@@ -1,0 +1,2 @@
+    if (ret == 1)
+        return ar_usage(ret);

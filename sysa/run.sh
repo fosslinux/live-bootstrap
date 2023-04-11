@@ -170,8 +170,6 @@ build autoconf-2.69
 
 build libtool-2.2.4
 
-build bash-2.05b
-
 cat > .env <<- EOF
 export PATH=${PATH}
 PREFIX=${PREFIX}

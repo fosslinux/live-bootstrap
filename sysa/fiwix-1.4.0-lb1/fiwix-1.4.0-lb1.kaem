@@ -1,0 +1,556 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
+# SPDX-License-Identifier: MIT
+
+set -ex
+
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
+# Extract
+mkdir build src
+cd src
+ungz --file ${distfiles}/${pkg}.tar.gz --output ${pkg}.tar
+cd ..
+
+cd build
+untar --file ../src/${pkg}.tar
+cd ${pkg}
+
+alias as="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -traditional -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include"
+
+alias cc="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes"
+
+cd kernel
+as -c -o boot.o boot.S
+as -c -o core386.o core386.S
+cc -c -o main.o main.c
+cc -c -o init.o init.c
+cc -c -o gdt.o gdt.c
+cc -c -o idt.o idt.c
+cc -c -o syscalls.o syscalls.c
+cc -c -o pic.o pic.c
+cc -c -o pit.o pit.c
+cc -c -o irq.o irq.c
+cc -c -o traps.o traps.c
+cc -c -o cpu.o cpu.c
+cc -c -o cmos.o cmos.c
+cc -c -o timer.o timer.c
+cc -c -o sched.o sched.c
+cc -c -o sleep.o sleep.c
+cc -c -o signal.o signal.c
+cc -c -o process.o process.c
+cc -c -o multiboot.o multiboot.c
+
+cd syscalls
+cc -c -o umount.o umount.c
+cc -c -o getgid.o getgid.c
+cc -c -o getppid.o getppid.c
+cc -c -o fstatfs.o fstatfs.c
+cc -c -o getgroups.o getgroups.c
+cc -c -o fsync.o fsync.c
+cc -c -o setreuid.o setreuid.c
+cc -c -o newuname.o newuname.c
+cc -c -o fork.o fork.c
+cc -c -o setitimer.o setitimer.c
+cc -c -o fdatasync.o fdatasync.c
+cc -c -o chmod.o chmod.c
+cc -c -o mmap2.o mmap2.c
+cc -c -o msgsnd.o msgsnd.c
+cc -c -o madvise.o madvise.c
+cc -c -o exit.o exit.c
+cc -c -o readlink.o readlink.c
+cc -c -o socketcall.o socketcall.c
+cc -c -o stat64.o stat64.c
+cc -c -o readv.o readv.c
+cc -c -o sigaction.o sigaction.c
+cc -c -o fstat.o fstat.c
+cc -c -o waitpid.o waitpid.c
+cc -c -o setfsgid.o setfsgid.c
+cc -c -o chown.o chown.c
+cc -c -o flock.o flock.c
+cc -c -o uname.o uname.c
+cc -c -o lseek.o lseek.c
+cc -c -o setsid.o setsid.c
+cc -c -o settimeofday.o settimeofday.c
+cc -c -o unlink.o unlink.c
+cc -c -o sigprocmask.o sigprocmask.c
+cc -c -o ustat.o ustat.c
+cc -c -o open.o open.c
+cc -c -o sync.o sync.c
+cc -c -o iopl.o iopl.c
+cc -c -o msgget.o msgget.c
+cc -c -o pipe.o pipe.c
+cc -c -o shmdt.o shmdt.c
+cc -c -o getsid.o getsid.c
+cc -c -o setfsuid.o setfsuid.c
+cc -c -o signal.o signal.c
+cc -c -o newfstat.o newfstat.c
+cc -c -o mkdir.o mkdir.c
+cc -c -o getcwd.o getcwd.c
+cc -c -o link.o link.c
+cc -c -o msgctl.o msgctl.c
+cc -c -o sethostname.o sethostname.c
+cc -c -o semctl.o semctl.c
+cc -c -o sysinfo.o sysinfo.c
+cc -c -o setdomainname.o setdomainname.c
+cc -c -o getegid.o getegid.c
+cc -c -o personality.o personality.c
+cc -c -o setregid.o setregid.c
+cc -c -o setgid.o setgid.c
+cc -c -o lstat.o lstat.c
+cc -c -o getuid.o getuid.c
+cc -c -o llseek.o llseek.c
+cc -c -o select.o select.c
+cc -c -o ftruncate.o ftruncate.c
+cc -c -o getpgid.o getpgid.c
+cc -c -o brk.o brk.c
+cc -c -o getrusage.o getrusage.c
+cc -c -o sigsuspend.o sigsuspend.c
+cc -c -o writev.o writev.c
+cc -c -o times.o times.c
+cc -c -o ssetmask.o ssetmask.c
+cc -c -o stat.o stat.c
+cc -c -o fchdir.o fchdir.c
+cc -c -o chdir.o chdir.c
+cc -c -o setgroups.o setgroups.c
+cc -c -o newstat.o newstat.c
+cc -c -o creat.o creat.c
+cc -c -o getdents64.o getdents64.c
+cc -c -o getpid.o getpid.c
+cc -c -o read.o read.c
+cc -c -o dup.o dup.c
+cc -c -o utimes.o utimes.c
+cc -c -o semget.o semget.c
+cc -c -o mount.o mount.c
+cc -c -o rmdir.o rmdir.c
+cc -c -o setrlimit.o setrlimit.c
+cc -c -o sgetmask.o sgetmask.c
+cc -c -o pause.o pause.c
+cc -c -o utime.o utime.c
+cc -c -o statfs.o statfs.c
+cc -c -o ioperm.o ioperm.c
+cc -c -o exit_group.o exit_group.c
+cc -c -o ftime.o ftime.c
+cc -c -o truncate.o truncate.c
+cc -c -o pipe2.o pipe2.c
+cc -c -o old_mmap.o old_mmap.c
+cc -c -o olduname.o olduname.c
+cc -c -o kill.o kill.c
+cc -c -o gettimeofday.o gettimeofday.c
+cc -c -o fchmod.o fchmod.c
+cc -c -o fcntl64.o fcntl64.c
+cc -c -o mprotect.o mprotect.c
+cc -c -o getitimer.o getitimer.c
+cc -c -o old_select.o old_select.c
+cc -c -o symlink.o symlink.c
+cc -c -o mknod.o mknod.c
+cc -c -o write.o write.c
+cc -c -o rename.o rename.c
+cc -c -o shmat.o shmat.c
+cc -c -o ipc.o ipc.c
+cc -c -o lstat64.o lstat64.c
+cc -c -o access.o access.c
+cc -c -o getrlimit.o getrlimit.c
+cc -c -o sigreturn.o sigreturn.c
+cc -c -o ioctl.o ioctl.c
+cc -c -o umask.o umask.c
+cc -c -o geteuid.o geteuid.c
+cc -c -o munmap.o munmap.c
+cc -c -o alarm.o alarm.c
+cc -c -o nanosleep.o nanosleep.c
+cc -c -o close.o close.c
+cc -c -o chroot.o chroot.c
+cc -c -o ftruncate64.o ftruncate64.c
+cc -c -o msgrcv.o msgrcv.c
+cc -c -o umount2.o umount2.c
+cc -c -o time.o time.c
+cc -c -o stime.o stime.c
+cc -c -o semop.o semop.c
+cc -c -o newlstat.o newlstat.c
+cc -c -o sigpending.o sigpending.c
+cc -c -o reboot.o reboot.c
+cc -c -o setuid.o setuid.c
+cc -c -o wait4.o wait4.c
+cc -c -o chown32.o chown32.c
+cc -c -o fcntl.o fcntl.c
+cc -c -o fstat64.o fstat64.c
+cc -c -o shmctl.o shmctl.c
+cc -c -o dup2.o dup2.c
+cc -c -o setpgid.o setpgid.c
+cc -c -o getdents.o getdents.c
+cc -c -o getpgrp.o getpgrp.c
+cc -c -o fchown.o fchown.c
+cc -c -o execve.o execve.c
+cc -c -o shmget.o shmget.c
+cd ../..
+
+cd mm
+cc -c -o bios_map.o bios_map.c
+cc -c -o buddy_low.o buddy_low.c
+cc -c -o memory.o memory.c
+cc -c -o page.o page.c
+cc -c -o alloc.o alloc.c
+cc -c -o fault.o fault.c
+cc -c -o mmap.o mmap.c
+cc -c -o swapper.o swapper.c
+cd ..
+
+cd fs
+cc -c -o filesystems.o filesystems.c
+cc -c -o devices.o devices.c
+cc -c -o buffer.o buffer.c
+cc -c -o fd.o fd.c
+cc -c -o locks.o locks.c
+cc -c -o super.o super.c
+cc -c -o inode.o inode.c
+cc -c -o namei.o namei.c
+cc -c -o elf.o elf.c
+cc -c -o script.o script.c
+
+cd minix
+cc -c -o super.o super.c
+cc -c -o bitmaps.o bitmaps.c
+cc -c -o inode.o inode.c
+cc -c -o namei.o namei.c
+cc -c -o symlink.o symlink.c
+cc -c -o dir.o dir.c
+cc -c -o file.o file.c
+cc -c -o v1_inode.o v1_inode.c
+cc -c -o v2_inode.o v2_inode.c
+cd ..
+
+cd ext2
+cc -c -o inode.o inode.c
+cc -c -o super.o super.c
+cc -c -o namei.o namei.c
+cc -c -o symlink.o symlink.c
+cc -c -o dir.o dir.c
+cc -c -o file.o file.c
+cc -c -o bitmaps.o bitmaps.c
+cd ..
+
+cd pipefs
+cc -c -o super.o super.c
+cc -c -o fifo.o fifo.c
+cc -c -o pipe.o pipe.c
+cd ..
+
+cd iso9660
+cc -c -o inode.o inode.c
+cc -c -o super.o super.c
+cc -c -o namei.o namei.c
+cc -c -o dir.o dir.c
+cc -c -o file.o file.c
+cc -c -o rrip.o rrip.c
+cc -c -o symlink.o symlink.c
+cd ..
+
+cd procfs
+cc -c -o super.o super.c
+cc -c -o inode.o inode.c
+cc -c -o namei.o namei.c
+cc -c -o dir.o dir.c
+cc -c -o file.o file.c
+cc -c -o symlink.o symlink.c
+cc -c -o tree.o tree.c
+cc -c -o data.o data.c
+cd ../..
+
+cd drivers/char
+cc -c -o console.o console.c
+cc -c -o tty.o tty.c
+cc -c -o tty_queue.o tty_queue.c
+cc -c -o vt.o vt.c
+cc -c -o defkeymap.o defkeymap.c
+cc -c -o keyboard.o keyboard.c
+cc -c -o memdev.o memdev.c
+cc -c -o serial.o serial.c
+cc -c -o lp.o lp.c
+cc -c -o fb.o fb.c
+cc -c -o sysrq.o sysrq.c
+cd ..
+
+cd block
+cc -c -o dma.o dma.c
+cc -c -o floppy.o floppy.c
+cc -c -o part.o part.c
+cc -c -o ata.o ata.c
+cc -c -o ata_hd.o ata_hd.c
+cc -c -o atapi.o atapi.c
+cc -c -o atapi_cd.o atapi_cd.c
+cc -c -o ramdisk.o ramdisk.c
+cd ..
+
+cd pci
+cc -c -o pci.o pci.c
+cd ..
+
+cd video
+cc -c -o video.o video.c
+cc -c -o vgacon.o vgacon.c
+cc -c -o fbcon.o fbcon.c
+cc -c -o fonts.o fonts.c
+cc -c -o bga.o bga.c
+cd ../..
+
+cd lib
+cc -c -o ctype.o ctype.c
+cc -c -o strings.o strings.c
+cc -c -o printk.o printk.c
+cd ..
+
+mkdir /boot
+tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
+	kernel/boot.o \
+       	kernel/core386.o \
+	kernel/main.o kernel/init.o \
+	kernel/gdt.o \
+	kernel/idt.o \
+	kernel/syscalls.o \
+	kernel/pic.o \
+	kernel/pit.o \
+	kernel/irq.o \
+	kernel/traps.o \
+	kernel/cpu.o \
+	kernel/cmos.o \
+	kernel/timer.o \
+	kernel/sched.o \
+	kernel/sleep.o \
+	kernel/signal.o \
+	kernel/process.o \
+	kernel/multiboot.o \
+	kernel/syscalls/umount.o \
+	kernel/syscalls/getgid.o \
+	kernel/syscalls/getppid.o \
+	kernel/syscalls/fstatfs.o \
+	kernel/syscalls/getgroups.o \
+	kernel/syscalls/fsync.o \
+	kernel/syscalls/setreuid.o \
+	kernel/syscalls/newuname.o \
+	kernel/syscalls/fork.o \
+	kernel/syscalls/setitimer.o \
+	kernel/syscalls/fdatasync.o \
+	kernel/syscalls/chmod.o \
+	kernel/syscalls/mmap2.o \
+	kernel/syscalls/msgsnd.o \
+	kernel/syscalls/madvise.o \
+	kernel/syscalls/exit.o \
+	kernel/syscalls/readlink.o \
+	kernel/syscalls/socketcall.o \
+	kernel/syscalls/stat64.o \
+	kernel/syscalls/readv.o \
+	kernel/syscalls/sigaction.o \
+	kernel/syscalls/fstat.o \
+	kernel/syscalls/waitpid.o \
+	kernel/syscalls/setfsgid.o \
+	kernel/syscalls/chown.o \
+	kernel/syscalls/flock.o \
+	kernel/syscalls/uname.o \
+	kernel/syscalls/lseek.o \
+	kernel/syscalls/setsid.o \
+	kernel/syscalls/settimeofday.o \
+	kernel/syscalls/unlink.o \
+	kernel/syscalls/sigprocmask.o \
+	kernel/syscalls/ustat.o \
+	kernel/syscalls/open.o \
+	kernel/syscalls/sync.o \
+	kernel/syscalls/iopl.o \
+	kernel/syscalls/msgget.o \
+	kernel/syscalls/pipe.o \
+	kernel/syscalls/shmdt.o \
+	kernel/syscalls/getsid.o \
+	kernel/syscalls/setfsuid.o \
+	kernel/syscalls/signal.o \
+	kernel/syscalls/newfstat.o \
+	kernel/syscalls/mkdir.o \
+	kernel/syscalls/getcwd.o \
+	kernel/syscalls/link.o \
+	kernel/syscalls/msgctl.o \
+	kernel/syscalls/sethostname.o \
+	kernel/syscalls/semctl.o \
+	kernel/syscalls/sysinfo.o \
+	kernel/syscalls/setdomainname.o \
+	kernel/syscalls/getegid.o \
+	kernel/syscalls/personality.o \
+	kernel/syscalls/setregid.o \
+	kernel/syscalls/setgid.o \
+	kernel/syscalls/lstat.o \
+	kernel/syscalls/getuid.o \
+	kernel/syscalls/llseek.o \
+	kernel/syscalls/select.o \
+	kernel/syscalls/ftruncate.o \
+	kernel/syscalls/getpgid.o \
+	kernel/syscalls/brk.o \
+	kernel/syscalls/getrusage.o \
+	kernel/syscalls/sigsuspend.o \
+	kernel/syscalls/writev.o \
+	kernel/syscalls/times.o \
+	kernel/syscalls/ssetmask.o \
+	kernel/syscalls/stat.o \
+	kernel/syscalls/fchdir.o \
+	kernel/syscalls/chdir.o \
+	kernel/syscalls/setgroups.o \
+	kernel/syscalls/newstat.o \
+	kernel/syscalls/creat.o \
+	kernel/syscalls/getdents64.o \
+	kernel/syscalls/getpid.o \
+	kernel/syscalls/read.o \
+	kernel/syscalls/dup.o \
+	kernel/syscalls/utimes.o \
+	kernel/syscalls/semget.o \
+	kernel/syscalls/mount.o \
+	kernel/syscalls/rmdir.o \
+	kernel/syscalls/setrlimit.o \
+	kernel/syscalls/sgetmask.o \
+	kernel/syscalls/pause.o \
+	kernel/syscalls/utime.o \
+	kernel/syscalls/statfs.o \
+	kernel/syscalls/ioperm.o \
+	kernel/syscalls/exit_group.o \
+	kernel/syscalls/ftime.o \
+	kernel/syscalls/truncate.o \
+	kernel/syscalls/pipe2.o \
+	kernel/syscalls/old_mmap.o \
+	kernel/syscalls/olduname.o \
+	kernel/syscalls/kill.o \
+	kernel/syscalls/gettimeofday.o \
+	kernel/syscalls/fchmod.o \
+	kernel/syscalls/fcntl64.o \
+	kernel/syscalls/mprotect.o \
+	kernel/syscalls/getitimer.o \
+	kernel/syscalls/old_select.o \
+	kernel/syscalls/symlink.o \
+	kernel/syscalls/mknod.o \
+	kernel/syscalls/write.o \
+	kernel/syscalls/rename.o \
+	kernel/syscalls/shmat.o \
+	kernel/syscalls/ipc.o \
+	kernel/syscalls/lstat64.o \
+	kernel/syscalls/access.o \
+	kernel/syscalls/getrlimit.o \
+	kernel/syscalls/sigreturn.o \
+	kernel/syscalls/ioctl.o \
+	kernel/syscalls/umask.o \
+	kernel/syscalls/geteuid.o \
+	kernel/syscalls/munmap.o \
+	kernel/syscalls/alarm.o \
+	kernel/syscalls/nanosleep.o \
+	kernel/syscalls/close.o \
+	kernel/syscalls/chroot.o \
+	kernel/syscalls/ftruncate64.o \
+	kernel/syscalls/msgrcv.o \
+	kernel/syscalls/umount2.o \
+	kernel/syscalls/time.o \
+	kernel/syscalls/stime.o \
+	kernel/syscalls/semop.o \
+	kernel/syscalls/newlstat.o \
+	kernel/syscalls/sigpending.o \
+	kernel/syscalls/reboot.o \
+	kernel/syscalls/setuid.o \
+	kernel/syscalls/wait4.o \
+	kernel/syscalls/chown32.o \
+	kernel/syscalls/fcntl.o \
+	kernel/syscalls/fstat64.o \
+	kernel/syscalls/shmctl.o \
+	kernel/syscalls/dup2.o \
+	kernel/syscalls/setpgid.o \
+	kernel/syscalls/getdents.o \
+	kernel/syscalls/getpgrp.o \
+	kernel/syscalls/fchown.o \
+	kernel/syscalls/execve.o \
+	kernel/syscalls/shmget.o \
+	mm/bios_map.o \
+	mm/buddy_low.o \
+	mm/memory.o \
+	mm/page.o \
+	mm/alloc.o \
+	mm/fault.o \
+	mm/mmap.o \
+	mm/swapper.o \
+	fs/filesystems.o \
+	fs/devices.o \
+	fs/buffer.o \
+	fs/fd.o \
+	fs/locks.o \
+	fs/super.o \
+	fs/inode.o \
+	fs/namei.o \
+	fs/elf.o \
+	fs/script.o \
+	fs/minix/super.o \
+	fs/minix/bitmaps.o \
+	fs/minix/inode.o \
+	fs/minix/namei.o \
+	fs/minix/symlink.o \
+	fs/minix/dir.o \
+	fs/minix/file.o \
+	fs/minix/v1_inode.o \
+	fs/minix/v2_inode.o \
+	fs/ext2/inode.o \
+	fs/ext2/super.o \
+	fs/ext2/namei.o \
+	fs/ext2/symlink.o \
+	fs/ext2/dir.o \
+	fs/ext2/file.o \
+	fs/ext2/bitmaps.o \
+	fs/pipefs/super.o \
+	fs/pipefs/fifo.o \
+	fs/pipefs/pipe.o \
+	fs/iso9660/inode.o \
+	fs/iso9660/super.o \
+	fs/iso9660/namei.o \
+	fs/iso9660/dir.o \
+	fs/iso9660/file.o \
+	fs/iso9660/rrip.o \
+	fs/iso9660/symlink.o \
+	fs/procfs/super.o \
+	fs/procfs/inode.o \
+	fs/procfs/namei.o \
+	fs/procfs/dir.o \
+	fs/procfs/file.o \
+	fs/procfs/symlink.o \
+	fs/procfs/tree.o \
+	fs/procfs/data.o \
+	drivers/char/console.o \
+	drivers/char/tty.o \
+	drivers/char/tty_queue.o \
+	drivers/char/vt.o \
+	drivers/char/defkeymap.o \
+	drivers/char/keyboard.o \
+	drivers/char/memdev.o \
+	drivers/char/serial.o \
+	drivers/char/lp.o \
+	drivers/char/fb.o \
+	drivers/char/sysrq.o \
+	drivers/block/dma.o \
+	drivers/block/floppy.o \
+	drivers/block/part.o \
+	drivers/block/ata.o \
+	drivers/block/ata_hd.o \
+	drivers/block/atapi.o \
+	drivers/block/atapi_cd.o \
+	drivers/block/ramdisk.o \
+	drivers/pci/pci.o \
+	drivers/video/video.o \
+	drivers/video/vgacon.o \
+	drivers/video/fbcon.o \
+	drivers/video/fonts.o \
+	drivers/video/bga.o \
+	lib/ctype.o \
+	lib/strings.o \
+	lib/printk.o \
+	-o /boot/fiwix
+
+cd ../..
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /boot/fiwix
+
+    cp ${pkg}.checksums ${srcdir}
+else
+    sha256sum -c ${pkg}.checksums
+fi

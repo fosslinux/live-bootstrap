@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
+# SPDX-License-Identifier: MIT
+diff -r -u musl-1.1.24.orig/arch/i386/pthread_arch.h musl-1.1.24/arch/i386/pthread_arch.h
+--- arch/i386/pthread_arch.h	2019-10-13 21:58:27.000000000 +0000
++++ arch/i386/pthread_arch.h	2023-04-07 11:56:04.649119523 +0000
+@@ -1,8 +1,8 @@
++extern pthread_t g_pthread;
++
+ static inline struct pthread *__pthread_self()
+ {
+-	struct pthread *self;
+-	__asm__ ("movl %%gs:0,%0" : "=r" (self) );
+-	return self;
++	return g_pthread;
+ }
+ 
+ #define TP_ADJ(p) (p)
+diff -r -u musl-1.1.24.orig/src/env/__init_tls.c musl-1.1.24/src/env/__init_tls.c
+--- src/env/__init_tls.c	2019-10-13 21:58:27.000000000 +0000
++++ src/env/__init_tls.c	2023-04-07 11:56:43.565120289 +0000
+@@ -10,20 +10,19 @@
+ #include "syscall.h"
+ 
+ volatile int __thread_list_lock;
++pthread_t g_pthread;
+ 
+ int __init_tp(void *p)
+ {
+ 	pthread_t td = p;
+ 	td->self = td;
+-	int r = __set_thread_area(TP_ADJ(p));
+-	if (r < 0) return -1;
+-	if (!r) libc.can_do_threads = 1;
+ 	td->detach_state = DT_JOINABLE;
+ 	td->tid = __syscall(SYS_set_tid_address, &__thread_list_lock);
+ 	td->locale = &libc.global_locale;
+ 	td->robust_list.head = &td->robust_list.head;
+ 	td->sysinfo = __sysinfo;
+ 	td->next = td->prev = td;
++	g_pthread = td;
+ 	return 0;
+ }
+ 

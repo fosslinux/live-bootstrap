@@ -1,0 +1,3 @@
+                        ph->p_paddr = ph->p_vaddr;
+                        if (ph->p_paddr >= 0xC0000000)
+                            ph->p_paddr = ph->p_paddr - 0xC0000000;

@@ -20,6 +20,12 @@ cd ..
 
 cd build
 untar --file ../src/${pkg}.tar
+/x86/bin/simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tcctools.c \
+    /sysa/tcc-0.9.27/simple-patches/remove-fileopen.before /sysa/tcc-0.9.27/simple-patches/remove-fileopen.after
+/x86/bin/simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tcctools.c \
+    /sysa/tcc-0.9.27/simple-patches/addback-fileopen.before /sysa/tcc-0.9.27/simple-patches/addback-fileopen.after
+/x86/bin/simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tccelf.c \
+    /sysa/tcc-0.9.27/simple-patches/fiwix-paddr.before /sysa/tcc-0.9.27/simple-patches/fiwix-paddr.after
 untar --non-strict --file ../src/${MES_PKG}.tar
 cd ${pkg}
 

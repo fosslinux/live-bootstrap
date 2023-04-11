@@ -34,6 +34,10 @@ def create_configuration_file(args):
         config.write("CHROOT_ONLY_SYSA=" + str(args.bwrap) + "\n")
         config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
         config.write("DISK=sda1\n")
+        if (args.bare_metal or args.qemu) and not args.kernel:
+            config.write("KERNEL_BOOTSTRAP=True\n")
+        else:
+            config.write("KERNEL_BOOTSTRAP=False\n")
 
 # pylint: disable=too-many-statements
 def main():
@@ -81,8 +85,7 @@ def main():
                         default="qemu-system-x86_64")
     parser.add_argument("-qr", "--qemu-ram", help="Memory (in megabytes) allocated to QEMU VM",
                         default=4096)
-    parser.add_argument("-qk", "--kernel", help="Kernel to use (default is ./kernel)",
-                        default="kernel")
+    parser.add_argument("-qk", "--kernel", help="Custom sysa kernel to use")
 
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
                         action="store_true")
@@ -199,27 +202,42 @@ print(shutil.which('chroot'))
                      '/init')
 
     elif args.bare_metal:
-        system_c.prepare(create_disk_image=True)
-        system_a.prepare(create_initramfs=True)
-
-        print("Please:")
-        print("  1. Take tmp/sysa/initramfs and your kernel, boot using this.")
-        print("  2. Take tmp/sysc/disk.img and put this on a writable storage medium.")
+        if args.kernel:
+            system_c.prepare(create_disk_image=True)
+            system_a.prepare(create_initramfs=True)
+            print("Please:")
+            print("  1. Take tmp/sysa/initramfs and your kernel, boot using this.")
+            print("  2. Take tmp/sysc/disk.img and put this on a writable storage medium.")
+        else:
+            system_a.prepare(create_initramfs=True, kernel_bootstrap=True)
+            print("Please:")
+            print("  1. Take tmp/sysa/sysa.img and write it to a boot drive and then boot it.")
 
     else:
-        system_c.prepare(create_disk_image=True)
-        system_a.prepare(create_initramfs=True)
+        if args.kernel:
+            system_c.prepare(create_disk_image=True)
+            system_a.prepare(create_initramfs=True)
 
-        run(args.qemu_cmd,
-            '-enable-kvm',
-            '-m', str(args.qemu_ram) + 'M',
-            '-no-reboot',
-            '-hda', tmpdir.get_disk("sysc"),
-            '-nic', 'user,ipv6=off,model=e1000',
-            '-kernel', args.kernel,
-            '-initrd', system_a.initramfs_path,
-            '-nographic',
-            '-append', 'console=ttyS0')
+            run(args.qemu_cmd,
+                '-enable-kvm',
+                '-m', str(args.qemu_ram) + 'M',
+                '-no-reboot',
+                '-hda', tmpdir.get_disk("sysc"),
+                '-nic', 'user,ipv6=off,model=e1000',
+                '-kernel', args.kernel,
+                '-initrd', system_a.initramfs_path,
+                '-nographic',
+                '-append', 'console=ttyS0')
+        else:
+            system_a.prepare(create_initramfs=True, kernel_bootstrap=True)
+            run(args.qemu_cmd,
+                '-enable-kvm',
+                '-m', "4G",
+                '-no-reboot',
+                '-drive', 'file=' + os.path.join(system_a.tmp_dir, 'sysa.img') + ',format=raw',
+                '-machine', 'kernel-irqchip=split',
+                '-nic', 'user,ipv6=off,model=e1000',
+                '-nographic')
 
 if __name__ == "__main__":
     main()

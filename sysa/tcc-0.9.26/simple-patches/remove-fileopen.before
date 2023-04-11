@@ -1,0 +1,8 @@
+    if (ret == 1)
+        return ar_usage(ret);
+
+    if ((fh = fopen(argv[i_lib], "wb")) == NULL)
+    {
+        fprintf(stderr, "tcc: ar: can't open file %s \n", argv[i_lib]);
+        goto the_end;
+    }
