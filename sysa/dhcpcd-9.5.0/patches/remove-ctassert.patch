@@ -4,9 +4,9 @@
 
 __CTASSERT macro does not work properly on our older GCC.
 
-diff --color -ru src/arp.c src/arp.c
---- src/arp.c	2022-05-22 13:55:30.103757852 +1000
-+++ src/arp.c	2022-05-22 13:55:43.692407546 +1000
+diff -ru src/arp.c src/arp.c
+--- src/arp.c
++++ src/arp.c
 @@ -63,9 +63,6 @@
  /* ARP debugging can be quite noisy. Enable this for more noise! */
  //#define	ARP_DEBUG
@@ -17,9 +17,9 @@ diff --color -ru src/arp.c src/arp.c
  static ssize_t
  arp_request(const struct arp_state *astate,
      const struct in_addr *sip)
-diff --color -ru src/auth.c src/auth.c
---- src/auth.c	2022-05-22 13:52:30.219151581 +1000
-+++ src/auth.c	2022-05-22 13:53:24.729760674 +1000
+diff -ru src/auth.c src/auth.c
+--- src/auth.c
++++ src/auth.c
 @@ -343,9 +343,6 @@
  
  	/* RFC3318, section 5.2 - zero giaddr and hops */
@@ -30,9 +30,9 @@ diff --color -ru src/auth.c src/auth.c
  		*(mm + offsetof(struct bootp, hops)) = '\0';
  		memset(mm + offsetof(struct bootp, giaddr), 0, 4);
  	}
-diff --color -ru src/dhcp6.c src/dhcp6.c
---- src/dhcp6.c	2022-05-22 13:52:30.219151581 +1000
-+++ src/dhcp6.c	2022-05-22 13:53:33.455178213 +1000
+diff -ru src/dhcp6.c src/dhcp6.c
+--- src/dhcp6.c
++++ src/dhcp6.c
 @@ -84,33 +84,28 @@
  	uint8_t xid[3];
  	/* followed by options */
@@ -75,9 +75,9 @@ diff --color -ru src/dhcp6.c src/dhcp6.c
  
  struct dhcp6_op {
  	uint16_t type;
-diff --color -ru src/dhcp.c src/dhcp.c
---- src/dhcp.c	2022-05-22 13:52:30.219151581 +1000
-+++ src/dhcp.c	2022-05-22 13:53:08.074963614 +1000
+diff -ru src/dhcp.c src/dhcp.c
+--- src/dhcp.c
++++ src/dhcp.c
 @@ -98,11 +98,6 @@
  #define IP_RECVPKTINFO IP_PKTINFO
  #endif
@@ -90,10 +90,10 @@ diff --color -ru src/dhcp.c src/dhcp.c
  struct dhcp_op {
  	uint8_t value;
  	const char *name;
-diff --color -ru src/if-bsd.c src/if-bsd.c
---- src/if-bsd.c	2022-05-22 13:52:30.219151581 +1000
-+++ src/if-bsd.c	2022-05-22 13:53:31.686093557 +1000
-@@ -1589,7 +1589,6 @@
+diff -ru src/if-bsd.c src/if-bsd.c
+--- src/if-bsd.c
++++ src/if-bsd.c
+@@ -1600,7 +1600,6 @@
  #endif
  }
  
@@ -101,9 +101,9 @@ diff --color -ru src/if-bsd.c src/if-bsd.c
  int
  if_handlelink(struct dhcpcd_ctx *ctx)
  {
-diff --color -ru src/ipv6nd.c src/ipv6nd.c
---- src/ipv6nd.c	2022-05-22 13:52:30.219151581 +1000
-+++ src/ipv6nd.c	2022-05-22 13:53:30.092017279 +1000
+diff -ru src/ipv6nd.c src/ipv6nd.c
+--- src/ipv6nd.c
++++ src/ipv6nd.c
 @@ -80,7 +80,6 @@
  	uint32_t	nd_opt_rdnss_lifetime;
          /* followed by list of IP prefixes */
@@ -116,13 +116,13 @@ diff --color -ru src/ipv6nd.c src/ipv6nd.c
  	uint32_t	nd_opt_dnssl_lifetime;
  	/* followed by list of DNS servers */
  };
--__CTASSERT(sizeof(struct nd_opt_rdnss) == 8);
+-__CTASSERT(sizeof(struct nd_opt_dnssl) == 8);
  #endif
  
  /* Impossible options, so we can easily add extras */
-diff --color -ru src/privsep-root.c src/privsep-root.c
---- src/privsep-root.c	2022-05-22 13:52:30.220151629 +1000
-+++ src/privsep-root.c	2022-05-22 13:53:28.152924488 +1000
+diff -ru src/privsep-root.c src/privsep-root.c
+--- src/privsep-root.c
++++ src/privsep-root.c
 @@ -56,8 +56,6 @@
  #include "sa.h"
  #include "script.h"
