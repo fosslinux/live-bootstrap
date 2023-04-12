@@ -95,8 +95,8 @@ if [ "${CHROOT}" = False ]; then
 
     create_sysb
     if [ "${KERNEL_BOOTSTRAP}" = True ]; then
-	echo "Kernel bootstrapping successful."
-	echo "NOTE: Transition to Linux and building remaining packages is under development."
+        echo "Kernel bootstrapping successful."
+        echo "NOTE: Transition to Linux and building remaining packages is under development."
     else
         go_sysb
     fi
