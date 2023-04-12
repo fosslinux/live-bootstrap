@@ -10,6 +10,7 @@ src_prepare() {
 
     rm help2man.info
     touch help2man.info
+    rm help2man*.1
 }
 
 src_configure() {
