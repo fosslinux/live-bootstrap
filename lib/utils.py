@@ -14,7 +14,7 @@ import sys
 
 def run(*args, **kwargs):
     """A small wrapper around subprocess.run"""
-    arguments = [str(arg) for arg in args]
+    arguments = [str(arg) for arg in args if arg is not None]
 
     if kwargs.pop('verbose', False):
         print(arguments)
