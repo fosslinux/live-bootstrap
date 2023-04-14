@@ -69,7 +69,7 @@ src_compile() {
     # We have to choose the order ourselves because the Makefile is extremely lax about the order
     # First of all, do everything that doesn't use any C
     rm Modules/_blake2/blake2s_impl.c
-    make regen-opcode \
+    make "${MAKEJOBS}" regen-opcode \
         regen-opcode-targets \
         regen-typeslots \
         regen-token \
@@ -82,17 +82,17 @@ src_compile() {
         regen-global-objects
 
     # Do the freeze regen process
-    make regen-frozen
-    make regen-deepfreeze
-    make regen-global-objects
+    make "${MAKEJOBS}" regen-frozen
+    make "${MAKEJOBS}" regen-deepfreeze
+    make "${MAKEJOBS}" regen-global-objects
 
-    make CPPFLAGS="-U__DATE__ -U__TIME__"
+    make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
 
     # Regen Python/stdlib_module_names.h (you must have an existing build first)
-    make regen-stdlib-module-names
+    make "${MAKEJOBS}" regen-stdlib-module-names
 
     # Now rebuild with proper stdlib_module_names.h
-    make CPPFLAGS="-U__DATE__ -U__TIME__"
+    make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {

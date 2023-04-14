@@ -11,6 +11,6 @@ src_configure() {
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-	--disable-shared \
+        --disable-shared \
         CFLAGS='-D_GNU_SOURCE -DNO_GETCONTEXT -DSEARCH_FOR_DATA_START -DUSE_MMAP -DHAVE_DL_ITERATE_PHDR'
 }

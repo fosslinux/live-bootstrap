@@ -47,7 +47,7 @@ src_compile() {
 	--disable-shared \
 	--enable-timeout=15
     touch doc/agdoc.texi # build later
-    make CFLAGS=-Wno-error
+    make -j1 CFLAGS=-Wno-error
 
     # Fix non-reproducible man-page
     awk '{gsub("\\(/tmp/.*", "", $7); print}' agen5/autogen.1 > autogen.1

@@ -19,7 +19,7 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true
+    make -j1 MAKEINFO=true PREFIX="${PREFIX}"
 }
 
 src_install() {

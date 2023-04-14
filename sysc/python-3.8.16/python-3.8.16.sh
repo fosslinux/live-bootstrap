@@ -53,9 +53,9 @@ src_configure() {
 src_compile() {
     # Regenerations
     rm Modules/_blake2/blake2s_impl.c
-    make regen-all
+    make "${MAKEJOBS}" regen-all
 
-    make CPPFLAGS="-U__DATE__ -U__TIME__"
+    make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {

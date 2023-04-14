@@ -125,15 +125,15 @@ src_compile() {
     ln -s . build/build-i386-unknown-linux-musl
     for dir in libiberty libcpp libdecnumber gcc; do
         # We have makeinfo now but it is not happy with gcc .info files, so skip it
-        make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" \
+        make "${MAKEJOBS}" -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" \
             STMP_FIXINC= GMPLIBS="-lmpc -lmpfr -lgmp" MAKEINFO=true
     done
 
     # host_subdir is necessary because we have slightly different build directory layout
-    make -C build/libgcc PATH="${PATH}:../gcc" CC=../gcc/xgcc \
+    make "${MAKEJOBS}" -C build/libgcc PATH="${PATH}:../gcc" CC=../gcc/xgcc \
         host_subdir=build CFLAGS="-I../gcc/include -I/${PREFIX}/include"
 
-    make -C build/libstdc++-v3 PATH="${PATH}:${PWD}/build/gcc" \
+    make "${MAKEJOBS}" -C build/libstdc++-v3 PATH="${PATH}:${PWD}/build/gcc" \
         CXXFLAGS="-I${PWD}/build/gcc/include -I ${PREFIX}/include"
 }
 

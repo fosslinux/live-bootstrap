@@ -22,7 +22,7 @@ src_configure() {
 src_compile() {
     # Missing dependency in Makefile
     flex -o src/analyze.c src/analyze.l
-    make MAKEINFO=true
+    make "${MAKEJOBS}" MAKEINFO=true
 }
 
 src_install() {

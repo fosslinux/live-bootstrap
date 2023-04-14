@@ -29,10 +29,11 @@ def create_configuration_file(args):
     """
     config_path = os.path.join('sysa', 'bootstrap.cfg')
     with open(config_path, "w", encoding="utf_8") as config:
-        config.write("FORCE_TIMESTAMPS=" + str(args.force_timestamps) + "\n")
-        config.write("CHROOT=" + str(args.chroot or args.bwrap) + "\n")
-        config.write("CHROOT_ONLY_SYSA=" + str(args.bwrap) + "\n")
-        config.write("UPDATE_CHECKSUMS=" + str(args.update_checksums) + "\n")
+        config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
+        config.write(f"CHROOT={args.chroot or args.bwrap}\n")
+        config.write(f"CHROOT_ONLY_SYSA={args.bwrap}\n")
+        config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
+        config.write(f"JOBS={args.cores}\n")
         config.write("DISK=sda1\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             config.write("KERNEL_BOOTSTRAP=True\n")
@@ -61,6 +62,8 @@ def main():
                         action="store_true")
     parser.add_argument("--tmpfs-size", help="Size of the tmpfs",
                         default="8G")
+    parser.add_argument("--cores", help="Cores to use for building",
+                         default=2)
     parser.add_argument("--force-timestamps",
                         help="Force all files timestamps to be 0 unix time",
                         action="store_true")
@@ -118,6 +121,10 @@ def main():
     # Tmp validation
     if args.bwrap and args.tmpfs:
         raise ValueError("tmpfs cannot be used with bwrap.")
+
+    # Cores validation
+    if int(args.cores) < 1:
+        raise ValueError("Must use one or more cores.")
 
     # bootstrap.cfg
     if args.bare_metal:
@@ -221,6 +228,7 @@ print(shutil.which('chroot'))
             run(args.qemu_cmd,
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
+                '-smp', str(args.cores),
                 '-no-reboot',
                 '-hda', tmpdir.get_disk("sysc"),
                 '-nic', 'user,ipv6=off,model=e1000',
@@ -233,6 +241,7 @@ print(shutil.which('chroot'))
             run(args.qemu_cmd,
                 '-enable-kvm',
                 '-m', "4G",
+                '-smp', str(args.cores),
                 '-no-reboot',
                 '-drive', 'file=' + os.path.join(system_a.tmp_dir, 'sysa.img') + ',format=raw',
                 '-machine', 'kernel-irqchip=split',

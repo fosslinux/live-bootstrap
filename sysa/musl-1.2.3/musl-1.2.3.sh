@@ -29,5 +29,5 @@ src_configure() {
 }
 
 src_compile() {
-    make CROSS_COMPILE=
+    make "${MAKEJOBS}" CROSS_COMPILE=
 }

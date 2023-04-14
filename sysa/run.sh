@@ -21,6 +21,13 @@ SRCDIR="${srcdir}"
 # shellcheck source=sysa/helpers.sh
 . helpers.sh
 
+if [ "${KERNEL_BOOTSTRAP}" ]; then
+    # Fiwix does not support SMP
+    MAKEJOBS="-j1"
+else
+    MAKEJOBS="-j${JOBS}"
+fi
+
 # Ask some questions
 echo
 echo "Now that bash has been built, there are potentially some questions for you!"
@@ -178,6 +185,7 @@ SOURCES=${SOURCES}
 DESTDIR=${DESTDIR}
 DISTFILES=${DISTFILES}
 SRCDIR=${SRCDIR}
+MAKEJOBS=${MAKEJOBS}
 EOF
 
 exec env -i bash run2.sh

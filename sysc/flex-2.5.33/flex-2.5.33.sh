@@ -22,7 +22,7 @@ src_configure() {
 }
 
 src_compile() {
-    make MAKEINFO=true
+    make "${MAKEJOBS}" MAKEINFO=true
 }
 
 src_install() {

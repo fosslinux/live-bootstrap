@@ -24,7 +24,7 @@ src_configure() {
 }
 
 src_compile() {
-    make PREFIX="${PREFIX}" CROSS_COMPILE= CFLAGS="-DSYSCALL_NO_TLS" AS_CMD='as -o $@ $<'
+    make "${MAKEJOBS}" PREFIX="${PREFIX}" CROSS_COMPILE= CFLAGS="-DSYSCALL_NO_TLS" AS_CMD='as -o $@ $<'
 }
 
 src_install() {

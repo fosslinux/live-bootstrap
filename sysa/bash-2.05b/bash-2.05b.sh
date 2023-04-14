@@ -39,6 +39,10 @@ src_configure() {
         bash_cv_dev_fd=whacky
 }
 
+src_compile() {
+    make -j1
+}
+
 src_install() {
     install -D bash "${DESTDIR}${PREFIX}/bin/bash"
     # Work around weird symlink bug

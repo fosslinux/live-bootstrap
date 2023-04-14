@@ -50,8 +50,8 @@ src_compile() {
     generate_autoconf_h
 
     # Allow use of patched initramfs_list.sh (which is required anyway)
-    make ARCH=i386 prepare
-    PATH="${PWD}/usr:${PATH}" make ARCH=i386
+    make "${MAKEJOBS}" ARCH=i386 prepare
+    PATH="${PWD}/usr:${PATH}" make "${MAKEJOBS}" ARCH=i386
 
     # Clear up more space
     find . -name '*.o' -delete

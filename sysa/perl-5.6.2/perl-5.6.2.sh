@@ -34,6 +34,10 @@ src_prepare() {
     sed -i "s#/usr/include/errno.h#${PREFIX}/include/musl/bits/errno.h#" ext/Errno/Errno_pm.PL
 }
 
+src_compile() {
+    make -j1 PREFIX="${PREFIX}"
+}
+
 src_install() {
     # Remove old perl
     rm -rf "${PREFIX}"/lib/perl5/

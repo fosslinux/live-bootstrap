@@ -86,7 +86,7 @@ build libatomic_ops-7.6.10
 
 build gc-8.0.4
 
-build guile-3.0.7
+build guile-3.0.9
 
 build which-2.21
 

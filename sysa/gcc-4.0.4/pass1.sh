@@ -93,7 +93,7 @@ src_compile() {
     mkdir build/gcc/include
     ln -s ../../../gcc/gsyslimits.h build/gcc/include/syslimits.h
     for dir in libiberty libcpp gcc; do
-        make -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" STMP_FIXINC=
+        make "${MAKEJOBS}" -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" STMP_FIXINC=
     done
 }
 
