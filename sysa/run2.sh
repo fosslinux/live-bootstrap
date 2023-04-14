@@ -73,7 +73,7 @@ build ed-1.4
 
 build bc-1.07.1
 
-if [ "${CHROOT}" = False ]; then
+if [ "${CHROOT}" = False ] || [ "${BUILD_KERNELS}" = True ]; then
     # Save because linux deletes all distfiles to save space
     cp "${DISTFILES}"/musl-1.2.3.tar.gz "${SOURCES}"/musl-1.2.3
 fi
@@ -86,13 +86,15 @@ grep --no-filename '^build' "${SOURCES}"/run*.sh | grep -v musl-1.2.3 | sed "s/b
     rm -rf "${SOURCES:?}/${p:?}"
 done
 
-if [ "${CHROOT}" = False ]; then
+if [ "${CHROOT}" = False ] || [ "${BUILD_KERNELS}" = True ]; then
     build kexec-tools-2.0.22
 
     build linux-4.9.10
+fi
 
-    build musl-1.2.3 '' no-patches
+build musl-1.2.3 '' no-patches
 
+if [ "${CHROOT}" = False ]; then
     create_sysb
     if [ "${KERNEL_BOOTSTRAP}" = True ]; then
         echo "Kernel bootstrapping successful."
@@ -101,8 +103,6 @@ if [ "${CHROOT}" = False ]; then
         go_sysb
     fi
 else
-    build musl-1.2.3 '' no-patches
-
     # In chroot mode transition directly into System C.
     SYSC=/sysc_image
     sys_transfer "${SYSC}" /sysc gzip patch
