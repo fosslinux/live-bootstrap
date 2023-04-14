@@ -1,0 +1,4 @@
+static void fill_local_got_entries(TCCState *s1)
+{
+    ElfW_Rel *rel;
+    for_each_elem(s1->got->reloc, 0, rel, ElfW_Rel) {
