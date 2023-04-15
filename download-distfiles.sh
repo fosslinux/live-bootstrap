@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
 #
