@@ -45,7 +45,17 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
+BUILD_FIWIX=False
+
 if match x${KERNEL_BOOTSTRAP} xTrue; then
+    BUILD_FIWIX=True
+fi
+
+if match x${BUILD_KERNELS} xTrue; then
+    BUILD_FIWIX=True
+fi
+
+if match x${BUILD_FIWIX} xTrue; then
     # The Fiwix kernel
     pkg="fiwix-1.4.0-lb1"
     cd ${pkg}
@@ -58,14 +68,16 @@ if match x${KERNEL_BOOTSTRAP} xTrue; then
     kaem --verbose --file ${pkg}.kaem
     cd ..
 
-    # Build the ext2 image
-    make_fiwix_initrd
-
     # Live boot loader for Fiwix
     pkg="kexec-fiwix"
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
     cd ..
+fi
+
+if match x${KERNEL_BOOTSTRAP} xTrue; then
+    # Build the ext2 image
+    make_fiwix_initrd
 
     # Boot Fiwix
     kexec-fiwix

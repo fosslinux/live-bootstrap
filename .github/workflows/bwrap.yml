@@ -43,7 +43,7 @@ jobs:
           key: cache-${{ hashFiles('sys*/*/sources') }}
       - name: Run bootstrap
         id: bootstrap
-        run: ./rootfs.py --bwrap --external-sources --preserve --cores 2
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2
       - name: Archive created packages
         if: steps.bootstrap.conclusion == 'success'
         uses: actions/upload-artifact@v3

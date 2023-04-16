@@ -26,6 +26,9 @@ untar --file ../src/${pkg}.tar
     /sysa/tcc-0.9.27/simple-patches/addback-fileopen.before /sysa/tcc-0.9.27/simple-patches/addback-fileopen.after
 /x86/bin/simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tccelf.c \
     /sysa/tcc-0.9.27/simple-patches/fiwix-paddr.before /sysa/tcc-0.9.27/simple-patches/fiwix-paddr.after
+# Fix SIGSEGV while building lwext4
+/x86/bin/simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tccelf.c \
+    /sysa/tcc-0.9.27/simple-patches/check-reloc-null.before /sysa/tcc-0.9.27/simple-patches/check-reloc-null.after
 untar --non-strict --file ../src/${MES_PKG}.tar
 cd ${pkg}
 

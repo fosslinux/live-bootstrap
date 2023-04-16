@@ -11,5 +11,8 @@ src_prepare() {
 
 src_configure() {
     ./configure --prefix="${PREFIX}" \
-        --sbindir="${PREFIX}/bin"
+        --sbindir="${PREFIX}/bin" \
+        --build=i686-pc-linux-gnu \
+        --host=i686-pc-linux-gnu \
+        --target=i686-pc-linux-gnu
 }
