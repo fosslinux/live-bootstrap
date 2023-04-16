@@ -39,7 +39,7 @@ def create_configuration_file(args):
             config.write("KERNEL_BOOTSTRAP=True\n")
         else:
             config.write("KERNEL_BOOTSTRAP=False\n")
-        config.write(f"BUILD_KERNELS={args.build_kernels}\n")
+        config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
 
 # pylint: disable=too-many-statements
 def main():
