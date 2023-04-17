@@ -95,5 +95,6 @@ src_configure() {
         --disable-sjlj-exceptions \
         --disable-multilib \
         --enable-threads=posix \
-        --disable-libsanitizer
+        --disable-libsanitizer \
+        --disable-libssp
 }
