@@ -1136,7 +1136,7 @@ Differences to 3.8.16:
   remove determinism from precompiled Python libraries (``.pyc``). Finally, we
   can re-enable compiling of Python modules.
 
-GCC 10.4.0
+gcc 10.4.0
 ==========
 
 GCC 10.x series is the last version of GCC that is able to be built with the
