@@ -1145,3 +1145,15 @@ every subdirectory, since we now have ``autogen`` available we are able to use
 the top-level configure to build the project. We do not use GCC's bootstrap mode,
 where GCC is recompiled with itself after being built, since we're just going
 to use this GCC to compile GCC 12, it adds build time for little benefit.
+
+binutils 2.38 (pass 2)
+======================
+
+We recompile Binutils with the full intended autogen top-level build system,
+instead of the subdirectory build system used before. This creates a binutils
+that functions completely correctly for the build of GCC 12 (eg, fixes the
+mistaken plugin loading support). Other modern features are added, including;
+
+* threaded linking
+* 64-bit linking on 32-bit x86
+* the modern, rewritten gold linker used by some distributions

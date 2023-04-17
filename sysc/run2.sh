@@ -74,7 +74,7 @@ build texinfo-6.7
 
 build gcc-4.7.4
 
-build binutils-2.38
+build binutils-2.38 pass1.sh
 
 build gperf-3.1
 
@@ -121,6 +121,8 @@ build python-3.8.16
 build python-3.11.1
 
 build gcc-10.4.0
+
+build binutils-2.38 pass2.sh
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
