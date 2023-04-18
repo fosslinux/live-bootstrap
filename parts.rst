@@ -1157,3 +1157,24 @@ mistaken plugin loading support). Other modern features are added, including;
 * threaded linking
 * 64-bit linking on 32-bit x86
 * the modern, rewritten gold linker used by some distributions
+
+gcc 12.2.0
+==========
+
+This is the most recent version of GCC. With this version of GCC, the
+final gcc-binutils-musl toolchain is complete. The focus of further builds
+shifts to rebuilds for correctness, cleanup and preparation for downstream
+consumption.
+
+In line with this, a variety of modern features + minor build changes are used
+to ensure the compiler is suitable for downstream consumption;
+
+* A full internal GCC bootstrap is used to ensure there are no lagging
+  historical problems.
+* PIE and SSP are enabled by default, as is done on every major modern Linux
+  distribution.
+* libssp is disabled and handed off to the libc (done by many modern Linux
+  distributions). libssp in GCC is very broken and glibc-centric - it should
+  really be handled by the libc, which is what most distributions do.
+* LTO now fully functions correctly, despite both the linker and the compiler
+  being static binaries.

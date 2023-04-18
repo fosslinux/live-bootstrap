@@ -84,7 +84,6 @@ src_configure() {
     mkdir build
     cd build
 
-    # -rdynamic is required for plugin support in a static ld
     LDFLAGS="-static" \
     ../configure \
         --prefix="${PREFIX}" \
