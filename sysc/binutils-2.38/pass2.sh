@@ -77,7 +77,7 @@ src_prepare() {
     ./bfd/mep-relocs.pl
 
     # Manpages
-    find . -type f -name '*.1' -or -name '*.man' -delete
+    find . -type f \( -name '*.1' -or -name '*.man' \) -delete
 }
 
 src_configure() {
