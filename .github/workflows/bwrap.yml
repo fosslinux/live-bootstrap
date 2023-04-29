@@ -48,7 +48,7 @@ jobs:
         id: bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2
       - name: Archive created packages
-        if: steps.bootstrap.conclusion == 'success'
+        if: always() # archive failed builds
         uses: actions/upload-artifact@v3
         with:
           name: packages
