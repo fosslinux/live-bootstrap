@@ -116,4 +116,7 @@ src_install() {
         ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
     done
     popd
+
+    # FIXME: Binutils' manpages dates are not reproducible
+    rm -r "${DESTDIR}${PREFIX}/share/man"
 }
