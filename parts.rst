@@ -1136,7 +1136,7 @@ Differences to 3.8.16:
   remove determinism from precompiled Python libraries (``.pyc``). Finally, we
   can re-enable compiling of Python modules.
 
-GCC 10.4.0
+gcc 10.4.0
 ==========
 
 GCC 10.x series is the last version of GCC that is able to be built with the
@@ -1145,3 +1145,36 @@ every subdirectory, since we now have ``autogen`` available we are able to use
 the top-level configure to build the project. We do not use GCC's bootstrap mode,
 where GCC is recompiled with itself after being built, since we're just going
 to use this GCC to compile GCC 12, it adds build time for little benefit.
+
+binutils 2.38 (pass 2)
+======================
+
+We recompile Binutils with the full intended autogen top-level build system,
+instead of the subdirectory build system used before. This creates a binutils
+that functions completely correctly for the build of GCC 12 (eg, fixes the
+mistaken plugin loading support). Other modern features are added, including;
+
+* threaded linking
+* 64-bit linking on 32-bit x86
+* the modern, rewritten gold linker used by some distributions
+
+gcc 12.2.0
+==========
+
+This is the most recent version of GCC. With this version of GCC, the
+final gcc-binutils-musl toolchain is complete. The focus of further builds
+shifts to rebuilds for correctness, cleanup and preparation for downstream
+consumption.
+
+In line with this, a variety of modern features + minor build changes are used
+to ensure the compiler is suitable for downstream consumption;
+
+* A full internal GCC bootstrap is used to ensure there are no lagging
+  historical problems.
+* PIE and SSP are enabled by default, as is done on every major modern Linux
+  distribution.
+* libssp is disabled and handed off to the libc (done by many modern Linux
+  distributions). libssp in GCC is very broken and glibc-centric - it should
+  really be handled by the libc, which is what most distributions do.
+* LTO now fully functions correctly, despite both the linker and the compiler
+  being static binaries.

@@ -30,7 +30,7 @@ src_prepare() {
     # Because GCC is stupid, copy depcomp back in
     cp "${PREFIX}/share/automake-1.15/depcomp" .
     # Makefile.in only
-    BACK="${PWD}"
+    local BACK="${PWD}"
     find . -type d \
         -exec test -e "{}/Makefile.am" -a ! -e "{}/configure" \; \
         -print | while read d; do
@@ -48,7 +48,7 @@ src_prepare() {
     rm intl/plural.c
 
     # Remove flex generated files
-    rm gcc/gengtype-lex.c
+    rm gcc/gengtype-lex.cc
 
     # Remove unused generated files
     rm -r libgfortran/generated
@@ -75,11 +75,6 @@ src_configure() {
     mkdir build
     cd build
 
-    # std=gnu11 is the default for GCC10, so that is what it makes most
-    # sense to build with. (default, std=gnu90 is too outdated).
-    # For this GCC, we only build one stage, as extra is superfluous,
-    # since we build GCC 12 straight after.
-    CFLAGS="-std=gnu11" \
     LDFLAGS="-static" \
     ../configure \
         --prefix="${PREFIX}" \
@@ -87,14 +82,20 @@ src_configure() {
         --build=i386-unknown-linux-musl \
         --target=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
-        --disable-bootstrap \
+        --enable-bootstrap \
         --enable-static \
+        --enable-default-pie \
+        --enable-default-ssp \
+        --disable-plugins \
+        --disable-libssp \
+        --disable-libsanitizer \
         --program-transform-name= \
         --enable-languages=c,c++ \
         --with-system-zlib \
-        --disable-sjlj-exceptions \
         --disable-multilib \
-        --enable-threads=posix \
-        --disable-libsanitizer \
-        --disable-libssp
+        --enable-threads=posix
+}
+
+src_compile() {
+    make "${MAKEJOBS}" BOOT_LDFLAGS="-static"
 }

@@ -14,14 +14,21 @@ src_prepare() {
 
     rm zlib/aclocal.m4 zlib/configure
 
-    # Regenerate files
+    # Regenerate autoconf
     for dir in bfd binutils gas gold gprof intl ld libctf libiberty opcodes; do
         cd $dir
         AUTOPOINT=true ACLOCAL=aclocal-1.15 AUTOMAKE=automake-1.15 autoreconf-2.69 -fi
         cd ..
     done
-
     ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
+
+    # Regenerate directories with Makefile.am only
+    pushd gold
+    automake-1.15 -fai testsuite/Makefile
+    popd
+    pushd bfd
+    automake-1.15 -fai doc/Makefile
+    popd
 
     # Rebuild bison files
     touch -- */*.y
@@ -62,7 +69,7 @@ src_prepare() {
     ./bfd/mep-relocs.pl
 
     # Manpages
-    find . -type f -name '*.1' -or -name '*.man' -delete
+    find . -type f \( -name '*.1' -or -name '*.man' \) -delete
 }
 
 src_configure() {
@@ -104,4 +111,7 @@ src_install() {
         ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
     done
     popd
+
+    # FIXME: Binutils' manpages dates are not reproducible
+    rm -r "${DESTDIR}${PREFIX}/share/man"
 }
