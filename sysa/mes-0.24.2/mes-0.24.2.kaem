@@ -57,7 +57,7 @@ cp mes/module/srfi/srfi-9-struct.mes mes/module/srfi/srfi-9.mes
 cp mes/module/srfi/srfi-9/gnu-struct.mes mes/module/srfi/srfi-9/gnu.mes
 
 # Fixes to support newer M2-Planet
-catm ${MES_ARCH}_defs.M1 /M2libc/${MES_ARCH}/${MES_ARCH}_defs.M1 lib/m2/${MES_ARCH}/${MES_ARCH}_defs.M1
+catm ${MES_ARCH}_defs.M1 /M2libc/${ARCH}/${ARCH}_defs.M1 lib/m2/${MES_ARCH}/${MES_ARCH}_defs.M1
 cp ${MES_ARCH}_defs.M1 lib/m2/${MES_ARCH}/${MES_ARCH}_defs.M1
 rm ${MES_ARCH}_defs.M1
 
