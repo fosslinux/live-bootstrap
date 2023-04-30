@@ -12,7 +12,7 @@ set -ex
 # checksum-transcriber utility
 M2LIBC_PATH=/M2libc
 M2-Mesoplanet --architecture ${ARCH} -f checksum-transcriber.c -o ${bindir}/checksum-transcriber
-sha256sum -c checksum-transcriber.SHA256SUM
+sha256sum -c checksum-transcriber.${ARCH}.SHA256SUM
 
 # simple patch tool based on before and after chunks
 M2-Mesoplanet --architecture x86 -f simple-patch.c -o /x86/bin/simple-patch
