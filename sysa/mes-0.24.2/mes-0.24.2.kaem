@@ -70,7 +70,7 @@ chmod 755 ${bindir}/mes-m2
 mescc_in=scripts/mescc.scm.in
 replace --file ${mescc_in} --output ${mescc_in} --match-on @prefix@ --replace-with ${prefix}
 replace --file ${mescc_in} --output ${mescc_in} --match-on @VERSION@ --replace-with ${MES_VERSION}
-replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_cpu@ --replace-with ${ARCH}
+replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_cpu@ --replace-with ${MES_ARCH}
 replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_kernel@ --replace-with linux
 
 mescc_scm=${bindir}/mescc.scm
