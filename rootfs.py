@@ -84,6 +84,7 @@ def main():
                         help="Path to prebuilt binary packages.", nargs=None)
     parser.add_argument("--early-preseed",
                         help="Skip early stages of live-bootstrap.", nargs=None)
+    parser.add_argument("--internal-ci", help="INTERNAL for github CI")
 
     # QEMU arguments
     parser.add_argument("-q", "--qemu", help="Use QEMU",
@@ -177,42 +178,44 @@ print(shutil.which('chroot'))
         run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
 
     elif args.bwrap:
-        system_c.prepare(create_disk_image=False)
-        system_a.prepare(create_initramfs=False)
+        if not args.internal_ci or args.internal_ci == "pass1":
+            system_c.prepare(create_disk_image=False)
+            system_a.prepare(create_initramfs=False)
 
-        arch = stage0_arch_map.get(args.arch, args.arch)
-        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        run('bwrap', '--unshare-user',
-                     '--uid', '0',
-                     '--gid', '0',
-                     '--unshare-net',
-                     '--clearenv',
-                     '--setenv', 'PATH', '/usr/bin',
-                     '--bind', system_a.tmp_dir, '/',
-                     '--dir', '/dev',
-                     '--dev-bind', '/dev/null', '/dev/null',
-                     '--dev-bind', '/dev/zero', '/dev/zero',
-                     '--dev-bind', '/dev/random', '/dev/random',
-                     '--dev-bind', '/dev/urandom', '/dev/urandom',
-                     init)
+            arch = stage0_arch_map.get(args.arch, args.arch)
+            init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+            run('bwrap', '--unshare-user',
+                         '--uid', '0',
+                         '--gid', '0',
+                         '--unshare-net',
+                         '--clearenv',
+                         '--setenv', 'PATH', '/usr/bin',
+                         '--bind', system_a.tmp_dir, '/',
+                         '--dir', '/dev',
+                         '--dev-bind', '/dev/null', '/dev/null',
+                         '--dev-bind', '/dev/zero', '/dev/zero',
+                         '--dev-bind', '/dev/random', '/dev/random',
+                         '--dev-bind', '/dev/urandom', '/dev/urandom',
+                         init)
 
-        run('bwrap', '--unshare-user',
-                     '--uid', '0',
-                     '--gid', '0',
-                     '--unshare-net' if args.external_sources else None,
-                     '--clearenv',
-                     '--setenv', 'PATH', '/usr/bin',
-                     '--bind', system_a.tmp_dir + "/sysc_image", '/',
-                     '--dir', '/dev',
-                     '--dev-bind', '/dev/null', '/dev/null',
-                     '--dev-bind', '/dev/zero', '/dev/zero',
-                     '--dev-bind', '/dev/random', '/dev/random',
-                     '--dev-bind', '/dev/urandom', '/dev/urandom',
-                     '--tmpfs', '/dev/shm',
-                     '--proc', '/proc',
-                     '--bind', '/sys', '/sys',
-                     '--tmpfs', '/tmp',
-                     '/init')
+        if not args.internal_ci or args.internal_ci == "pass2":
+            run('bwrap', '--unshare-user',
+                         '--uid', '0',
+                         '--gid', '0',
+                         '--unshare-net' if args.external_sources else None,
+                         '--clearenv',
+                         '--setenv', 'PATH', '/usr/bin',
+                         '--bind', system_a.tmp_dir + "/sysc_image", '/',
+                         '--dir', '/dev',
+                         '--dev-bind', '/dev/null', '/dev/null',
+                         '--dev-bind', '/dev/zero', '/dev/zero',
+                         '--dev-bind', '/dev/random', '/dev/random',
+                         '--dev-bind', '/dev/urandom', '/dev/urandom',
+                         '--tmpfs', '/dev/shm',
+                         '--proc', '/proc',
+                         '--bind', '/sys', '/sys',
+                         '--tmpfs', '/tmp',
+                         '/init')
 
     elif args.bare_metal:
         if args.kernel:
