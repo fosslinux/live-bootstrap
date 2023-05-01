@@ -31,10 +31,10 @@ cd ..
 
 cd build
 untar --file ../src/${TCC_TAR}.tar
-/x86/bin/simple-patch /sysa/tcc-0.9.26/build/tcc-0.9.26-1136-g5bba73cc/tcctools.c \
-    /sysa/tcc-0.9.26/simple-patches/remove-fileopen.before /sysa/tcc-0.9.26/simple-patches/remove-fileopen.after
-/x86/bin/simple-patch /sysa/tcc-0.9.26/build/tcc-0.9.26-1136-g5bba73cc/tcctools.c \
-    /sysa/tcc-0.9.26/simple-patches/addback-fileopen.before /sysa/tcc-0.9.26/simple-patches/addback-fileopen.after
+/x86/bin/simple-patch ${TCC_PKG}/tcctools.c \
+    ../simple-patches/remove-fileopen.before ../simple-patches/remove-fileopen.after
+/x86/bin/simple-patch ${TCC_PKG}/tcctools.c \
+    ../simple-patches/addback-fileopen.before ../simple-patches/addback-fileopen.after
 
 untar --non-strict --file ../src/${MES_PKG}.tar
 
