@@ -1,5 +1,6 @@
 SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2023 Emily Trau <emily@downunderctf.com>
 
 SPDX-License-Identifier: CDDL-1.0
 
@@ -227,7 +228,7 @@ diff -U3 -r yacc/y1.c yacc/y1.c
 -		q = chcopy(q, L"    (");
 -		swprintf(q, q + isize - sarr, L"%d)", -i);
 +		q = chcopy(q, "    (");
-+		sprintf(q, q + isize - sarr, "%d)", -i);
++		snprintf(q, q + isize - sarr, "%d)", -i);
  	}
  	return (sarr);
  }
@@ -393,7 +394,7 @@ diff -U3 -r yacc/y2.c yacc/y2.c
  				lrprnt();		/* dump lhs, rhs */
 -				swprintf(actname, sizeof actname,
 -						L"$$%d", nprod);
-+				sprintf(actname, sizeof actname,
++				snprintf(actname, sizeof actname,
 +						"$$%d", nprod);
  				/*
  				 * make it nonterminal
