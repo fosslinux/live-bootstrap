@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2023 Emily Trau <emily@downunderctf.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -76,7 +77,7 @@ CFLAGS  = -I . -I lib \
 
 SRC_DIR=src
 
-COREUTILS = basename cat chmod cksum csplit cut echo expand false fmt fold head id join kill link ln logname mkfifo mkdir mknod nl od paste pathchk printf ptx pwd readlink rmdir seq sleep split sum tail tee tr tsort unexpand unlink wc whoami tac test touch true yes
+COREUTILS = basename cat chmod cksum csplit cut dirname echo expand expr factor false fmt fold head hostname id join kill link ln logname mkfifo mkdir mknod nl od paste pathchk pr printf ptx pwd readlink rmdir seq sleep sort split sum tail tee tr tsort unexpand uniq unlink wc whoami tac test touch true yes
 
 BINARIES = $(addprefix $(SRC_DIR)/, $(COREUTILS))
 
@@ -84,7 +85,7 @@ ALL=$(BINARIES) $(SRC_DIR)/cp $(SRC_DIR)/ls $(SRC_DIR)/install $(SRC_DIR)/md5sum
 all: $(BINARIES) $(SRC_DIR)/cp $(SRC_DIR)/ls $(SRC_DIR)/install $(SRC_DIR)/md5sum $(SRC_DIR)/mv $(SRC_DIR)/rm $(SRC_DIR)/sha1sum
 
 LIB_DIR = lib
-LIB_SRC = acl posixtm posixver strftime getopt getopt1 hash hash-pjw addext argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode __fpending file-type fnmatch fopen-safer full-read full-write getline getstr gettime hard-locale human idcache isdir imaxtostr linebuffer localcharset long-options makepath mbswidth md5 memcasecmp memcoll modechange offtostr path-concat physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha stpcpy stripslash strtoimax strtoumax umaxtostr unicodeio userspec version-etc xgetcwd xgethostname xmalloc xmemcoll xnanosleep xreadlink xstrdup xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist regex canonicalize mkstemp memrchr euidaccess ftw dirfd obstack strverscmp strftime tempname tsearch
+LIB_SRC = acl posixtm posixver strftime getopt getopt1 hash hash-pjw addext argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode __fpending file-type fnmatch fopen-safer full-read full-write gethostname getline getstr gettime hard-locale human idcache isdir imaxtostr linebuffer localcharset long-options makepath mbswidth md5 memcasecmp memcoll modechange offtostr path-concat physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha stpcpy stripslash strtoimax strtoumax umaxtostr unicodeio userspec version-etc xgetcwd xgethostname xmalloc xmemcoll xnanosleep xreadlink xstrdup xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist regex canonicalize mkstemp memrchr euidaccess ftw dirfd obstack strverscmp strftime tempname tsearch
 
 LIB_OBJECTS = $(addprefix $(LIB_DIR)/, $(addsuffix .o, $(LIB_SRC)))
 
