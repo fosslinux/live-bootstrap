@@ -15,6 +15,7 @@ you can run bootstap inside chroot.
 
 import argparse
 import os
+import shutil
 
 from sysa import SysA
 from sysc import SysC
@@ -35,6 +36,7 @@ def create_configuration_file(args):
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write("DISK=sda1\n")
+        config.write(f"INTERNAL_CI={args.internal_ci}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             config.write("KERNEL_BOOTSTRAP=True\n")
         else:
@@ -198,7 +200,9 @@ print(shutil.which('chroot'))
                          '--dev-bind', '/dev/urandom', '/dev/urandom',
                          init)
 
-        if not args.internal_ci or args.internal_ci == "pass2":
+        if not args.internal_ci or args.internal_ci == "pass2" or args.internal_ci == "pass3":
+            shutil.copy2(os.path.join('sysa', 'bootstrap.cfg'),
+                         os.path.join('tmp', 'sysa', 'sysc_image', 'usr', 'src', 'bootstrap.cfg'))
             run('bwrap', '--unshare-user',
                          '--uid', '0',
                          '--gid', '0',

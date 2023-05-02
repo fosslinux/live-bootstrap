@@ -57,11 +57,11 @@ jobs:
       - name: Archive sysc_image
         uses: actions/upload-artifact@v3
         with:
-          name: sysc_image
+          name: internal_sysc_image
           path: sysc_image.tar
 
-  sysc:
-    name: Run sysc under bubblewrap
+  sysc1:
+    name: Run sysc (part 1) under bubblewrap
     needs: sysa
     runs-on: ubuntu-latest
     steps:
@@ -77,11 +77,46 @@ jobs:
       - name: Get sysc_image
         uses: actions/download-artifact@v3
         with:
-          name: sysc_image
+          name: internal_sysc_image
       - name: Extract sysc_image
         run: tar -xf sysc_image.tar
       - name: Run bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass2
+      - name: Archive created packages
+        if: always() # archive failed builds progress
+        uses: actions/upload-artifact@v3
+        with:
+          name: internal_packages_sysc1
+          path: tmp/sysa/sysc_image/usr/src/repo/**
+
+  sysc2:
+    name: Run sysc (part 2) under bubblewrap
+    needs: sysc1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install bubblewrap
+        run: sudo apt install bubblewrap
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          # There is a strange bug(?) in nongnu, when you clone a git repository
+          # against a commit != HEAD with depth=1, it errors out.
+          fetch-depth: 0
+      - name: Get sysc_image
+        uses: actions/download-artifact@v3
+        with:
+          name: internal_sysc_image
+      - name: Extract sysc_image
+        run: tar -xf sysc_image.tar
+      # By doing this, all packages that have already been compiled will come from the preseed.
+      - name: Get packages repo progress
+        uses: actions/download-artifact@v3
+        with:
+          name: internal_packages_sysc1
+          path: tmp/sysa/sysc_image/usr/src/repo-preseeded/
+      - name: Run bootstrap
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass3
       - name: Archive created packages
         if: always() # archive failed builds
         uses: actions/upload-artifact@v3

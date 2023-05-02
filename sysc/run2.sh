@@ -120,6 +120,8 @@ build python-3.8.16
 
 build python-3.11.1
 
+[ "${INTERNAL_CI}" = "pass2" ] && exit 0
+
 build gcc-10.4.0
 
 build binutils-2.38 pass2.sh
