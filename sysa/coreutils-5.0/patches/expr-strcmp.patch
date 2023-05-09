@@ -1,0 +1,26 @@
+SPDX-FileCopyrightText: 2023 Emily Trau <emily@downunderctf.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+strcoll() does not exist in mes libc, change it to strcmp.
+
+--- src/expr.c
++++ src/expr.c
+@@ -332,7 +332,7 @@ nextarg (char *str)
+     return 0;
+   else
+     {
+-      int r = strcoll (*args, str) == 0;
++      int r = strcmp (*args, str) == 0;
+       args += r;
+       return r;
+     }
+@@ -668,7 +668,7 @@ eval2 (void)
+       r = eval3 ();
+       tostring (l);
+       tostring (r);
+-      lval = strcoll (l->u.s, r->u.s);
++      lval = strcmp (l->u.s, r->u.s);
+       rval = 0;
+       if (toarith (l) && toarith (r))
+ 	{

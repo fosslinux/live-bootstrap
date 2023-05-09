@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2023 Emily Trau <emily@downunderctf.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -39,6 +40,8 @@ patch -Np0 -i ../../patches/ls-strcmp.patch
 patch -Np0 -i ../../patches/touch-getdate.patch
 patch -Np0 -i ../../patches/touch-dereference.patch
 patch -Np0 -i ../../patches/tac-uint64.patch
+patch -Np0 -i ../../patches/expr-strcmp.patch
+patch -Np0 -i ../../patches/sort-locale.patch
 
 # Build and install
 make -f Makefile PREFIX=${prefix}
