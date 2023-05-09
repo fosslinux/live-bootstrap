@@ -37,7 +37,7 @@ class SysC(SysGeneral):
 
         if self.external_sources:
             if create_disk_image:
-                rootfs_dir = self._tmpdir.mount_disk("sysc")
+                rootfs_dir = self._tmpdir.mount_disk("sysc", size="16G")
             else:
                 rootfs_dir = self.tmp_dir
             source_manifest = self.get_source_manifest()
