@@ -124,7 +124,7 @@ build gcc-10.4.0
 
 build binutils-2.38 pass2.sh
 
-build gcc-12.2.0
+build gcc-13.1.0
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
