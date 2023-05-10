@@ -21,6 +21,7 @@
 /usr/bin/checksum-transcriber
 /usr/bin/tcc
 /usr/bin/tcc-0.9.26
+/usr/bin/kexec-linux
 /usr/lib/mes/libc.a
 /usr/lib/mes/libgetopt.a
 /usr/lib/mes/crt1.o

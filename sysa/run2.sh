@@ -25,16 +25,20 @@ create_sysb() {
 }
 
 go_sysb() {
-    # Mount proc for kexec
-    mkdir /proc /etc
-    mount -t proc proc /proc
-    # kexec time
-    echo "Loading kernel + sysb initramfs using kexec"
-    kexec -l "/boot/linux-4.9.10" --console-serial \
-        --initrd="/boot/initramfs-sysb.cpio.gz" \
-        --append="init=/init console=ttyS0"
-    echo "kexecing into sysb"
-    kexec -e
+    if [ "${KERNEL_BOOTSTRAP}" = True ]; then
+        kexec-linux "/dev/ram1" "/boot/linux-4.9.10" "/boot/initramfs-sysb.cpio.gz"
+    else
+        # Mount proc for kexec
+        mkdir /proc /etc
+        mount -t proc proc /proc
+        # kexec time
+        echo "Loading kernel + sysb initramfs using kexec"
+        kexec -l "/boot/linux-4.9.10" --console-serial \
+            --initrd="/boot/initramfs-sysb.cpio.gz" \
+            --append="init=/init console=ttyS0"
+        echo "kexecing into sysb"
+        kexec -e
+    fi
 }
 
 build automake-1.15.1
@@ -96,12 +100,7 @@ build musl-1.2.3 '' no-patches
 
 if [ "${CHROOT}" = False ]; then
     create_sysb
-    if [ "${KERNEL_BOOTSTRAP}" = True ]; then
-        echo "Kernel bootstrapping successful."
-        echo "NOTE: Transition to Linux and building remaining packages is under development."
-    else
-        go_sysb
-    fi
+    go_sysb
 else
     # In chroot mode transition directly into System C.
     SYSC=/sysc_image

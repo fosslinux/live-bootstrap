@@ -57,7 +57,7 @@ fi
 
 if match x${BUILD_FIWIX} xTrue; then
     # The Fiwix kernel
-    pkg="fiwix-1.4.0-lb1"
+    pkg="fiwix-1.4.0-lb2"
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
     cd ..
@@ -70,6 +70,12 @@ if match x${BUILD_FIWIX} xTrue; then
 
     # Live boot loader for Fiwix
     pkg="kexec-fiwix"
+    cd ${pkg}
+    kaem --verbose --file ${pkg}.kaem
+    cd ..
+
+    # Live boot loader for Fiwix to Linux
+    pkg="kexec-linux"
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
     cd ..

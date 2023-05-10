@@ -35,11 +35,12 @@ def create_configuration_file(args):
         config.write(f"CHROOT_ONLY_SYSA={args.bwrap}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
-        config.write("DISK=sda1\n")
         config.write(f"INTERNAL_CI={args.internal_ci}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
+            config.write("DISK=sda\n")
             config.write("KERNEL_BOOTSTRAP=True\n")
         else:
+            config.write("DISK=sda1\n")
             config.write("KERNEL_BOOTSTRAP=False\n")
         config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
 

@@ -1,0 +1,209 @@
+# SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
+# SPDX-License-Identifier: MIT
+#
+# Builder-Hex0 is a small bootable machine image which acts as
+# a bootloader using a hex0 compiler. It compiles hex0 code starting
+# at sector 2, placing the compiled code at address 0x7E00 and then
+# and then jumps to the resulting binary.
+#
+# hex0 is a "language" for binary encoding in hexadecimal
+# with support for comments.
+
+# Functions:
+# _start
+# read_sector
+# read
+# compile
+
+#------------------------------------------------------------
+# Memory:
+#  9FC00 -  FFFFF BIOS
+#   7C00 -   7E00 MBR/code
+#   7A00 -   7BFF sector read buffer
+# < 7700          real mode stack
+#------------------------------------------------------------
+
+
+# ------------------------------------------------------------
+# Stub Entry Point
+#
+# boot drive is in dl
+#
+#[7C00][15]
+#:_start
+
+# We cannot be sure the registers are initialized to zero so we
+# do that first. We far jump to mbr_main in order to set CS.
+31 C0           # xor ax, ax
+8E D8           # mov ds, ax
+8E C0           # mov es, ax
+8E D0           # mov ss, ax
+BC 00 77        # mov sp, 0x7700
+FC              # cld ; clear direction flag
+
+#----------------------------------------
+# Compile hex0 to binary
+# compile(dl=boot_drive):
+#[7C0C]
+BF 00 7E        # mov di, 0x7E00
+
+# this flag is set after the first digit is seen
+31 DB           # xor bx,bx
+
+#:read_loop
+9A 91 7C 00 00  # call read
+84 C0           # test al, al
+74 4D           # jz finish
+
+3C 23           # cmp al, '#'
+74 28           # jz skip_comment
+
+3C 3B           # cmp ';'
+74 24           # jz skip_comment
+
+3C 66           # cmp al, 'f'
+7F EB           # jg read_loop
+
+3C 61           # cmp al, 'a'
+7C 04           # jl maybe_upper
+
+# Handle a to f
+2C 57           # sub al, 'a'-10 == 87 = 0x57
+EB 23           # jmp maybe_store
+
+#:maybe_upper
+3C 46           # cmp al, 'F'
+7F DF           # jg read_loop
+
+3C 41           # cmp al, 'A'
+7C 04           # jl maybe_digit
+
+# Handle A to F
+2C 37           # sub al, 'A'-10 == 55 = x37
+EB 17           # jmp maybe_store
+
+#:maybe_digit
+3C 39           # cmp al, '9'
+7F D3           # jg read_loop
+
+3C 30           # cmp al, '0'
+7C CF           # jl read_loop
+
+# Handle 0 to 9
+2C 30           # sub al, '0' == x30
+EB 0B           # jmp maybe_store
+
+#:skip_comment
+9A 91 7C 00 00  # call read
+3C 0A           # cmp al, '\n'
+75 F7           # jnz skip_comment
+EB C0           # jmp read_loop
+
+# only store on second digit
+#:maybe_store
+84 DB           # test bl, bl
+75 09           # jnz second_digit
+
+# If on first digit, record and keep going
+#:first_digit
+C0 E0 04        # shl al, 4
+88 C7           # mov bh, al
+FE C3           # inc bl
+EB B3           # jmp read_loop
+
+# If on second digit, store and clear state
+#:second_digit
+08 C7           # or bh, al
+88 F8           # mov al, bh
+AA              # stosb
+31 DB           # xor bx, bx
+
+EB AA           # jmp read_loop
+
+#:finish
+EA 00 7E 00 00  # ljmp $0000:7E00       ; jump to stage2
+
+
+#[7C6C][  ]
+#:read_sector(di = *dest_addr, cx=cylinder/sector, dh = head, dl=drive)
+#
+# returns: di - next byte to write to
+#          cx,dh - next disk sector to read from
+#
+50              # push ax
+53              # push bx
+
+89 FB           # mov bx, di      ; int 13 writes to bx
+
+#:read_one_loop
+B4 02           # mov ah, 2        ; rw mode = 02 (read)
+B0 01           # mov al, 1        ; num_sectors
+CD 13           # int 0x13
+72 F8           # jnc read_one_loop
+3C 01           # cmp al, 1
+75 F4           # jnz read_one_loop
+
+80 F9 3F        # cmp cl, 0x3f        ; if sector_num == max_sector
+74 04           # jz next_head        ;      goto next_head
+FE C1           # inc cl              ; else sector_num++;
+EB 04           # jmp cleanup
+
+#next_head:
+FE C6           # inc dh              ; else head_num++
+B1 01           # mov cl, 1           ; sector = 1
+
+5B              # pop bx
+58              # pop ax
+CB              # retf
+
+
+#----------------------------------------
+# last_read_location
+#[7C8C]
+02 00    ; last_cylinder/sector
+00       ; last_head
+FF 01    ; last_byte
+
+#[7C91]
+#:read()
+53                    # push bx
+51                    # push cx
+52                    # push dx
+56                    # push si
+57                    # push di
+
+# get current position
+BB 8C 7C              # mov bx, last_read_location
+8B 0F                 # mov cx, [bx]
+8A 77 02              # mov dh, [bx+2]
+8B 47 03              # mov ax, [bx+3]
+
+#end of sector?
+3D FF 01              # cmp ax, 0x01ff
+74 03                 # je next sector
+
+#nextchar:
+40                    # inc ax
+EB 0F                 # jmp getchar
+
+#read next sector
+BF 00 78              # mov di, 0x7800
+9A 6C 7C 00 00        # call read_sector
+# save new location and offset
+89 0F                 # mov [bx], cx
+88 77 02              # mov [bx+2], dh
+31 C0                 # xor ax, ax
+
+#getchar:
+89 47 03              # mov [bx+3], ax
+BE 00 78              # mov si, 0x7800
+89 C3                 # mov bx, ax
+8A 00                 # mov al, [si+bx]
+
+#finish:
+5F                    # pop di
+5E                    # pop si
+5A                    # pop dx
+59                    # pop cx
+5B                    # pop bx
+CB                    # ret

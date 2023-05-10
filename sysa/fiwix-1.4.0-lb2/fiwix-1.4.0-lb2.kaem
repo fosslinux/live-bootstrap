@@ -18,9 +18,9 @@ cd build
 untar --file ../src/${pkg}.tar
 cd ${pkg}
 
-alias as="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -traditional -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include"
+alias as="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -traditional -I/sysa/fiwix-1.4.0-lb2/build/fiwix-1.4.0-lb2/include"
 
-alias cc="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb1/build/fiwix-1.4.0-lb1/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes"
+alias cc="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -I/sysa/fiwix-1.4.0-lb2/build/fiwix-1.4.0-lb2/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes"
 
 cd kernel
 as -c -o boot.o boot.S
@@ -42,6 +42,7 @@ cc -c -o sleep.o sleep.c
 cc -c -o signal.o signal.c
 cc -c -o process.o process.c
 cc -c -o multiboot.o multiboot.c
+cc -c -o kexec.o kexec.c
 
 cd syscalls
 cc -c -o umount.o umount.c
@@ -278,6 +279,7 @@ cc -c -o floppy.o floppy.c
 cc -c -o part.o part.c
 cc -c -o ata.o ata.c
 cc -c -o ata_hd.o ata_hd.c
+cc -c -o ata_pci.o ata_pci.c
 cc -c -o atapi.o atapi.c
 cc -c -o atapi_cd.o atapi_cd.c
 cc -c -o ramdisk.o ramdisk.c
@@ -321,6 +323,7 @@ tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
 	kernel/signal.o \
 	kernel/process.o \
 	kernel/multiboot.o \
+	kernel/kexec.o \
 	kernel/syscalls/umount.o \
 	kernel/syscalls/getgid.o \
 	kernel/syscalls/getppid.o \
@@ -529,6 +532,7 @@ tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
 	drivers/block/part.o \
 	drivers/block/ata.o \
 	drivers/block/ata_hd.o \
+	drivers/block/ata_pci.o \
 	drivers/block/atapi.o \
 	drivers/block/atapi_cd.o \
 	drivers/block/ramdisk.o \

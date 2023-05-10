@@ -267,6 +267,18 @@ int main(int argc, char **argv)
 		printf("ext4_mknod error: %d  \n", err);
 		return EXIT_FAILURE;
 	}
+	printf("ext4_mknod /mp/dev/ram0\n");
+	err = ext4_mknod("/mp/dev/ram0", EXT4_DE_BLKDEV, MKDEV(1, 0));
+	if (err != EOK) {
+		printf("ext4_mknod error: %d  \n", err);
+		return EXIT_FAILURE;
+	}
+	printf("ext4_mknod /mp/dev/ram1\n");
+	err = ext4_mknod("/mp/dev/ram1", EXT4_DE_BLKDEV, MKDEV(1, 1));
+	if (err != EOK) {
+		printf("ext4_mknod error: %d  \n", err);
+		return EXIT_FAILURE;
+	}
 
 	copy_file("/usr/bin/kaem", "/mp/init");
 	copy_file("/sysa/after2.kaem", "/mp/kaem.run");

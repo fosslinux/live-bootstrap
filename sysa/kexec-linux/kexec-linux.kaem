@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
+# SPDX-License-Identifier: MIT
+cd src
+tcc -static -m32 -march=i386 -std=c89 -I../../tcc/tcc-0.9.27/include -o ${bindir}/kexec-linux kexec-linux.c
+cd ..
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum /usr/bin/kexec-linux
+    sha256sum -o ${pkg}.checksums \
+        /usr/bin/kexec-linux
+
+    cp ${pkg}.checksums ${srcdir}
+else
+    sha256sum -c ${pkg}.checksums
+fi

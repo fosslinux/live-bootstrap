@@ -65,15 +65,15 @@ if [ -z "${DISK}" ] || ! [ -e "/dev/${DISK}" ]; then
     echo "DISK=${DISK}" >> /usr/src/bootstrap.cfg
 fi
 
-# Is it a full disk, and not a partition
+# Is it a full disk, and not a partition?
 # shellcheck disable=SC2012
 if [ $(($(ls -l "/dev/${DISK}" | sed "s/.*, *//" | sed "s/ .*//") % 8)) -eq 0 ]; then
-    if ! fdisk -l "/dev/${DISK}" | grep -qE "${DISK}p?[0-9]" ; then
-        echo "Creating partition table and partition"
-        echo ";" | sfdisk "/dev/${DISK}"
-        mkfs.ext4 "/dev/${DISK}1"
-        DISK="${DISK}1"
-    fi
+    echo "Creating partition table..."
+    echo ";" | sfdisk "/dev/${DISK}"
+    fdisk -l "/dev/${DISK}"
+    echo "Creating ext4 partition..."
+    mkfs.ext4 "/dev/${DISK}1"
+    DISK="${DISK}1"
 fi
 echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
 

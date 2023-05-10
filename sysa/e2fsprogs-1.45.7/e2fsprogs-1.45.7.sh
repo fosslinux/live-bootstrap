@@ -30,6 +30,7 @@ src_prepare() {
 src_configure() {
     ./configure --prefix="${PREFIX}" \
         --sbindir="${PREFIX}/bin" \
+        --disable-tls \
         with_udev_rules_dir=no \
         with_systemd_unit_dir=no
 }

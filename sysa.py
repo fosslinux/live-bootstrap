@@ -193,12 +193,24 @@ class SysA(SysGeneral):
 
     def create_builder_hex0_disk_image(self, image_file_name):
         """Create builder-hex0 disk image"""
-        run(os.path.join('sysa', 'stage0-posix', 'src',
-                         'bootstrap-seeds', 'POSIX', 'x86', 'hex0-seed'),
-            os.path.join('kernel-bootstrap', 'builder-hex0-x86.hex0'),
-            image_file_name)
+        shutil.copyfile(os.path.join('kernel-bootstrap', 'builder-hex0-x86-stage1.bin'), image_file_name)
 
         with open(image_file_name, 'ab') as image_file:
+            current_size = os.stat(image_file_name).st_size
+            while current_size != 510:
+                image_file.write(b'\0')
+                current_size += 1
+            image_file.write(b'\x55')
+            image_file.write(b'\xAA')
+
+            # Append stage2 hex0 source
+            with open(os.path.join('kernel-bootstrap', 'builder-hex0-x86-stage2.hex0')) as infile:
+                image_file.write(infile.read().encode())
+            # Pad to next sector
+            current_size = os.stat(image_file_name).st_size
+            while current_size % 512 != 0:
+                image_file.write(b'\0')
+                current_size += 1
             self.append_srcfs(image_file)
 
         current_size = os.stat(image_file_name).st_size
@@ -213,6 +225,6 @@ class SysA(SysGeneral):
 
         # fill file with zeros up to desired size, one megabyte at a time
         with open(image_file_name, 'ab') as image_file:
-            while current_size < 1008 * megabyte:
+            while current_size < 16384 * megabyte:
                 image_file.write(b'\0' * megabyte)
                 current_size += megabyte

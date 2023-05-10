@@ -77,10 +77,10 @@ int main() {
 	puts("Preparing multiboot info for kernel...");
 
 	char cmdline[256];
-	sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2", INITRD_MB * 1024);
+	sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024);
 	char * boot_loader_name = "kexec-fiwix";
 
-	unsigned int next_avail_mem = 0x8000;
+	unsigned int next_avail_mem = 0x9800;
 	multiboot_info_t * pmultiboot_info = (multiboot_info_t *) next_avail_mem;
 	memset(pmultiboot_info, 0, sizeof(multiboot_info_t));
 
