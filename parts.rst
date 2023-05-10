@@ -11,13 +11,15 @@
 bootstrap-seeds
 ===============
 
-This is where it all begins. We start with the two raw binary seeds ``hex0-seed`` and ``kaem-optional-seed``.
+This is where it all begins.
 
-First, we use those seeds to rebuild themselves.
+A kernel bootstrapping option is used by default at the beginning. The tiny ``builder-hex0-x86-stage1`` binary seed boots, builds and runs the ``builder-hex0-x86-stage2`` kernel. The stage2 kernel has its own built-in shell, the ``hex0`` compiler and the ``src`` tool to load files into its memory file system. In this case the first step is to build the ``hex0-seed`` and ``kaem-optional-seed`` binaries from hex0 source.
 
-Note that all early compilers before ``mes`` are part of `stage0-posix <https://github.com/oriansj/stage0-posix>`_.
+Note that all early shells and compilers before ``mes`` are part of `stage0-posix <https://github.com/oriansj/stage0-posix>`_.
 
-A kernel bootstrapping option is used by default at the beginning. ``hex0-seed`` can be used to compile the ``builder-hex0`` kernel which has its own built-in shell, the ``hex0`` compiler and the ``src`` tool to load files into its file system. ``builder-hex0`` runs stage0-posix and then builds ``mes`` and ``tcc``. It then builds and launches the `Fiwix <https://github.com/mikaku/Fiwix>` kernel which runs the build until Linux takes over.
+``builder-hex0-x86-stage2`` runs as the kernel for building the stage0-posix compilers and then ``mes`` and ``tcc``. Then the `Fiwix <https://github.com/mikaku/Fiwix>` kernel is built and launched. Then Fiwix runs the build until Linux takes over. 
+
+If chroot or bwrap is specified or if a pre-existing kernel is provided for QEMU then we start with the two raw binary seeds ``hex0-seed`` and ``kaem-optional-seed``. We use those seeds to rebuild themselves.
 
 
 hex0
@@ -39,9 +41,16 @@ In the first steps we use initial ``hex0`` binary seed to rebuild ``kaem-optiona
 ``hex0`` can be approximated with: ``sed 's/[;#].*$//g' $input_file | xxd -r -p > $output_file``
 
 
-builder-hex0
-============
-By default (when kernel bootstrap is enabled), the ``builder-hex0`` kernel boots from a hard drive and loads an enormous shell script which embeds files (loaded with the ``src`` command) and the initial commands to build ``hex0-seed``, ``kaem-optional-seed``, and the command which launches stage0-posix using ``kaem-optional-seed`` and the stage0-posix launch script ``kaem.x86``. Builder-hex0 is written in hex0 and can be compiled with any one of ``hex0-seed``, ``sed``, the tiny ``builder-hex0-mini`` boot kernel or it can build itself.
+builder-hex0-x86-stage1
+=======================
+
+By default (when kernel bootstrap is enabled), the ``builder-hex0-x86-stage1`` boot loader/compiler boots from a hard drive and loads hex0 source code from disk, compiles, and runs the builder-hex0-x86-stage2 kernel. Builder-hex0-x86-stage1 is written in hex0 and can be compiled with any one of ``hex0-seed``, ``sed``, or the tiny ``builder-hex0-mini`` binary.
+
+
+builder-hex0-x86-stage2
+=======================
+
+When kernel bootstrap is enabled, the ``builder-hex0-x86-stage2`` kernel loads an enormous shell script which embeds files (loaded with the ``src`` command) and the initial commands to build ``hex0-seed``, ``kaem-optional-seed``, and the command which launches stage0-posix using ``kaem-optional-seed`` and the stage0-posix launch script ``kaem.x86``.
 
 
 kaem-optional
@@ -221,6 +230,12 @@ kexec-fiwix
 
 If the kernel bootstrap option is enabled then a C program `kexec-fiwix` is compiled
 and run which places the Fiwix ram drive in memory and launches the Fiwix kernel.
+
+kexec-linux
+===========
+
+If the kernel bootstrap option is enabled then a C program `kexec-linux` is compiled.
+This is used as part of the go_sysb step later to launch the Linux kernel.
 
 make 3.82
 =========
@@ -686,11 +701,6 @@ The next step is not a package, but the creation of the sysb rootfs, containing
 all of the scripts for sysb (which merely move to sysc). Again, this is only
 done in non-chroot mode, because sysb does not exist in chroot mode.
 
-musl 1.2.3
-==========
-Prior to building and booting Linux, musl is rebuilt yet again with syscalls
-``clone`` and ``set_thread_area`` enabled for Linux thread support.
-
 Linux kernel 4.9.10
 ===================
 
@@ -710,6 +720,11 @@ and removing modules. Modules are unused. They are difficult to transfer to
 subsequent systems, and we do not have ``modprobe``. Lastly,
 the initramfs of sysb is generated in this stage, using ``gen_init_cpio`` within
 the Linux kernel tree. This avoids the compilation of ``cpio`` as well.
+
+musl 1.2.3
+==========
+Prior to booting Linux, musl is rebuilt yet again with syscalls
+``clone`` and ``set_thread_area`` enabled for Linux thread support.
 
 go_sysb
 =======
