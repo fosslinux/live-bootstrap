@@ -13,13 +13,13 @@ bootstrap-seeds
 
 This is where it all begins.
 
-A kernel bootstrapping option is used by default at the beginning. The tiny ``builder-hex0-x86-stage1`` binary seed boots, builds and runs the ``builder-hex0-x86-stage2`` kernel. The stage2 kernel has its own built-in shell, the ``hex0`` compiler and the ``src`` tool to load files into its memory file system. In this case the first step is to build the ``hex0-seed`` and ``kaem-optional-seed`` binaries from hex0 source.
+A kernel bootstrapping option is used by default at the beginning. The tiny ``builder-hex0-x86-stage1`` binary seed boots, builds and runs the ``builder-hex0-x86-stage2`` kernel. The ``builder-hex0-x86-stage1`` and ``builder-hex0-x86-stage2`` kernels are written in ``hex0``. The stage2 kernel has its own built-in shell, the ``hex0`` compiler and the ``src`` tool to load files into its memory file system. In this case the first step is to build the ``hex0-seed`` and ``kaem-optional-seed`` binaries from ``hex0`` source.
 
 Note that all early shells and compilers before ``mes`` are part of `stage0-posix <https://github.com/oriansj/stage0-posix>`_.
 
 ``builder-hex0-x86-stage2`` runs as the kernel for building the stage0-posix compilers and then ``mes`` and ``tcc``. Then the `Fiwix <https://github.com/mikaku/Fiwix>` kernel is built and launched. Then Fiwix runs the build until Linux takes over. 
 
-If chroot or bwrap is specified or if a pre-existing kernel is provided for QEMU then we start with the two raw binary seeds ``hex0-seed`` and ``kaem-optional-seed``. We use those seeds to rebuild themselves.
+If chroot or bwrap is specified or if a pre-existing kernel is provided then we start with the two raw binary seeds ``hex0-seed`` and ``kaem-optional-seed``. We use those seeds to rebuild themselves.
 
 
 hex0
@@ -44,7 +44,7 @@ In the first steps we use initial ``hex0`` binary seed to rebuild ``kaem-optiona
 builder-hex0-x86-stage1
 =======================
 
-By default (when kernel bootstrap is enabled), the ``builder-hex0-x86-stage1`` boot loader/compiler boots from a hard drive and loads hex0 source code from disk, compiles, and runs the builder-hex0-x86-stage2 kernel. Builder-hex0-x86-stage1 is written in hex0 and can be compiled with any one of ``hex0-seed``, ``sed``, or the tiny ``builder-hex0-mini`` binary.
+By default (when kernel bootstrap is enabled), the ``builder-hex0-x86-stage1`` boot loader/compiler boots from a hard drive and loads ``hex0`` source code from disk, compiles, and runs the ``builder-hex0-x86-stage2`` kernel. ``builder-hex0-x86-stage1`` is written in ``hex0`` and can be compiled with any one of ``hex0-seed``, ``sed``, or the tiny ``builder-hex0-mini`` binary.
 
 
 builder-hex0-x86-stage2
