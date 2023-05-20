@@ -71,7 +71,7 @@ static bool open_filedev(void)
 	file_dev_name_set(input_name);
 	bd = file_dev_get();
 	if (!bd) {
-		printf("open_filedev: fail\n");
+		puts("open_filedev: fail");
 		return false;
 	}
 	return true;
@@ -85,7 +85,7 @@ bool lwext4_mount(struct ext4_blockdev *bdev, struct ext4_bcache *bcache)
 	bd = bdev;
 
 	if (!bd) {
-		printf("lwext4_mount: no block device\n");
+		puts("lwext4_mount: no block device");
 		return false;
 	}
 
@@ -155,21 +155,21 @@ bool copy_file(char *src_path, char *dest_path)
 
         err = ext4_fopen(&dest_file, dest_path, "wb");
 	if (err != EOK) {
-		printf("ext4_open error: %d  \n", err);
+		printf("ext4_open error: %d\n", err);
 		return EXIT_FAILURE;
 	}
 
 	if (src_len > 0) {
 		err = ext4_fwrite(&dest_file, src_mem, src_len, 0);
 		if (err != EOK) {
-			printf("ext4_fwrite error: %d  \n", err);
+			printf("ext4_fwrite error: %d\n", err);
 			return EXIT_FAILURE;
 		}
 	}
 
 	err = ext4_fclose(&dest_file);
 	if (err != EOK) {
-		printf("ext4_fclose error: %d  \n", err);
+		printf("ext4_fclose error: %d\n", err);
 		return EXIT_FAILURE;
 	}
 
@@ -226,7 +226,7 @@ int main(int argc, char **argv)
 
 	err = ext4_mkfs(&fs, bd, &info, F_SET_EXT2_V0);
 	if (err != EOK) {
-		printf("ext4_mkfs error: %d  \n", err);
+		printf("ext4_mkfs error: %d\n", err);
 		return EXIT_FAILURE;
 	}
 
@@ -255,44 +255,44 @@ int main(int argc, char **argv)
 	if (!lwext4_mount(bd, bc))
 		return EXIT_FAILURE;
 
-	printf("ext4_dir_mk /mp/dev\n");
+	puts("ext4_dir_mk /mp/dev");
 	err = ext4_dir_mk("/mp/dev");
 	if (err != EOK) {
-		printf("ext4_dir_mk error: %d  \n", err);
+		printf("ext4_dir_mk error: %d\n", err);
 	}
 
-	printf("ext4_mknod /mp/dev/console\n");
+	puts("ext4_mknod /mp/dev/console");
 	err = ext4_mknod("/mp/dev/console", EXT4_DE_CHRDEV, MKDEV(5, 1));
 	if (err != EOK) {
-		printf("ext4_mknod error: %d  \n", err);
+		printf("ext4_mknod error: %d\n", err);
 		return EXIT_FAILURE;
 	}
-	printf("ext4_mknod /mp/dev/ram0\n");
+	puts("ext4_mknod /mp/dev/ram0");
 	err = ext4_mknod("/mp/dev/ram0", EXT4_DE_BLKDEV, MKDEV(1, 0));
 	if (err != EOK) {
-		printf("ext4_mknod error: %d  \n", err);
+		printf("ext4_mknod error: %d\n", err);
 		return EXIT_FAILURE;
 	}
-	printf("ext4_mknod /mp/dev/ram1\n");
+	puts("ext4_mknod /mp/dev/ram1");
 	err = ext4_mknod("/mp/dev/ram1", EXT4_DE_BLKDEV, MKDEV(1, 1));
 	if (err != EOK) {
-		printf("ext4_mknod error: %d  \n", err);
+		printf("ext4_mknod error: %d\n", err);
 		return EXIT_FAILURE;
 	}
 
 	copy_file("/usr/bin/kaem", "/mp/init");
 	copy_file("/sysa/after2.kaem", "/mp/kaem.run");
 	copy_file_list("/sysa/lwext4-1.0.0-lb1/files/fiwix-file-list.txt");
-	printf("ext4_dir_mk /mp/tmp\n");
+	puts("ext4_dir_mk /mp/tmp");
 	ext4_dir_mk("/mp/tmp");
-	printf("ext4_dir_mk /mp/usr\n");
+	puts("ext4_dir_mk /mp/usr");
 	ext4_dir_mk("/mp/usr");
-	printf("ext4_dir_mk /mp/usr/src\n");
+	puts("ext4_dir_mk /mp/usr/src");
 	ext4_dir_mk("/mp/usr/src");
 
 	if (!lwext4_umount())
 		return EXIT_FAILURE;
 
-	printf("Fiwix ext2 initrd created successfully.\n");
+	puts("Fiwix ext2 initrd created successfully.");
 	return EXIT_SUCCESS;
 }
