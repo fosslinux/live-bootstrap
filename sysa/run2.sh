@@ -91,6 +91,8 @@ grep --no-filename '^build' "${SOURCES}"/run*.sh | grep -v musl-1.2.3 | sed "s/b
 done
 
 if [ "${CHROOT}" = False ] || [ "${BUILD_KERNELS}" = True ]; then
+    build kexec-linux-1.0.0
+
     build kexec-tools-2.0.22
 
     build linux-4.9.10

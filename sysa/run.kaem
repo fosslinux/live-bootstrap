@@ -73,12 +73,6 @@ if match x${BUILD_FIWIX} xTrue; then
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
     cd ..
-
-    # Live boot loader for Fiwix to Linux
-    pkg="kexec-linux"
-    cd ${pkg}
-    kaem --verbose --file ${pkg}.kaem
-    cd ..
 fi
 
 if match x${KERNEL_BOOTSTRAP} xTrue; then

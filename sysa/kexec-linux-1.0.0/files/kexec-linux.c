@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/reboot.h>
 #include <sys/stat.h>
 #include <time.h>
 
@@ -28,7 +29,7 @@ int main(int argc, char **argv) {
 
 	/* Write length of kernel */
 	if (stat(kernel_file_name, &stats) == 0) {
-		fwrite(&stats.st_size, sizeof(stats.st_size), 1, ramdrive_file);
+		fwrite(&stats.st_size, 4, 1, ramdrive_file);
 	} else {
 		fprintf(stderr, "Cannot stat kernel file '%s'\n", kernel_file_name);
 		exit(1);
@@ -36,7 +37,7 @@ int main(int argc, char **argv) {
 
 	/* Write length of initramfs */
 	if (stat(initramfs_file_name, &stats) == 0) {
-		fwrite(&stats.st_size, sizeof(stats.st_size), 1, ramdrive_file);
+		fwrite(&stats.st_size, 4, 1, ramdrive_file);
 	} else {
 		fprintf(stderr, "Cannot stat initramfs file '%s'\n", initramfs_file_name);
 		exit(1);
@@ -52,25 +53,11 @@ int main(int argc, char **argv) {
 	}
 	fclose(ramdrive_file);
 
-	/* Perform syscall sync */
-	__asm__ __volatile__(
-			"movl $0x00000024, %%eax\n\t"
-			"int $0x80\n\t"
-			: /* no output */
-			: /* no input */
-	       );
+	/* Flush ram drive writes to device */
+	sync();
 
 	/* Perform syscall reboot to initiate kexec */
-	__asm__ __volatile__(
-			"movl $0x58, %%eax\n\t"
-			"movl $0xfee1dead, %%ebx\n\t"
-			"movl $0x28121969, %%ecx\n\t"
-			"movl $0xcdef0123, %%edx\n\t"
-			"movl $0x00, %%esi\n\t"
-			"int $0x80\n\t"
-			: /* no output */
-			: /* no input */
-	       );
+	reboot(RB_HALT_SYSTEM);
 }
 
 int append_file(FILE *dst_file, char *src_file_name) {
