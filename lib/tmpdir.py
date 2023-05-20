@@ -69,7 +69,7 @@ class Tmpdir:
             os.mkdir(sys_path)
         return sys_path
 
-    def add_disk(self, name, size="8G", filesystem="ext4"):
+    def add_disk(self, name, size="16G", filesystem="ext4"):
         """Add a disk"""
         disk_path = os.path.join(self.path, f"{name}.img")
         self._disks[name] = create_disk(disk_path, "msdos", filesystem, size)
