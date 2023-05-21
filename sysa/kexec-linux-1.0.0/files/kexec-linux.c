@@ -2,6 +2,7 @@
 /* SPDX-License-Identifier: MIT */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <sys/reboot.h>
 #include <sys/stat.h>
@@ -14,6 +15,7 @@ int main(int argc, char **argv) {
 	char *ramdrive_file_name, *kernel_file_name, *initramfs_file_name;
 	FILE *ramdrive_file;
 	struct stat stats;
+	uint32_t size;
 
 	if (argc < 3) {
 		puts("Usage: fiwix-kexec-linux <ram-drive-name> <kernel-file-name> <initramfs-file-name>");
@@ -29,7 +31,8 @@ int main(int argc, char **argv) {
 
 	/* Write length of kernel */
 	if (stat(kernel_file_name, &stats) == 0) {
-		fwrite(&stats.st_size, 4, 1, ramdrive_file);
+		size = (uint32_t) stats.st_size;
+		fwrite(&size, sizeof(size), 1, ramdrive_file);
 	} else {
 		fprintf(stderr, "Cannot stat kernel file '%s'\n", kernel_file_name);
 		exit(1);
@@ -37,7 +40,8 @@ int main(int argc, char **argv) {
 
 	/* Write length of initramfs */
 	if (stat(initramfs_file_name, &stats) == 0) {
-		fwrite(&stats.st_size, 4, 1, ramdrive_file);
+		size = (uint32_t) stats.st_size;
+		fwrite(&size, sizeof(size), 1, ramdrive_file);
 	} else {
 		fprintf(stderr, "Cannot stat initramfs file '%s'\n", initramfs_file_name);
 		exit(1);
