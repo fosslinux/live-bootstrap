@@ -13,7 +13,6 @@ import shutil
 import tarfile
 
 from lib.sysgeneral import SysGeneral, stage0_arch_map
-from lib.utils import run
 
 # pylint: disable=consider-using-with
 # pylint: disable=too-many-instance-attributes
@@ -113,6 +112,8 @@ class SysA(SysGeneral):
         for root, _, filepaths in os.walk(dirpath):
             if 'stage0-posix' in root:
                 continue
+            if root == os.path.join('sysc', 'distfiles'):
+                continue
             with open(file_list_path, 'a', encoding="utf-8") as file_list:
                 for filepath in filepaths:
                     file_list.write(f"/{os.path.join(root, filepath)}\n")
@@ -193,12 +194,20 @@ class SysA(SysGeneral):
 
     def create_builder_hex0_disk_image(self, image_file_name):
         """Create builder-hex0 disk image"""
-        run(os.path.join('sysa', 'stage0-posix', 'src',
-                         'bootstrap-seeds', 'POSIX', 'x86', 'hex0-seed'),
-            os.path.join('kernel-bootstrap', 'builder-hex0-x86.hex0'),
-            image_file_name)
+        shutil.copyfile(os.path.join('sysa', 'stage0-posix', 'src', 'bootstrap-seeds',
+                                     'NATIVE', 'x86', 'builder-hex0-x86-stage1.img'),
+                        image_file_name)
 
         with open(image_file_name, 'ab') as image_file:
+            # Append stage2 hex0 source
+            with open(os.path.join('kernel-bootstrap', 'builder-hex0-x86-stage2.hex0'),
+                      encoding="utf-8") as infile:
+                image_file.write(infile.read().encode())
+            # Pad to next sector
+            current_size = os.stat(image_file_name).st_size
+            while current_size % 512 != 0:
+                image_file.write(b'\0')
+                current_size += 1
             self.append_srcfs(image_file)
 
         current_size = os.stat(image_file_name).st_size
@@ -213,6 +222,6 @@ class SysA(SysGeneral):
 
         # fill file with zeros up to desired size, one megabyte at a time
         with open(image_file_name, 'ab') as image_file:
-            while current_size < 1008 * megabyte:
+            while current_size < 16384 * megabyte:
                 image_file.write(b'\0' * megabyte)
                 current_size += megabyte

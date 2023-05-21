@@ -57,7 +57,7 @@ fi
 
 if match x${BUILD_FIWIX} xTrue; then
     # The Fiwix kernel
-    pkg="fiwix-1.4.0-lb1"
+    pkg="fiwix-1.4.0-lb2"
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
     cd ..
