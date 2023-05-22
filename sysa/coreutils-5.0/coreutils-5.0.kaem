@@ -42,6 +42,7 @@ patch -Np0 -i ../../patches/touch-dereference.patch
 patch -Np0 -i ../../patches/tac-uint64.patch
 patch -Np0 -i ../../patches/expr-strcmp.patch
 patch -Np0 -i ../../patches/sort-locale.patch
+patch -Np0 -i ../../patches/uniq-fopen.patch
 
 # Build and install
 make -f Makefile PREFIX=${prefix}
@@ -61,12 +62,16 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/cp \
         /usr/bin/csplit \
         /usr/bin/cut \
+        /usr/bin/dirname \
         /usr/bin/echo \
         /usr/bin/expand \
+        /usr/bin/expr \
+        /usr/bin/factor \
         /usr/bin/false \
         /usr/bin/fmt \
         /usr/bin/fold \
         /usr/bin/head \
+        /usr/bin/hostname \
         /usr/bin/id \
         /usr/bin/join \
         /usr/bin/kill \
@@ -80,6 +85,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/od \
         /usr/bin/paste \
         /usr/bin/pathchk \
+        /usr/bin/pr \
         /usr/bin/printf \
         /usr/bin/ptx \
         /usr/bin/pwd \
@@ -87,6 +93,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/rmdir \
         /usr/bin/seq \
         /usr/bin/sleep \
+        /usr/bin/sort \
         /usr/bin/split \
         /usr/bin/sum \
         /usr/bin/tail \
@@ -94,6 +101,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/tr \
         /usr/bin/tsort \
         /usr/bin/unexpand \
+        /usr/bin/uniq \
         /usr/bin/unlink \
         /usr/bin/wc \
         /usr/bin/whoami \

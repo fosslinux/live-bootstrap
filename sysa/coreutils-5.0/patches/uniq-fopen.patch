@@ -1,0 +1,68 @@
+SPDX-FileCopyrightText: 2005 Paul Eggert <eggert@cs.ucla.edu>
+SPDX-FileCopyrightText: 2023 Emily Trau <emily@downunderctf.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+uniq: don't assume fopen cannot return stdin or stdout.
+Backport of https://git.savannah.gnu.org/cgit/coreutils.git/commit/?id=786ebb2ceca72f69aa2de701671fb41f53cb1489
+
+--- src/uniq.c
++++ src/uniq.c
+@@ -30,6 +30,7 @@
+ #include "error.h"
+ #include "hard-locale.h"
+ #include "posixver.h"
++#include "stdio-safer.h"
+ #include "xmemcoll.h"
+ #include "xstrtol.h"
+ #include "memcasecmp.h"
+@@ -267,20 +268,26 @@ check_file (const char *infile, const char *outfile)
+   FILE *ostream;
+   struct linebuffer lb1, lb2;
+   struct linebuffer *thisline, *prevline;
++  bool is_stdin = STREQ (infile, "-");
++  bool is_stdout = STREQ (outfile, "-");
+ 
+-  if (STREQ (infile, "-"))
++  if (is_stdin)
+     istream = stdin;
+   else
+-    istream = fopen (infile, "r");
+-  if (istream == NULL)
+-    error (EXIT_FAILURE, errno, "%s", infile);
++    {
++      istream = fopen_safer (infile, "r");
++      if (! istream)
++        error (EXIT_FAILURE, errno, "%s", infile);
++    }
+ 
+-  if (STREQ (outfile, "-"))
++  if (is_stdout)
+     ostream = stdout;
+   else
+-    ostream = fopen (outfile, "w");
+-  if (ostream == NULL)
+-    error (EXIT_FAILURE, errno, "%s", outfile);
++    {
++      ostream = fopen_safer (outfile, "w");
++      if (! ostream)
++        error (EXIT_FAILURE, errno, "%s", outfile);
++    }
+ 
+   thisline = &lb1;
+   prevline = &lb2;
+@@ -377,12 +384,12 @@ check_file (const char *infile, const char *outfile)
+     }
+ 
+  closefiles:
+-  if (ferror (istream) || fclose (istream) == EOF)
++  if (!is_stdin && (ferror (istream) || fclose (istream) != 0))
+     error (EXIT_FAILURE, errno, _("error reading %s"), infile);
+ 
+   /* Close ostream only if it's not stdout -- the latter is closed
+      via the atexit-invoked close_stdout.  */
+-  if (ostream != stdout && (ferror (ostream) || fclose (ostream) == EOF))
++  if (!is_stdout && (ferror (ostream) || fclose (ostream) != 0))
+     error (EXIT_FAILURE, errno, _("error writing %s"), outfile);
+ 
+   free (lb1.buffer);
