@@ -135,9 +135,6 @@ def main():
         raise ValueError("Must use one or more cores.")
 
     # bootstrap.cfg
-    if args.bare_metal:
-        args.no_create_config = True
-
     try:
         os.remove(os.path.join('sysa', 'bootstrap.cfg'))
     except FileNotFoundError:
