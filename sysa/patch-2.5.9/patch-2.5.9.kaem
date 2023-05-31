@@ -15,8 +15,8 @@ cd build
 
 # Extract
 cp ${distfiles}/${pkg}.tar.gz ../src/
-gzip -d -f ../src/${pkg}.tar.gz
-tar xf ../src/${pkg}.tar
+ungz --file ../src/${pkg}.tar.gz --output ../src/${pkg}.tar
+untar --file ../src/${pkg}.tar
 cd ${pkg}
 cp ../../mk/main.mk Makefile
 

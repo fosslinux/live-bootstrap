@@ -244,6 +244,12 @@ GNU ``make`` is now built so we have a more robust building system.
 ``make`` allows us to do things like define rules for files rather than
 writing complex kaem scripts.
 
+patch 2.5.9
+===========
+
+``patch`` is a very useful tool at this stage, allowing us to make
+significantly more complex edits, including just changes to lines.
+
 gzip 1.2.4
 ==========
 
@@ -260,12 +266,6 @@ sed 4.0.9
 =========
 
 You are most likely aware of GNU ``sed``, a line editor.
-
-patch 2.5.9
-===========
-
-``patch`` is a very useful tool at this stage, allowing us to make
-significantly more complex edits, including just changes to lines.
 
 bzip2 1.0.8
 ===========

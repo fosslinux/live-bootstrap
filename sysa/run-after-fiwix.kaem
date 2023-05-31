@@ -39,6 +39,12 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
+# patch
+pkg="patch-2.5.9"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
+
 # gzip
 pkg="gzip-1.2.4"
 cd ${pkg}
@@ -53,12 +59,6 @@ cd ..
 
 # sed
 pkg="sed-4.0.9"
-cd ${pkg}
-kaem --file ${pkg}.kaem
-cd ..
-
-# patch
-pkg="patch-2.5.9"
 cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
