@@ -31,9 +31,9 @@ cd ..
 
 cd build
 untar --file ../src/${TCC_TAR}.tar
-/x86/bin/simple-patch ${TCC_PKG}/tcctools.c \
+simple-patch ${TCC_PKG}/tcctools.c \
     ../simple-patches/remove-fileopen.before ../simple-patches/remove-fileopen.after
-/x86/bin/simple-patch ${TCC_PKG}/tcctools.c \
+simple-patch ${TCC_PKG}/tcctools.c \
     ../simple-patches/addback-fileopen.before ../simple-patches/addback-fileopen.after
 
 untar --non-strict --file ../src/${MES_PKG}.tar
