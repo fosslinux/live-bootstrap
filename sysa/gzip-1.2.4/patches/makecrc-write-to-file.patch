@@ -1,0 +1,31 @@
+SPDX-FileCopyrightText: 2023 Paul Dersey <pdersey@gmail.com>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+Modify makecrc so that it outputs C code to a file that
+can be appended to util.c
+
+--- sample/makecrc.c
++++ sample/makecrc.c
+@@ -47,7 +47,9 @@ main()
+     e |= 1L << (31 - p[i]);
+ 
+   /* Compute and print table of CRC's, five per line */
+-  printf("  0x00000000L");
++  FILE *output = fopen("crc.c", "w");
++  fprintf(output, "ulg crc_32_tab[] = {\n");
++  fprintf(output,"  0x00000000L");
+   for (i = 1; i < 256; i++)
+   {
+     c = i;
+@@ -56,8 +58,8 @@ main()
+      */
+     for (k = 8; k; k--)
+       c = c & 1 ? (c >> 1) ^ e : c >> 1;
+-    printf(i % 5 ? ", 0x%08lxL" : ",\n  0x%08lxL", c);
++    fprintf(output, i % 5 ? ", 0x%08lxL" : ",\n  0x%08lxL", c);
+   }
+-  putchar('\n');
++  fprintf(output,"\n};\n");
+   return 0;
+ }
