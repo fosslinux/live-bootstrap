@@ -83,7 +83,7 @@ chmod 755 ${mescc_scm}
 alias mescc="${MES} -e main ${bindir}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -c"
 
 # Start with crt1.o
-mescc lib/linux/${MES_ARCH}-mes-mescc/crt1.c
+mescc lib/linux/${MES_ARCH}-mes-mescc/crt1.c -o lib/${MES_ARCH}-mes/crt1.o
 
 # Now for libc-mini.a
 mescc lib/mes/eputs.c
@@ -261,7 +261,7 @@ mescc src/symbol.c
 mescc src/vector.c
 
 # Link everything into new mes executable
-${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${libdir} -nostdlib -o ${bindir}/mes -L . crt1.o builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
+${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${libdir} -o ${bindir}/mes builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
 
 # Make directories
 mkdir ${prefix}/lib/linux ${incdir}/mes ${incdir}/sys ${incdir}/linux ${incdir}/arch
@@ -275,8 +275,8 @@ cp ${libdir}/${MES_ARCH}-mes/libc.s ${prefix}/lib/${MES_ARCH}-mes/
 cp ${libdir}/${MES_ARCH}-mes/libc+tcc.s ${prefix}/lib/${MES_ARCH}-mes/
 cp ${libdir}/${MES_ARCH}-mes/libmescc.s ${prefix}/lib/${MES_ARCH}-mes/
 cp ${libdir}/${MES_ARCH}-mes/${MES_ARCH}.M1 ${prefix}/lib/${MES_ARCH}-mes/
-cp crt1.o ${prefix}/lib/${MES_ARCH}-mes/
-cp crt1.s ${prefix}/lib/${MES_ARCH}-mes/
+cp ${libdir}/${MES_ARCH}-mes/crt1.o ${prefix}/lib/${MES_ARCH}-mes/
+cp ${libdir}/${MES_ARCH}-mes/crt1.s ${prefix}/lib/${MES_ARCH}-mes/
 cp ${libdir}/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-footer-single-main.hex2 ${prefix}/lib/linux/${MES_ARCH}-mes/
 cp ${libdir}/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-header.hex2 ${prefix}/lib/linux/${MES_ARCH}-mes/
 
