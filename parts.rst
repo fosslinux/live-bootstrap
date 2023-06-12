@@ -639,7 +639,7 @@ findutils 4.2.33
 GNU Find Utilities can be used to search for files. We are mainly interested
 in ``find`` and ``xargs`` that are often used in scripts.
 
-musl 1.2.3
+musl 1.2.4
 ==========
 
 GCC can build the latest as of the time of writing musl version.
@@ -721,7 +721,7 @@ subsequent systems, and we do not have ``modprobe``. Lastly,
 the initramfs of sysb is generated in this stage, using ``gen_init_cpio`` within
 the Linux kernel tree. This avoids the compilation of ``cpio`` as well.
 
-musl 1.2.3
+musl 1.2.4
 ==========
 Prior to booting Linux, musl is rebuilt yet again with syscalls
 ``clone`` and ``set_thread_area`` enabled for Linux thread support.
@@ -759,10 +759,10 @@ script and ``bison`` is used to recreate some included generated files.
 curl 7.83.0
 ===========
 
-curl is built in sysc because Linux must be running with support for threads
+``curl`` is built in sysc because Linux must be running with support for threads
 (which is not the case if kernel bootstrapping is being used). curl requires
-musl 1.2.3 with thread support, which was built at the end of sysa.
-curl is built first in sysc so the rest of the packages can be downloaded.
+musl with thread support, which was built at the end of sysa.
+``curl`` is built first in sysc so the rest of the packages can be downloaded.
 Note that the tar file for curl itself was copied over from sysa because
 curl is not yet available to download it.
 
@@ -770,8 +770,8 @@ xz 5.4.1
 ========
 
 XZ Utils is a set of free software command-line lossless data compressors,
-including lzma and xz. In most cases, xz achieves higher compression rates
-than alternatives like gzip and bzip2.
+including ``lzma`` and ``xz``. In most cases, ``xz`` achieves higher compression rates
+than alternatives like ``gzip`` and ``bzip2``.
 
 file 5.44
 =========
@@ -1021,7 +1021,7 @@ We use the `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-b
 project to rebuild those and create (slightly crippled) ``autogen`` that
 is then able to build a full-featured version.
 
-musl 1.2.3
+musl 1.2.4
 ==========
 
 With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt

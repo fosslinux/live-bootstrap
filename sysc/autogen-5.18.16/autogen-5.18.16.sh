@@ -41,7 +41,7 @@ src_compile() {
 
     SOURCE_DIR="$PWD" ./config/bootstrap
     # Specify timeout to avoid non-reproducibility
-    ./configure \
+    CPPFLAGS=-D_LARGEFILE64_SOURCE=1 ./configure \
 	--prefix="${FINALPREFIX}" \
 	--libdir="${FINALPREFIX}/lib/i386-unknown-linux-musl" \
 	--disable-shared \

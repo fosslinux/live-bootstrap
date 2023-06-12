@@ -96,7 +96,7 @@ build sed-4.8
 
 build autogen-5.18.16 autogen-5.18.16.sh
 
-build musl-1.2.3
+build musl-1.2.4
 
 build python-2.0.1 stage1.sh
 
