@@ -57,7 +57,7 @@ build gcc-4.0.4 pass1.sh
 
 build findutils-4.2.33
 
-build musl-1.2.3
+build musl-1.2.4
 
 build linux-headers-5.10.41 '' '' linux-5.10.41
 
@@ -79,14 +79,14 @@ build bc-1.07.1
 
 if [ "${CHROOT}" = False ] || [ "${BUILD_KERNELS}" = True ]; then
     # Save because linux deletes all distfiles to save space
-    cp "${DISTFILES}"/musl-1.2.3.tar.gz "${SOURCES}"/musl-1.2.3
+    cp "${DISTFILES}"/musl-1.2.4.tar.gz "${SOURCES}"/musl-1.2.4
 fi
 
 mkdir -p /sysc/distfiles
 cp "${DISTFILES}"/curl-7.88.1.tar.bz2 /sysc/distfiles
 
 # Clear up some RAM space
-grep --no-filename '^build' "${SOURCES}"/run*.sh | grep -v musl-1.2.3 | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
+grep --no-filename '^build' "${SOURCES}"/run*.sh | grep -v musl-1.2.4 | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
     rm -rf "${SOURCES:?}/${p:?}"
 done
 
@@ -98,7 +98,7 @@ if [ "${CHROOT}" = False ] || [ "${BUILD_KERNELS}" = True ]; then
     build linux-4.9.10
 fi
 
-build musl-1.2.3 '' no-patches
+build musl-1.2.4 '' no-patches
 
 if [ "${CHROOT}" = False ]; then
     create_sysb

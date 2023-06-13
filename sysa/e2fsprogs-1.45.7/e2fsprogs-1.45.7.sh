@@ -28,9 +28,11 @@ src_prepare() {
 }
 
 src_configure() {
+    # defrag fails to build with musl 1.2.4
     ./configure --prefix="${PREFIX}" \
         --sbindir="${PREFIX}/bin" \
         --disable-tls \
+        --disable-defrag \
         with_udev_rules_dir=no \
         with_systemd_unit_dir=no
 }
