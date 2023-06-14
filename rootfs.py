@@ -36,6 +36,7 @@ def create_configuration_file(args):
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci}\n")
+        config.write(f"BARE_METAL={args.bare_metal}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             config.write("DISK=sda\n")
             config.write("KERNEL_BOOTSTRAP=True\n")
