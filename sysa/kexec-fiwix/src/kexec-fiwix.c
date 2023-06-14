@@ -77,7 +77,16 @@ int main() {
 	puts("Preparing multiboot info for kernel...");
 
 	char cmdline[256];
-	sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024);
+	/* Don't use a serial console if configured for bare metal */
+	char *bare_metal = getenv("BARE_METAL");
+	if (bare_metal != NULL && strcmp(bare_metal, "True") == 0)
+	{
+		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init\"", INITRD_MB * 1024);
+	}
+	else
+	{
+		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024);
+	}
 	char * boot_loader_name = "kexec-fiwix";
 
 	unsigned int next_avail_mem = 0x9800;
