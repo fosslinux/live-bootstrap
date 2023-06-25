@@ -33,9 +33,15 @@ go_sysb() {
         mount -t proc proc /proc
         # kexec time
         echo "Loading kernel + sysb initramfs using kexec"
-        kexec -l "/boot/linux-4.9.10" --console-serial \
-            --initrd="/boot/initramfs-sysb.cpio.gz" \
-            --append="init=/init console=ttyS0"
+        if [ "${BARE_METAL}" = True ]; then
+            kexec -l "/boot/linux-4.9.10" \
+                --initrd="/boot/initramfs-sysb.cpio.gz" \
+                --append="init=/init"
+        else
+            kexec -l "/boot/linux-4.9.10" --console-serial \
+                --initrd="/boot/initramfs-sysb.cpio.gz" \
+                --append="init=/init console=ttyS0"
+        fi
         echo "kexecing into sysb"
         kexec -e
     fi
