@@ -37,7 +37,10 @@ install_tar util-linux-2.19.1 0
 # Begin sysb bootstrapping process
 cd "${SOURCES}"
 
-echo "PREFIX=${PREFIX}" > .env
-echo "SOURCES=${SOURCES}" >> .env
+cat > .env <<- EOF
+export PATH=${PATH}
+PREFIX=${PREFIX}
+SOURCES=${SOURCES}
+EOF
 
 exec ./run.sh
