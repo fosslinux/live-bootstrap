@@ -62,4 +62,4 @@ fi
 
 build bash-5.2.15
 
-exec env -i PATH="${PATH}" HOME="${HOME}" SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}" bash run2.sh
+exec env -i bash run2.sh
