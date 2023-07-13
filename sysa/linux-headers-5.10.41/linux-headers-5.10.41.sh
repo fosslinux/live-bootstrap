@@ -23,7 +23,7 @@ src_compile() {
 }
 
 src_install() {
-    export base_dir="${PWD}"
+    base_dir="${PWD}"
     # We "compile" the headers here because it is easier
     for d in include/uapi arch/x86/include/uapi; do
         cd "${d}"
