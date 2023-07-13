@@ -43,4 +43,4 @@ PREFIX=${PREFIX}
 SOURCES=${SOURCES}
 EOF
 
-exec ./run.sh
+exec env -i bash run.sh

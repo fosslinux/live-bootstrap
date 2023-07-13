@@ -81,4 +81,4 @@ MAKEJOBS=${MAKEJOBS}
 INTERNAL_CI=${INTERNAL_CI}
 EOF
 
-exec ./run.sh
+exec env -i bash run.sh
