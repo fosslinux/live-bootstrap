@@ -75,7 +75,7 @@ if [ $(($(ls -l "/dev/${DISK}" | sed "s/.*, *//" | sed "s/ .*//") % 8)) -eq 0 ];
     mkfs.ext4 "/dev/${DISK}1"
     DISK="${DISK}1"
 fi
-echo "export DISK=${DISK}" >> /usr/src/bootstrap.cfg
+echo "DISK=${DISK}" >> /usr/src/bootstrap.cfg
 
 SYSC=/sysc
 
