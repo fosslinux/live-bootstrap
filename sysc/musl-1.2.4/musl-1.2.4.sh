@@ -14,18 +14,10 @@ src_configure() {
 
 src_compile() {
     make "${MAKEJOBS}" CROSS_COMPILE=
-
-    # Provide libssp_nonshared.a to avoid GCC's messy libssp
-    # (Taken from Alpine Linux)
-    gcc -c __stack_chk_fail_local.c -o __stack_chk_fail_local.o
-    ar r libssp_nonshared.a __stack_chk_fail_local.o
 }
 
 src_install() {
     default
-
-    # Install libssp_nonshared.a
-    install -m 644 libssp_nonshared.a "${DESTDIR}${PREFIX}/lib/"
 
     # Make dynamic linker symlink relative in ${PREFIX}/lib
     rm "${DESTDIR}/lib/ld-musl-i386.so.1"

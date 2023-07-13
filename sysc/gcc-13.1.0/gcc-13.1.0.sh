@@ -84,8 +84,6 @@ src_configure() {
         --host=i386-unknown-linux-musl \
         --enable-bootstrap \
         --enable-static \
-        --enable-default-pie \
-        --enable-default-ssp \
         --disable-plugins \
         --disable-libssp \
         --disable-libsanitizer \
