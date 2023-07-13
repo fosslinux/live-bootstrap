@@ -68,9 +68,9 @@ ln -s /usr/bin/bash /usr/bin/sh
 cd "${SOURCES}"
 
 cat > .env <<- EOF
-export PATH="${PREFIX}/bin:${PREFIX}/sbin"
-export HOME=/tmp
-export SOURCE_DATE_EPOCH=0
+export PATH=${PATH}
+export HOME=${HOME}
+export SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
 PREFIX=${PREFIX}
 LIBDIR=${LIBDIR}
 SOURCES=${SOURCES}
