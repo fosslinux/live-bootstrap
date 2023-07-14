@@ -23,7 +23,7 @@ src_configure() {
 }
 
 src_compile() {
-    export SOURCE_DATE_EPOCH=1638831119
+    declare -x SOURCE_DATE_EPOCH=1638831119
     default
 }
 

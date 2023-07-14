@@ -15,13 +15,13 @@ src_prepare() {
 src_compile() {
 (
     set -e
-    export PKG_CONFIG_PATH="${LIBDIR}/pkgconfig"
+    declare -x PKG_CONFIG_PATH="${LIBDIR}/pkgconfig"
     sed -i "s/make install/make install DESTDIR=\${DESTDIR}/" bootstrap_tarball.sh
     sed -i "/make check/d" bootstrap_tarball.sh
-    export FINALPREFIX="${PREFIX}"
-    export GUILE_STATIC="--static"
-    export GNULIBDIR="${PWD}"/../gnulib-8f4538a5
-    export MAN_PAGE_DATE=1970-01-01
+    declare -x FINALPREFIX="${PREFIX}"
+    declare -x GUILE_STATIC="--static"
+    declare -x GNULIBDIR="${PWD}"/../gnulib-8f4538a5
+    declare -x MAN_PAGE_DATE=1970-01-01
 
     SKIP_MAIN=1 . ./bootstrap_tarball.sh
     prepare_tarball
