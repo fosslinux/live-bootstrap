@@ -197,6 +197,8 @@ print(shutil.which('chroot'))
                          '--dev-bind', '/dev/zero', '/dev/zero',
                          '--dev-bind', '/dev/random', '/dev/random',
                          '--dev-bind', '/dev/urandom', '/dev/urandom',
+                         '--dev-bind', '/dev/ptmx', '/dev/ptmx',
+                         '--dev-bind', '/dev/tty', '/dev/tty',
                          init)
 
         if not args.internal_ci or args.internal_ci == "pass2" or args.internal_ci == "pass3":
@@ -214,6 +216,8 @@ print(shutil.which('chroot'))
                          '--dev-bind', '/dev/zero', '/dev/zero',
                          '--dev-bind', '/dev/random', '/dev/random',
                          '--dev-bind', '/dev/urandom', '/dev/urandom',
+                         '--dev-bind', '/dev/ptmx', '/dev/ptmx',
+                         '--dev-bind', '/dev/tty', '/dev/tty',
                          '--tmpfs', '/dev/shm',
                          '--proc', '/proc',
                          '--bind', '/sys', '/sys',

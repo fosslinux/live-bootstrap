@@ -472,12 +472,14 @@ populate_device_nodes() {
     test -c "/dev/random" || mknod -m 444 "/dev/random" c 1 8
     test -c "/dev/urandom" || mknod -m 444 "/dev/urandom" c 1 9
 
+    test -c "/dev/ptmx" || mknod -m 666 "/dev/ptmx" c 5 2
+    test -c "/dev/tty" || mknod -m 666 "/dev/tty" c 5 0
+
     if command -v mount >/dev/null 2>&1; then
         test -d "/dev/shm" || (mkdir /dev/shm && mount -t tmpfs tmpfs /dev/shm)
     fi
 
     if [ "${CHROOT}" = False ]; then
-        test -c "/dev/tty" || mknod -m 666 "/dev/tty" c 5 0
         test -c "/dev/console" || mknod -m 666 "/dev/console" c 5 1
     fi
 }
