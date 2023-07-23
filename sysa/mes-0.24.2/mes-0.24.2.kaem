@@ -181,7 +181,32 @@ mescc lib/linux/kill.c
 catm ${libdir}/${MES_ARCH}-mes/libc.a eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o isnumber.o abtol.o cast.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o assert_msg.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o raise.o access.o brk.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl3.o _open3.o _read.o time.o unlink.o waitpid.o syscall.o getpid.o kill.o
 catm ${libdir}/${MES_ARCH}-mes/libc.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s isnumber.s abtol.s cast.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s assert_msg.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s raise.s access.s brk.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl3.s _open3.s _read.s time.s unlink.s waitpid.s syscall.s getpid.s kill.s
 
+# Build mes itself
+mescc src/builtins.c
+mescc src/cc.c
+mescc src/core.c
+mescc src/display.c
+mescc src/eval-apply.c
+mescc src/gc.c
+mescc src/globals.c
+mescc src/hash.c
+mescc src/lib.c
+mescc src/math.c
+mescc src/mes.c
+mescc src/module.c
+mescc src/posix.c
+mescc src/reader.c
+mescc src/stack.c
+mescc src/string.c
+mescc src/struct.c
+mescc src/symbol.c
+mescc src/vector.c
+
+# Link everything into new mes executable
+${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${libdir} -o ${bindir}/mes builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
+
 # libc+tcc.a
+alias mescc="${bindir}/mes -e main ${bindir}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -c"
 mescc lib/ctype/islower.c
 mescc lib/ctype/isupper.c
 mescc lib/ctype/tolower.c
@@ -238,30 +263,6 @@ mescc lib/linux/rmdir.c
 mescc lib/linux/stat.c
 catm ${libdir}/${MES_ARCH}-mes/libc+tcc.a ${libdir}/${MES_ARCH}-mes/libc.a islower.o isupper.o tolower.o toupper.o abtod.o dtoab.o search-path.o execvp.o fclose.o fdopen.o ferror.o fflush.o fopen.o fprintf.o fread.o fseek.o ftell.o fwrite.o printf.o remove.o snprintf.o sprintf.o sscanf.o vfprintf.o vprintf.o vsnprintf.o vsprintf.o vsscanf.o calloc.o qsort.o strtod.o strtof.o strtol.o strtold.o strtoll.o strtoul.o strtoull.o memmem.o strcat.o strchr.o strlwr.o strncpy.o strrchr.o strstr.o strupr.o sigaction.o ldexp.o mprotect.o localtime.o sigemptyset.o setjmp.o close.o rmdir.o stat.o
 catm ${libdir}/${MES_ARCH}-mes/libc+tcc.s ${libdir}/${MES_ARCH}-mes/libc.s islower.s isupper.s tolower.s toupper.s abtod.s dtoab.s search-path.s execvp.s fclose.s fdopen.s ferror.s fflush.s fopen.s fprintf.s fread.s fseek.s ftell.s fwrite.s printf.s remove.s snprintf.s sprintf.s sscanf.s vfprintf.s vprintf.s vsnprintf.s vsprintf.s vsscanf.s calloc.s qsort.s strtod.s strtof.s strtol.s strtold.s strtoll.s strtoul.s strtoull.s memmem.s strcat.s strchr.s strlwr.s strncpy.s strrchr.s strstr.s strupr.s sigaction.s ldexp.s mprotect.s localtime.s sigemptyset.s setjmp.s close.s rmdir.s stat.s
-
-# Build mes itself
-mescc src/builtins.c
-mescc src/cc.c
-mescc src/core.c
-mescc src/display.c
-mescc src/eval-apply.c
-mescc src/gc.c
-mescc src/globals.c
-mescc src/hash.c
-mescc src/lib.c
-mescc src/math.c
-mescc src/mes.c
-mescc src/module.c
-mescc src/posix.c
-mescc src/reader.c
-mescc src/stack.c
-mescc src/string.c
-mescc src/struct.c
-mescc src/symbol.c
-mescc src/vector.c
-
-# Link everything into new mes executable
-${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${libdir} -o ${bindir}/mes builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
 
 # Make directories
 mkdir ${prefix}/lib/linux ${incdir}/mes ${incdir}/sys ${incdir}/linux ${incdir}/arch
