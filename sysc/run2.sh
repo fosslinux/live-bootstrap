@@ -128,6 +128,10 @@ build binutils-2.38 pass2.sh
 
 build gcc-13.1.0
 
+build tar-1.34 
+
+Build gzip-1.12 
+
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
     echo 'Forcing all files timestamps to be 0 unix time.'
     canonicalise_all_files_timestamp

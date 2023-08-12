@@ -1193,3 +1193,13 @@ to ensure the compiler is suitable for downstream consumption;
   really be handled by the libc, which is what most distributions do.
 * LTO now fully functions correctly, despite both the linker and the compiler
   being static binaries.
+
+tar 1.34 (pass 2)
+========
+
+Rebuild tar using the musl tool chain.
+
+gzip 1.12
+==========
+
+Build the latest version of gzip using the musl tool chain.
