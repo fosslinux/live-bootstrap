@@ -6,18 +6,10 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-ssrc_prepare() {
+src_prepare() {
     default
 }
 
 src_configure() {
-./configure --prefix=/usr
-}
-
-src_compile() {
-make "${MAKEJOBS}"
-}
-
-src_install() {
-    default
+    ./configure --prefix="${PREFIX}"
 }
