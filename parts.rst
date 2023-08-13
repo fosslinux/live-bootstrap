@@ -1195,11 +1195,11 @@ to ensure the compiler is suitable for downstream consumption;
   being static binaries.
 
 tar 1.34 (pass 2)
-========
+=================
 
 Rebuild tar using the musl tool chain.
 
 gzip 1.12
-==========
+=========
 
 Build the latest version of gzip using the musl tool chain.
