@@ -128,8 +128,6 @@ build binutils-2.38 pass2.sh
 
 build gcc-13.1.0
 
-build tar-1.34 
-
 build gzip-1.12 
 
 if [ "$FORCE_TIMESTAMPS" = True ] ; then
