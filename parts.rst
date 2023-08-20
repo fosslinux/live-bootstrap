@@ -309,7 +309,7 @@ flex 2.5.11
 ===========
 
 ``flex`` is a tool for generating lexers or scanners: programs that
-recognize lexical patters.
+recognize lexical patterns.
 
 Unfortunately ``flex`` also depends on itself for compiling its own
 scanner, so first flex 2.5.11 is compiled, with its scanner definition
