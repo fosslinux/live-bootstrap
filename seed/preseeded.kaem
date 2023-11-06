@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/script-generator /steps/manifest
+/usr/bin/kaem --file /preseed-jump.kaem

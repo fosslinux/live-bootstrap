@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: MIT 
-
-[submodule "sysa/stage0-posix/src"]
-	path = sysa/stage0-posix/src
-	url = https://github.com/oriansj/stage0-posix/
+[submodule "seed/stage0-posix"]
+	path = seed/stage0-posix
+	url = https://github.com/oriansj/stage0-posix

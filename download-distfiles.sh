@@ -20,27 +20,18 @@ download_source() {
     echo "${checksum}  ${dest_path}" | sha256sum -c
 }
 
-download_for_sys() {
-    local sysdir="${1}"
-    local distfiles="${sysdir}/distfiles"
-
-    mkdir -p "${distfiles}"
-
-    local entry
-    for entry in "${sysdir}"/*; do
-        [ -e "${entry}/sources" ] || continue
-
-        local line
-        # shellcheck disable=SC2162
-        while read line; do
-            # This is intentional - we want to split out ${line} into separate arguments.
-            # shellcheck disable=SC2086
-            download_source "${distfiles}" ${line}
-        done < "${entry}/sources"
-    done
-}
-
 set -e
+
 cd "$(dirname "$(readlink -f "$0")")"
-download_for_sys sysa
-download_for_sys sysc
+mkdir -p distfiles
+
+for entry in steps/*; do
+    [ -e "${entry}/sources" ] || continue
+
+    # shellcheck disable=SC2162
+    while read line; do
+        # This is intentional - we want to split out ${line} into separate arguments.
+        # shellcheck disable=SC2086
+        download_source distfiles ${line}
+    done < "${entry}/sources"
+done
