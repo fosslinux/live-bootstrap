@@ -1,4 +1,4 @@
-DISTFILES=/distfiles
+DISTFILES=/external/distfiles
 PREFIX=/usr
 BINDIR=${PREFIX}/bin
 LIBDIR=${PREFIX}/lib/mes

@@ -202,7 +202,7 @@ int main(int argc, char **argv)
 	char zeros[BLOCK_SIZE];
 
 	unsigned int next_file_address;
-	
+
 	next_file_address = *((unsigned int *) 0x7F8D);
 
 	printf("Starting fiwix.ext2 at addr 0x%08x\n", next_file_address);
