@@ -89,6 +89,7 @@ mount -t ext4 "/dev/${DISK}" /sysc
 echo "Copying data into sysc"
 sys_transfer "${SYSC}" /sysc_src gzip patch
 cp -r /sysa.tar.bz2 /sysc/sysa.tar.bz2
+cp -r /sysc_src/sysa_saved.tar.bz2 /sysc/sysa_saved.tar.bz2
 sync
 
 # switch_root into sysc 1. for simplicity 2. to avoid kexecing again
