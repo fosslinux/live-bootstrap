@@ -19,8 +19,11 @@ create_sysb() {
     echo "Creating sysb rootfs"
     sys_transfer /sysb_image /sysb gzip patch
     cp -rl /sysc /sysb_image/sysc_src
+    tar -cvf - --exclude='sysb' --exclude='sysc' --exclude='sysb_image' / | bzip2 > /sysb_image/sysa.tar.bz2
+    ls -la /sysb_image/sysa.tar.bz2
     echo "Creating sysb initramfs"
     gen_initramfs_list.sh -o "/boot/initramfs-sysb.cpio.gz" /sysb_image
+    ls -l "/boot/initramfs-sysb.cpio.gz"
     rm -rf /sysb /sysb_image # Cleanup
 }
 
@@ -92,7 +95,10 @@ mkdir -p /sysc/distfiles
 cp "${DISTFILES}"/curl-7.88.1.tar.bz2 /sysc/distfiles
 
 # Clear up some RAM space
+tar -cvf - --exclude="${DISTFILES}" "${SOURCES}" | bzip2 > /sysc/sysa_saved.tar.bz2
+ls -l /sysc/sysa_saved.tar.bz2
 grep --no-filename '^build' "${SOURCES}"/run*.sh | grep -v musl-1.2.4 | sed "s/build //" | sed "s/ .*$//" | while read -r p ; do
+    echo rm -rf "${SOURCES:?}/${p:?}"
     rm -rf "${SOURCES:?}/${p:?}"
 done
 
