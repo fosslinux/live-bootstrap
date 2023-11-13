@@ -171,6 +171,10 @@ menuentry 'Linux live-bootstrap (4.9.10, graphical console)' {
 	linux /boot/linux-4.9.10 root=/dev/sda1 rw console=tty1
 }
 
+menuentry "Shutdown" {
+    halt
+}
+
 menuentry "Reboot" {
     reboot
 }
