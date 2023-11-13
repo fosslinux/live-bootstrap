@@ -256,7 +256,7 @@ print(shutil.which('chroot'))
             system_a.prepare(create_initramfs=True, kernel_bootstrap=True)
             run(args.qemu_cmd,
                 '-enable-kvm',
-                '-m', "4G",
+                '-m', "8G",
                 '-smp', str(args.cores),
                 '-no-reboot',
                 '-drive', 'file=' + os.path.join(system_a.tmp_dir, 'sysa.img') + ',format=raw',

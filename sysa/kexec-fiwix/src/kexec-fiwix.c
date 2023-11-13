@@ -123,7 +123,7 @@ int main() {
 
 	/* Set memory map info */
 	pmultiboot_info->mmap_addr = next_avail_mem;
-	pmultiboot_info->mmap_length = 7 * sizeof(multiboot_memory_map_t);
+	pmultiboot_info->mmap_length = 8 * sizeof(multiboot_memory_map_t);
 	multiboot_memory_map_t *pmultiboot_memory_map = (multiboot_memory_map_t *) next_avail_mem;
 
 	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
@@ -166,6 +166,14 @@ int main() {
 	pmultiboot_memory_map->addr = 0XFFFC0000;
 	pmultiboot_memory_map->len  = 0x00040000;
 	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
+	pmultiboot_memory_map++;
+
+	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+	pmultiboot_memory_map->addr = 1;
+	pmultiboot_memory_map->addr = pmultiboot_memory_map->addr << 32;
+	pmultiboot_memory_map->len  = 1;
+	pmultiboot_memory_map->len  = pmultiboot_memory_map->len  << 32;
+	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_AVAILABLE;
 	pmultiboot_memory_map++;
 
 	next_avail_mem += pmultiboot_info->mmap_length;
