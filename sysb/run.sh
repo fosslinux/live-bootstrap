@@ -69,7 +69,8 @@ fi
 # shellcheck disable=SC2012
 if [ $(($(ls -l "/dev/${DISK}" | sed "s/.*, *//" | sed "s/ .*//") % 8)) -eq 0 ]; then
     echo "Creating partition table..."
-    echo ";" | sfdisk "/dev/${DISK}"
+    # Convince our ancient sfdisk to align to megabytes, not cylinders
+    echo "2048;" | sfdisk -uS -S32 -H64 "/dev/${DISK}"
     fdisk -l "/dev/${DISK}"
     echo "Creating ext4 partition..."
     mkfs.ext4 "/dev/${DISK}1"
