@@ -7,6 +7,7 @@
 
 #define MULTIBOOT_MAGIC 0x2BADB002
 #define INITRD_MB 1152
+#define KEXEC_MB 256
 
 int main() {
 	/* Read the kernel */
@@ -81,11 +82,11 @@ int main() {
 	char *bare_metal = getenv("BARE_METAL");
 	if (bare_metal != NULL && strcmp(bare_metal, "True") == 0)
 	{
-		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init\"", INITRD_MB * 1024);
+		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init\"", INITRD_MB * 1024, KEXEC_MB * 1024);
 	}
 	else
 	{
-		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024);
+		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024, KEXEC_MB * 1024);
 	}
 	char * boot_loader_name = "kexec-fiwix";
 
