@@ -220,8 +220,6 @@ class SysA(SysGeneral):
             image_file.write(b'\0' * round_up)
         current_size += round_up
 
-        # fill file with zeros up to desired size, one megabyte at a time
+        # extend file up to desired size
         with open(image_file_name, 'ab') as image_file:
-            while current_size < 16384 * megabyte:
-                image_file.write(b'\0' * megabyte)
-                current_size += megabyte
+            image_file.truncate(16384 * megabyte)
