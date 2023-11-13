@@ -36,6 +36,11 @@ create_fhs
 
 populate_device_nodes
 
+# Make some swap
+dd if=/dev/zero of=/swap bs=1M count=8192
+mkswap /swap
+swapon /swap
+
 if [ -e "${SOURCES}/distfiles" ]; then
     mv "${SOURCES}/distfiles" /
 else
