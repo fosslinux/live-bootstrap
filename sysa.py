@@ -222,4 +222,4 @@ class SysA(SysGeneral):
 
         # extend file up to desired size
         with open(image_file_name, 'ab') as image_file:
-            image_file.truncate(16384 * megabyte)
+            image_file.truncate(32768 * megabyte)
