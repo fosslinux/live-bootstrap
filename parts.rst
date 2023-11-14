@@ -164,7 +164,7 @@ we have to copy a lot of files into the root of the initramfs, making it
 very messy. We get into the move ordered directory ``/sysa`` here,
 copying over all of the required binaries from ``/``.
 
-mes 0.24
+mes 0.25
 ========
 
 GNU ``mes`` is a scheme interpreter. It runs the sister project ``mescc``,

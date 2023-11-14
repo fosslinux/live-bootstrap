@@ -19,7 +19,7 @@ M2-Mesoplanet --architecture x86 -f simple-patch.c -o ${bindir}/simple-patch
 
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
-MES_VERSION=0.24.2
+MES_VERSION=0.25
 MES_PKG=mes-${MES_VERSION}
 MES_PKG_DIR=${MES_PKG}
 MES_PREFIX=${sysa}/${MES_PKG}/build/${MES_PKG_DIR}
