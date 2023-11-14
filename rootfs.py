@@ -19,7 +19,7 @@ import shutil
 
 from sysa import SysA
 from sysc import SysC
-from lib.utils import run
+from lib.utils import run, run_as_root
 from lib.sysgeneral import stage0_arch_map
 from lib.tmpdir import Tmpdir
 
@@ -168,15 +168,15 @@ def bootstrap(args, system_a, system_c, tmpdir):
 import shutil
 print(shutil.which('chroot'))
 """
-        chroot_binary = run('sudo', 'python3', '-c', find_chroot,
-                            capture_output=True).stdout.decode().strip()
+        chroot_binary = run_as_root('python3', '-c', find_chroot,
+                                    capture_output=True).stdout.decode().strip()
 
         system_c.prepare(create_disk_image=False)
         system_a.prepare(create_initramfs=False)
 
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        run('sudo', 'env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
+        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
 
     elif args.bwrap:
         if not args.internal_ci or args.internal_ci == "pass1":

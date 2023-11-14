@@ -12,7 +12,7 @@ import getpass
 import os
 import shutil
 
-from lib.utils import mount, umount, create_disk, run
+from lib.utils import mount, umount, create_disk, run_as_root
 
 class TmpType(enum.Enum):
     """Different types of tmpdirs we can have"""
@@ -45,7 +45,7 @@ class Tmpdir:
         if not self.preserve:
             for disk in self._disks.values():
                 print(f"Detaching {disk}")
-                run("sudo", "losetup", "-d", disk)
+                run_as_root("losetup", "-d", disk)
 
             if self._type == TmpType.TMPFS:
                 print(f"Unmounting tmpdir from {self.path}")
@@ -75,7 +75,7 @@ class Tmpdir:
         self._disks[name] = create_disk(disk_path, "msdos", filesystem, size)
         self._disk_filesystems[name] = filesystem
         # Allow executing user to access it
-        run("sudo", "chown", getpass.getuser(), self._disks[name])
+        run_as_root("chown", getpass.getuser(), self._disks[name])
 
     def mount_disk(self, name, mountpoint=None):
         """Mount the disk"""
@@ -85,7 +85,7 @@ class Tmpdir:
         os.mkdir(mountpoint)
         mount(self._disks[name] + "p1", mountpoint, self._disk_filesystems[name])
         # Allow executing user to access it
-        run("sudo", "chown", getpass.getuser(), mountpoint)
+        run_as_root("chown", getpass.getuser(), mountpoint)
         self._mountpoints[name] = mountpoint
         return mountpoint
 

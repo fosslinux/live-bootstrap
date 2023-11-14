@@ -25,27 +25,34 @@ def run(*args, **kwargs):
         print("Bootstrapping failed")
         sys.exit(1)
 
+def run_as_root(*args, **kwargs):
+    """A helper for run that invokes sudo when unprivileged"""
+    if os.geteuid() != 0:
+        run("sudo", *args, **kwargs)
+    else:
+        run(*args, **kwargs)
+
 def create_disk(image, disk_type, fs_type, size):
     """Create a disk image, with a filesystem on it"""
     run('truncate', '-s', size, image)
     # First find the device we will use, then actually use it
-    loop_dev = run('sudo', 'losetup', '-f', capture_output=True).stdout.decode().strip()
-    run('sudo', 'losetup', '-P', loop_dev, image)
+    loop_dev = run_as_root('losetup', '-f', capture_output=True).stdout.decode().strip()
+    run_as_root('losetup', '-P', loop_dev, image)
     # Create the partition
     if disk_type != "none":
-        run('sudo', 'parted', '--script', image, 'mklabel', disk_type, 'mkpart',
+        run_as_root('parted', '--script', image, 'mklabel', disk_type, 'mkpart',
                 'primary', 'ext4', '0%', '100%')
-        run('sudo', 'partprobe', loop_dev)
-        run('sudo', 'mkfs.' + fs_type, loop_dev + "p1")
+        run_as_root('partprobe', loop_dev)
+        run_as_root('mkfs.' + fs_type, loop_dev + "p1")
     return loop_dev
 
 def mount(source, target, fs_type, options='', **kwargs):
     """Mount filesystem"""
-    run('sudo', 'mount', source, target, '-t', fs_type, '-o', options, **kwargs)
+    run_as_root('mount', source, target, '-t', fs_type, '-o', options, **kwargs)
 
 def umount(target, **kwargs):
     """Unmount filesystem"""
-    run('sudo', 'umount', '--recursive', target, **kwargs)
+    run_as_root('umount', '--recursive', target, **kwargs)
 
 def copytree(src, dst, ignore=shutil.ignore_patterns('*.git*')):
     """Copy directory tree into another directory"""
