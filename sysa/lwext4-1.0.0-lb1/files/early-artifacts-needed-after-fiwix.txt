@@ -73,6 +73,7 @@
 /usr/include/mes/config.h
 /usr/include/mes/constants.h
 /usr/include/mes/lib.h
+/usr/include/mes/lib-cc.h
 /usr/include/mes/lib-mini.h
 /usr/include/mes/mes.h
 /usr/include/mes/symbols.h
