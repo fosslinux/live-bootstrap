@@ -125,7 +125,7 @@ def main():
 
     # Arch validation
     if args.arch != "x86":
-        raise ValueError("Only x86 is supported at the moment.")
+        print("Only x86 is supported at the moment, other arches are for development only.")
 
     # Tmp validation
     if args.bwrap and args.tmpfs:

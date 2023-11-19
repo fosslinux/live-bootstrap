@@ -190,9 +190,8 @@ non-trivial process and as seen within tcc. kaem has many different parts
 within it: a. tcc 0.9.26 is first compiled using ``mescc``. b. The mes
 libc is recompiled using tcc (``mescc`` has a non-standard ``.a``
 format), including some additions for later programs. c. tcc 0.9.26 is
-recompiled 5(!) times to add new features that are required for other
-features, namely ``long long`` and ``float``. Each time, the libc is
-also recompiled.
+recompiled 3 times to add new features, namely ``long long`` and
+``float``. Each time, the libc is also recompiled.
 
 tinycc 0.9.27
 =============
