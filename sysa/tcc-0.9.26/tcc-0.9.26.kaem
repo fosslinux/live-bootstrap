@@ -15,7 +15,7 @@ MES_SOURCE=${MES_PREFIX}
 MES=${bindir}/mes
 
 TCC_TAR=tcc-0.9.26
-TCC_PKG=tcc-0.9.26-1136-g5bba73cc
+TCC_PKG=tcc-0.9.26-1147-gee75a10c
 
 # Check tarball checksums
 checksum-transcriber sources
@@ -30,7 +30,7 @@ ungz --file ${distfiles}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
 cd ..
 
 cd build
-untar --file ../src/${TCC_TAR}.tar
+untar --non-strict --file ../src/${TCC_TAR}.tar
 simple-patch ${TCC_PKG}/tcctools.c \
     ../simple-patches/remove-fileopen.before ../simple-patches/remove-fileopen.after
 simple-patch ${TCC_PKG}/tcctools.c \
@@ -39,8 +39,9 @@ simple-patch ${TCC_PKG}/tcctools.c \
 untar --non-strict --file ../src/${MES_PKG}.tar
 
 # Create config.h
+catm ${MES_PKG_DIR}/include/mes/config.h
+catm ${TCC_PKG}/config.h
 cd ${TCC_PKG}
-catm config.h
 
 if match ${ARCH} x86; then
     MES_ARCH=x86
@@ -48,14 +49,28 @@ if match ${ARCH} x86; then
     MES_LIBC_SUFFIX=gcc
     HAVE_LONG_LONG=0
 fi
+if match ${ARCH} amd64; then
+    MES_ARCH=x86_64
+    TCC_TARGET_ARCH=X86_64
+    MES_LIBC_SUFFIX=gcc
+    HAVE_LONG_LONG=1
+fi
+if match ${ARCH} riscv64; then
+    MES_ARCH=riscv64
+    TCC_TARGET_ARCH=RISCV64
+    MES_LIBC_SUFFIX=tcc
+    HAVE_LONG_LONG=1
+fi
+
 
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -S \
     -o tcc.s \
     -I ${incdir} \
     -D BOOTSTRAP=1 \
+    -D HAVE_LONG_LONG=${HAVE_LONG_LONG} \
     -I . \
-    -D TCC_TARGET_I386=1 \
+    -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
     -D inline= \
     -D CONFIG_TCCDIR=\"${libdir}/mes/tcc\" \
     -D CONFIG_SYSROOT=\"/\" \
@@ -67,25 +82,24 @@ ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
     -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_MES_LIBC=1 \
     -D TCC_VERSION=\"0.9.26\" \
     -D ONE_SOURCE=1 \
     tcc.c
 ${MES} --no-auto-compile -e main ${bindir}/mescc.scm -- \
     --base-address 0x08048000 \
-    -o mes-tcc \
+    -o tcc-mes \
     -L ${libdir} \
     tcc.s \
     -l c+tcc
-cp mes-tcc ${bindir}/
-chmod 755 ${bindir}/mes-tcc
+cp tcc-mes ${bindir}/
+chmod 755 ${bindir}/tcc-mes
 
 # Install libc into a subdirectory
 libdir=${libdir}/mes
 mkdir ${libdir}
 
-# test mes-tcc
-mes-tcc -version
+# test tcc-mes
+tcc-mes -version
 
 # Recompile the mes C library
 cd ../${MES_PKG_DIR}
@@ -96,42 +110,53 @@ catm ../unified-libc.c ctype/isalnum.c ctype/isalpha.c ctype/isascii.c ctype/isc
 cd ..
 
 # crt1.o
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
+tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
 
-# crtn.o
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
+catm ${libdir}/crtn.o
+catm ${libdir}/crti.o
+if match ${ARCH} x86; then
+    # crtn.o
+    tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
 
-# crti.o
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
+    # crti.o
+    tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
+fi
 
 # libc+gcc.a
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-mes-tcc -ar cr ${libdir}/libc.a unified-libc.o
+tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
+tcc-mes -ar cr ${libdir}/libc.a unified-libc.o
 
 # libtcc1.a
 mkdir ${libdir}/tcc
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/libtcc1.c
-mes-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
+tcc-mes -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o libtcc1.o lib/libtcc1.c
+if match ${ARCH} riscv64; then
+    tcc-mes -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
+    tcc-mes -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o lib-arm64.o
+else
+    tcc-mes -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
+fi
 
 # libgetopt.a
-mes-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/getopt.c
-mes-tcc -ar cr ${libdir}/libgetopt.a getopt.o
+tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} lib/posix/getopt.c
+tcc-mes -ar cr ${libdir}/libgetopt.a getopt.o
 
 cd ../${TCC_PKG}
 
 # boot0 (ref comments here for all boot*)
 # compile
-mes-tcc \
+tcc-mes \
     -g \
     -v \
     -static \
-    -o boot0-tcc \
+    -o tcc-boot0 \
     -D BOOTSTRAP=1 \
-    -D HAVE_LONG_LONG_STUB=1 \
+    -D HAVE_FLOAT=1 \
+    -D HAVE_BITFIELD=1 \
+    -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
     -I ${prefix}/include \
-    -D TCC_TARGET_I386=1 \
+    -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
     -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
     -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
@@ -142,43 +167,51 @@ mes-tcc \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
     -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_MES_LIBC=1 \
     -D TCC_VERSION=\"0.9.26\" \
     -D ONE_SOURCE=1 \
     -L . \
     -L ${libdir} \
     tcc.c
 # Install
-cp boot0-tcc ${bindir}/
-chmod 755 ${bindir}/boot0-tcc
+cp tcc-boot0 ${bindir}/
+chmod 755 ${bindir}/tcc-boot0
 cd ../${MES_PKG_DIR}
 # Recompile libc: crt{1,n,i}, libtcc.a, libc.a
-boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
-boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
-boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
-boot0-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG_STUB=1 -I include -I include/linux/x86 lib/libtcc1.c
-boot0-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
-boot0-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot0-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-boot0-tcc -ar cr ${libdir}/libc.a unified-libc.o
+tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
+if match ${ARCH} x86; then
+    tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
+    tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
+fi
+
+tcc-boot0 -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o libtcc1.o lib/libtcc1.c
+if match ${ARCH} riscv64; then
+    tcc-boot0 -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
+    tcc-boot0 -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o lib-arm64.o
+else
+    tcc-boot0 -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
+fi
+
+tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
+tcc-boot0 -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot0
-boot0-tcc -version
+tcc-boot0 -version
 
 # boot1
-boot0-tcc \
+tcc-boot0 \
     -g \
     -v \
     -static \
-    -o boot1-tcc \
+    -o tcc-boot1 \
     -D BOOTSTRAP=1 \
+    -D HAVE_FLOAT=1 \
     -D HAVE_BITFIELD=1 \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
     -I ${prefix}/include \
-    -D TCC_TARGET_I386=1 \
+    -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
     -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
     -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
@@ -189,41 +222,48 @@ boot0-tcc \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
     -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_MES_LIBC=1 \
     -D TCC_VERSION=\"0.9.26\" \
     -D ONE_SOURCE=1 \
     -L . \
     tcc.c
-cp boot1-tcc ${bindir}
-chmod 755 ${bindir}/boot1-tcc
+cp tcc-boot1 ${bindir}
+chmod 755 ${bindir}/tcc-boot1
 cd ../${MES_PKG_DIR}
-boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
-boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
-boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
-boot1-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
-boot1-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
-boot1-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot1-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-boot1-tcc -ar cr ${libdir}/libc.a unified-libc.o
+tcc-boot1 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
+if match ${ARCH} x86; then
+    tcc-boot1 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
+    tcc-boot1 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
+fi
+
+tcc-boot1 -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o libtcc1.o lib/libtcc1.c
+if match ${ARCH} riscv64; then
+    tcc-boot1 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
+    tcc-boot1 -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o lib-arm64.o
+else
+    tcc-boot1 -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
+fi
+
+tcc-boot1 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
+tcc-boot1 -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot1
-boot1-tcc -version
+tcc-boot1 -version
 
 # boot2
-boot1-tcc \
+tcc-boot1 \
     -g \
     -v \
     -static \
-    -o boot2-tcc \
+    -o tcc-boot2 \
     -D BOOTSTRAP=1 \
     -D HAVE_BITFIELD=1 \
-    -D HAVE_FLOAT_STUB=1 \
+    -D HAVE_FLOAT=1 \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
     -I ${prefix}/include \
-    -D TCC_TARGET_I386=1 \
+    -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
     -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
     -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
@@ -234,170 +274,45 @@ boot1-tcc \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
     -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_MES_LIBC=1 \
     -D TCC_VERSION=\"0.9.26\" \
     -D ONE_SOURCE=1 \
     -L . \
     tcc.c
-cp boot2-tcc ${bindir}
-chmod 755 ${bindir}/boot2-tcc
+cp tcc-boot2 ${bindir}
+chmod 755 ${bindir}/tcc-boot2
 cd ../${MES_PKG_DIR}
-boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
-boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
-boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
-boot2-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT_STUB=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
-boot2-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
-boot2-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot2-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-boot2-tcc -ar cr ${libdir}/libc.a unified-libc.o
+tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
+if match ${ARCH} x86; then
+    tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
+    tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
+fi
+
+tcc-boot2 -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o libtcc1.o lib/libtcc1.c
+if match ${ARCH} riscv64; then
+    tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
+    tcc-boot2 -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o lib-arm64.o
+else
+    tcc-boot2 -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
+fi
+
+tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
+tcc-boot2 -ar cr ${libdir}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # Test boot2
-boot2-tcc -version
-
-# boot3
-boot2-tcc \
-    -g \
-    -v \
-    -static \
-    -o boot3-tcc \
-    -D BOOTSTRAP=1 \
-    -D HAVE_BITFIELD=1 \
-    -D HAVE_FLOAT=1 \
-    -D HAVE_LONG_LONG=1 \
-    -D HAVE_SETJMP=1 \
-    -I . \
-    -I ${prefix}/include \
-    -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
-    -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
-    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
-    -D TCC_LIBTCC1=\"libtcc1.a\" \
-    -D CONFIG_TCCBOOT=1 \
-    -D CONFIG_TCC_STATIC=1 \
-    -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_MES_LIBC=1 \
-    -D TCC_VERSION=\"0.9.26\" \
-    -D ONE_SOURCE=1 \
-    -L . \
-    tcc.c
-cp boot3-tcc ${bindir}
-chmod 755 ${bindir}/boot3-tcc
-cd ../${MES_PKG_DIR}
-boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
-boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
-boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
-boot3-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
-boot3-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
-boot3-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot3-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-boot3-tcc -ar cr ${libdir}/libc.a unified-libc.o
-cd ../${TCC_PKG}
-
-# Test boot3
-boot3-tcc -version
-
-# boot4
-boot3-tcc \
-    -g \
-    -v \
-    -static \
-    -o boot4-tcc \
-    -D BOOTSTRAP=1 \
-    -D HAVE_BITFIELD=1 \
-    -D HAVE_FLOAT=1 \
-    -D HAVE_LONG_LONG=1 \
-    -D HAVE_SETJMP=1 \
-    -I . \
-    -I ${prefix}/include \
-    -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
-    -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
-    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
-    -D TCC_LIBTCC1=\"libtcc1.a\" \
-    -D CONFIG_TCCBOOT=1 \
-    -D CONFIG_TCC_STATIC=1 \
-    -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_MES_LIBC=1 \
-    -D TCC_VERSION=\"0.9.26\" \
-    -D ONE_SOURCE=1 \
-    -L . \
-    tcc.c
-cp boot4-tcc ${bindir}
-chmod 755 ${bindir}/boot4-tcc
-cd ../${MES_PKG_DIR}
-boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
-boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
-boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
-boot4-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
-boot4-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
-boot4-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot4-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-boot4-tcc -ar cr ${libdir}/libc.a unified-libc.o
-cd ../${TCC_PKG}
-
-# Test boot4
-boot4-tcc -version
-
-# boot5
-boot4-tcc \
-    -g \
-    -v \
-    -static \
-    -o boot5-tcc \
-    -D BOOTSTRAP=1 \
-    -D HAVE_BITFIELD=1 \
-    -D HAVE_FLOAT=1 \
-    -D HAVE_LONG_LONG=1 \
-    -D HAVE_SETJMP=1 \
-    -I . \
-    -I ${prefix}/include \
-    -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
-    -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
-    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
-    -D TCC_LIBTCC1=\"libtcc1.a\" \
-    -D CONFIG_TCCBOOT=1 \
-    -D CONFIG_TCC_STATIC=1 \
-    -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_MES_LIBC=1 \
-    -D TCC_VERSION=\"0.9.26\" \
-    -D ONE_SOURCE=1 \
-    -L . \
-    tcc.c
-cp boot5-tcc ${bindir}
-chmod 755 ${bindir}/boot5-tcc
-cd ../${MES_PKG_DIR}
-boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
-boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
-boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
-boot5-tcc -c -D HAVE_CONFIG_H=1 -D HAVE_FLOAT=1 -D HAVE_LONG_LONG=1 -I include -I include/linux/x86 lib/libtcc1.c
-boot5-tcc -c -D TCC_TARGET_I386=1 ../${TCC_PKG}/lib/libtcc1.c
-boot5-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
-boot5-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-boot5-tcc -ar cr ${libdir}/libc.a unified-libc.o
-
-# Test boot5
-boot5-tcc -version
+tcc-boot2 -version
 
 # We have our final tcc 0.9.26!
-cp ${bindir}/boot5-tcc ${bindir}/tcc
+cp ${bindir}/tcc-boot2 ${bindir}/tcc
 chmod 755 ${bindir}/tcc
+rm ${bindir}/tcc-boot2
 cp ${bindir}/tcc ${bindir}/tcc-0.9.26
 chmod 755 ${bindir}/tcc-0.9.26
 
 # Also recompile getopt, we don't need to do this during the boot* stages
 # because nothing is linked against it
-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 lib/posix/getopt.c
+cd ../${MES_PKG_DIR}
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} lib/posix/getopt.c
 tcc -ar cr ${libdir}/libgetopt.a getopt.o
 
 cd ../..
@@ -405,12 +320,9 @@ cd ../..
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
-        /usr/bin/mes-tcc \
-        /usr/bin/boot0-tcc \
-        /usr/bin/boot1-tcc \
-        /usr/bin/boot2-tcc \
-        /usr/bin/boot3-tcc \
-        /usr/bin/boot4-tcc \
+        /usr/bin/tcc-mes \
+        /usr/bin/tcc-boot0 \
+        /usr/bin/tcc-boot1 \
         /usr/bin/tcc \
         /usr/lib/mes/libc.a \
         /usr/lib/mes/libgetopt.a \
@@ -421,5 +333,5 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
 
     cp ${pkg}.checksums ${srcdir}
 else
-    sha256sum -c ${pkg}.checksums
+    sha256sum -c ${pkg}.${ARCH}.checksums
 fi
