@@ -155,14 +155,46 @@ checksumming tool, that we use to ensure reproducibility and authenticity
 of generated binaries. We also build initial ``untar``, ``ungz`` and ``unbz2``
 utilities to deal with compressed archives.
 
-``/sysa``
-=========
+live-bootstrap seed
+===================
 
-We now move into the ``/sysa`` directory. As stage0-posix has no
-concept of ``chdir()`` (not added until very late in stage0-posix),
-we have to copy a lot of files into the root of the initramfs, making it
-very messy. We get into the move ordered directory ``/sysa`` here,
-copying over all of the required binaries from ``/``.
+``stage0-posix`` executes a file ``after.kaem``, which creates a kaem script to
+continue the bootstrap. This is responsible for cleaning up the mess in
+``/x86/bin`` and moving it to the permanent ``/usr/bin``, and setting a few
+environment variables.
+
+script-generator
+================
+
+``script-generator`` is a program that translates live-bootstrap's
+domain-specific manifest language into shell scripts that can be run to complete
+the bootstrap. The translator is implemented in ``M2-Planet``.
+
+The language is fairly simple; each line has the format
+``<directive>: <arguments> <predicate>``. A predicate only runs the line if a
+particular condition is true.
+
+The following directives are supported:
+
+* ``build``, builds a particular package defined in ``steps/``.
+* ``improve``, runs a script making a distinct and logical improvement to the
+  live bootstrap system.
+* ``define``, define a variable evaluated from other constants/variables.
+* ``jump``, moves into a new rootfs/kernel using a custom script.
+
+checksum-transcriber 1.0
+========================
+
+``checksum-transcriber`` is a small program that converts live-bootstrap's
+source specification for packages into a SHA256SUM file that can be used to
+checksum source tarballs.
+
+simple-patch 1.0
+================
+
+``simple-patch`` is a rudimentary patching program. It works by matching for a
+text block given to it, and replacing it with another text block. This is
+sufficient for the early patching required before we have full proper GNU patch.
 
 mes 0.25
 ========
@@ -176,6 +208,10 @@ to this part:
    *only* the Mes interpreter, not the libc or anything else.
 2. We then use this to recompile the Mes interpreter as well as building
    the libc. This second interpreter is faster and less buggy.
+
+From this point until musl, we are capable of making non-standard and strange
+libraries. All libraries are in ``/usr/lib/mes``, and includes are in
+``/usr/include/mes``, as they are incompatible with musl.
 
 tinycc 0.9.26
 =============
@@ -215,8 +251,8 @@ This is a Linux 2.0 clone which is much simpler to understand and build than
 Linux.  This version of Fiwix is a fork of 1.4.0 that contains many
 modifications and enhancements to support live-boostrap.
 
-lwext4 1.0.0
-============
+lwext4 1.0.0-lb1
+================
 
 If the kernel bootstrap option is enabled then `lwext4 <https://github.com/gkostka/lwext4>`
 is built next. This is a library for creating ext2/3/4 file systems from user land.
@@ -230,11 +266,19 @@ kexec-fiwix
 If the kernel bootstrap option is enabled then a C program `kexec-fiwix` is compiled
 and run which places the Fiwix ram drive in memory and launches the Fiwix kernel.
 
-kexec-linux
-===========
+esfu 1.0
+========
 
-If the kernel bootstrap option is enabled then a C program `kexec-linux` is compiled.
-This is used as part of the go_sysb step later to launch the Linux kernel.
+This is an extremely crippled basic implementation of ``mount`` and ``mknod``.
+Sufficient only for the next step.
+
+early_mount_disk
+================
+
+When using kernel bootstrap, distfiles from this point exist on an external
+disk. Using ``esfu``'s ``mount`` and ``mknod``, we are able to mount this disk.
+This is unnecessary when not using kernel bootstrap as everything is done on the
+disk.
 
 make 3.82
 =========
@@ -304,6 +348,12 @@ Bash ships with a bison pre-generated file here which we delete.
 Unfortunately, we have not bootstrapped bison but fortunately for us,
 heirloom yacc is able to cope here.
 
+update_env
+==========
+
+This is a simple script that makes some small updates to the env file that were
+not possible when using kaem.
+
 flex 2.5.11
 ===========
 
@@ -321,8 +371,8 @@ tcc 0.9.27 (patched)
 
 We recompile ``tcc`` with some patches needed to build musl.
 
-musl 1.1.24
-===========
+musl 1.1.24 and musl_libdir
+===========================
 
 ``musl`` is a C standard library that is lightweight, fast, simple,
 free, and strives to be correct in the sense of standards-conformance
@@ -334,6 +384,9 @@ from building many newer or more complex programs.
 apply a few patches. In particular, we replace all weak symbols with
 strong symbols and will patch ``tcc`` in the next step to ignore
 duplicate symbols.
+
+We do not use any of ``/usr/lib/mes`` or ``/usr/include/mes`` any longer, rather
+using ``/usr/lib`` and ``/usr/include`` like normal.
 
 tcc 0.9.27 (musl)
 =================
@@ -586,12 +639,6 @@ libtool 2.2.4
 GNU Libtool is the final part of GNU Autotools. It is a script used to hide away differences
 when compiling shared libraries on different platforms.
 
-bash 2.05b
-==========
-
-Up to this point, our build of ``bash`` could run scripts but could not be used
-interactively. Rebuilding bash makes this functionality work.
-
 automake 1.15.1
 ===============
 
@@ -646,6 +693,12 @@ GCC can build the latest as of the time of writing musl version.
 We also don't need any of the TCC patches that we used before.
 To accomodate Fiwix, there are patches to avoid syscalls set_thread_area and clone.
 
+Linux headers 5.10.41
+=====================
+
+This gets some headers out of the Linux kernel that are required to use the
+kernel ABI, needed for ``util-linux``.
+
 gcc 4.0.4
 =========
 
@@ -655,10 +708,15 @@ util-linux 2.19.1
 =================
 
 ``util-linux`` contains a number of general system administration utilities.
-Most pressingly, we need these for being able to mount disks (for non-chroot
-mode, but it is built it in chroot mode anyway because it will likely be useful
-later). The latest version is not used because of autotools/GCC
-incompatibilities.
+This gives us access to a much less crippled version of ``mount`` and ``mknod``.
+The latest version is not used because of autotools/GCC incompatibilities.
+
+move_disk
+=========
+
+In ``kernel-bootstrap`` mode, we have been working off an initramfs for some
+things up until now. At this point we are now capable of moving to it entirely,
+so we do so.
 
 kbd-1.15
 ========
@@ -685,6 +743,12 @@ bc 1.07.1
 ``bc`` is a console based calculator that is sometime used in scripts. We need ``bc``
 to rebuild some Linux kernel headers.
 
+kexec-linux
+===========
+
+If the kernel bootstrap option is enabled then a C program ``kexec-linux`` is compiled.
+This can be used to launch a Linux kernel from Fiwix.
+
 kexec-tools 2.0.22
 ==================
 
@@ -692,13 +756,6 @@ kexec-tools 2.0.22
 Linux kernel without a manual restart from within a running system. It is a
 kind of soft-restart. It is only built for non-chroot mode, as we only use it
 in non-chroot mode. It is used to go into sysb/sysc.
-
-create_sysb
-===========
-
-The next step is not a package, but the creation of the sysb rootfs, containing
-all of the scripts for sysb (which merely move to sysc). Again, this is only
-done in non-chroot mode, because sysb does not exist in chroot mode.
 
 Linux kernel 4.9.10
 ===================
@@ -716,30 +773,10 @@ so we use a ``find`` command to remove those, which are automatically regenerate
 The kernel config was originally taken from Void Linux, and was then modified
 for the requirements of live-bootstrap, including compiler features, drivers,
 and removing modules. Modules are unused. They are difficult to transfer to
-subsequent systems, and we do not have ``modprobe``. Lastly,
-the initramfs of sysb is generated in this stage, using ``gen_init_cpio`` within
-the Linux kernel tree. This avoids the compilation of ``cpio`` as well.
+subsequent systems, and we do not have ``modprobe``.
 
-musl 1.2.4
-==========
-Prior to booting Linux, musl is rebuilt yet again with syscalls
-``clone`` and ``set_thread_area`` enabled for Linux thread support.
-
-go_sysb
-=======
-
-This is the last step of sysa, run for non-chroot mode. It uses kexec to load
-the new Linux kernel into RAM and execute it, moving into sysb.
-
-In chroot, sysb is skipped, and data is transferred directly to sysc and
-chrooted into.
-
-sysb
-====
-
-sysb is purely a transition to sysc, allowing binaries from sysa to get onto a
-disk (as sysa does not necessarily have hard disk support in the kernel).
-It populates device nodes, mounts sysc, copies over data, and executes sysc.
+We then kexec to use the new Linux kernel, using ``kexec-tools`` for a Linux
+kernel and ``kexec-linux`` for Fiwix.
 
 curl 7.88.1
 ===========
