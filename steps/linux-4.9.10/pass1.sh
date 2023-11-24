@@ -62,7 +62,7 @@ src_compile() {
 }
 
 src_install() {
-    install -D -m 644 arch/i386/boot/bzImage "/boot/linux-4.9.10"
-    install -D -m 755 usr/gen_init_cpio "${PREFIX}/bin/gen_init_cpio"
-    install -D -m 755 scripts/gen_initramfs_list.sh "${PREFIX}/bin/gen_initramfs_list.sh"
+    install -D -m 644 arch/i386/boot/bzImage "${DESTDIR}/boot/linux-4.9.10"
+    install -D -m 755 usr/gen_init_cpio "${DESTDIR}${PREFIX}/bin/gen_init_cpio"
+    install -D -m 755 scripts/gen_initramfs_list.sh "${DESTDIR}${PREFIX}/bin/gen_initramfs_list.sh"
 }
