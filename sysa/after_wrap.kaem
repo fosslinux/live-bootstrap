@@ -1,0 +1,10 @@
+#!/bin/sh
+
+PATH=./${ARCH_DIR}/bin
+
+./${ARCH_DIR}/bin/M2-Mesoplanet --architecture ${ARCH} \
+  -f sysa/wrap.c \
+  -o ./${ARCH_DIR}/bin/wrap \
+  --temp-directory ./x86/artifact
+
+exec ./${ARCH_DIR}/bin/wrap ./${ARCH_DIR}/bin/kaem --verbose --strict --file sysa/after.kaem
