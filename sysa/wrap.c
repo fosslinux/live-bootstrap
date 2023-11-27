@@ -92,25 +92,44 @@ void deny_setgroups() {
 }
 
 int main(int argc, char **argv, char **envp) {
-  int uid = geteuid();
-  int gid = getegid();
-  unshare(CLONE_NEWUSER | CLONE_NEWNS);
-  mkdir ("dev", 0755);
-  touch ("dev/null");
-  mount ("/dev/null", "dev/null", "", MS_BIND, NULL);
-  touch ("dev/zero");
-  mount ("/dev/zero", "dev/zero", "", MS_BIND, NULL);
-  touch ("dev/random");
-  mount ("/dev/random", "dev/random", "", MS_BIND, NULL);
-  touch ("dev/urandom");
-  mount ("/dev/urandom", "dev/urandom", "", MS_BIND, NULL);
-  touch ("dev/ptmx");
-  mount ("/dev/ptmx", "dev/ptmx", "", MS_BIND, NULL);
-  touch ("dev/tty");
-  mount ("/dev/tty", "dev/tty", "", MS_BIND, NULL);
-  deny_setgroups();
-  set_map(uid, "/proc/self/uid_map");
-  set_map(gid, "/proc/self/gid_map");
-  chroot (".");
-  execve (argv[1], argv + 4 , envp);
+  char *cwd = get_current_dir_name();
+  /* Do nothing if cwd is already root */
+  if (strcmp(cwd, "/")) {
+    int uid = geteuid();
+    int gid = getegid();
+    /* Don't create a user and mount namespace if we are already root */
+    if (uid != 0) {
+      require(unshare(CLONE_NEWUSER | CLONE_NEWNS) == 0, "Failed to create user and mount namespaces");
+      /* Prevent the use of setgroups and make gid_map writeable */
+      deny_setgroups();
+      /* Map the root user in the user namespace to our user id */
+      set_map(uid, "/proc/self/uid_map");
+      /* Map the root group in the user namespace to our group id */
+      set_map(gid, "/proc/self/gid_map");
+    }
+    mkdir ("dev", 0755);
+    touch ("dev/null");
+    mount ("/dev/null", "dev/null", "", MS_BIND, NULL);
+    touch ("dev/zero");
+    mount ("/dev/zero", "dev/zero", "", MS_BIND, NULL);
+    touch ("dev/random");
+    mount ("/dev/random", "dev/random", "", MS_BIND, NULL);
+    touch ("dev/urandom");
+    mount ("/dev/urandom", "dev/urandom", "", MS_BIND, NULL);
+    touch ("dev/ptmx");
+    mount ("/dev/ptmx", "dev/ptmx", "", MS_BIND, NULL);
+    touch ("dev/tty");
+    mount ("/dev/tty", "dev/tty", "", MS_BIND, NULL);
+    mkdir ("dev/shm", 0755);
+    mount ("tmpfs", "dev/shm", "tmpfs", 0, NULL);
+    mkdir ("proc", 0755);
+    mount ("proc", "proc", "proc", 0, NULL);
+    mkdir ("sys", 0755);
+    mount ("/sys", "sys", "", MS_BIND, NULL);
+    mkdir ("tmp", 0755);
+    mkdir ("tmpfs", "tmp", "tmpfs", 0, NULL);
+    chroot (".");
+  }
+  free(cwd);
+  return execve (argv[1], argv + sizeof(char *) , envp);
 }
