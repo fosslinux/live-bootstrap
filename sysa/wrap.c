@@ -1,12 +1,21 @@
 #define CLONE_NEWUSER 0x10000000
 #define CLONE_NEWNS 0x00020000
 #define MS_BIND 4096
+#define MNT_DETACH 0x00000002
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <string.h>
-#include <bootstrappable.h>
+#include <stdlib.h>
 
 #include <sys/stat.h>
+
+#include <fcntl.h>
+#include <unistd.h>
+
+#ifdef __M2__
+
+#include <bootstrappable.h>
 
 int unshare(int flags) {
   asm (
@@ -60,18 +69,40 @@ int chroot(char *path) {
   );
 }
 
-int set_map(int parent_id, char *path) {
-  char *map_contents;
-  char *parent_id_str;
+#else
+
+// From bootstrappable.c in M2libc
+
+void require(int bool, char* error)
+{
+  if(!bool)
+  {
+    fputs(error, stderr);
+    exit(EXIT_FAILURE);
+  }
+}
+
+extern int unshare(int flags);
+
+extern int mount(const char *source, const char *target,
+  const char *filesystemtype, unsigned long mountflags, const void *data);
+
+#endif
+
+void set_map(int parent_id, char *path) {
   int fd = open(path, O_WRONLY, 0);
   require(fd != -1, "Cannot open map file");
 
-  map_contents = calloc(37, sizeof(char));
+  char *map_contents = calloc(38, sizeof(char));
 
+#ifdef __M2__
   strcpy(map_contents, "0 ");
-  parent_id_str = int2str(parent_id, 10, 0);
+  char *parent_id_str = int2str(parent_id, 10, 0);
   strcat(map_contents, parent_id_str);
   strcat(map_contents, " 1");
+#else
+  snprintf(map_contents, 38, "0 %i 1", parent_id);
+#endif
   write(fd, map_contents, strlen(map_contents));
   write(STDOUT_FILENO, map_contents, strlen(map_contents));
   free(map_contents);
@@ -92,6 +123,7 @@ void deny_setgroups() {
 }
 
 int main(int argc, char **argv, char **envp) {
+  require(argc > 1, "Expected at least one argument: command");
   char *cwd = get_current_dir_name();
   /* Do nothing if cwd is already root */
   if (strcmp(cwd, "/")) {
@@ -127,7 +159,7 @@ int main(int argc, char **argv, char **envp) {
     mkdir ("sys", 0755);
     mount ("/sys", "sys", "", MS_BIND, NULL);
     mkdir ("tmp", 0755);
-    mkdir ("tmpfs", "tmp", "tmpfs", 0, NULL);
+    mount ("tmpfs", "tmp", "tmpfs", 0, NULL);
     chroot (".");
   }
   free(cwd);
