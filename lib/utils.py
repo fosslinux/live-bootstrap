@@ -29,8 +29,7 @@ def run_as_root(*args, **kwargs):
     """A helper for run that invokes sudo when unprivileged"""
     if os.geteuid() != 0:
         return run("sudo", *args, **kwargs)
-    else:
-        return run(*args, **kwargs)
+    return run(*args, **kwargs)
 
 def create_disk(image, disk_type, fs_type, size):
     """Create a disk image, with a filesystem on it"""
