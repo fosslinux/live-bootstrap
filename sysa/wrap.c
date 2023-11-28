@@ -184,7 +184,7 @@ void deny_setgroups() {
   close(fd);
 }
 
-int main(int argc, char **argv, char **envp) {
+int main(int argc, char **argv) {
   require(argc > 1, "Expected at least one argument: command");
   char *cwd = get_current_dir_name();
   /* Do nothing if cwd is already root */
