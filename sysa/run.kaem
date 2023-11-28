@@ -69,7 +69,7 @@ if match x${BUILD_FIWIX} xTrue; then
     cd ..
 
     # Live boot loader for Fiwix
-    pkg="kexec-fiwix"
+    pkg="kexec-fiwix-1.0"
     cd ${pkg}
     kaem --verbose --file ${pkg}.kaem
     cd ..
