@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -ex
+
 PATH=./${ARCH_DIR}/bin
 
 ./${ARCH_DIR}/bin/M2-Mesoplanet --architecture ${ARCH} \
