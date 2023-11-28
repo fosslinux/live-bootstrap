@@ -225,5 +225,19 @@ int main(int argc, char **argv, char **envp) {
     chroot (".");
   }
   free(cwd);
-  return execve (argv[1], argv + sizeof(char *) , envp);
+  char **newenv = malloc(3 * sizeof(char *));
+  char *ARCH = getenv("ARCH");
+  newenv[0] = malloc(6 + strlen(ARCH));
+  strcpy(newenv[0], "ARCH=");
+  strcpy(newenv[0] + 5, ARCH);
+  char *ARCH_DIR = getenv("ARCH_DIR");
+  newenv[1] = malloc(10 + strlen(ARCH_DIR));
+  strcpy(newenv[1], "ARCH_DIR=");
+  strcpy(newenv[1] + 9, ARCH_DIR);
+  newenv[2] = NULL;
+#ifdef __M2__
+  return execve (argv[1], argv + sizeof(char *) , newenv);
+#else
+  return execve (argv[1], argv + 1, newenv);
+#endif
 }
