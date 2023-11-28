@@ -81,11 +81,11 @@ int main() {
 	char *bare_metal = getenv("BARE_METAL");
 	if (bare_metal != NULL && strcmp(bare_metal, "True") == 0)
 	{
-		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init\"", INITRD_MB * 1024);
+		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init\"", INITRD_MB * 1024);
 	}
 	else
 	{
-		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=sysa.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024);
+		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=67000 kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024);
 	}
 	char * boot_loader_name = "kexec-fiwix";
 
@@ -117,8 +117,8 @@ int main() {
 	pmultiboot_module->mod_end = 0x1C6000 + (INITRD_MB * 1024 * 1024);
 	next_avail_mem += sizeof(multiboot_module_t);
 	pmultiboot_module->cmdline = next_avail_mem;
-	strcpy((char *) next_avail_mem, "sysa.ext2");
-	next_avail_mem += (strlen("sysa.ext2") + 1);
+	strcpy((char *) next_avail_mem, "fiwix.ext2");
+	next_avail_mem += (strlen("fiwix.ext2") + 1);
 
 	/* Set memory map info */
 	pmultiboot_info->mmap_addr = next_avail_mem;
@@ -182,7 +182,7 @@ int main() {
 	int filenum;
 	unsigned int filename_addr;
 	for (filenum = 4, filename_addr = 0x201000; filenum <= 14335; filenum++, filename_addr += 1024) {
-		if (!strcmp((char *) filename_addr, "/boot/sysa.ext2")) {
+		if (!strcmp((char *) filename_addr, "/boot/fiwix.ext2")) {
 			printf("Found image at filenum %d\n", filenum);
 			break;
 		}

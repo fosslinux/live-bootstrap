@@ -205,10 +205,10 @@ int main(int argc, char **argv)
 	
 	next_file_address = *((unsigned int *) 0x7F8D);
 
-	printf("Starting sysa.ext2 at addr 0x%08x\n", next_file_address);
+	printf("Starting fiwix.ext2 at addr 0x%08x\n", next_file_address);
 
 	/* Create zeroed out disk image file */
-	input_name = "/boot/sysa.ext2";
+	input_name = "/boot/fiwix.ext2";
 
 	memset(zeros, 0, BLOCK_SIZE);
 	FILE *ext2file = fopen(input_name, "w");
