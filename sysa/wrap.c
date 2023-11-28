@@ -17,6 +17,8 @@
 
 #include <bootstrappable.h>
 
+#if __i386__
+
 int unshare(int flags) {
   asm (
     "lea_ebx,[esp+DWORD] %4"
@@ -68,6 +70,66 @@ int chroot(char *path) {
     "int !0x80"
   );
 }
+
+#elif __x86_64__
+
+int unshare(int flags) {
+  asm (
+    "lea_rdi,[rsp+DWORD] %8"
+    "mov_rdi,[rdi]"
+    "mov_rax, %272"
+    "syscall"
+  );
+}
+
+int geteuid() {
+  asm (
+    "mov_rax, %107"
+    "syscall"
+  );
+}
+
+int getegid() {
+  asm (
+    "mov_rax, %108"
+    "syscall"
+  );
+}
+
+int mount(
+  char *source, char *target, char *filesystemtype,
+  unsigned mountflags, void *data
+) {
+  asm (
+    "DEFINE mov_r8,[rsp+DWORD] 4C8D8424"
+    "DEFINE mov_r10,[rsp+DWORD] 4C8B9424"
+    "lea_rdi,[rsp+DWORD] %40"
+    "mov_rdi,[rdi]"
+    "lea_rsi,[rsp+DWORD] %32"
+    "mov_rsi,[rsi]"
+    "lea_rdx,[rsp+DWORD] %24"
+    "mov_rdx,[rdx]"
+    "mov_r10,[rsp+DWORD] %16"
+    "mov_r8,[rsp+DWORD] %8"
+    "mov_rax, %165"
+    "syscall"
+  );
+}
+
+int chroot(char *path) {
+  asm (
+    "lea_rdi,[rsp+DWORD] %8"
+    "mov_rdi,[rdi]"
+    "mov_rax, %161"
+    "syscall"
+  );
+}
+
+#else
+
+#error arch not supported
+
+#endif
 
 #else
 
