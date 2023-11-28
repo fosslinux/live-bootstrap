@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-extract="linux-5.10.41/scripts linux-5.10.41/include linux-5.10.41/arch/x86/include linux-5.10.41/arch/x86/entry"
+extract="linux-4.9.10/scripts linux-4.9.10/include linux-4.9.10/arch/x86/include linux-4.9.10/arch/x86/entry"
 
 src_prepare() {
     default
@@ -31,7 +31,8 @@ src_install() {
         headers="$(find . -type f -name "*.h")"
         cd "${base_dir}"
         for h in ${headers}; do
-            scripts/headers_install.sh "${d}/${h}" "${DESTDIR}${PREFIX}/include/${h}"
+            path="$(dirname "${h}")"
+            scripts/headers_install.sh "${DESTDIR}${PREFIX}/include/${path}" "${d}/${path}" "$(basename "${h}")"
         done
     done
 
@@ -47,9 +48,9 @@ src_install() {
 
     # Generate linux/version.h
     # Rules are from makefile
-    VERSION=5
-    PATCHLEVEL=10
-    SUBLEVEL=42
+    VERSION=4
+    PATCHLEVEL=9
+    SUBLEVEL=10
     VERSION_CODE="$((VERSION * 65536 + PATCHLEVEL * 256 + SUBLEVEL))"
     echo '#define LINUX_VERSION_CODE '"${VERSION_CODE}" \
         > "${DESTDIR}${PREFIX}/include/linux/version.h"
