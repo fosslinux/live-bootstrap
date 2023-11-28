@@ -1,6 +1,7 @@
 #define CLONE_NEWUSER 0x10000000
 #define CLONE_NEWNS 0x00020000
 #define MS_BIND 4096
+#define MS_REC 16384
 #define MNT_DETACH 0x00000002
 #define _GNU_SOURCE
 
@@ -217,9 +218,9 @@ int main(int argc, char **argv) {
     mkdir ("dev/shm", 0755);
     mount ("tmpfs", "dev/shm", "tmpfs", 0, NULL);
     mkdir ("proc", 0755);
-    mount ("proc", "proc", "proc", 0, NULL);
+    mount ("/proc", "proc", "", MS_BIND | MS_REC, NULL);
     mkdir ("sys", 0755);
-    mount ("/sys", "sys", "", MS_BIND, NULL);
+    mount ("/sys", "sys", "", MS_BIND | MS_REC, NULL);
     mkdir ("tmp", 0755);
     mount ("tmpfs", "tmp", "tmpfs", 0, NULL);
     chroot (".");
