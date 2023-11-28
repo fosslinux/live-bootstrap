@@ -225,18 +225,35 @@ int main(int argc, char **argv, char **envp) {
     chroot (".");
   }
   free(cwd);
+
+
   char **newenv = malloc(3 * sizeof(char *));
+  int newenv_index = 0;
+  require(newenv != NULL, "Failed to allocate space for new environment.");
+
   char *ARCH = getenv("ARCH");
-  newenv[0] = malloc(6 + strlen(ARCH));
-  strcpy(newenv[0], "ARCH=");
-  strcpy(newenv[0] + 5, ARCH);
+  if (ARCH != NULL) {
+    newenv[0] = malloc(6 + strlen(ARCH));
+    require(newenv[0] != NULL, "Failed to allocate space for new environment.");
+    strcpy(newenv[0], "ARCH=");
+    strcpy(newenv[0] + 5, ARCH);
+    newenv_index += 1;
+  }
+
   char *ARCH_DIR = getenv("ARCH_DIR");
-  newenv[1] = malloc(10 + strlen(ARCH_DIR));
-  strcpy(newenv[1], "ARCH_DIR=");
-  strcpy(newenv[1] + 9, ARCH_DIR);
-  newenv[2] = NULL;
+  if (ARCH_DIR != NULL) {
+    newenv[newenv_index] = malloc(10 + strlen(ARCH_DIR));
+    require(newenv[newenv_index] != NULL, "Failed to allocate space for new environment.");
+    strcpy(newenv[newenv_index], "ARCH_DIR=");
+    strcpy(newenv[newenv_index] + 9, ARCH_DIR);
+    newenv_index += 1;
+  }
+
+  newenv[newenv_index] = NULL;
+
+
 #ifdef __M2__
-  return execve (argv[1], argv + sizeof(char *) , newenv);
+  return execve (argv[1], argv + sizeof(char *), newenv);
 #else
   return execve (argv[1], argv + 1, newenv);
 #endif
