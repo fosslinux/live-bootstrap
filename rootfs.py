@@ -31,8 +31,9 @@ def create_configuration_file(args):
     config_path = os.path.join('sysa', 'bootstrap.cfg')
     with open(config_path, "w", encoding="utf_8") as config:
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
-        config.write(f"CHROOT={args.chroot or args.bwrap}\n")
+        config.write(f"CHROOT={args.chroot or args.wrap or args.bwrap}\n")
         config.write(f"CHROOT_ONLY_SYSA={args.bwrap}\n")
+        config.write(f"CHROOT_WRAP={args.wrap}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci}\n")
@@ -58,6 +59,8 @@ def main():
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
                         action="store_true")
     parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
+                        action="store_true")
+    parser.add_argument("-w", "--wrap", help="Use builtin unprivileged wrapper",
                         action="store_true")
     parser.add_argument("-p", "--preserve", help="Do not remove temporary dir",
                         action="store_true")
@@ -113,6 +116,8 @@ def main():
             count += 1
         if args.bwrap:
             count += 1
+        if args.wrap:
+            count += 1
         if args.bare_metal:
             count += 1
         return count
@@ -130,6 +135,9 @@ def main():
     # Tmp validation
     if args.bwrap and args.tmpfs:
         raise ValueError("tmpfs cannot be used with bwrap.")
+
+    if args.wrap and args.tmpfs:
+        raise ValueError("tmpfs cannot be used with wrap.")
 
     # Cores validation
     if int(args.cores) < 1:
@@ -223,6 +231,16 @@ print(shutil.which('chroot'))
                          '--bind', '/sys', '/sys',
                          '--tmpfs', '/tmp',
                          '/init')
+    
+    elif args.wrap:
+        system_c.prepare(create_disk_image=False)
+        system_a.prepare(create_initramfs=False, wrap=True)
+
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join('bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+
+        os.chdir(system_a.tmp_dir)
+        run(init)
 
     elif args.bare_metal:
         if args.kernel:

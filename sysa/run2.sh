@@ -114,6 +114,15 @@ else
     SYSC=/sysc_image
     sys_transfer "${SYSC}" /sysc gzip patch
     if [ "${CHROOT_ONLY_SYSA}" != True ]; then
+        if [ "${CHROOT_WRAP}" = True ]; then
+            # bind mount dev, proc and sys into new root
+            mkdir -p "${SYSC}/dev"
+            mount --no-mtab --rbind /dev "${SYSC}/dev"
+            mkdir -p "${SYSC}/proc"
+            mount --no-mtab --rbind /proc "${SYSC}/proc"
+            mkdir -p "${SYSC}/sys"
+            mount --no-mtab --rbind /sys "${SYSC}/sys"
+        fi
         exec chroot "${SYSC}" /init
     fi
 fi
