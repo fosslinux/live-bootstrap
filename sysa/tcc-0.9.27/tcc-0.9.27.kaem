@@ -20,15 +20,15 @@ cd ..
 
 cd build
 untar --file ../src/${pkg}.tar
-simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tcctools.c \
-    /sysa/tcc-0.9.27/simple-patches/remove-fileopen.before /sysa/tcc-0.9.27/simple-patches/remove-fileopen.after
-simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tcctools.c \
-    /sysa/tcc-0.9.27/simple-patches/addback-fileopen.before /sysa/tcc-0.9.27/simple-patches/addback-fileopen.after
-simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tccelf.c \
-    /sysa/tcc-0.9.27/simple-patches/fiwix-paddr.before /sysa/tcc-0.9.27/simple-patches/fiwix-paddr.after
+simple-patch tcc-0.9.27/tcctools.c \
+    ../simple-patches/remove-fileopen.before ../simple-patches/remove-fileopen.after
+simple-patch tcc-0.9.27/tcctools.c \
+    ../simple-patches/addback-fileopen.before ../simple-patches/addback-fileopen.after
+simple-patch tcc-0.9.27/tccelf.c \
+    ../simple-patches/fiwix-paddr.before ../simple-patches/fiwix-paddr.after
 # Fix SIGSEGV while building lwext4
-simple-patch /sysa/tcc-0.9.27/build/tcc-0.9.27/tccelf.c \
-    /sysa/tcc-0.9.27/simple-patches/check-reloc-null.before /sysa/tcc-0.9.27/simple-patches/check-reloc-null.after
+simple-patch tcc-0.9.27/tccelf.c \
+    ../simple-patches/check-reloc-null.before ../simple-patches/check-reloc-null.after
 untar --non-strict --file ../src/${MES_PKG}.tar
 cd ${pkg}
 
