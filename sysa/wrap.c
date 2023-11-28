@@ -228,17 +228,6 @@ int chroot(char *path) {
 
 #else
 
-// From bootstrappable.c in M2libc
-
-void require(int bool, char* error)
-{
-  if(!bool)
-  {
-    fputs(error, stderr);
-    exit(EXIT_FAILURE);
-  }
-}
-
 extern int unshare(int flags);
 
 extern int mount(const char *source, const char *target,
@@ -246,9 +235,57 @@ extern int mount(const char *source, const char *target,
 
 #endif
 
+void touch(char *path) {
+  int fd = open(path, O_CREAT, 0777);
+  if (fd == -1) {
+    fputs("Failed to create file ", stderr);
+    fputs(path, stderr);
+    fputc('\n', stderr);
+    exit(EXIT_FAILURE);
+  }
+  if (close(fd) != 0) {
+    fputs("Failed to close file ", stderr);
+    fputs(path, stderr);
+    fputc('\n', stderr);
+    exit(EXIT_FAILURE);
+  }
+}
+
+void mkmount(
+  char *source, char *target, char *filesystemtype,
+  unsigned mountflags, void *data, int type
+) {
+  int r = 0;
+  if (type) {
+    r = mkdir(target, 0755);
+  } else {
+    touch(target);
+  }
+  if (r != 0 && r != -17) {
+    fputs("Failed to create mountpoint ", stderr);
+    fputs(target, stderr);
+    fputc('\n', stderr);
+    exit(EXIT_FAILURE);
+  }
+  
+  r = mount(source, target, filesystemtype, mountflags, data);
+
+  if (r != 0) {
+    fputs("Failed to mount directory ", stderr);
+    fputs(target, stderr);
+    fputc('\n', stderr);
+    exit(EXIT_FAILURE);
+  }
+}
+
 void set_map(int parent_id, char *path) {
   int fd = open(path, O_WRONLY, 0);
-  require(fd != -1, "Cannot open map file");
+  if (fd == -1) {
+    fputs("Failed to open map file ", stderr);
+    fputs(path, stderr);
+    fputc('\n', stderr);
+    exit(EXIT_FAILURE);
+  }
 
   char *map_contents = calloc(38, sizeof(char));
 
@@ -266,21 +303,21 @@ void set_map(int parent_id, char *path) {
   close(fd);
 }
 
-void touch(char *path) {
-  int fd = open(path, O_CREAT, 0777);
-  require(fd != -1, "Cannot open file");
-  close(fd);
-}
-
 void deny_setgroups() {
   int fd = open("/proc/self/setgroups", O_WRONLY, 0777);
-  require(fd != -1, "Failed to open /proc/self/setgroups");
+  if(fd == -1) {
+    fputs("Failed to open /proc/self/setgroups\n", stderr);
+    exit(EXIT_FAILURE);
+  }
   write(fd, "deny", 4);
   close(fd);
 }
 
 int main(int argc, char **argv) {
-  require(argc > 1, "Expected at least one argument: command");
+  if(argc <= 1) {
+    fputs("Expected at least one argument: command\n", stderr);
+    exit(EXIT_FAILURE);
+  }
   char *cwd = get_current_dir_name();
   /* Do nothing if cwd is already root */
   if (strcmp(cwd, "/")) {
@@ -288,7 +325,10 @@ int main(int argc, char **argv) {
     int gid = getegid();
     /* Don't create a user and mount namespace if we are already root */
     if (uid != 0) {
-      require(unshare(CLONE_NEWUSER | CLONE_NEWNS) == 0, "Failed to create user and mount namespaces");
+      if (unshare(CLONE_NEWUSER | CLONE_NEWNS) != 0) {
+        fputs("Failed to create user and mount namespaces\n", stderr);
+        exit(EXIT_FAILURE);
+      }
       /* Prevent the use of setgroups and make gid_map writeable */
       deny_setgroups();
       /* Map the root user in the user namespace to our user id */
@@ -296,40 +336,43 @@ int main(int argc, char **argv) {
       /* Map the root group in the user namespace to our group id */
       set_map(gid, "/proc/self/gid_map");
     }
-    mkdir ("dev", 0755);
-    touch ("dev/null");
-    mount ("/dev/null", "dev/null", "", MS_BIND, NULL);
-    touch ("dev/zero");
-    mount ("/dev/zero", "dev/zero", "", MS_BIND, NULL);
-    touch ("dev/random");
-    mount ("/dev/random", "dev/random", "", MS_BIND, NULL);
-    touch ("dev/urandom");
-    mount ("/dev/urandom", "dev/urandom", "", MS_BIND, NULL);
-    touch ("dev/ptmx");
-    mount ("/dev/ptmx", "dev/ptmx", "", MS_BIND, NULL);
-    touch ("dev/tty");
-    mount ("/dev/tty", "dev/tty", "", MS_BIND, NULL);
-    mkdir ("dev/shm", 0755);
-    mount ("tmpfs", "dev/shm", "tmpfs", 0, NULL);
-    mkdir ("proc", 0755);
-    mount ("/proc", "proc", "", MS_BIND | MS_REC, NULL);
-    mkdir ("sys", 0755);
-    mount ("/sys", "sys", "", MS_BIND | MS_REC, NULL);
-    mkdir ("tmp", 0755);
-    mount ("tmpfs", "tmp", "tmpfs", 0, NULL);
-    chroot (".");
+    int r = mkdir("dev", 0755);
+    if (r != 0 && r != -17) {
+      fputs("Failed to create dev folder\n", stderr);
+      exit(EXIT_FAILURE);
+    }
+    mkmount ("/dev/null", "dev/null", "", MS_BIND, NULL, 0);
+    mkmount ("/dev/zero", "dev/zero", "", MS_BIND, NULL, 0);
+    mkmount ("/dev/random", "dev/random", "", MS_BIND, NULL, 0);
+    mkmount ("/dev/urandom", "dev/urandom", "", MS_BIND, NULL, 0);
+    mkmount ("/dev/ptmx", "dev/ptmx", "", MS_BIND, NULL, 0);
+    mkmount ("/dev/tty", "dev/tty", "", MS_BIND, NULL, 0);
+    mkmount ("tmpfs", "dev/shm", "tmpfs", 0, NULL, 1);
+    mkmount ("/proc", "proc", "", MS_BIND | MS_REC, NULL, 1);
+    mkmount ("/sys", "sys", "", MS_BIND | MS_REC, NULL, 1);
+    mkmount ("tmpfs", "tmp", "tmpfs", 0, NULL, 1);
+    if (chroot (".") != 0) {
+      fputs("Failed to chroot into .\n", stderr);
+      exit(EXIT_FAILURE);
+    }
   }
   free(cwd);
 
 
   char **newenv = malloc(3 * sizeof(char *));
   int newenv_index = 0;
-  require(newenv != NULL, "Failed to allocate space for new environment.");
+  if (newenv == NULL) {
+    fputs("Failed to allocate space for new environment\n", stderr);
+    exit(EXIT_FAILURE);
+  }
 
   char *ARCH = getenv("ARCH");
   if (ARCH != NULL) {
     newenv[0] = malloc(6 + strlen(ARCH));
-    require(newenv[0] != NULL, "Failed to allocate space for new environment.");
+    if (newenv[0] == NULL) {
+      fputs("Failed to allocate space for new environment\n", stderr);
+      exit(EXIT_FAILURE);
+    }
     strcpy(newenv[0], "ARCH=");
     strcpy(newenv[0] + 5, ARCH);
     newenv_index += 1;
@@ -338,7 +381,10 @@ int main(int argc, char **argv) {
   char *ARCH_DIR = getenv("ARCH_DIR");
   if (ARCH_DIR != NULL) {
     newenv[newenv_index] = malloc(10 + strlen(ARCH_DIR));
-    require(newenv[newenv_index] != NULL, "Failed to allocate space for new environment.");
+    if (newenv[newenv_index] == NULL) {
+      fputs("Failed to allocate space for new environment\n", stderr);
+      exit(EXIT_FAILURE);
+    }
     strcpy(newenv[newenv_index], "ARCH_DIR=");
     strcpy(newenv[newenv_index] + 9, ARCH_DIR);
     newenv_index += 1;
