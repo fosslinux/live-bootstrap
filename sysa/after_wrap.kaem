@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2023 Max Hearnden <max@hearnden.org.uk>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 set -ex
 
 PATH=./${ARCH_DIR}/bin

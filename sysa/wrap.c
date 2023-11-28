@@ -1,3 +1,7 @@
+/* SPDX-FileCopyrightText: 2023 Max Hearnden <max@hearnden.org.uk> */
+/* SPDX-License-Identifier: GPL-3.0-or-later */
+
+
 #define CLONE_NEWUSER 0x10000000
 #define CLONE_NEWNS 0x00020000
 #define MS_BIND 4096
