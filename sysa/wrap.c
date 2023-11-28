@@ -101,7 +101,7 @@ int mount(
   unsigned mountflags, void *data
 ) {
   asm (
-    "DEFINE mov_r8,[rsp+DWORD] 4C8D8424"
+    "DEFINE mov_r8,[rsp+DWORD]  4C8B8424"
     "DEFINE mov_r10,[rsp+DWORD] 4C8B9424"
     "lea_rdi,[rsp+DWORD] %40"
     "mov_rdi,[rdi]"
