@@ -126,6 +126,100 @@ int chroot(char *path) {
   );
 }
 
+#elif __riscv && __riscv_xlen==32
+
+int unshare(int flags) {
+  asm (
+    "rd_a0 rs1_fp !-4 lw"
+    "rd_a7 !97 addi"
+    "ecall"
+  );
+}
+
+int geteuid() {
+  asm (
+    "rd_a7 !175 addi"
+    "ecall"
+  );
+}
+
+int getegid() {
+  asm (
+    "rd_a7 !177 addi"
+    "ecall"
+  );
+}
+
+int mount (
+  char *source, char *target, char *filesystemtype,
+  unsigned mountflags, void *data
+) {
+  asm (
+    "rd_a0 rs1_fp !-4 lw"
+    "rd_a1 rs1_fp !-8 lw"
+    "rd_a2 rs1_fp !-12 lw"
+    "rd_a3 rs1_fp !-16 lw"
+    "rd_a4 rs1_fp !-20 lw"
+    "rd_a7 !40 addi"
+    "ecall"
+  );
+}
+
+int chroot(char *path) {
+  asm (
+    "rd_a0 rs1_fp !-4 lw"
+    "rd_a7 !51 addi"
+    "ecall"
+  );
+}
+
+#elif __riscv && __riscv_xlen==64
+
+int unshare(int flags) {
+  asm (
+    "rd_a0 rs1_fp !-8 ld"
+    "rd_a7 !97 addi"
+    "ecall"
+  );
+}
+
+int geteuid() {
+  asm (
+    "rd_a7 !175 addi"
+    "ecall"
+  );
+}
+
+int getegid() {
+  asm (
+    "rd_a7 !177 addi"
+    "ecall"
+  );
+}
+
+int mount (
+  char *source, char *target, char *filesystemtype,
+  unsigned mountflags, void *data
+) {
+  asm (
+    "rd_a0 rs1_fp !-8 ld"
+    "rd_a1 rs1_fp !-16 ld"
+    "rd_a2 rs1_fp !-24 ld"
+    "rd_a3 rs1_fp !-32 ld"
+    "rd_a4 rs1_fp !-40 ld"
+    "rd_a7 !40 addi"
+    "ecall"
+  );
+}
+
+int chroot(char *path) {
+  asm (
+    "rd_a0 rs1_fp !-8 ld"
+    "rd_a7 !51 addi"
+    "ecall"
+  );
+}
+
 #else
 
 #error arch not supported
