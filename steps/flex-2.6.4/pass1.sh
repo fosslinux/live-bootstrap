@@ -23,5 +23,4 @@ src_install() {
 
     # Remove yacc, we won't need it any longer
     rm "${PREFIX}/bin/yacc"
-    rm /yaccpar
 }

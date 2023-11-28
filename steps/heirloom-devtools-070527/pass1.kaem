@@ -14,8 +14,6 @@ sha256sum -c sources.SHA256SUM
 mkdir build src
 cd build
 
-lexdir=/lex
-
 # Extract
 cp ${DISTFILES}/${pkg}.tar.bz2 ../src/
 bunzip2 -f ../src/${pkg}.tar.bz2
@@ -40,10 +38,10 @@ cd ../lex
 make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
 
 # Install lex
-mkdir ${LEXDIR}
+mkdir ${LIBDIR}/lex
 install lex ${BINDIR}
 install libl.a ${LIBDIR}
-install -m 644 ncform ${LEXDIR}
+install -m 644 ncform ${LIBDIR}/lex
 
 cd ../../..
 
@@ -53,8 +51,8 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/yacc \
         /usr/bin/lex \
         /usr/lib/mes/libl.a \
-        /yaccpar \
-        /lex/ncform
+        /usr/lib/mes/yaccpar \
+        /usr/lib/mes/lex/ncform
 
     install ${pkg}.checksums ${SRCDIR}
 else
