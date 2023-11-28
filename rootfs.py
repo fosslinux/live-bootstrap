@@ -239,8 +239,7 @@ print(shutil.which('chroot'))
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join('bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
 
-        os.chdir(system_a.tmp_dir)
-        run(init)
+        run(init, cwd = system_a.tmp_dir)
 
     elif args.bare_metal:
         if args.kernel:
