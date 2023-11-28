@@ -15,7 +15,10 @@ M2-Mesoplanet --architecture ${ARCH} -f checksum-transcriber.c -o ${BINDIR}/chec
 sha256sum -c checksum-transcriber.${ARCH}.SHA256SUM
 
 # simple patch tool based on before and after chunks
-M2-Mesoplanet --architecture ${ARCH} -f simple-patch.c -o ${BINDIR}/simple-patch
+pkg="simple-patch-1.0"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
 
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+# Build & install
+M2-Mesoplanet --architecture ${ARCH} -f src/simple-patch.c -o ${BINDIR}/simple-patch
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /usr/bin/simple-patch
+
+    cp ${pkg}.checksums ${SRCDIR}
+else
+    sha256sum -c ${pkg}.${ARCH}.checksums
+fi
