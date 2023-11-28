@@ -1,5 +1,10 @@
+#!/bin/sh
+#
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
+
+set -ex
+
 cd src
 tcc -m32 -march=i386 -std=c89 -I../../tcc/tcc-0.9.27/include -o ${bindir}/kexec-fiwix kexec-fiwix.c
 cd ..
