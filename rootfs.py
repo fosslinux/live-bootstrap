@@ -231,7 +231,7 @@ print(shutil.which('chroot'))
                          '--bind', '/sys', '/sys',
                          '--tmpfs', '/tmp',
                          '/init')
-    
+
     elif args.wrap:
         system_c.prepare(create_disk_image=False)
         system_a.prepare(create_initramfs=False, wrap=True)
