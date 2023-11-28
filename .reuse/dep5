@@ -9,6 +9,6 @@ Source: https://github.com/fosslinux/live-bootstrap
 # Copyright: $YEAR $NAME <$CONTACT>
 # License: ...
 
-Files: sys*/*/sources sysa/checksum-transcriber.*.SHA256SUM sysa/*/*.checksums sysa/SHA256SUMS.pkgs sysa/*/simple-patches/*
+Files: sys*/*/sources sysa/*/*.checksums sysa/SHA256SUMS.pkgs sysa/*/simple-patches/*
 Copyright: none
 License: MIT

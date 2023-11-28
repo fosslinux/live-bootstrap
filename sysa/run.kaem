@@ -9,10 +9,13 @@
 
 set -ex
 
-# checksum-transcriber utility
 M2LIBC_PATH=/M2libc
-M2-Mesoplanet --architecture ${ARCH} -f checksum-transcriber.c -o ${BINDIR}/checksum-transcriber
-sha256sum -c checksum-transcriber.${ARCH}.SHA256SUM
+
+# checksum-transcriber utility
+pkg="checksum-transcriber-1.0"
+cd ${pkg}
+kaem --file ${pkg}.kaem
+cd ..
 
 # simple patch tool based on before and after chunks
 pkg="simple-patch-1.0"
