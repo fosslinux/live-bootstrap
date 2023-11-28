@@ -76,7 +76,7 @@ ${MES} --no-auto-compile -e main ${BINDIR}/mescc.scm -- \
     -D CONFIG_SYSROOT=\"/\" \
     -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/mes/include:${PREFIX}/include\"
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
     -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
     -D CONFIG_TCC_LIBTCC1_MES=0 \
     -D CONFIG_TCCBOOT=1 \
@@ -157,7 +157,7 @@ tcc-mes \
     -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"${LIBDIR}:${LIBDIR}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
     -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -206,13 +206,13 @@ tcc-boot0 \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I ${PREFIX}/include \
+    -I ${PREFIX}/include/mes \
     -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
     -D CONFIG_TCCDIR=\"${LIBDIR}/tcc\" \
     -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"${LIBDIR}:${LIBDIR}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
     -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
@@ -258,13 +258,13 @@ tcc-boot1 \
     -D HAVE_LONG_LONG=1 \
     -D HAVE_SETJMP=1 \
     -I . \
-    -I ${PREFIX}/include \
+    -I ${PREFIX}/include/mes \
     -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
     -D CONFIG_TCCDIR=\"${LIBDIR}/tcc\" \
     -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"${LIBDIR}:${LIBDIR}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
     -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \

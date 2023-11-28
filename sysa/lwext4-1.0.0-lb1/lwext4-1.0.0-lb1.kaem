@@ -1,5 +1,8 @@
+#!/bin/sh
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
+
+set -ex
 
 mkdir build src
 cd src
@@ -10,9 +13,7 @@ cd build
 untar --file ../src/${pkg}.tar
 cd ${pkg}
 
-mkdir build_generic
-mkdir build_generic/include
-mkdir build_generic/include/generated
+mkdir -p build_generic/include/generated
 catm build_generic/include/generated/ext4_config.h ../../config/ext4_config.h
 
 cd blockdev/linux

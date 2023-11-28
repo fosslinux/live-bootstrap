@@ -17,7 +17,7 @@ DISTFILES=/sysa/distfiles
 PREFIX=/usr
 BINDIR=${PREFIX}/bin
 LIBDIR=${PREFIX}/lib
-INCDIR=${PREFIX}/include
+INCDIR=${PREFIX}/include/mes
 SRCDIR=${PREFIX}/src
 TMPDIR=/tmp # tmpdir is needed for patch to work
 
