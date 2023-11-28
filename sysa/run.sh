@@ -8,15 +8,12 @@
 
 set -e
 
-# shellcheck disable=SC2154
-PREFIX="${prefix}"
+# shellcheck disable=SC2153
 LIBDIR="${PREFIX}/lib/mes"
 # shellcheck disable=SC2154
 SOURCES="${sysa}"
 DISTFILES="${sysa}/distfiles"
 DESTDIR=/tmp/destdir
-# shellcheck disable=SC2154
-SRCDIR="${srcdir}"
 
 # shellcheck source=sysa/helpers.sh
 . helpers.sh

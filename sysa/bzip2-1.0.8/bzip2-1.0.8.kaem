@@ -15,7 +15,7 @@ mkdir build src
 cd build 
 
 # Extract
-cp ${distfiles}/${pkg}.tar.gz ../src/
+cp ${DISTFILES}/${pkg}.tar.gz ../src/
 gzip -d -f ../src/${pkg}.tar.gz
 tar xf ../src/${pkg}.tar
 cd ${pkg}
@@ -28,10 +28,10 @@ patch -Np0 -i ../../patches/coreutils.patch
 make CC=tcc AR="tcc -ar" LDFLAGS="-static" bzip2
 
 # Install
-cp bzip2 ${prefix}/bin/bzip2
-cp bzip2 ${prefix}/bin/bunzip2
-chmod 755 ${prefix}/bin/bzip2
-chmod 755 ${prefix}/bin/bunzip2
+cp bzip2 ${PREFIX}/bin/bzip2
+cp bzip2 ${PREFIX}/bin/bunzip2
+chmod 755 ${PREFIX}/bin/bzip2
+chmod 755 ${PREFIX}/bin/bunzip2
 
 # Test
 bzip2 --help
@@ -43,7 +43,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/bzip2
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

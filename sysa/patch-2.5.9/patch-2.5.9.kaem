@@ -14,7 +14,7 @@ mkdir build src
 cd build
 
 # Extract
-cp ${distfiles}/${pkg}.tar.gz ../src/
+cp ${DISTFILES}/${pkg}.tar.gz ../src/
 ungz --file ../src/${pkg}.tar.gz --output ../src/${pkg}.tar
 untar --file ../src/${pkg}.tar
 cd ${pkg}
@@ -25,11 +25,11 @@ catm config.h
 catm patchlevel.h
 
 # Build
-make -f Makefile PREFIX=${prefix}
+make -f Makefile PREFIX=${PREFIX}
 
 # Install
-cp patch ${prefix}/bin/patch
-chmod 755 ${prefix}/bin/patch
+cp patch ${PREFIX}/bin/patch
+chmod 755 ${PREFIX}/bin/patch
 
 cd ../..
 
@@ -38,7 +38,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/patch
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

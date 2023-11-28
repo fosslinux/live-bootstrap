@@ -14,7 +14,7 @@
 #define MAX_TOKENS 3
 
 char *get_distfiles(char **envp) {
-	char *envvar = "distfiles=";
+	char *envvar = "DISTFILES=";
 	int i = 0;
 	while (envp[i] != NULL && strncmp(envp[i], envvar, strlen(envvar)) != 0) i += 1;
 	// Now we have distfiles= - get just the part we want.

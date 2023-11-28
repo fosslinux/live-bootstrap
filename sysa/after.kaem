@@ -13,56 +13,56 @@ PATH=/${ARCH_DIR}/bin
 
 # Set commonly used variables
 sysa=/sysa
-distfiles=/sysa/distfiles
-prefix=/usr
-bindir=${prefix}/bin
-libdir=${prefix}/lib
-incdir=${prefix}/include
-srcdir=${prefix}/src
+DISTFILES=/sysa/distfiles
+PREFIX=/usr
+BINDIR=${PREFIX}/bin
+LIBDIR=${PREFIX}/lib
+INCDIR=${PREFIX}/include
+SRCDIR=${PREFIX}/src
 TMPDIR=/tmp # tmpdir is needed for patch to work
 
-mkdir -p ${prefix} ${bindir} ${libdir} ${incdir} ${srcdir} ${TMPDIR}
+mkdir -p ${PREFIX} ${BINDIR} ${LIBDIR} ${INCDIR} ${SRCDIR} ${TMPDIR}
 
 # Remove remaining dependencies on /bin (stage0-posix directory)
-cp /${ARCH_DIR}/bin/blood-elf ${bindir}/blood-elf
-cp /${ARCH_DIR}/bin/catm ${bindir}/catm
-cp /${ARCH_DIR}/bin/chmod ${bindir}/chmod
-cp /${ARCH_DIR}/bin/get_machine ${bindir}/get_machine
-cp /${ARCH_DIR}/bin/hex2 ${bindir}/hex2
-cp /${ARCH_DIR}/bin/kaem ${bindir}/kaem
-cp /${ARCH_DIR}/bin/match ${bindir}/match
-cp /${ARCH_DIR}/bin/M1 ${bindir}/M1
-cp /${ARCH_DIR}/bin/M2-Mesoplanet ${bindir}/M2-Mesoplanet
-cp /${ARCH_DIR}/bin/M2-Planet ${bindir}/M2-Planet
-cp /${ARCH_DIR}/bin/mkdir ${bindir}/mkdir
-cp /${ARCH_DIR}/bin/sha256sum ${bindir}/sha256sum
-cp /${ARCH_DIR}/bin/unbz2 ${bindir}/unbz2
-cp /${ARCH_DIR}/bin/ungz ${bindir}/ungz
-cp /${ARCH_DIR}/bin/untar ${bindir}/untar
-cp /${ARCH_DIR}/bin/cp ${bindir}/cp
-cp /${ARCH_DIR}/bin/replace ${bindir}/replace
-cp /${ARCH_DIR}/bin/rm ${bindir}/rm
+cp /${ARCH_DIR}/bin/blood-elf ${BINDIR}/blood-elf
+cp /${ARCH_DIR}/bin/catm ${BINDIR}/catm
+cp /${ARCH_DIR}/bin/chmod ${BINDIR}/chmod
+cp /${ARCH_DIR}/bin/get_machine ${BINDIR}/get_machine
+cp /${ARCH_DIR}/bin/hex2 ${BINDIR}/hex2
+cp /${ARCH_DIR}/bin/kaem ${BINDIR}/kaem
+cp /${ARCH_DIR}/bin/match ${BINDIR}/match
+cp /${ARCH_DIR}/bin/M1 ${BINDIR}/M1
+cp /${ARCH_DIR}/bin/M2-Mesoplanet ${BINDIR}/M2-Mesoplanet
+cp /${ARCH_DIR}/bin/M2-Planet ${BINDIR}/M2-Planet
+cp /${ARCH_DIR}/bin/mkdir ${BINDIR}/mkdir
+cp /${ARCH_DIR}/bin/sha256sum ${BINDIR}/sha256sum
+cp /${ARCH_DIR}/bin/unbz2 ${BINDIR}/unbz2
+cp /${ARCH_DIR}/bin/ungz ${BINDIR}/ungz
+cp /${ARCH_DIR}/bin/untar ${BINDIR}/untar
+cp /${ARCH_DIR}/bin/cp ${BINDIR}/cp
+cp /${ARCH_DIR}/bin/replace ${BINDIR}/replace
+cp /${ARCH_DIR}/bin/rm ${BINDIR}/rm
 
-chmod 755 ${bindir}/blood-elf
-chmod 755 ${bindir}/catm
-chmod 755 ${bindir}/chmod
-chmod 755 ${bindir}/cp
-chmod 755 ${bindir}/get_machine
-chmod 755 ${bindir}/hex2
-chmod 755 ${bindir}/kaem
-chmod 755 ${bindir}/match
-chmod 755 ${bindir}/M1
-chmod 755 ${bindir}/M2-Mesoplanet
-chmod 755 ${bindir}/M2-Planet
-chmod 755 ${bindir}/mkdir
-chmod 755 ${bindir}/sha256sum
-chmod 755 ${bindir}/unbz2
-chmod 755 ${bindir}/ungz
-chmod 755 ${bindir}/untar
-chmod 755 ${bindir}/replace
-chmod 755 ${bindir}/rm
+chmod 755 ${BINDIR}/blood-elf
+chmod 755 ${BINDIR}/catm
+chmod 755 ${BINDIR}/chmod
+chmod 755 ${BINDIR}/cp
+chmod 755 ${BINDIR}/get_machine
+chmod 755 ${BINDIR}/hex2
+chmod 755 ${BINDIR}/kaem
+chmod 755 ${BINDIR}/match
+chmod 755 ${BINDIR}/M1
+chmod 755 ${BINDIR}/M2-Mesoplanet
+chmod 755 ${BINDIR}/M2-Planet
+chmod 755 ${BINDIR}/mkdir
+chmod 755 ${BINDIR}/sha256sum
+chmod 755 ${BINDIR}/unbz2
+chmod 755 ${BINDIR}/ungz
+chmod 755 ${BINDIR}/untar
+chmod 755 ${BINDIR}/replace
+chmod 755 ${BINDIR}/rm
 
-PATH=${bindir}
+PATH=${BINDIR}
 
 cd ${sysa}
 

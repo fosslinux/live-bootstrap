@@ -11,11 +11,11 @@ set -ex
 
 # checksum-transcriber utility
 M2LIBC_PATH=/M2libc
-M2-Mesoplanet --architecture ${ARCH} -f checksum-transcriber.c -o ${bindir}/checksum-transcriber
+M2-Mesoplanet --architecture ${ARCH} -f checksum-transcriber.c -o ${BINDIR}/checksum-transcriber
 sha256sum -c checksum-transcriber.${ARCH}.SHA256SUM
 
 # simple patch tool based on before and after chunks
-M2-Mesoplanet --architecture ${ARCH} -f simple-patch.c -o ${bindir}/simple-patch
+M2-Mesoplanet --architecture ${ARCH} -f simple-patch.c -o ${BINDIR}/simple-patch
 
 # Environmental variables needed for mes
 NYACC_PKG=nyacc-1.00.2
@@ -37,7 +37,7 @@ cd ${pkg}
 kaem --file ${pkg}.kaem
 cd ..
 
-libdir=${libdir}/mes
+LIBDIR=${LIBDIR}/mes
 
 # tcc 0.9.27
 pkg="tcc-0.9.27"
