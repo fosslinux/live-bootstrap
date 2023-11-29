@@ -180,7 +180,7 @@ class SysA(SysGeneral):
 
         # Add commands to kick off stage0-posix
         cmd = ' '.join(['hex0',
-                        './bootstrap-seeds/POSIX/x86/hex0_x86.hex0'
+                        './bootstrap-seeds/POSIX/x86/hex0_x86.hex0',
                         './bootstrap-seeds/POSIX/x86/hex0-seed\n'])
         image_file.write(cmd.encode())
         cmd = ' '.join(['hex0',
