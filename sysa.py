@@ -37,7 +37,7 @@ class SysA(SysGeneral):
 
         self.tmp_dir = tmpdir.add_sys("sysa")
 
-    def prepare(self, create_initramfs, kernel_bootstrap=False):
+    def prepare(self, create_initramfs, kernel_bootstrap=False, wrap=False):
         """
         Prepare directory structure for System A.
         We create an empty tmp directory, unpack stage0-posix.
@@ -50,7 +50,7 @@ class SysA(SysGeneral):
             shutil.copy2(os.path.join(self.sys_dir, 'base-preseeded.kaem'),
                          os.path.join(self.tmp_dir, 'kaem.x86'))
         else:
-            self.stage0_posix()
+            self.stage0_posix(wrap)
 
         self.sysa()
 
@@ -93,7 +93,7 @@ class SysA(SysGeneral):
         shutil.copytree(self.sysc_dir, os.path.join(self.tmp_dir, 'sysc'),
                 ignore=ignore)
 
-    def stage0_posix(self):
+    def stage0_posix(self, wrap):
         """Copy in all of the stage0-posix"""
         stage0_posix_base_dir = os.path.join(self.sys_dir, 'stage0-posix', 'src')
         copy_tree(stage0_posix_base_dir, self.tmp_dir)
@@ -104,7 +104,11 @@ class SysA(SysGeneral):
         shutil.copy2(kaem_optional_seed, os.path.join(self.tmp_dir, 'init'))
 
         # stage0-posix hook to continue running live-bootstrap
-        shutil.copy2(os.path.join(self.sys_dir, 'after.kaem'),
+        if wrap:
+            after_kaem_name = "after_wrap.kaem"
+        else:
+            after_kaem_name = "after.kaem"
+        shutil.copy2(os.path.join(self.sys_dir, after_kaem_name),
                      os.path.join(self.tmp_dir, 'after.kaem'))
 
     def add_fiwix_files(self, file_list_path, dirpath):
