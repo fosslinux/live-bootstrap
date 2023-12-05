@@ -10,7 +10,6 @@
 
 int append_file(FILE *dst_file, char *src_file_name);
 
-
 int main(int argc, char **argv) {
 	char *ramdrive_file_name, *kernel_file_name, *initramfs_file_name;
 	FILE *ramdrive_file;
@@ -29,32 +28,31 @@ int main(int argc, char **argv) {
 
 	ramdrive_file = fopen(ramdrive_file_name, "wb");
 
-	/* Write length of kernel */
-	if (stat(kernel_file_name, &stats) == 0) {
-		size = (uint32_t) stats.st_size;
-		fwrite(&size, sizeof(size), 1, ramdrive_file);
-	} else {
-		fprintf(stderr, "Cannot stat kernel file '%s'\n", kernel_file_name);
-		exit(1);
-	}
-
-	/* Write length of initramfs */
-	if (stat(initramfs_file_name, &stats) == 0) {
-		size = (uint32_t) stats.st_size;
-		fwrite(&size, sizeof(size), 1, ramdrive_file);
-	} else {
-		fprintf(stderr, "Cannot stat initramfs file '%s'\n", initramfs_file_name);
-		exit(1);
-	}
+	/* Move past where lengths go */
+	int length_offset = 2 * sizeof(uint32_t);
+	fseek(ramdrive_file, length_offset, SEEK_SET);
+	uint32_t last_pos = ftell(ramdrive_file);
 
 	if (append_file(ramdrive_file, kernel_file_name)) {
 		fprintf(stderr, "Cannot append kernel '%s'\n", kernel_file_name);
 		exit(1);
 	}
+
+	uint32_t kernel_size = ftell(ramdrive_file) - last_pos;
+	last_pos = ftell(ramdrive_file);
+
 	if (append_file(ramdrive_file, initramfs_file_name)) {
 		fprintf(stderr, "Cannot append initramfs '%s'\n", initramfs_file_name);
 		exit(1);
 	}
+
+	uint32_t initramfs_size = ftell(ramdrive_file) - last_pos;
+
+	/* Now write the lengths */
+	fseek(ramdrive_file, 0, SEEK_SET);
+	fwrite(&kernel_size, sizeof(kernel_size), 1, ramdrive_file);
+	fwrite(&initramfs_size, sizeof(initramfs_size), 1, ramdrive_file);
+
 	fclose(ramdrive_file);
 
 	/* Flush ram drive writes to device */
@@ -68,10 +66,17 @@ int append_file(FILE *dst_file, char *src_file_name) {
 	FILE *src_file;
 	char buff[BUFSIZ];
 	size_t n;
+
+	if (*src_file_name == '!') {
+		src_file_name++;
+		src_file = popen(src_file_name, "r");
+	} else {
+		src_file = fopen(src_file_name, "rb");
+	}
  
-	if (src_file = fopen(src_file_name, "rb")) {
+	if (src_file) {
 		while ((n = fread(buff, 1, BUFSIZ, src_file)) != 0) {
-			fwrite(buff, 1, n, dst_file );
+			fwrite(buff, 1, n, dst_file);
 		}
 		fclose(src_file);
 		return 0;
