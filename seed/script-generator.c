@@ -1,7 +1,7 @@
 /*
  * SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
  *
- * SPDX-License-Idnetifier: GPL-3.0-or-later
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 #define MAX_TOKEN 64

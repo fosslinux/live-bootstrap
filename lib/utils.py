@@ -31,8 +31,10 @@ def run_as_root(*args, **kwargs):
         return run("sudo", *args, **kwargs)
     return run(*args, **kwargs)
 
-def create_disk(image, disk_type, fs_type, size, mkfs_args=[]):
+def create_disk(image, disk_type, fs_type, size, mkfs_args=None):
     """Create a disk image, with a filesystem on it"""
+    if mkfs_args is None:
+        mkfs_args = []
     run('truncate', '-s', size, image)
     # First find the device we will use, then actually use it
     loop_dev = run_as_root('losetup', '-f', capture_output=True).stdout.decode().strip()

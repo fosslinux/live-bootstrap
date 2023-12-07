@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 # http://www.linuxfromscratch.org/lfs/view/6.1/chapter06/devices.html
 mkdir -p "/dev"

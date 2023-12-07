@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 # Save because linux deletes all distfiles to save space
 cp "${DISTFILES}"/musl-1.2.4.tar.gz /tmp
 cp "${DISTFILES}"/curl-7.88.1.tar.bz2 /tmp

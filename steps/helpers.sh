@@ -289,7 +289,7 @@ default_src_unpack() {
 # Then it copies our custom makefile and any other custom files from files directory.
 default_src_prepare() {
     if test -d "${patch_dir}"; then
-        if ls "${patch_dir}"/*.patch 2>&1 >/dev/null; then
+        if ls "${patch_dir}"/*.patch >/dev/null 2>&1; then
             for p in "${patch_dir}"/*.patch; do
                 echo "Applying patch: ${p}"
                 patch -Np0 < "${p}"

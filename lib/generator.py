@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
+"""
+This file contains all code required to generate the boot image for live-bootstrap
+"""
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 
-import glob
 import hashlib
 import os
 import shutil
-import subprocess
 import tarfile
 import requests
 
@@ -30,6 +31,7 @@ class Generator():
         self.repo_path = repo_path
         self.tmpdir = tmpdir
         self.tmp_dir = tmpdir.path
+        self.external_dir = os.path.join(self.tmp_dir, 'external')
 
     def prepare(self, using_kernel=False, kernel_bootstrap=False):
         """
@@ -38,7 +40,6 @@ class Generator():
         / -- contains seed to allow steps to be built, containing custom
              scripts and stage0-posix
         """
-        self.external_dir = os.path.join(self.tmp_dir, 'external')
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
         # Linux 4.9.10 does not support a bunch of them
@@ -151,7 +152,8 @@ class Generator():
         """Copy in distfiles"""
         def copy_no_network_distfiles(out):
             # Note that no network == no disk for kernel bootstrap mode
-            with open(os.path.join(self.git_dir, 'steps', 'pre-network-sources'), 'r') as source_list:
+            pre_src_path = os.path.join(self.git_dir, 'steps', 'pre-network-sources')
+            with open(pre_src_path, 'r', encoding="utf-8") as source_list:
                 for file in source_list.readlines():
                     file = file.strip()
                     shutil.copy2(os.path.join(self.distfiles_dir, file),

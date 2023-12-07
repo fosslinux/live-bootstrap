@@ -59,7 +59,8 @@ class Tmpdir:
         mount("tmpfs", self.path, "tmpfs", f"size={size}")
         self._type = TmpType.TMPFS
 
-    def add_disk(self, name, size="16G", filesystem="ext4", tabletype="msdos", mkfs_args=[]):
+    # pylint: disable=too-many-arguments
+    def add_disk(self, name, size="16G", filesystem="ext4", tabletype="msdos", mkfs_args=None):
         """Add a disk"""
         disk_path = os.path.join(self.path, f"{name}.img")
         self._disks[name] = create_disk(disk_path, tabletype, filesystem, size, mkfs_args=mkfs_args)
