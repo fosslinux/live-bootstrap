@@ -53,6 +53,9 @@ CFLAGS  = -I . -I lib \
           -DLIBDIR=\"$(PREFIX)/lib\" \
           -DHAVE_DECL_WCWIDTH=0 \
           -DHAVE_SYS_STAT_H=1 \
+          -DHAVE_SYS_STATFS_H=1 \
+          -DHAVE_SYS_VFS_H=1 \
+          -DHAVE_STRUCT_STATVFS_F_NAMEMAX=1 \
           -DHAVE_INTTYPES_H=1 \
           -DHAVE_DECL_MEMCHR=1 \
           -DHAVE_MEMORY_H=1 \
@@ -84,7 +87,7 @@ CFLAGS  = -I . -I lib \
 
 SRC_DIR=src
 
-COREUTILS = basename cat chmod chroot cksum comm csplit cut dd dirname echo env expand expr false fmt fold head id join kill link ln logname mkfifo mkdir mknod nl od paste pathchk printf ptx pwd readlink rmdir seq sleep sort split sum sync tail tee touch tr tsort uname unexpand uniq unlink wc whoami tac test true yes
+COREUTILS = basename cat chmod chroot cksum comm csplit cut dd dirname echo env expand expr false fmt fold head id join kill link ln logname mkfifo mkdir mknod nl od paste pathchk printf ptx pwd readlink rmdir seq sleep sort split stat sum sync tail tee touch tr tsort uname unexpand uniq unlink wc whoami tac test true yes
 
 BINARIES = $(addprefix $(SRC_DIR)/, $(COREUTILS))
 
@@ -92,7 +95,7 @@ ALL=$(BINARIES) $(SRC_DIR)/cp $(SRC_DIR)/ls $(SRC_DIR)/install $(SRC_DIR)/md5sum
 all: $(BINARIES) $(SRC_DIR)/cp $(SRC_DIR)/ls $(SRC_DIR)/install $(SRC_DIR)/md5sum $(SRC_DIR)/mv $(SRC_DIR)/rm $(SRC_DIR)/sha1sum
 
 LIB_DIR = lib
-LIB_SRC = acl alloca posixtm posixver strftime getopt getopt1 hash hash-pjw addext argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode __fpending file-type fnmatch fopen-safer full-read full-write getline getstr gettime hard-locale human idcache isdir imaxtostr linebuffer localcharset long-options makepath mbswidth md5 memcasecmp memcoll modechange offtostr path-concat physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha stpcpy stripslash strtoimax strtoumax umaxtostr unicodeio userspec version-etc xgetcwd xgethostname xmalloc xmemcoll xnanosleep xreadlink xstrdup xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist regex canonicalize mkstemp memrchr euidaccess ftw obstack strverscmp strftime tsearch
+LIB_SRC = acl alloca posixtm posixver strftime getopt getopt1 hash hash-pjw addext argmatch backupfile basename canon-host closeout cycle-check diacrit dirname dup-safer error exclude exitfail filemode __fpending file-type fnmatch fopen-safer full-read full-write getline getstr gettime hard-locale human idcache isdir imaxtostr linebuffer localcharset long-options makepath mbswidth md5 memcasecmp memcoll modechange offtostr path-concat physmem quote quotearg readtokens rpmatch safe-read safe-write same save-cwd savedir settime sha stpcpy stripslash strtoimax strtoumax umaxtostr unicodeio userspec version-etc xgetcwd xgethostname xmalloc xmemcoll xnanosleep xreadlink xstrdup xstrtod xstrtol xstrtoul xstrtoimax xstrtoumax yesno strnlen getcwd sig2str mountlist regex canonicalize mkstemp memrchr euidaccess ftw obstack strverscmp strftime tsearch stat
 
 LIB_OBJECTS = $(addprefix $(LIB_DIR)/, $(addsuffix .o, $(LIB_SRC)))
 
