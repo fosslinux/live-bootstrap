@@ -21,7 +21,7 @@ jobs:
       - name: Install pylint
         run: sudo pip3 install pylint
       - name: pylint
-        run: pylint rootfs.py sysa.py sysc.py lib/utils.py lib/sysgeneral.py lib/tmpdir.py --disable=duplicate-code
+        run: pylint rootfs.py lib/utils.py lib/generator.py lib/tmpdir.py --disable=duplicate-code
 
   shellcheck:
     name: Lint shell files
@@ -30,7 +30,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: shellcheck
-        run: shellcheck sysa/run.sh sysa/run2.sh sysb/init sysb/run.sh sysc/init sysc/run.sh sysa/helpers.sh download-distfiles.sh
+        run: shellcheck steps/helpers.sh download-distfiles.sh
 
   reuse:
     name: Lint reuse information

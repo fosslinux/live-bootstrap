@@ -12,94 +12,90 @@ An attempt to provide a reproducible, automatic, complete end-to-end
 bootstrap from a minimal number of binary seeds to a supported fully
 functioning operating system.
 
-Get me started!
----------------
+How do I use this?
+------------------
+
+Quick start:
+
+See ``./rootfs.py --help`` and follow the instructions given there.
+This uses a variety of userland tools to prepare the bootstrap.
+
+(*Currently, there is no way to perform the bootstrap without external
+preparations! This is a currently unsolved problem.*)
+
+Without using Python:
 
 1. ``git clone https://github.com/fosslinux/live-bootstrap``
 2. ``git submodule update --init --recursive``
-3. Provide a kernel (vmlinuz file) as the name ``kernel`` in the root of the
-   repository. **This must be a 32-bit kernel.**
-4. ``./rootfs.py --qemu`` - ensure your account has kvm privileges and qemu
-   installed.
-
-   a. Alternatively, run ``./rootfs.py --chroot`` to run it in a chroot.
-   b. Alternatively, run ``./rootfs.py --bwrap`` to run it in a bubblewrap
-      sandbox. When user namespaces are supported, this mode is rootless.
-   c. Alternatively, run ``./rootfs.py`` but don’t run the actual
-      virtualization and instead copy sysa/tmp/initramfs to a USB or
-      some other device and boot from bare metal. NOTE: we now require
-      a hard drive. This is currently hardcoded as sda. You also need
-      to put ``sysc/tmp/disk.img`` onto your sda on the bootstrapping
-      machine.
-   d. Alternatively, do not use python at all, see "Python-less build"
-      below.
-
-5. Wait.
-6. If you can, observe the many binaries in ``/usr/bin``! When the
-   bootstrap is completed ``bash`` is launched providing a shell to
-   explore the system.
-
+3. Consider whether you are going to run this in a chroot, in QEMU, or on bare
+   metal. (All of this *can* be automated, but not in a trustable way. See
+   further below.)
+   a. **chroot:** Create a directory where the chroot will reside, run
+   ``./download-distfiles.sh``, and copy:
+      * The entire contents of ``seed/stage0-posix`` into that directory.
+      * All other files in ``seed`` into that directory.
+      * ``steps/`` and ``distfiles/`` into that directory.
+        * At least all files listed in ``steps/pre-network-sources`` must be
+          copied in. All other files will be obtained from the network.
+      * Run ``/bootstrap-seeds/POSIX/x86/kaem-optional-seed`` in the chroot.
+        (Eg, ``chroot rootfs /bootstrap-seeds/POSIX/x86/kaem-optional-seed``).
+   b. **QEMU:** Create two blank disk images.
+      * On the first image, write
+        ``seed/stage0-posix/bootstrap-seeds/NATIVE/x86/builder-hex0-x86-stage1.img``
+        to it, followed by ``kernel-bootstrap/builder-hex0-x86-stage2.hex0``,
+        followed by zeros padding the disk to the next sector.
+      * distfiles can be obtained using ``./download-distfiles.sh``.
+      * See the list in part a. For every file within that list, write a line to
+        the disk ``src <size-of-file> <path-to-file>``, followed by the contents
+        of the file.
+        * *Only* copy distfiles listed in ``steps/pre-network-sources`` into
+          this disk.
+      * Optionally (if you don't do this, distfiles will be network downloaded):
+        * On the second image, create an MSDOS partition table and one ext3
+          partition.
+        * Copy ``distfiles/`` into this disk.
+      * Run QEMU, with 4+G RAM, optionally SMP (multicore), both drives (in the
+        order introduced above), a NIC with model E1000 (``-nic
+        user,model=e1000``), and ``-machine kernel-irqchip=split``.
+   c. **Bare metal:** Follow the same steps as QEMU, but the disks need to be
+   two different *physical* disks, and boot from the first disk.
 
 Background
 ----------
 
-This project is a part of the bootstrappable project, a project that
-aims to be able to build complete computing platforms through the use of
-source code. When you build a compiler like GCC, you need another C
-compiler to compile the compiler - turtles all the way down. Even the
-first GCC compiler was written in C. There has to be a way to break the
-chain…
+Problem statement
+=================
 
-There has been significant work on this over the last 5 years, from
-Jeremiah Orians’ stage0, hex2 and M2-Planet to janneke’s Mes. We have a
-currently, fully-functioning chain of bootstrapping from the 357-byte
-hex0 seed to a complete GCC compiler and hence a full Linux operating
-system. From there, it is trivial to move to other UNIXes. However,
-there is only currently one vector through which this can be
-automatically done, GNU Guix.
+live-bootstrap's overarching problem statement is;
 
-While the primary author of this project does not believe Guix is a bad
-project, the great reliance on Guile, the complexity of many of the
-scripts and the rather steep learning curve to install and run Guix make
-it a very non plug-and-play solution. Furthermore, there is currently
-(Jan 2021) no possible way to run the bootstrap from outside of a
-pre-existing Linux environment. Additionally, Guix uses many scripts and
-distributed files that cannot be considered source code.
+> How can a usable Linux system be created with only human-auditable, and
+wherever possible, human-written, source code?
 
-(NOTE: Guix is working on a Full Source Bootstrap, but I’m not
-completely sure what that entails).
+Clarifications:
 
-Furthermore, having an alternative bootstrap automation tool allows
-people to have greater trust in the bootstrap procedure.
+* "usable" means a modern toolchain, with appropriate utilities, that can be
+  used to expand the amount of software on the system, interactively, or
+  non-interactively.
+* "human-auditable" is discretionary, but is usually fairly strict. See
+  "Specific things to be bootstrapped" below.
 
-Comparison between GNU Guix and live-bootstrap
-----------------------------------------------
+Why is this difficult?
+======================
 
-+----------------------+----------------------+----------------------+
-| Item                 | Guix                 | live-bootstrap       |
-+======================+======================+======================+
-| Total size of seeds  | ~30MB (Reduced       | ~1KB                 |
-| [1]                  | Source Bootstrap)    |                      |
-|                      | [2]                  |                      |
-+----------------------+----------------------+----------------------+
-| Use of kernel        | Linux-Libre Kernel   | Any Linux Kernel     |
-|                      |                      | (2.6+) [3]           |
-+----------------------+----------------------+----------------------+
-| Implementation       | Yes                  | No (in development)  |
-| complete             |                      |                      |
-+----------------------+----------------------+----------------------+
-| Automation           | Almost fully         | Optional user        |
-|                      | automatic            | customization        |
-+----------------------+----------------------+----------------------+
+The core of a modern Linux system is primarily written in C and C++. C and C++
+are **self-hosting**, ie, nearly every single C compiler is written in C.
 
-[1]: Both projects only use software licensed under a FSF-approved
-free software license. Kernel is excluded from seed.
-[2]: Reiterating that Guix is working on a full source bootstrap,
-although that still uses guile (~12 MB). [3]: Work is ongoing to use
-other, smaller POSIX kernels.
+Every single version of GCC was written in C. To avoid using an existing
+toolchain, we need some way to be able to compile a GCC version without C. We
+can use a less well-featured compiler, TCC, to do this. And so forth, until we
+get to a fairly primitive C compiler written in assembly, ``cc_x86``.
 
-Why would I want bootstrapping?
--------------------------------
+Going up through this process requires a bunch of other utilities as well; the
+autotools suite, guile and autogen, etc. These also have to be matched
+appropriately to the toolchain available.
+
+Why should I care?
+------------------
 
 That is outside of the scope of this README. Here’s a few things you can
 look at:
@@ -117,7 +113,7 @@ bootstrapping. However, there are a number of non-auditable files used
 in many of their packages. Here is a list of file types that we deem
 unsuitable for bootstrapping.
 
-1. Binaries (apart from seed hex0, kaem, kernel).
+1. Binaries (apart from seed hex0, kaem, builder-hex0).
 2. Any pre-generated configure scripts, or Makefile.in’s from autotools.
 3. Pre-generated bison/flex parsers (identifiable through a ``.y``
    file).
@@ -131,56 +127,18 @@ How does this work?
 
 **For a more in-depth discussion, see parts.rst.**
 
-sysa
-~~~~
+Firstly, ``builder-hex0`` is launched. ``builder-hex0`` is a minimal kernel that is
+written in ``hex0``, existing in 3 self-bootstrapping stages.
 
-sysa is the first ‘system’ used in live-bootstrap. We move to a new
-system after a reboot, which often occurs after the movement to a new
-kernel. It is run by the seed Linux kernel provided by the user. It
-compiles everything we need to be able to compile our own Linux kernel.
-It runs fully in an initramfs and does not rely on disk support in the
-seed Linux kernel.
+This is capable of executing the entirety of ``stage0-posix``, (see
+``seed/stage0-posix``), which produces a variety of useful utilities and a basic
+C language, ``M2-Planet``.
 
-sysb
-~~~~
+``stage0-posix`` runs a file called ``after.kaem``. This is a shell script that
+builds and runs a small program called ``script-generator``. This program reads
+``steps/manifest`` and converts it into a series of shell scripts that can be
+executed in sequence to complete the bootstrap.
 
-sysb is the second 'system' of live-bootstrap. This uses the Linux 4.9.10
-kernel compiled within sysa. As we do not rely on disk support in sysa, we
-need this intermediate system to be able to add the missing binaries to sysc
-before moving into it. This is executed through kexec from sysa. At this point,
-a SATA disk IS required.
-
-sysc
-~~~~
-
-sysc is the (current) last 'system' of live-bootstrap. This is a continuation
-from sysb, executed through util-linux's ``switch_root`` command which moves
-the entire rootfs without a reboot. Every package from here on out is compiled
-under this system, taking binaries from sysa. Chroot and bubblewrap modes skip
-sysb, as it is obviously irrelevant to them.
-
-Python-less build
------------------
-
-Python is no longer a requirement to set up the build system. The
-repository is almost completely in a form where it can be used as the
-source of a build.
-
-1. Download required tarballs into ``sysa/distfiles`` and ``sysc/distfiles``.
-   You can use the ``download-distfiles.sh`` script.
-2. Copy sysa/stage0-posix/src/* to the root of the repository.
-3. Copy sysa/stage0-posix/src/bootstrap-seeds/POSIX/x86/kaem-optional-seed
-   to init in the root of the repository.
-4. Copy sysa/after.kaem to after.kaem
-5. Create a CPIO archive (eg, ``cpio --format newc --create --directory . > ../initramfs``).
-6. Boot your initramfs and kernel.
-
-chroot builds
-~~~~~~~~~~~~~
-
-For chroot  based bootstraps you can skip creation of initramfs and instead start bootstrap with
-
-``sudo chroot . bootstrap-seeds/POSIX/x86/kaem-optional-seed``
-
-It is also recommended to copy everything to a new directory as bootstrapping messes up with files
-in git repository and cannot be re-run again.
+From this point forward, ``steps/manifest`` is effectively self documenting.
+Each package built exists in ``steps/<pkg>``, and the build scripts can be seen
+there.

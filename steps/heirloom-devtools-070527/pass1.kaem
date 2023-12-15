@@ -1,0 +1,60 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
+mkdir build src
+cd build
+
+# Extract
+cp ${DISTFILES}/${pkg}.tar.bz2 ../src/
+bunzip2 -f ../src/${pkg}.tar.bz2
+tar xf ../src/${pkg}.tar ${pkg}/yacc ${pkg}/lex
+rm -r ../src/
+cd ${pkg}
+
+# Prepare and patch
+patch -Np0 -i ../../patches/yacc_remove_wchar.patch
+patch -Np0 -i ../../patches/lex_remove_wchar.patch
+
+# Build yacc
+cd yacc
+make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DMAXPATHLEN=100\ -DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
+
+# Install yacc
+install yacc ${BINDIR}
+install -m 644 yaccpar ${LIBDIR}
+
+# Build lex
+cd ../lex
+make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
+
+# Install lex
+mkdir ${LIBDIR}/lex
+install lex ${BINDIR}
+install libl.a ${LIBDIR}
+install -m 644 ncform ${LIBDIR}/lex
+
+cd ../../..
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /usr/bin/yacc \
+        /usr/bin/lex \
+        /usr/lib/mes/libl.a \
+        /usr/lib/mes/yaccpar \
+        /usr/lib/mes/lex/ncform
+
+    install ${pkg}.checksums ${SRCDIR}
+else
+    sha256sum -c ${pkg}.checksums
+fi

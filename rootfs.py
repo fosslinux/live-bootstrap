@@ -17,18 +17,16 @@ import argparse
 import os
 import shutil
 
-from sysa import SysA
-from sysc import SysC
 from lib.utils import run, run_as_root
-from lib.sysgeneral import stage0_arch_map
 from lib.tmpdir import Tmpdir
+from lib.generator import Generator, stage0_arch_map
 
 def create_configuration_file(args):
     """
     Creates bootstrap.cfg file which would contain options used to
     customize bootstrap.
     """
-    config_path = os.path.join('sysa', 'bootstrap.cfg')
+    config_path = os.path.join('steps', 'bootstrap.cfg')
     with open(config_path, "w", encoding="utf_8") as config:
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
         config.write(f"CHROOT={args.chroot or args.bwrap}\n")
@@ -38,7 +36,10 @@ def create_configuration_file(args):
         config.write(f"INTERNAL_CI={args.internal_ci}\n")
         config.write(f"BARE_METAL={args.bare_metal}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
-            config.write("DISK=sda\n")
+            if args.repo or args.external_sources:
+                config.write("DISK=sdb1\n")
+            else:
+                config.write("DISK=sdb\n")
             config.write("KERNEL_BOOTSTRAP=True\n")
         else:
             config.write("DISK=sda1\n")
@@ -49,7 +50,7 @@ def create_configuration_file(args):
 def main():
     """
     A few command line arguments to customize bootstrap.
-    This function also creates SysA object which prepares directory
+    This function also creates object which prepares directory
     structure with bootstrap seeds and all sources.
     """
     parser = argparse.ArgumentParser()
@@ -151,16 +152,15 @@ def main():
     if args.tmpfs:
         tmpdir.tmpfs(size=args.tmpfs_size)
 
-    # sys
-    system_c = SysC(arch=args.arch, tmpdir=tmpdir,
-                    external_sources=args.external_sources)
-    system_a = SysA(arch=args.arch, early_preseed=args.early_preseed,
-                    tmpdir=tmpdir, external_sources=args.external_sources,
-                    repo_path=args.repo)
+    generator = Generator(tmpdir=tmpdir,
+                          arch=args.arch,
+                          external_sources=args.external_sources,
+                          repo_path=args.repo,
+                          early_preseed=args.early_preseed)
 
-    bootstrap(args, system_a, system_c, tmpdir)
+    bootstrap(args, generator, tmpdir)
 
-def bootstrap(args, system_a, system_c, tmpdir):
+def bootstrap(args, generator, tmpdir):
     """Kick off bootstrap process."""
     print(f"Bootstrapping {args.arch} -- SysA")
     if args.chroot:
@@ -171,17 +171,15 @@ print(shutil.which('chroot'))
         chroot_binary = run_as_root('python3', '-c', find_chroot,
                                     capture_output=True).stdout.decode().strip()
 
-        system_c.prepare(create_disk_image=False)
-        system_a.prepare(create_initramfs=False)
+        generator.prepare(using_kernel=False)
 
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, system_a.tmp_dir, init)
+        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.tmp_dir, init)
 
     elif args.bwrap:
         if not args.internal_ci or args.internal_ci == "pass1":
-            system_c.prepare(create_disk_image=False)
-            system_a.prepare(create_initramfs=False)
+            generator.prepare(using_kernel=False)
 
             arch = stage0_arch_map.get(args.arch, args.arch)
             init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
@@ -191,7 +189,7 @@ print(shutil.which('chroot'))
                          '--unshare-net',
                          '--clearenv',
                          '--setenv', 'PATH', '/usr/bin',
-                         '--bind', system_a.tmp_dir, '/',
+                         '--bind', generator.tmp_dir, '/',
                          '--dir', '/dev',
                          '--dev-bind', '/dev/null', '/dev/null',
                          '--dev-bind', '/dev/zero', '/dev/zero',
@@ -210,7 +208,7 @@ print(shutil.which('chroot'))
                          '--unshare-net' if args.external_sources else None,
                          '--clearenv',
                          '--setenv', 'PATH', '/usr/bin',
-                         '--bind', system_a.tmp_dir + "/sysc_image", '/',
+                         '--bind', generator.tmp_dir + "/sysc_image", '/',
                          '--dir', '/dev',
                          '--dev-bind', '/dev/null', '/dev/null',
                          '--dev-bind', '/dev/zero', '/dev/zero',
@@ -226,40 +224,39 @@ print(shutil.which('chroot'))
 
     elif args.bare_metal:
         if args.kernel:
-            system_c.prepare(create_disk_image=True)
-            system_a.prepare(create_initramfs=True)
+            generator.prepare(using_kernel=True)
             print("Please:")
-            print("  1. Take tmp/sysa/initramfs and your kernel, boot using this.")
-            print("  2. Take tmp/sysc/disk.img and put this on a writable storage medium.")
+            print("  1. Take tmp/initramfs and your kernel, boot using this.")
+            print("  2. Take tmp/disk.img and put this on a writable storage medium.")
         else:
-            system_a.prepare(create_initramfs=True, kernel_bootstrap=True)
+            generator.prepare(kernel_bootstrap=True)
             print("Please:")
-            print("  1. Take tmp/sysa/sysa.img and write it to a boot drive and then boot it.")
+            print("  1. Take tmp/disk.img and write it to a boot drive and then boot it.")
 
     else:
         if args.kernel:
-            system_c.prepare(create_disk_image=True)
-            system_a.prepare(create_initramfs=True)
+            generator.prepare(using_kernel=True)
 
             run(args.qemu_cmd,
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-hda', tmpdir.get_disk("sysc"),
+                '-drive', 'file=' + tmpdir.get_disk("disk") + ',format=raw',
+                '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
                 '-nic', 'user,ipv6=off,model=e1000',
                 '-kernel', args.kernel,
-                '-initrd', system_a.initramfs_path,
                 '-nographic',
-                '-append', 'console=ttyS0')
+                '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw')
         else:
-            system_a.prepare(create_initramfs=True, kernel_bootstrap=True)
+            generator.prepare(kernel_bootstrap=True)
             run(args.qemu_cmd,
                 '-enable-kvm',
                 '-m', "4G",
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + os.path.join(system_a.tmp_dir, 'sysa.img') + ',format=raw',
+                '-drive', 'file=' + os.path.join(generator.tmp_dir, 'disk.img') + ',format=raw',
+                '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
                 '-machine', 'kernel-irqchip=split',
                 '-nic', 'user,ipv6=off,model=e1000',
                 '-nographic')

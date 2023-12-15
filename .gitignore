@@ -5,7 +5,6 @@
 
 tmp/
 kernel
-sysa/distfiles/
-sysc/distfiles/
+distfiles/
 __pycache__
-sysa/bootstrap.cfg
+steps/bootstrap.cfg

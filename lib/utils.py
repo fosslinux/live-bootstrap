@@ -31,8 +31,10 @@ def run_as_root(*args, **kwargs):
         return run("sudo", *args, **kwargs)
     return run(*args, **kwargs)
 
-def create_disk(image, disk_type, fs_type, size):
+def create_disk(image, disk_type, fs_type, size, mkfs_args=None):
     """Create a disk image, with a filesystem on it"""
+    if mkfs_args is None:
+        mkfs_args = []
     run('truncate', '-s', size, image)
     # First find the device we will use, then actually use it
     loop_dev = run_as_root('losetup', '-f', capture_output=True).stdout.decode().strip()
@@ -40,9 +42,9 @@ def create_disk(image, disk_type, fs_type, size):
     # Create the partition
     if disk_type != "none":
         run_as_root('parted', '--script', image, 'mklabel', disk_type, 'mkpart',
-                'primary', 'ext4', '0%', '100%')
+                'primary', fs_type, '0%', '100%')
         run_as_root('partprobe', loop_dev)
-        run_as_root('mkfs.' + fs_type, loop_dev + "p1")
+        run_as_root('mkfs.' + fs_type, loop_dev + "p1", *mkfs_args)
     return loop_dev
 
 def mount(source, target, fs_type, options='', **kwargs):

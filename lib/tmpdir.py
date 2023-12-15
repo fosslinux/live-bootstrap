@@ -24,7 +24,6 @@ class Tmpdir:
     Represents a tmpdir
     """
 
-    _syses = {}
     _disks = {}
     _disk_filesystems = {}
     _mountpoints = {}
@@ -60,19 +59,11 @@ class Tmpdir:
         mount("tmpfs", self.path, "tmpfs", f"size={size}")
         self._type = TmpType.TMPFS
 
-    def add_sys(self, name, subdir=None):
-        """Create a subdirectory and register a sys"""
-        if subdir is None:
-            subdir = name
-        sys_path = os.path.join(self.path, name)
-        if not os.path.exists(sys_path):
-            os.mkdir(sys_path)
-        return sys_path
-
-    def add_disk(self, name, size="16G", filesystem="ext4"):
+    # pylint: disable=too-many-arguments
+    def add_disk(self, name, size="16G", filesystem="ext4", tabletype="msdos", mkfs_args=None):
         """Add a disk"""
         disk_path = os.path.join(self.path, f"{name}.img")
-        self._disks[name] = create_disk(disk_path, "msdos", filesystem, size)
+        self._disks[name] = create_disk(disk_path, tabletype, filesystem, size, mkfs_args=mkfs_args)
         self._disk_filesystems[name] = filesystem
         # Allow executing user to access it
         run_as_root("chown", getpass.getuser(), self._disks[name])
