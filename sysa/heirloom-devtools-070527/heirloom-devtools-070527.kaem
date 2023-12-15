@@ -17,7 +17,7 @@ cd build
 lexdir=/lex
 
 # Extract
-cp ${distfiles}/${pkg}.tar.bz2 ../src/
+cp ${DISTFILES}/${pkg}.tar.bz2 ../src/
 bunzip2 -f ../src/${pkg}.tar.bz2
 tar xf ../src/${pkg}.tar ${pkg}/yacc ${pkg}/lex
 rm -r ../src/
@@ -32,18 +32,18 @@ cd yacc
 make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DMAXPATHLEN=100\ -DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
 
 # Install yacc
-install yacc ${bindir}
-install -m 644 yaccpar /
+install yacc ${BINDIR}
+install -m 644 yaccpar ${LIBDIR}
 
 # Build lex
 cd ../lex
 make -f Makefile.mk CC=tcc AR=tcc\ -ar CFLAGS=-DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
 
 # Install lex
-mkdir ${lexdir}
-install lex ${bindir}
-install libl.a ${libdir}
-install -m 644 ncform ${lexdir}
+mkdir ${LEXDIR}
+install lex ${BINDIR}
+install libl.a ${LIBDIR}
+install -m 644 ncform ${LEXDIR}
 
 cd ../../..
 
@@ -56,7 +56,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /yaccpar \
         /lex/ncform
 
-    install ${pkg}.checksums ${srcdir}
+    install ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

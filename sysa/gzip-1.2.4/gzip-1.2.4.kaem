@@ -16,7 +16,7 @@ mkdir build src
 cd build
 
 # Extract
-ungz --file ${distfiles}/${pkg}.tar.gz --output ../src/${pkg}.tar
+ungz --file ${DISTFILES}/${pkg}.tar.gz --output ../src/${pkg}.tar
 untar --file ../src/${pkg}.tar
 rm ../src/${pkg}.tar
 cd ${pkg}
@@ -42,10 +42,10 @@ cp util.c.new util.c
 make
 
 # Install
-cp gzip ${bindir}/gzip
-cp gzip ${bindir}/gunzip
-chmod 755 ${bindir}/gzip
-chmod 755 ${bindir}/gunzip
+cp gzip ${BINDIR}/gzip
+cp gzip ${BINDIR}/gunzip
+chmod 755 ${BINDIR}/gzip
+chmod 755 ${BINDIR}/gunzip
 
 cd ../..
 
@@ -54,7 +54,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/gzip
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

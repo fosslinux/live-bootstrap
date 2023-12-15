@@ -11,16 +11,16 @@ sha256sum -c sources.SHA256SUM
 # Extract
 mkdir build src
 cd src
-ungz --file ${distfiles}/${pkg}.tar.gz --output ${pkg}.tar
+ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
 cd ..
 
 cd build
 untar --file ../src/${pkg}.tar
 cd ${pkg}
 
-alias as="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DNO_CONFIG_OFFSET64 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -traditional -I/sysa/${pkg}/build/${pkg}/include"
+alias as="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DNO_CONFIG_OFFSET64 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -traditional -I${SRCDIR}/${pkg}/build/${pkg}/include"
 
-alias cc="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DNO_CONFIG_OFFSET64 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -I/sysa/${pkg}/build/${pkg}/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes"
+alias cc="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DNO_CONFIG_OFFSET64 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -I${SRCDIR}/${pkg}/build/${pkg}/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes"
 
 cd kernel
 as -c -o boot.o boot.S
@@ -554,7 +554,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /boot/fiwix
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

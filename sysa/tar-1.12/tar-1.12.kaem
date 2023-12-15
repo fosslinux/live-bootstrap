@@ -16,7 +16,7 @@ mkdir build src
 cd build
 
 # Extract
-cp ${distfiles}/${pkg}.tar.gz ../src/
+cp ${DISTFILES}/${pkg}.tar.gz ../src/
 gzip -d -f ../src/${pkg}.tar.gz
 untar --file ../src/${pkg}.tar
 rm ../src/${pkg}.tar
@@ -33,8 +33,8 @@ cp src/create.c.new src/create.c
 make -f Makefile
 
 # Install
-cp tar ${prefix}/bin/tar
-chmod 755 ${prefix}/bin/tar
+cp tar ${PREFIX}/bin/tar
+chmod 755 ${PREFIX}/bin/tar
 
 cd ../..
 
@@ -43,7 +43,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/tar
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

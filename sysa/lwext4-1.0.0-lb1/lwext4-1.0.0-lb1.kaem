@@ -1,18 +1,19 @@
+#!/bin/sh
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
 
+set -ex
+
 mkdir build src
 cd src
-ungz --file ${distfiles}/${pkg}.tar.gz --output ${pkg}.tar
+ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
 cd ..
 
 cd build
 untar --file ../src/${pkg}.tar
 cd ${pkg}
 
-mkdir build_generic
-mkdir build_generic/include
-mkdir build_generic/include/generated
+mkdir -p build_generic/include/generated
 catm build_generic/include/generated/ext4_config.h ../../config/ext4_config.h
 
 cd blockdev/linux
@@ -45,7 +46,7 @@ cc -c ext4_xattr.c
 catm make_fiwix_initrd.c ../../../files/make_fiwix_initrd.c
 tcc -m32 -march=i386 -std=c89 -I../include -I../build_generic/include -I../../tcc/tcc-0.9.27/include -DVERSION="\"1.0\"" -c make_fiwix_initrd.c
 
-tcc -m32 -o ${bindir}/make_fiwix_initrd ext4.o ext4_balloc.o ext4_bcache.o ext4_bitmap.o ext4_block_group.o ext4_blockdev.o ext4_crc32.o ext4_debug.o ext4_dir.o ext4_dir_idx.o ext4_extent.o ext4_fs.o ext4_hash.o ext4_ialloc.o ext4_inode.o ext4_journal.o ext4_mbr.o ext4_mkfs.o ext4_super.o ext4_trans.o ext4_xattr.o ../blockdev/linux/file_dev.o make_fiwix_initrd.o
+tcc -m32 -o ${BINDIR}/make_fiwix_initrd ext4.o ext4_balloc.o ext4_bcache.o ext4_bitmap.o ext4_block_group.o ext4_blockdev.o ext4_crc32.o ext4_debug.o ext4_dir.o ext4_dir_idx.o ext4_extent.o ext4_fs.o ext4_hash.o ext4_ialloc.o ext4_inode.o ext4_journal.o ext4_mbr.o ext4_mkfs.o ext4_super.o ext4_trans.o ext4_xattr.o ../blockdev/linux/file_dev.o make_fiwix_initrd.o
 
 cd ../../..
 
@@ -54,7 +55,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/make_fiwix_initrd
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

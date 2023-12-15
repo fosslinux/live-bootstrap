@@ -6,7 +6,7 @@
 set -ex
 
 cd src
-tcc -m32 -march=i386 -std=c89 -I../../tcc/tcc-0.9.27/include -o ${bindir}/kexec-fiwix kexec-fiwix.c
+tcc -m32 -march=i386 -std=c89 -I../../tcc/tcc-0.9.27/include -o ${BINDIR}/kexec-fiwix kexec-fiwix.c
 cd ..
 
 # Checksums
@@ -14,7 +14,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/kexec-fiwix
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

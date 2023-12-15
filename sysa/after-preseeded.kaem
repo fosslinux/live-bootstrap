@@ -11,14 +11,14 @@ set -ex
 
 # Set commonly used variables
 sysa=/sysa
-distfiles=/sysa/distfiles
-prefix=/usr
-bindir=${prefix}/bin
-libdir=${libdir}/mes
-incdir=${prefix}/include
-srcdir=${prefix}/src
+DISTFILES=/sysa/distfiles
+PREFIX=/usr
+BINDIR=${PREFIX}/bin
+LIBDIR=${PREFIX}/lib/mes
+INCDIR=${PREFIX}/include/mes
+SRCDIR=${PREFIX}/src
 TMPDIR=/tmp # tmpdir is needed for patch to work
-PATH=${bindir}
+PATH=${BINDIR}
 
 cd ${sysa}
 

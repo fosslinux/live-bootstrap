@@ -15,7 +15,7 @@ src_configure() {
       --disable-shared \
       --prefix="${PREFIX}" \
       --libdir="${LIBDIR}" \
-      --includedir="${PREFIX}/include/"
+      --includedir="${PREFIX}/include"
 
     # configure script creates this file
     if test -f /dev/null; then

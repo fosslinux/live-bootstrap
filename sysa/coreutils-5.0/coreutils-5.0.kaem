@@ -17,7 +17,7 @@ mkdir build src
 cd build
 
 # Extract
-cp ${distfiles}/${pkg}.tar.bz2 ../src/
+cp ${DISTFILES}/${pkg}.tar.bz2 ../src/
 bunzip2 -f ../src/${pkg}.tar.bz2
 tar xf ../src/${pkg}.tar
 cd ${pkg}
@@ -45,8 +45,8 @@ patch -Np0 -i ../../patches/sort-locale.patch
 patch -Np0 -i ../../patches/uniq-fopen.patch
 
 # Build and install
-make -f Makefile PREFIX=${prefix}
-make -f Makefile PREFIX=${prefix} install
+make -f Makefile PREFIX=${PREFIX}
+make -f Makefile PREFIX=${PREFIX} install
 
 cd ../..
 rm -r src/
@@ -116,7 +116,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/rm \
         /usr/bin/sha1sum
 
-    install ${pkg}.checksums ${srcdir}
+    install ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
 
-prefix=/usr
-bindir=${prefix}/bin
+PREFIX=/usr
+BINDIR=${PREFIX}/bin
 
-PATH=${bindir}
+PATH=${BINDIR}
 
 cd sysa
 

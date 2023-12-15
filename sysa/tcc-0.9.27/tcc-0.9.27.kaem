@@ -14,8 +14,8 @@ sha256sum -c sources.SHA256SUM
 # Extract
 mkdir build src
 cd src
-unbz2 --file ${distfiles}/${pkg}.tar.bz2 --output ${pkg}.tar
-ungz --file ${distfiles}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
+unbz2 --file ${DISTFILES}/${pkg}.tar.bz2 --output ${pkg}.tar
+ungz --file ${DISTFILES}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
 cd ..
 
 cd build
@@ -39,14 +39,14 @@ catm config.h
 tcc-0.9.26 \
     -v \
     -static \
-    -o ${bindir}/tcc \
+    -o ${BINDIR}/tcc \
     -D TCC_TARGET_I386=1 \
-    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
+    -D CONFIG_TCCDIR=\"${LIBDIR}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
-    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${LIBDIR}:${LIBDIR}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
+    -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
     -D CONFIG_TCC_STATIC=1 \
     -D CONFIG_USE_LIBGCC=1 \
     -D TCC_VERSION=\"0.9.27\" \
@@ -54,7 +54,7 @@ tcc-0.9.26 \
     tcc.c
 
 # Recompile the mes C library
-cd ../${MES_PKG_DIR}
+cd ../${MES_PKG}
 
 # Create unified libc file
 cd lib
@@ -62,14 +62,14 @@ catm ../unified-libc.c ctype/isalnum.c ctype/isalpha.c ctype/isascii.c ctype/isc
 cd ..
 
 # Recompile libc: crt{1,n,i}, libtcc.a, libc.a
-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crt1.o lib/linux/x86-mes-gcc/crt1.c
-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crtn.o lib/linux/x86-mes-gcc/crtn.c
-tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${libdir}/crti.o lib/linux/x86-mes-gcc/crti.c
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${LIBDIR}/crt1.o lib/linux/x86-mes-gcc/crt1.c
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${LIBDIR}/crtn.o lib/linux/x86-mes-gcc/crtn.c
+tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o ${LIBDIR}/crti.o lib/linux/x86-mes-gcc/crti.c
 tcc -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG_STUB=1 -I include -I include/linux/x86 lib/libtcc1.c
 tcc -c -D TCC_TARGET_I386=1 ../${pkg}/lib/libtcc1.c
-tcc -ar cr ${libdir}/tcc/libtcc1.a libtcc1.o
+tcc -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o
 tcc -c -D HAVE_CONFIG_H=1 -I include -I include/linux/x86 -o unified-libc.o unified-libc.c
-tcc -ar cr ${libdir}/libc.a unified-libc.o
+tcc -ar cr ${LIBDIR}/libc.a unified-libc.o
 cd ../..
 
 # Test
@@ -80,7 +80,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/tcc
 
-    cp ${pkg}.checksums ${srcdir}
+    cp ${pkg}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.checksums
 fi

@@ -19,7 +19,7 @@ src_compile() {
         -D CONFIG_TCC_CRTPREFIX=\""${LIBDIR}"\" \
         -D CONFIG_TCC_ELFINTERP=\"/musl/loader\" \
         -D CONFIG_TCC_LIBPATHS=\""${LIBDIR}:${LIBDIR}/tcc"\" \
-        -D CONFIG_TCC_SYSINCLUDEPATHS=\""${PREFIX}/include/musl"\" \
+        -D CONFIG_TCC_SYSINCLUDEPATHS=\""${PREFIX}/include"\" \
         -D TCC_LIBGCC=\""${LIBDIR}/libc.a"\" \
         -D CONFIG_TCC_STATIC=1 \
         -D CONFIG_USE_LIBGCC=1 \
