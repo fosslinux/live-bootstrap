@@ -65,7 +65,7 @@ build findutils-4.2.33
 
 build musl-1.2.4
 
-build linux-headers-5.10.41 '' '' linux-5.10.41
+build linux-headers-4.9.10 '' '' linux-4.9.10
 
 build gcc-4.0.4 pass2.sh
 

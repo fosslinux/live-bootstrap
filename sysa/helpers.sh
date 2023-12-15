@@ -199,6 +199,7 @@ build() {
     cd "${SOURCES}"
 
     unset -f src_unpack src_prepare src_configure src_compile src_install src_postprocess
+    unset extract
 }
 
 interpret_source_line() {
@@ -231,12 +232,6 @@ default_src_get() {
 # Intelligently extracts a file based upon its filetype.
 extract_file() {
     f="${3:-$(basename "${1}")}"
-    if test $# -gt 3; then
-        shift 3
-        extract="$*"
-    else
-        extract=
-    fi
     # shellcheck disable=SC2154
     case "${noextract}" in
         *${f}*)
