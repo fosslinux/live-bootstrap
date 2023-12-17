@@ -236,13 +236,15 @@ print(shutil.which('chroot'))
     elif args.bare_metal:
         if args.kernel:
             generator.prepare(using_kernel=True, target_size=size)
+            image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
             print("Please:")
-            print("  1. Take tmp/initramfs and your kernel, boot using this.")
-            print("  2. Take tmp/disk.img and put this on a writable storage medium.")
+            print(f"  1. Take {image_path}/initramfs and your kernel, boot using this.")
+            print(f"  2. Take {image_path}/disk.img and put this on a writable storage medium.")
         else:
             generator.prepare(kernel_bootstrap=True, target_size=size)
+            image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
             print("Please:")
-            print("  1. Take tmp/disk.img and write it to a boot drive and then boot it.")
+            print(f"  1. Take {image_path}/disk.img and write it to a boot drive and then boot it.")
 
     else:
         if args.kernel:
