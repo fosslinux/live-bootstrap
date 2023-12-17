@@ -57,8 +57,6 @@ class Generator():
             if self.repo_path or self.external_sources:
                 self.tmpdir.add_disk("external", filesystem="ext3")
                 self.tmpdir.mount_disk("external", "external")
-            else:
-                self.tmpdir.add_disk("external", tabletype="none")
         elif using_kernel:
             self.tmp_dir = os.path.join(self.tmp_dir, 'disk')
             self.tmpdir.add_disk("disk", filesystem="ext3")
