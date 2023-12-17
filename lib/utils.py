@@ -31,7 +31,8 @@ def run_as_root(*args, **kwargs):
         return run("sudo", *args, **kwargs)
     return run(*args, **kwargs)
 
-def create_disk(image, disk_type, fs_type, size, mkfs_args=None):
+# pylint: disable=too-many-arguments
+def create_disk(image, disk_type, fs_type, size, bootable=False, mkfs_args=None):
     """Create a disk image, with a filesystem on it"""
     if mkfs_args is None:
         mkfs_args = []
@@ -42,7 +43,7 @@ def create_disk(image, disk_type, fs_type, size, mkfs_args=None):
     # Create the partition
     if disk_type != "none":
         run_as_root('parted', '--script', image, 'mklabel', disk_type, 'mkpart',
-                'primary', fs_type, '0%', '100%')
+                'primary', fs_type, '1GiB' if bootable else '1MiB', '100%')
         run_as_root('partprobe', loop_dev)
         run_as_root('mkfs.' + fs_type, loop_dev + "p1", *mkfs_args)
     return loop_dev

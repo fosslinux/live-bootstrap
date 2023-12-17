@@ -33,7 +33,7 @@ class Generator():
         self.tmp_dir = tmpdir.path
         self.external_dir = os.path.join(self.tmp_dir, 'external')
 
-    def prepare(self, using_kernel=False, kernel_bootstrap=False):
+    def prepare(self, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
         /steps -- contains steps to be built
@@ -57,9 +57,14 @@ class Generator():
             if self.repo_path or self.external_sources:
                 self.tmpdir.add_disk("external", filesystem="ext3")
                 self.tmpdir.mount_disk("external", "external")
+            else:
+                self.external_dir = os.path.join(self.tmp_dir, 'external')
         elif using_kernel:
             self.tmp_dir = os.path.join(self.tmp_dir, 'disk')
-            self.tmpdir.add_disk("disk", filesystem="ext3")
+            self.tmpdir.add_disk("disk",
+                            filesystem="ext3",
+                            size=(target_size + "M") if target_size else "16G",
+                            bootable=True)
             self.tmpdir.mount_disk("disk", "disk")
             self.external_dir = os.path.join(self.tmp_dir, 'external')
 
@@ -86,7 +91,7 @@ class Generator():
             shutil.copytree(self.repo_path, repo_dir)
 
         if kernel_bootstrap:
-            self.create_builder_hex0_disk_image(os.path.join(self.tmp_dir, 'disk.img'))
+            self.create_builder_hex0_disk_image(os.path.join(self.tmp_dir, 'disk.img'), target_size)
 
         if kernel_bootstrap and (self.external_sources or self.repo_path):
             self.tmpdir.umount_disk('external')
@@ -149,7 +154,7 @@ class Generator():
     def distfiles(self):
         """Copy in distfiles"""
         def copy_no_network_distfiles(out):
-            # Note that no network == no disk for kernel bootstrap mode
+            # Note that "no disk" implies "no network" for kernel bootstrap mode
             pre_src_path = os.path.join(self.git_dir, 'steps', 'pre-network-sources')
             with open(pre_src_path, 'r', encoding="utf-8") as source_list:
                 for file in source_list.readlines():
@@ -222,7 +227,7 @@ class Generator():
 
         os.chdir(save_cwd)
 
-    def create_builder_hex0_disk_image(self, image_file_name):
+    def create_builder_hex0_disk_image(self, image_file_name, size):
         """Create builder-hex0 disk image"""
         shutil.copyfile(os.path.join('seed', 'stage0-posix', 'bootstrap-seeds',
                                      'NATIVE', 'x86', 'builder-hex0-x86-stage1.img'),
@@ -250,11 +255,10 @@ class Generator():
             image_file.write(b'\0' * round_up)
         current_size += round_up
 
-        # fill file with zeros up to desired size, one megabyte at a time
-        with open(image_file_name, 'ab') as image_file:
-            while current_size < 16384 * megabyte:
-                image_file.write(b'\0' * megabyte)
-                current_size += megabyte
+        # extend file up to desired size
+        if current_size < size * megabyte:
+            with open(image_file_name, 'ab') as image_file:
+                image_file.truncate(size * megabyte)
 
     def check_file(self, file_name, expected_hash):
         """Check hash of downloaded source file."""

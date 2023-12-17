@@ -60,10 +60,21 @@ class Tmpdir:
         self._type = TmpType.TMPFS
 
     # pylint: disable=too-many-arguments
-    def add_disk(self, name, size="16G", filesystem="ext4", tabletype="msdos", mkfs_args=None):
+    def add_disk(self,
+                 name,
+                 size="16G",
+                 filesystem="ext4",
+                 tabletype="msdos",
+                 bootable=False,
+                 mkfs_args=None):
         """Add a disk"""
         disk_path = os.path.join(self.path, f"{name}.img")
-        self._disks[name] = create_disk(disk_path, tabletype, filesystem, size, mkfs_args=mkfs_args)
+        self._disks[name] = create_disk(disk_path,
+                                        tabletype,
+                                        filesystem,
+                                        size,
+                                        bootable,
+                                        mkfs_args)
         self._disk_filesystems[name] = filesystem
         # Allow executing user to access it
         run_as_root("chown", getpass.getuser(), self._disks[name])
@@ -87,4 +98,4 @@ class Tmpdir:
 
     def get_disk(self, name):
         """Get the path to a device of a disk"""
-        return self._disks[name]
+        return self._disks.get(name)

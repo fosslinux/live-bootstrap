@@ -39,7 +39,7 @@ def create_configuration_file(args):
             if args.repo or args.external_sources:
                 config.write("DISK=sdb1\n")
             else:
-                config.write("DISK=sdb\n")
+                config.write("DISK=sda\n")
             config.write("KERNEL_BOOTSTRAP=True\n")
         else:
             config.write("DISK=sda1\n")
@@ -98,6 +98,8 @@ def main():
                         default="qemu-system-x86_64")
     parser.add_argument("-qr", "--qemu-ram", help="Memory (in megabytes) allocated to QEMU VM",
                         default=4096)
+    parser.add_argument("-qs", "--target-size", help="Size of the target image (for QEMU only)",
+                        default="16G")
     parser.add_argument("-qk", "--kernel", help="Custom sysa kernel to use")
 
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
@@ -136,6 +138,15 @@ def main():
     if int(args.cores) < 1:
         raise ValueError("Must use one or more cores.")
 
+    # Target image size validation
+    if args.qemu:
+        if int(str(args.target_size).rstrip('gGmM')) < 1:
+            raise ValueError("Please specify a positive target size for qemu.")
+        args.target_size = (int(str(args.target_size).rstrip('gGmM')) *
+            (1024 if str(args.target_size).lower().endswith('g') else 1))
+    else:
+        args.target_size = 0
+
     # bootstrap.cfg
     try:
         os.remove(os.path.join('sysa', 'bootstrap.cfg'))
@@ -158,9 +169,9 @@ def main():
                           repo_path=args.repo,
                           early_preseed=args.early_preseed)
 
-    bootstrap(args, generator, tmpdir)
+    bootstrap(args, generator, tmpdir, args.target_size)
 
-def bootstrap(args, generator, tmpdir):
+def bootstrap(args, generator, tmpdir, size):
     """Kick off bootstrap process."""
     print(f"Bootstrapping {args.arch} -- SysA")
     if args.chroot:
@@ -224,18 +235,18 @@ print(shutil.which('chroot'))
 
     elif args.bare_metal:
         if args.kernel:
-            generator.prepare(using_kernel=True)
+            generator.prepare(using_kernel=True, target_size=size)
             print("Please:")
             print("  1. Take tmp/initramfs and your kernel, boot using this.")
             print("  2. Take tmp/disk.img and put this on a writable storage medium.")
         else:
-            generator.prepare(kernel_bootstrap=True)
+            generator.prepare(kernel_bootstrap=True, target_size=size)
             print("Please:")
             print("  1. Take tmp/disk.img and write it to a boot drive and then boot it.")
 
     else:
         if args.kernel:
-            generator.prepare(using_kernel=True)
+            generator.prepare(using_kernel=True, target_size=size)
 
             run(args.qemu_cmd,
                 '-enable-kvm',
@@ -249,17 +260,24 @@ print(shutil.which('chroot'))
                 '-nographic',
                 '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw')
         else:
-            generator.prepare(kernel_bootstrap=True)
-            run(args.qemu_cmd,
+            generator.prepare(kernel_bootstrap=True, target_size=size)
+            arg_list = [
                 '-enable-kvm',
-                '-m', "4G",
+                '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + os.path.join(generator.tmp_dir, 'disk.img') + ',format=raw',
-                '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
+                '-drive', 'file=' + os.path.join(generator.tmp_dir, 'disk.img') + ',format=raw'
+            ]
+            if tmpdir.get_disk("external") is not None:
+                arg_list += [
+                    '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
+                ]
+            arg_list += [
                 '-machine', 'kernel-irqchip=split',
                 '-nic', 'user,ipv6=off,model=e1000',
-                '-nographic')
+                '-nographic'
+            ]
+            run(args.qemu_cmd, *arg_list)
 
 if __name__ == "__main__":
     main()
