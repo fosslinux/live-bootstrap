@@ -92,7 +92,7 @@ class Generator():
             shutil.copytree(self.repo_path, repo_dir)
 
         if kernel_bootstrap:
-            self.create_builder_hex0_disk_image(os.path.join(self.tmp_dir, 'disk.img'), target_size)
+            self.create_builder_hex0_disk_image(self.tmp_dir + '.img', target_size)
 
         if kernel_bootstrap and (self.external_sources or self.repo_path):
             self.tmpdir.umount_disk('external')

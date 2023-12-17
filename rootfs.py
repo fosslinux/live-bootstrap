@@ -244,7 +244,7 @@ print(shutil.which('chroot'))
             generator.prepare(kernel_bootstrap=True, target_size=size)
             image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
             print("Please:")
-            print(f"  1. Take {image_path}/disk.img and write it to a boot drive and then boot it.")
+            print(f"  1. Take {image_path}.img and write it to a boot drive and then boot it.")
 
     else:
         if args.kernel:
@@ -268,7 +268,7 @@ print(shutil.which('chroot'))
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + os.path.join(generator.tmp_dir, 'disk.img') + ',format=raw'
+                '-drive', 'file=' + generator.tmp_dir + '.img' + ',format=raw'
             ]
             if tmpdir.get_disk("external") is not None:
                 arg_list += [
