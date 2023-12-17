@@ -293,7 +293,8 @@ this script the next time")
                 with open(abs_file_name, 'wb') as target_file:
                     target_file.write(response.raw.read())
             else:
-                raise requests.HTTPError("Download failed.")
+                raise requests.HTTPError("Download failed: HTTP " +
+                    response.status_code + " " + response.reason)
         return abs_file_name
 
     def get_packages(self):
