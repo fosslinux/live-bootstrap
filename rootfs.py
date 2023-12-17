@@ -30,7 +30,6 @@ def create_configuration_file(args):
     with open(config_path, "w", encoding="utf_8") as config:
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
         config.write(f"CHROOT={args.chroot or args.bwrap}\n")
-        config.write(f"CHROOT_ONLY_SYSA={args.bwrap}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci}\n")
@@ -100,7 +99,7 @@ def main():
                         default=4096)
     parser.add_argument("-qs", "--target-size", help="Size of the target image (for QEMU only)",
                         default="16G")
-    parser.add_argument("-qk", "--kernel", help="Custom sysa kernel to use")
+    parser.add_argument("-qk", "--kernel", help="Custom early kernel to use")
 
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
                         action="store_true")
@@ -149,13 +148,13 @@ def main():
 
     # bootstrap.cfg
     try:
-        os.remove(os.path.join('sysa', 'bootstrap.cfg'))
+        os.remove(os.path.join('steps', 'bootstrap.cfg'))
     except FileNotFoundError:
         pass
     if not args.no_create_config:
         create_configuration_file(args)
     else:
-        with open(os.path.join('sysa', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
+        with open(os.path.join('steps', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
             pass
 
     # tmpdir
@@ -173,7 +172,7 @@ def main():
 
 def bootstrap(args, generator, tmpdir, size):
     """Kick off bootstrap process."""
-    print(f"Bootstrapping {args.arch} -- SysA")
+    print(f"Bootstrapping {args.arch}")
     if args.chroot:
         find_chroot = """
 import shutil
@@ -211,15 +210,16 @@ print(shutil.which('chroot'))
                          init)
 
         if not args.internal_ci or args.internal_ci == "pass2" or args.internal_ci == "pass3":
-            shutil.copy2(os.path.join('sysa', 'bootstrap.cfg'),
-                         os.path.join('tmp', 'sysa', 'sysc_image', 'usr', 'src', 'bootstrap.cfg'))
+            os.makedirs(os.path.join(generator.tmp_dir, 'stage2', 'steps'), exist_ok=True)
+            shutil.copy2(os.path.join('steps', 'bootstrap.cfg'),
+                         os.path.join(generator.tmp_dir, 'stage2', 'steps', 'bootstrap.cfg'))
             run('bwrap', '--unshare-user',
                          '--uid', '0',
                          '--gid', '0',
                          '--unshare-net' if args.external_sources else None,
                          '--clearenv',
                          '--setenv', 'PATH', '/usr/bin',
-                         '--bind', generator.tmp_dir + "/sysc_image", '/',
+                         '--bind', os.path.join(generator.tmp_dir, "stage2"), '/',
                          '--dir', '/dev',
                          '--dev-bind', '/dev/null', '/dev/null',
                          '--dev-bind', '/dev/zero', '/dev/zero',
