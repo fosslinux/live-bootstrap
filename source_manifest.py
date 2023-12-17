@@ -13,7 +13,7 @@ from lib.generator import Generator
 
 def main():
     """Generate a source manifest for a system"""
-    print(Generator.get_source_manifest())
+    print('\n'.join(map(' '.join, Generator.get_source_manifest())))
 
 if __name__ == "__main__":
     main()

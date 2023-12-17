@@ -32,6 +32,7 @@ class Generator():
         self.tmpdir = tmpdir
         self.tmp_dir = tmpdir.path
         self.external_dir = os.path.join(self.tmp_dir, 'external')
+        self.source_manifest = self.get_source_manifest(not self.external_sources)
 
     def prepare(self, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
@@ -100,8 +101,7 @@ class Generator():
 
     def steps(self):
         """Copy in steps."""
-        source_manifest = self.get_source_manifest(not self.external_sources)
-        self.get_packages(source_manifest)
+        self.get_packages()
 
         shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.tmp_dir, 'steps'))
 
@@ -155,12 +155,10 @@ class Generator():
         """Copy in distfiles"""
         def copy_no_network_distfiles(out):
             # Note that "no disk" implies "no network" for kernel bootstrap mode
-            pre_src_path = os.path.join(self.git_dir, 'steps', 'pre-network-sources')
-            with open(pre_src_path, 'r', encoding="utf-8") as source_list:
-                for file in source_list.readlines():
-                    file = file.strip()
-                    shutil.copy2(os.path.join(self.distfiles_dir, file),
-                                 os.path.join(out, file))
+            for file in self.source_manifest:
+                file = file[3].strip()
+                shutil.copy2(os.path.join(self.distfiles_dir, file),
+                             os.path.join(out, file))
 
         early_distfile_dir = os.path.join(self.tmp_dir, 'external', 'distfiles')
         main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
@@ -298,11 +296,9 @@ this script the next time")
                 raise requests.HTTPError("Download failed.")
         return abs_file_name
 
-    def get_packages(self, source_manifest):
+    def get_packages(self):
         """Prepare remaining sources"""
-        for line in source_manifest.split("\n"):
-            line = line.strip().split(" ")
-
+        for line in self.source_manifest:
             path = self.download_file(line[2], line[1], line[3])
             self.check_file(path, line[0])
 
@@ -311,7 +307,7 @@ this script the next time")
         """
         Generate a source manifest for the system.
         """
-        manifest_lines = []
+        entries = []
         directory = os.path.relpath(cls.distfiles_dir, cls.git_dir)
 
         # Find all source files
@@ -329,20 +325,20 @@ this script the next time")
                 if os.path.exists(sourcef):
                     # Read sources from the source file
                     with open(sourcef, "r", encoding="utf_8") as sources:
-                        for line in sources.readlines():
-                            line = line.strip().split(" ")
+                        for source in sources.readlines():
+                            source = source.strip().split(" ")
 
-                            if len(line) > 2:
-                                file_name = line[2]
+                            if len(source) > 2:
+                                file_name = source[2]
                             else:
                                 # Automatically determine file name based on URL.
-                                file_name = os.path.basename(line[0])
+                                file_name = os.path.basename(source[0])
 
-                            manifest_line = f"{line[1]} {directory} {line[0]} {file_name}"
-                            if manifest_line not in manifest_lines:
-                                manifest_lines.append(manifest_line)
+                            entry = (source[1], directory, source[0], file_name)
+                            if entry not in entries:
+                                entries.append(entry)
 
-        return "\n".join(manifest_lines)
+        return entries
 
 stage0_arch_map = {
     "amd64": "AMD64",
