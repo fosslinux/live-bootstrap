@@ -100,7 +100,7 @@ class Generator():
 
     def steps(self):
         """Copy in steps."""
-        source_manifest = self.get_source_manifest()
+        source_manifest = self.get_source_manifest(not self.external_sources)
         self.get_packages(source_manifest)
 
         shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.tmp_dir, 'steps'))
@@ -307,7 +307,7 @@ this script the next time")
             self.check_file(path, line[0])
 
     @classmethod
-    def get_source_manifest(cls):
+    def get_source_manifest(cls, pre_network=False):
         """
         Generate a source manifest for the system.
         """
@@ -316,9 +316,16 @@ this script the next time")
 
         # Find all source files
         steps_dir = os.path.join(cls.git_dir, 'steps')
-        for file in os.listdir(steps_dir):
-            if os.path.isdir(os.path.join(steps_dir, file)):
-                sourcef = os.path.join(steps_dir, file, "sources")
+        with open(os.path.join(steps_dir, 'manifest'), 'r', encoding="utf_8") as file:
+            for line in file:
+                if pre_network and line.strip().startswith("improve: ") and "network" in line:
+                    break
+
+                if not line.strip().startswith("build: "):
+                    continue
+
+                step = line.split(" ")[1].split("#")[0].strip()
+                sourcef = os.path.join(steps_dir, step, "sources")
                 if os.path.exists(sourcef):
                     # Read sources from the source file
                     with open(sourcef, "r", encoding="utf_8") as sources:
@@ -331,7 +338,9 @@ this script the next time")
                                 # Automatically determine file name based on URL.
                                 file_name = os.path.basename(line[0])
 
-                            manifest_lines.append(f"{line[1]} {directory} {line[0]} {file_name}")
+                            manifest_line = f"{line[1]} {directory} {line[0]} {file_name}"
+                            if manifest_line not in manifest_lines:
+                                manifest_lines.append(manifest_line)
 
         return "\n".join(manifest_lines)
 
