@@ -9,27 +9,11 @@ for the bootstrapping process.
 
 import argparse
 
-from sysa import SysA
-from sysc import SysC
+from lib.generator import Generator
 
 def main():
     """Generate a source manifest for a system"""
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("-s", "--system",
-                        help="Generate source manifest for the specified systems",
-                        choices=["sysa", "sysc"],
-                        nargs="+",
-                        action="extend",
-                        required=True)
-
-    args = parser.parse_args()
-
-    if "sysa" in args.system:
-        print(SysA.get_source_manifest())
-
-    if "sysc" in args.system:
-        print(SysC.get_source_manifest())
+    print(Generator.get_source_manifest())
 
 if __name__ == "__main__":
     main()
