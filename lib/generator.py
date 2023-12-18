@@ -168,7 +168,6 @@ class Generator():
             copy_no_network_distfiles(early_distfile_dir)
 
         if self.external_sources:
-            os.mkdir(main_distfile_dir)
             shutil.copytree(self.distfiles_dir, main_distfile_dir)
         else:
             os.mkdir(main_distfile_dir)
