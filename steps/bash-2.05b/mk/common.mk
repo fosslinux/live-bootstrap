@@ -49,6 +49,7 @@ COMMON_CFLAGS  = \
 	-DHAVE_BZERO \
 	-DHAVE_POSIX_SIGNALS \
 	-DHAVE_GETCWD \
+	-DHAVE_RENAME \
 	-DHAVE_SYS_SIGLIST \
 	-Dendpwent\(x\)=0 \
 	-Denable_hostname_completion\(on_or_off\)=0
