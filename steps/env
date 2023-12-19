@@ -9,4 +9,4 @@ LIBDIR=${PREFIX}/lib/mes
 INCDIR=${PREFIX}/include/mes
 SRCDIR=/steps
 TMPDIR=/tmp
-PATH=${BINDIR}:/${ARCH}/bin
+PATH=${BINDIR}:/${ARCH_DIR}/bin
