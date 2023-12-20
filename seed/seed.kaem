@@ -58,7 +58,7 @@ M2LIBC_PATH=/M2libc
 
 # mes envars
 NYACC_PKG=nyacc-1.00.2
-MES_PKG=mes-0.25
+MES_PKG=mes-0.26
 MES_PREFIX=${SRCDIR}/${MES_PKG}/build/${MES_PKG}
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${SRCDIR}/${MES_PKG}/build/${NYACC_PKG}/module
 

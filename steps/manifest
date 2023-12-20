@@ -23,7 +23,7 @@
 
 build: checksum-transcriber-1.0
 build: simple-patch-1.0
-build: mes-0.25
+build: mes-0.26
 build: tcc-0.9.26
 build: tcc-0.9.27
 define: BUILD_FIWIX = ( KERNEL_BOOTSTRAP == True || BUILD_KERNELS == True )

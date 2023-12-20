@@ -4,4 +4,4 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #undef SYSTEM_LIBC
-#define MES_VERSION "0.25"
+#define MES_VERSION "0.26"
