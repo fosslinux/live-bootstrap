@@ -67,7 +67,7 @@ build: perl-5.003
 build: perl5.004-05
 build: perl5.005-03
 build: perl-5.6.2
-improve: populate_device_nodes
+improve: populate_device_nodes ( CHROOT == False )
 build: autoconf-2.52
 build: automake-1.6.3
 build: automake-1.6.3
@@ -91,7 +91,7 @@ build: automake-1.15.1
 build: binutils-2.30
 build: musl-1.1.24
 build: tcc-0.9.27
-improve: populate_device_nodes
+improve: populate_device_nodes ( CHROOT == False )
 build: gcc-4.0.4
 build: findutils-4.2.33
 build: musl-1.2.4
@@ -112,7 +112,7 @@ jump: linux ( CHROOT == False )
 improve: finalize_fhs
 build: musl-1.2.4
 build: curl-7.88.1
-improve: populate_device_nodes
+improve: populate_device_nodes ( CHROOT == False )
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
 improve: get_network ( CHROOT == False )
 build: bash-5.2.15
