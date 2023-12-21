@@ -5,30 +5,40 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-
 src_prepare() {
     default
 
     # Remove unused generated files
     rm etc/Makefile.in etc/configure
-
     rm zlib/aclocal.m4 zlib/configure
 
+    # Regenerate top-level (autogen + autotools)
+    autogen Makefile.def
+    ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
+
     # Regenerate autoconf
-    for dir in bfd binutils gas gold gprof intl ld libctf libiberty opcodes; do
+    for dir in bfd binutils gas gold gprof gprofng intl ld libctf libiberty libsframe opcodes; do
         cd $dir
-        AUTOPOINT=true ACLOCAL=aclocal-1.15 AUTOMAKE=automake-1.15 autoreconf-2.69 -fi
+        ACLOCAL=aclocal-1.15 AUTOMAKE=automake-1.15 autoreconf-2.69 -fi
         cd ..
     done
-    ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 
     # Regenerate directories with Makefile.am only
     pushd gold
     automake-1.15 -fai testsuite/Makefile
     popd
-    pushd bfd
+    pushd gprofng
     automake-1.15 -fai doc/Makefile
+    automake-1.15 -fai gp-display-html/Makefile
+    automake-1.15 -fai src/Makefile
     popd
+
+    # intl/ Makefile is a bit broken because of new gettext
+    sed -i 's/@USE_INCLUDED_LIBINTL@/no/' intl/Makefile.in
+
+    # There is no way to add -all-static to libtool LDFLAGS (such a thing doesn't exist)
+    # -all-static is required for static binaries with libtool
+    sed -i 's:\(--mode=link $(CCLD)\):\1 -all-static:' {bfd,binutils,opcodes,ld,libctf,gas,gprof}/Makefile.in
 
     # Rebuild bison files
     touch -- */*.y
@@ -59,11 +69,13 @@ src_prepare() {
                    -delete
 
     # Remove pregenerated opcodes files
-    rm opcodes/i386-init.h opcodes/i386-tbl.h
+    rm opcodes/i386-init.h opcodes/i386-tbl.h opcodes/i386-mnem.h
     rm opcodes/ia64-asmtab.c
     rm opcodes/z8k-opc.h
     rm opcodes/aarch64-asm-2.c opcodes/aarch64-opc-2.c opcodes/aarch64-dis-2.c
     rm $(grep -l 'MACHINE GENERATED' opcodes/*.c opcodes/*.h)
+
+    rm libiberty/functions.texi
 
     # Regenerate MeP sections
     ./bfd/mep-relocs.pl
@@ -73,37 +85,35 @@ src_prepare() {
 }
 
 src_configure() {
-    for dir in intl libctf libiberty opcodes bfd binutils gas gprof ld; do
-        cd $dir
+    mkdir build
+    cd build
 
-        ./configure \
-            --disable-nls \
-            --enable-install-libiberty \
-            --enable-deterministic-archives \
-            --with-system-zlib \
-            --build=i386-unknown-linux-musl \
-            --host=i386-unknown-linux-musl \
-            --target=i386-unknown-linux-musl \
-            --program-prefix="" \
-            --prefix="${PREFIX}" \
-            --libdir="${LIBDIR}" \
-            --with-sysroot= \
-            --srcdir=.
-        cd ..
-    done
-}
-
-src_compile() {
-    make -C bfd headers
-    for dir in libiberty bfd opcodes libctf binutils gas gprof ld; do
-        make "${MAKEJOBS}" -C $dir tooldir=${PREFIX} CFLAGS="-std=c99"
-    done
+    LDFLAGS="-static" \
+    ../configure \
+        --prefix="${PREFIX}" \
+        --libdir="${LIBDIR}" \
+        --build=i386-unknown-linux-musl \
+        --host=i386-unknown-linux-musl \
+        --target=i386-unknown-linux-musl \
+        --enable-static \
+        --disable-nls \
+        --disable-multilib \
+        --disable-plugins \
+        --disable-gprofng \
+        --enable-threads \
+        --enable-64-bit-bfd \
+        --enable-gold \
+        --enable-ld=default \
+        --enable-install-libiberty \
+        --enable-deterministic-archives \
+        --with-system-zlib \
+        --program-prefix="" \
+        --with-sysroot= \
+        --srcdir=..
 }
 
 src_install() {
-    for dir in libiberty bfd opcodes libctf binutils gas gprof ld; do
-        make -C $dir tooldir=${PREFIX} DESTDIR="${DESTDIR}" install
-    done
+    default
 
     # Create triplet symlinks
     pushd "${DESTDIR}${PREFIX}/bin"
