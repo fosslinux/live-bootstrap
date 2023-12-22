@@ -16,6 +16,13 @@
 # - jump: jump (usually) to a new kernel, executes a script with that name
 #   eg, jump: fiwix
 #
+# The following directives have special significance:
+# - build directives beginning with "bash" (as well as jumps) trigger the generation of
+#   a new script
+# - the first improve directive containing "network" is used by generator.py to deduce
+#   what source files need to be downloaded in advance (files referenced after that will
+#   be downloaded during bootstrap, unless --external-sources is given)
+#
 # Other features:
 # - predicate; based on variables set in bootstrap.cfg, require for something to execute
 #   must be enclosed in brackets with spaces padded
