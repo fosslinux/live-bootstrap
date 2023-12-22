@@ -109,13 +109,13 @@ class Generator():
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
         stage0_posix_base_dir = os.path.join(self.git_dir, 'seed', 'stage0-posix')
-        for f in os.listdir(stage0_posix_base_dir):
-            orig = os.path.join(stage0_posix_base_dir, f)
-            to = os.path.join(self.tmp_dir, f)
+        for entry in os.listdir(stage0_posix_base_dir):
+            orig = os.path.join(stage0_posix_base_dir, entry)
+            target = os.path.join(self.tmp_dir, entry)
             if os.path.isfile(orig):
-                shutil.copy2(orig, to)
+                shutil.copy2(orig, target)
             else:
-                shutil.copytree(orig, to)
+                shutil.copytree(orig, target)
 
         arch = stage0_arch_map.get(self.arch, self.arch)
         kaem_optional_seed = os.path.join(self.git_dir, 'seed', 'stage0-posix', 'bootstrap-seeds',
@@ -125,11 +125,12 @@ class Generator():
     def seed(self):
         """Copy in extra seed files"""
         seed_dir = os.path.join(self.git_dir, 'seed')
-        for f in os.listdir(seed_dir):
-            if os.path.isfile(os.path.join(seed_dir, f)):
-                shutil.copy2(os.path.join(seed_dir, f), os.path.join(self.tmp_dir, f))
+        for entry in os.listdir(seed_dir):
+            if os.path.isfile(os.path.join(seed_dir, entry)):
+                shutil.copy2(os.path.join(seed_dir, entry), os.path.join(self.tmp_dir, entry))
 
-    def add_fiwix_files(self, file_list_path, dirpath):
+    @staticmethod
+    def add_fiwix_files(file_list_path, dirpath):
         """Add files to the list to populate Fiwix file system"""
         for root, _, filepaths in os.walk(dirpath):
             if 'stage0-posix' in root:
@@ -258,7 +259,8 @@ class Generator():
             with open(image_file_name, 'ab') as image_file:
                 image_file.truncate(size * megabyte)
 
-    def check_file(self, file_name, expected_hash):
+    @staticmethod
+    def check_file(file_name, expected_hash):
         """Check hash of downloaded source file."""
         with open(file_name, "rb") as downloaded_file:
             downloaded_content = downloaded_file.read() # read entire file as bytes
@@ -271,7 +273,8 @@ actual:   {readable_hash}\n\
 When in doubt, try deleting the file in question -- it will be downloaded again when running \
 this script the next time")
 
-    def download_file(self, url, directory, file_name):
+    @staticmethod
+    def download_file(url, directory, file_name):
         """
         Download a single source archive.
         """
