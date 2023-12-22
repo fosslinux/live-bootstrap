@@ -14,6 +14,7 @@ import shutil
 import tarfile
 import requests
 
+# pylint: disable=too-many-instance-attributes
 class Generator():
     """
     Class responsible for generating the basic media to be consumed.
@@ -22,25 +23,25 @@ class Generator():
     git_dir = os.path.join(os.path.dirname(os.path.join(__file__)), '..')
     distfiles_dir = os.path.join(git_dir, 'distfiles')
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, tmpdir, arch, external_sources,
-                 early_preseed, repo_path):
+    def __init__(self, arch, external_sources, early_preseed, repo_path):
         self.arch = arch
         self.early_preseed = early_preseed
         self.external_sources = external_sources
         self.repo_path = repo_path
-        self.tmpdir = tmpdir
-        self.tmp_dir = tmpdir.path
-        self.external_dir = os.path.join(self.tmp_dir, 'external')
         self.source_manifest = self.get_source_manifest(not self.external_sources)
+        self.tmp_dir = None
+        self.external_dir = None
 
-    def prepare(self, using_kernel=False, kernel_bootstrap=False, target_size=0):
+    def prepare(self, tmpdir, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
         /steps -- contains steps to be built
         / -- contains seed to allow steps to be built, containing custom
              scripts and stage0-posix
         """
+        self.tmp_dir = tmpdir.path
+        self.external_dir = os.path.join(self.tmp_dir, 'external')
+
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
         # Linux 4.9.10 does not support a bunch of them
@@ -56,17 +57,17 @@ class Generator():
             self.tmp_dir = init_path
 
             if self.repo_path or self.external_sources:
-                self.tmpdir.add_disk("external", filesystem="ext3")
-                self.tmpdir.mount_disk("external", "external")
+                tmpdir.add_disk("external", filesystem="ext3")
+                tmpdir.mount_disk("external", "external")
             else:
                 self.external_dir = os.path.join(self.tmp_dir, 'external')
         elif using_kernel:
             self.tmp_dir = os.path.join(self.tmp_dir, 'disk')
-            self.tmpdir.add_disk("disk",
+            tmpdir.add_disk("disk",
                             filesystem="ext3",
                             size=(target_size + "M") if target_size else "16G",
                             bootable=True)
-            self.tmpdir.mount_disk("disk", "disk")
+            tmpdir.mount_disk("disk", "disk")
             self.external_dir = os.path.join(self.tmp_dir, 'external')
 
         os.makedirs(self.external_dir, exist_ok=True)
@@ -95,9 +96,9 @@ class Generator():
             self.create_builder_hex0_disk_image(self.tmp_dir + '.img', target_size)
 
         if kernel_bootstrap and (self.external_sources or self.repo_path):
-            self.tmpdir.umount_disk('external')
+            tmpdir.umount_disk('external')
         elif using_kernel:
-            self.tmpdir.umount_disk('disk')
+            tmpdir.umount_disk('disk')
 
     def steps(self):
         """Copy in steps."""

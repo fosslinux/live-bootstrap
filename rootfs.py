@@ -162,8 +162,7 @@ def main():
     if args.tmpfs:
         tmpdir.tmpfs(size=args.tmpfs_size)
 
-    generator = Generator(tmpdir=tmpdir,
-                          arch=args.arch,
+    generator = Generator(arch=args.arch,
                           external_sources=args.external_sources,
                           repo_path=args.repo,
                           early_preseed=args.early_preseed)
@@ -181,7 +180,7 @@ print(shutil.which('chroot'))
         chroot_binary = run_as_root('python3', '-c', find_chroot,
                                     capture_output=True).stdout.decode().strip()
 
-        generator.prepare(using_kernel=False)
+        generator.prepare(tmpdir, using_kernel=False)
 
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
@@ -189,7 +188,7 @@ print(shutil.which('chroot'))
 
     elif args.bwrap:
         if not args.internal_ci or args.internal_ci == "pass1":
-            generator.prepare(using_kernel=False)
+            generator.prepare(tmpdir, using_kernel=False)
 
             arch = stage0_arch_map.get(args.arch, args.arch)
             init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
@@ -235,20 +234,20 @@ print(shutil.which('chroot'))
 
     elif args.bare_metal:
         if args.kernel:
-            generator.prepare(using_kernel=True, target_size=size)
+            generator.prepare(tmpdir, using_kernel=True, target_size=size)
             image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
             print("Please:")
             print(f"  1. Take {image_path}/initramfs and your kernel, boot using this.")
             print(f"  2. Take {image_path}/disk.img and put this on a writable storage medium.")
         else:
-            generator.prepare(kernel_bootstrap=True, target_size=size)
+            generator.prepare(tmpdir, kernel_bootstrap=True, target_size=size)
             image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
             print("Please:")
             print(f"  1. Take {image_path}.img and write it to a boot drive and then boot it.")
 
     else:
         if args.kernel:
-            generator.prepare(using_kernel=True, target_size=size)
+            generator.prepare(tmpdir, using_kernel=True, target_size=size)
 
             run(args.qemu_cmd,
                 '-enable-kvm',
@@ -262,7 +261,7 @@ print(shutil.which('chroot'))
                 '-nographic',
                 '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw')
         else:
-            generator.prepare(kernel_bootstrap=True, target_size=size)
+            generator.prepare(tmpdir, kernel_bootstrap=True, target_size=size)
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
