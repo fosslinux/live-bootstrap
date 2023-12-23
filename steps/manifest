@@ -115,6 +115,7 @@ define: BUILD_LINUX = ( CHROOT == False || BUILD_KERNELS == True )
 build: kexec-linux-1.0.0 ( BUILD_LINUX == True )
 build: kexec-tools-2.0.22 ( BUILD_LINUX == True )
 build: linux-4.9.10 ( BUILD_LINUX == True )
+jump: break ( INTERNAL_CI == pass1 )
 jump: linux ( CHROOT == False )
 improve: finalize_fhs
 build: musl-1.2.4
@@ -174,6 +175,7 @@ build: python-3.3.7
 build: python-3.4.10
 build: python-3.8.16
 build: python-3.11.1
+jump: break ( INTERNAL_CI == pass1 ) # scripts are generated in pass1
 build: gcc-10.4.0
 build: binutils-2.41
 build: gcc-13.1.0
