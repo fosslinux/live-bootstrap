@@ -32,6 +32,13 @@ class Generator():
         self.tmp_dir = None
         self.external_dir = None
 
+    def reuse(self, tmpdir):
+        """
+        Reuse a previously prepared bwrap environment for further stages.
+        """
+        self.tmp_dir = tmpdir.path
+        self.external_dir = os.path.join(self.tmp_dir, 'external')
+
     def prepare(self, tmpdir, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
@@ -39,8 +46,7 @@ class Generator():
         / -- contains seed to allow steps to be built, containing custom
              scripts and stage0-posix
         """
-        self.tmp_dir = tmpdir.path
-        self.external_dir = os.path.join(self.tmp_dir, 'external')
+        self.reuse(tmpdir)
 
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
