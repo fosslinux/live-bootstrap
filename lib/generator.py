@@ -38,6 +38,7 @@ class Generator():
         """
         self.tmp_dir = tmpdir.path
         self.external_dir = os.path.join(self.tmp_dir, 'external')
+        self.distfiles()
 
     def prepare(self, tmpdir, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
@@ -46,7 +47,8 @@ class Generator():
         / -- contains seed to allow steps to be built, containing custom
              scripts and stage0-posix
         """
-        self.reuse(tmpdir)
+        self.tmp_dir = tmpdir.path
+        self.external_dir = os.path.join(self.tmp_dir, 'external')
 
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
