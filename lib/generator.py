@@ -174,11 +174,11 @@ class Generator():
         main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
         if early_distfile_dir != main_distfile_dir:
-            os.makedirs(early_distfile_dir)
+            os.makedirs(early_distfile_dir, exist_ok=True)
             copy_no_network_distfiles(early_distfile_dir)
 
         if self.external_sources:
-            shutil.copytree(self.distfiles_dir, main_distfile_dir)
+            shutil.copytree(self.distfiles_dir, main_distfile_dir, dirs_exist_ok=True)
         else:
             os.mkdir(main_distfile_dir)
             copy_no_network_distfiles(main_distfile_dir)
