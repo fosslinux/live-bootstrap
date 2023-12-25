@@ -191,11 +191,10 @@ print(shutil.which('chroot'))
 
             arch = stage0_arch_map.get(args.arch, args.arch)
             init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-            run('bwrap', '--unshare-user',
+            run('env', '-', 'bwrap', '--unshare-user',
                          '--uid', '0',
                          '--gid', '0',
                          '--unshare-net' if args.external_sources else None,
-                         '--clearenv',
                          '--setenv', 'PATH', '/usr/bin',
                          '--bind', generator.tmp_dir, '/',
                          '--dir', '/dev',
@@ -213,11 +212,10 @@ print(shutil.which('chroot'))
 
         if args.internal_ci in ("pass2", "pass3"):
             generator.reuse(tmpdir)
-            run('bwrap', '--unshare-user',
+            run('env', '-', 'bwrap', '--unshare-user',
                          '--uid', '0',
                          '--gid', '0',
                          '--unshare-net' if args.external_sources else None,
-                         '--clearenv',
                          '--setenv', 'PATH', '/usr/bin',
                          '--bind', generator.tmp_dir, '/',
                          '--dir', '/dev',
