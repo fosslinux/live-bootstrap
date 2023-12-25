@@ -186,50 +186,33 @@ print(shutil.which('chroot'))
         run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.tmp_dir, init)
 
     elif args.bwrap:
+        init = '/init'
         if not args.internal_ci or args.internal_ci == "pass1":
             generator.prepare(tmpdir, using_kernel=False)
 
             arch = stage0_arch_map.get(args.arch, args.arch)
             init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-            run('env', '-', 'bwrap', '--unshare-user',
-                         '--uid', '0',
-                         '--gid', '0',
-                         '--unshare-net' if args.external_sources else None,
-                         '--setenv', 'PATH', '/usr/bin',
-                         '--bind', generator.tmp_dir, '/',
-                         '--dir', '/dev',
-                         '--dev-bind', '/dev/null', '/dev/null',
-                         '--dev-bind', '/dev/zero', '/dev/zero',
-                         '--dev-bind', '/dev/random', '/dev/random',
-                         '--dev-bind', '/dev/urandom', '/dev/urandom',
-                         '--dev-bind', '/dev/ptmx', '/dev/ptmx',
-                         '--dev-bind', '/dev/tty', '/dev/tty',
-                         '--tmpfs', '/dev/shm',
-                         '--proc', '/proc',
-                         '--bind', '/sys', '/sys',
-                         '--tmpfs', '/tmp',
-                         init)
-
-        if args.internal_ci in ("pass2", "pass3"):
+        else:
             generator.reuse(tmpdir)
-            run('env', '-', 'bwrap', '--unshare-user',
-                         '--uid', '0',
-                         '--gid', '0',
-                         '--unshare-net' if args.external_sources else None,
-                         '--setenv', 'PATH', '/usr/bin',
-                         '--bind', generator.tmp_dir, '/',
-                         '--dir', '/dev',
-                         '--dev-bind', '/dev/null', '/dev/null',
-                         '--dev-bind', '/dev/zero', '/dev/zero',
-                         '--dev-bind', '/dev/random', '/dev/random',
-                         '--dev-bind', '/dev/urandom', '/dev/urandom',
-                         '--dev-bind', '/dev/ptmx', '/dev/ptmx',
-                         '--dev-bind', '/dev/tty', '/dev/tty',
-                         '--tmpfs', '/dev/shm',
-                         '--proc', '/proc',
-                         '--bind', '/sys', '/sys',
-                         '--tmpfs', '/tmp',
-                         '/init')
+
+        run('env', '-i', 'bwrap', '--unshare-user',
+                                  '--uid', '0',
+                                  '--gid', '0',
+                                  '--unshare-net' if args.external_sources else None,
+                                  '--setenv', 'PATH', '/usr/bin',
+                                  '--bind', generator.tmp_dir, '/',
+                                  '--dir', '/dev',
+                                  '--dev-bind', '/dev/null', '/dev/null',
+                                  '--dev-bind', '/dev/zero', '/dev/zero',
+                                  '--dev-bind', '/dev/random', '/dev/random',
+                                  '--dev-bind', '/dev/urandom', '/dev/urandom',
+                                  '--dev-bind', '/dev/ptmx', '/dev/ptmx',
+                                  '--dev-bind', '/dev/tty', '/dev/tty',
+                                  '--tmpfs', '/dev/shm',
+                                  '--proc', '/proc',
+                                  '--bind', '/sys', '/sys',
+                                  '--tmpfs', '/tmp',
+                                  init)
 
     elif args.bare_metal:
         if args.kernel:
