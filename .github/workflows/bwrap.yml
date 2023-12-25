@@ -98,11 +98,18 @@ jobs:
       - name: Run bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass2
       - name: Archive created packages
-        if: always() # archive failed builds progress
+        if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v3
         with:
           name: internal_packages_pass2
           path: tmp/external/repo/**
+      - name: Tar pass2 image
+        run: tar -cf pass2_image.tar tmp
+      - name: Archive pass2_image
+        uses: actions/upload-artifact@v3
+        with:
+          name: internal_pass2_image
+          path: pass2_image.tar
 
   pass3:
     name: Run remaining builds under bubblewrap
@@ -118,18 +125,12 @@ jobs:
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
-      - name: Get pass1_image
+      - name: Get pass2_image
         uses: actions/download-artifact@v3
         with:
-          name: internal_pass1_image
-      - name: Extract pass1_image
-        run: tar -xf pass1_image.tar
-      # By doing this, all packages that have already been compiled will come from the preseed.
-      - name: Get packages repo progress
-        uses: actions/download-artifact@v3
-        with:
-          name: internal_packages_pass2
-          path: tmp/external/repo-preseeded/
+          name: internal_pass2_image
+      - name: Extract pass2_image
+        run: tar -xf pass2_image.tar
       - name: Query cache for sources
         id: cache
         uses: actions/cache/restore@v3
@@ -150,7 +151,7 @@ jobs:
       - name: Run bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass3
       - name: Archive created packages
-        if: always() # archive failed builds
+        if: always() # archive both failed and successful builds
         uses: actions/upload-artifact@v3
         with:
           name: packages
