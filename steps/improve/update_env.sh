@@ -16,6 +16,7 @@ SRCDIR=${SRCDIR}
 MAKEJOBS=-j${JOBS}
 export HOME=/tmp
 export SOURCE_DATE_EPOCH=0
+export KBUILD_BUILD_TIMESTAMP='@0'
 export SHELL=/usr/bin/bash
 DESTDIR=/tmp/destdir
 EOF
