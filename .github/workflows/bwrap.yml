@@ -78,6 +78,23 @@ jobs:
           name: internal_pass1_image
       - name: Extract pass1_image
         run: tar -xf pass1_image.tar
+      - name: Query cache for sources
+        id: cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            externals/distfiles
+          key: cache-${{ hashFiles('steps/*/sources') }}
+      - name: Get sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: ./download-distfiles.sh
+      - name: Cache sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            externals/distfiles
+          key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass2
       - name: Archive created packages
@@ -113,6 +130,23 @@ jobs:
         with:
           name: internal_packages_pass2
           path: tmp/externals/repo-preseeded/
+      - name: Query cache for sources
+        id: cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            externals/distfiles
+          key: cache-${{ hashFiles('steps/*/sources') }}
+      - name: Get sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: ./download-distfiles.sh
+      - name: Cache sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            externals/distfiles
+          key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass3
       - name: Archive created packages
