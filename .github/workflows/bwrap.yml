@@ -43,15 +43,15 @@ jobs:
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass1
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass1
       - name: Archive created packages
         if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v3
         with:
           name: packages
-          path: tmp/external/repo/**
+          path: target/external/repo/**
       - name: Tar pass1 image
-        run: tar -cf pass1_image.tar tmp
+        run: tar -cf pass1_image.tar target
       - name: Archive pass1_image
         uses: actions/upload-artifact@v3
         with:
@@ -96,15 +96,15 @@ jobs:
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass2
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2
       - name: Archive created packages
         if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v3
         with:
           name: internal_packages_pass2
-          path: tmp/external/repo/**
+          path: target/external/repo/**
       - name: Tar pass2 image
-        run: tar -cf pass2_image.tar tmp
+        run: tar -cf pass2_image.tar target
       - name: Archive pass2_image
         uses: actions/upload-artifact@v3
         with:
@@ -149,10 +149,10 @@ jobs:
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass3
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass3
       - name: Archive created packages
         if: always() # archive both failed and successful builds
         uses: actions/upload-artifact@v3
         with:
           name: packages
-          path: tmp/external/repo/**
+          path: target/external/repo/**

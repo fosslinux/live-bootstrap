@@ -17,7 +17,7 @@ import argparse
 import os
 
 from lib.utils import run, run_as_root
-from lib.tmpdir import Tmpdir
+from lib.target import Target
 from lib.generator import Generator, stage0_arch_map
 
 def create_configuration_file(args):
@@ -58,11 +58,9 @@ def main():
                         action="store_true")
     parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
                         action="store_true")
-    parser.add_argument("-p", "--preserve", help="Do not remove temporary dir",
-                        action="store_true")
-    parser.add_argument("-t", "--tmpdir", help="Temporary directory",
-                        default="tmp")
-    parser.add_argument("--tmpfs", help="Use a tmpfs on tmpdir",
+    parser.add_argument("-t", "--target", help="Target directory",
+                        default="target")
+    parser.add_argument("--tmpfs", help="Use a tmpfs on target",
                         action="store_true")
     parser.add_argument("--tmpfs-size", help="Size of the tmpfs",
                         default="8G")
@@ -128,7 +126,7 @@ def main():
     if args.arch != "x86":
         print("Only x86 is supported at the moment, other arches are for development only.")
 
-    # Tmp validation
+    # Tmpfs validation
     if args.bwrap and args.tmpfs:
         raise ValueError("tmpfs cannot be used with bwrap.")
 
@@ -156,19 +154,19 @@ def main():
         with open(os.path.join('steps', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
             pass
 
-    # tmpdir
-    tmpdir = Tmpdir(path=args.tmpdir, preserve=args.preserve)
+    # target
+    target = Target(path=args.target)
     if args.tmpfs:
-        tmpdir.tmpfs(size=args.tmpfs_size)
+        target.tmpfs(size=args.tmpfs_size)
 
     generator = Generator(arch=args.arch,
                           external_sources=args.external_sources,
                           repo_path=args.repo,
                           early_preseed=args.early_preseed)
 
-    bootstrap(args, generator, tmpdir, args.target_size)
+    bootstrap(args, generator, target, args.target_size)
 
-def bootstrap(args, generator, tmpdir, size):
+def bootstrap(args, generator, target, size):
     """Kick off bootstrap process."""
     print(f"Bootstrapping {args.arch}")
     if args.chroot:
@@ -179,28 +177,28 @@ print(shutil.which('chroot'))
         chroot_binary = run_as_root('python3', '-c', find_chroot,
                                     capture_output=True).stdout.decode().strip()
 
-        generator.prepare(tmpdir, using_kernel=False)
+        generator.prepare(target, using_kernel=False)
 
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.tmp_dir, init)
+        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init)
 
     elif args.bwrap:
         init = '/init'
         if not args.internal_ci or args.internal_ci == "pass1":
-            generator.prepare(tmpdir, using_kernel=False)
+            generator.prepare(target, using_kernel=False)
 
             arch = stage0_arch_map.get(args.arch, args.arch)
             init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         else:
-            generator.reuse(tmpdir)
+            generator.reuse(target)
 
         run('env', '-i', 'bwrap', '--unshare-user',
                                   '--uid', '0',
                                   '--gid', '0',
                                   '--unshare-net' if args.external_sources else None,
                                   '--setenv', 'PATH', '/usr/bin',
-                                  '--bind', generator.tmp_dir, '/',
+                                  '--bind', generator.target_dir, '/',
                                   '--dir', '/dev',
                                   '--dev-bind', '/dev/null', '/dev/null',
                                   '--dev-bind', '/dev/zero', '/dev/zero',
@@ -216,44 +214,44 @@ print(shutil.which('chroot'))
 
     elif args.bare_metal:
         if args.kernel:
-            generator.prepare(tmpdir, using_kernel=True, target_size=size)
-            image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
+            generator.prepare(target, using_kernel=True, target_size=size)
+            path = os.path.join(args.target, os.path.relpath(generator.target_dir, args.target))
             print("Please:")
-            print(f"  1. Take {image_path}/initramfs and your kernel, boot using this.")
-            print(f"  2. Take {image_path}/disk.img and put this on a writable storage medium.")
+            print(f"  1. Take {path}/initramfs and your kernel, boot using this.")
+            print(f"  2. Take {path}/disk.img and put this on a writable storage medium.")
         else:
-            generator.prepare(tmpdir, kernel_bootstrap=True, target_size=size)
-            image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
+            generator.prepare(target, kernel_bootstrap=True, target_size=size)
+            path = os.path.join(args.target, os.path.relpath(generator.target_dir, args.target))
             print("Please:")
-            print(f"  1. Take {image_path}.img and write it to a boot drive and then boot it.")
+            print(f"  1. Take {path}.img and write it to a boot drive and then boot it.")
 
     else:
         if args.kernel:
-            generator.prepare(tmpdir, using_kernel=True, target_size=size)
+            generator.prepare(target, using_kernel=True, target_size=size)
 
             run(args.qemu_cmd,
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + tmpdir.get_disk("disk") + ',format=raw',
-                '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
+                '-drive', 'file=' + target.get_disk("disk") + ',format=raw',
+                '-drive', 'file=' + target.get_disk("external") + ',format=raw',
                 '-nic', 'user,ipv6=off,model=e1000',
                 '-kernel', args.kernel,
                 '-nographic',
                 '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw')
         else:
-            generator.prepare(tmpdir, kernel_bootstrap=True, target_size=size)
+            generator.prepare(target, kernel_bootstrap=True, target_size=size)
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + generator.tmp_dir + '.img' + ',format=raw'
+                '-drive', 'file=' + generator.target_dir + '.img' + ',format=raw'
             ]
-            if tmpdir.get_disk("external") is not None:
+            if target.get_disk("external") is not None:
                 arg_list += [
-                    '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
+                    '-drive', 'file=' + target.get_disk("external") + ',format=raw',
                 ]
             arg_list += [
                 '-machine', 'kernel-irqchip=split',

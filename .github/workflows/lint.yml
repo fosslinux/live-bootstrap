@@ -21,7 +21,7 @@ jobs:
       - name: Install pylint
         run: sudo pip3 install pylint
       - name: pylint
-        run: pylint rootfs.py lib/utils.py lib/generator.py lib/tmpdir.py --disable=duplicate-code
+        run: pylint rootfs.py lib/utils.py lib/generator.py lib/target.py --disable=duplicate-code
 
   shellcheck:
     name: Lint shell files

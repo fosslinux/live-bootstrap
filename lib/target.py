@@ -4,34 +4,32 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 """
-Contains a class that represents a tmpdir
+Contains a class that represents a target directory
 """
 
 import enum
 import getpass
 import os
-import shutil
 
 from lib.utils import mount, umount, create_disk, run_as_root
 
-class TmpType(enum.Enum):
-    """Different types of tmpdirs we can have"""
+class TargetType(enum.Enum):
+    """Different types of target dirs we can have"""
     NONE = 0
     TMPFS = 1
 
-class Tmpdir:
+class Target:
     """
-    Represents a tmpdir
+    Represents a target directory
     """
 
     _disks = {}
     _disk_filesystems = {}
     _mountpoints = {}
 
-    def __init__(self, preserve, path="tmp"):
+    def __init__(self, path="target"):
         self.path = os.path.abspath(path)
-        self.preserve = preserve
-        self._type = TmpType.NONE
+        self._type = TargetType.NONE
 
         if not os.path.exists(self.path):
             os.mkdir(self.path)
@@ -41,23 +39,15 @@ class Tmpdir:
             print(f"Unmounting {path}")
             umount(path)
 
-        if not self.preserve:
-            for disk in self._disks.values():
-                print(f"Detaching {disk}")
-                run_as_root("losetup", "-d", disk)
-
-            if self._type == TmpType.TMPFS:
-                print(f"Unmounting tmpdir from {self.path}")
-                umount(self.path)
-
-            print(f"Removing {self.path}")
-            shutil.rmtree(self.path, ignore_errors=True)
+        for disk in self._disks.values():
+            print(f"Detaching {disk}")
+            run_as_root("losetup", "-d", disk)
 
     def tmpfs(self, size="8G"):
         """Mount a tmpfs"""
         print(f"Mounting tmpfs on {self.path}")
         mount("tmpfs", self.path, "tmpfs", f"size={size}")
-        self._type = TmpType.TMPFS
+        self._type = TargetType.TMPFS
 
     # pylint: disable=too-many-arguments
     def add_disk(self,
