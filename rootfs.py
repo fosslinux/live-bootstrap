@@ -30,7 +30,6 @@ def create_configuration_file(args):
     with open(config_path, "w", encoding="utf_8") as config:
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
         config.write(f"CHROOT={args.chroot or args.bwrap}\n")
-        config.write(f"CHROOT_ONLY_SYSA={args.bwrap}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci}\n")
@@ -39,7 +38,7 @@ def create_configuration_file(args):
             if args.repo or args.external_sources:
                 config.write("DISK=sdb1\n")
             else:
-                config.write("DISK=sdb\n")
+                config.write("DISK=sda\n")
             config.write("KERNEL_BOOTSTRAP=True\n")
         else:
             config.write("DISK=sda1\n")
@@ -98,7 +97,9 @@ def main():
                         default="qemu-system-x86_64")
     parser.add_argument("-qr", "--qemu-ram", help="Memory (in megabytes) allocated to QEMU VM",
                         default=4096)
-    parser.add_argument("-qk", "--kernel", help="Custom sysa kernel to use")
+    parser.add_argument("-qs", "--target-size", help="Size of the target image (for QEMU only)",
+                        default="16G")
+    parser.add_argument("-qk", "--kernel", help="Custom early kernel to use")
 
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
                         action="store_true")
@@ -136,15 +137,24 @@ def main():
     if int(args.cores) < 1:
         raise ValueError("Must use one or more cores.")
 
+    # Target image size validation
+    if args.qemu:
+        if int(str(args.target_size).rstrip('gGmM')) < 1:
+            raise ValueError("Please specify a positive target size for qemu.")
+        args.target_size = (int(str(args.target_size).rstrip('gGmM')) *
+            (1024 if str(args.target_size).lower().endswith('g') else 1))
+    else:
+        args.target_size = 0
+
     # bootstrap.cfg
     try:
-        os.remove(os.path.join('sysa', 'bootstrap.cfg'))
+        os.remove(os.path.join('steps', 'bootstrap.cfg'))
     except FileNotFoundError:
         pass
     if not args.no_create_config:
         create_configuration_file(args)
     else:
-        with open(os.path.join('sysa', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
+        with open(os.path.join('steps', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
             pass
 
     # tmpdir
@@ -152,17 +162,16 @@ def main():
     if args.tmpfs:
         tmpdir.tmpfs(size=args.tmpfs_size)
 
-    generator = Generator(tmpdir=tmpdir,
-                          arch=args.arch,
+    generator = Generator(arch=args.arch,
                           external_sources=args.external_sources,
                           repo_path=args.repo,
                           early_preseed=args.early_preseed)
 
-    bootstrap(args, generator, tmpdir)
+    bootstrap(args, generator, tmpdir, args.target_size)
 
-def bootstrap(args, generator, tmpdir):
+def bootstrap(args, generator, tmpdir, size):
     """Kick off bootstrap process."""
-    print(f"Bootstrapping {args.arch} -- SysA")
+    print(f"Bootstrapping {args.arch}")
     if args.chroot:
         find_chroot = """
 import shutil
@@ -171,7 +180,7 @@ print(shutil.which('chroot'))
         chroot_binary = run_as_root('python3', '-c', find_chroot,
                                     capture_output=True).stdout.decode().strip()
 
-        generator.prepare(using_kernel=False)
+        generator.prepare(tmpdir, using_kernel=False)
 
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
@@ -179,7 +188,7 @@ print(shutil.which('chroot'))
 
     elif args.bwrap:
         if not args.internal_ci or args.internal_ci == "pass1":
-            generator.prepare(using_kernel=False)
+            generator.prepare(tmpdir, using_kernel=False)
 
             arch = stage0_arch_map.get(args.arch, args.arch)
             init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
@@ -200,15 +209,16 @@ print(shutil.which('chroot'))
                          init)
 
         if not args.internal_ci or args.internal_ci == "pass2" or args.internal_ci == "pass3":
-            shutil.copy2(os.path.join('sysa', 'bootstrap.cfg'),
-                         os.path.join('tmp', 'sysa', 'sysc_image', 'usr', 'src', 'bootstrap.cfg'))
+            os.makedirs(os.path.join(generator.tmp_dir, 'stage2', 'steps'), exist_ok=True)
+            shutil.copy2(os.path.join('steps', 'bootstrap.cfg'),
+                         os.path.join(generator.tmp_dir, 'stage2', 'steps', 'bootstrap.cfg'))
             run('bwrap', '--unshare-user',
                          '--uid', '0',
                          '--gid', '0',
                          '--unshare-net' if args.external_sources else None,
                          '--clearenv',
                          '--setenv', 'PATH', '/usr/bin',
-                         '--bind', generator.tmp_dir + "/sysc_image", '/',
+                         '--bind', os.path.join(generator.tmp_dir, "stage2"), '/',
                          '--dir', '/dev',
                          '--dev-bind', '/dev/null', '/dev/null',
                          '--dev-bind', '/dev/zero', '/dev/zero',
@@ -224,18 +234,20 @@ print(shutil.which('chroot'))
 
     elif args.bare_metal:
         if args.kernel:
-            generator.prepare(using_kernel=True)
+            generator.prepare(tmpdir, using_kernel=True, target_size=size)
+            image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
             print("Please:")
-            print("  1. Take tmp/initramfs and your kernel, boot using this.")
-            print("  2. Take tmp/disk.img and put this on a writable storage medium.")
+            print(f"  1. Take {image_path}/initramfs and your kernel, boot using this.")
+            print(f"  2. Take {image_path}/disk.img and put this on a writable storage medium.")
         else:
-            generator.prepare(kernel_bootstrap=True)
+            generator.prepare(tmpdir, kernel_bootstrap=True, target_size=size)
+            image_path = os.path.join(args.tmpdir, os.path.relpath(generator.tmp_dir, args.tmpdir))
             print("Please:")
-            print("  1. Take tmp/disk.img and write it to a boot drive and then boot it.")
+            print(f"  1. Take {image_path}.img and write it to a boot drive and then boot it.")
 
     else:
         if args.kernel:
-            generator.prepare(using_kernel=True)
+            generator.prepare(tmpdir, using_kernel=True, target_size=size)
 
             run(args.qemu_cmd,
                 '-enable-kvm',
@@ -249,17 +261,24 @@ print(shutil.which('chroot'))
                 '-nographic',
                 '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw')
         else:
-            generator.prepare(kernel_bootstrap=True)
-            run(args.qemu_cmd,
+            generator.prepare(tmpdir, kernel_bootstrap=True, target_size=size)
+            arg_list = [
                 '-enable-kvm',
-                '-m', "4G",
+                '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + os.path.join(generator.tmp_dir, 'disk.img') + ',format=raw',
-                '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
+                '-drive', 'file=' + generator.tmp_dir + '.img' + ',format=raw'
+            ]
+            if tmpdir.get_disk("external") is not None:
+                arg_list += [
+                    '-drive', 'file=' + tmpdir.get_disk("external") + ',format=raw',
+                ]
+            arg_list += [
                 '-machine', 'kernel-irqchip=split',
                 '-nic', 'user,ipv6=off,model=e1000',
-                '-nographic')
+                '-nographic'
+            ]
+            run(args.qemu_cmd, *arg_list)
 
 if __name__ == "__main__":
     main()

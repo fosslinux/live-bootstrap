@@ -14,6 +14,7 @@ import shutil
 import tarfile
 import requests
 
+# pylint: disable=too-many-instance-attributes
 class Generator():
     """
     Class responsible for generating the basic media to be consumed.
@@ -22,24 +23,25 @@ class Generator():
     git_dir = os.path.join(os.path.dirname(os.path.join(__file__)), '..')
     distfiles_dir = os.path.join(git_dir, 'distfiles')
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, tmpdir, arch, external_sources,
-                 early_preseed, repo_path):
+    def __init__(self, arch, external_sources, early_preseed, repo_path):
         self.arch = arch
         self.early_preseed = early_preseed
         self.external_sources = external_sources
         self.repo_path = repo_path
-        self.tmpdir = tmpdir
-        self.tmp_dir = tmpdir.path
-        self.external_dir = os.path.join(self.tmp_dir, 'external')
+        self.source_manifest = self.get_source_manifest(not self.external_sources)
+        self.tmp_dir = None
+        self.external_dir = None
 
-    def prepare(self, using_kernel=False, kernel_bootstrap=False):
+    def prepare(self, tmpdir, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
         /steps -- contains steps to be built
         / -- contains seed to allow steps to be built, containing custom
              scripts and stage0-posix
         """
+        self.tmp_dir = tmpdir.path
+        self.external_dir = os.path.join(self.tmp_dir, 'external')
+
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
         # Linux 4.9.10 does not support a bunch of them
@@ -55,14 +57,17 @@ class Generator():
             self.tmp_dir = init_path
 
             if self.repo_path or self.external_sources:
-                self.tmpdir.add_disk("external", filesystem="ext3")
-                self.tmpdir.mount_disk("external", "external")
+                tmpdir.add_disk("external", filesystem="ext3")
+                tmpdir.mount_disk("external", "external")
             else:
-                self.tmpdir.add_disk("external", tabletype="none")
+                self.external_dir = os.path.join(self.tmp_dir, 'external')
         elif using_kernel:
             self.tmp_dir = os.path.join(self.tmp_dir, 'disk')
-            self.tmpdir.add_disk("disk", filesystem="ext3")
-            self.tmpdir.mount_disk("disk", "disk")
+            tmpdir.add_disk("disk",
+                            filesystem="ext3",
+                            size=(target_size + "M") if target_size else "16G",
+                            bootable=True)
+            tmpdir.mount_disk("disk", "disk")
             self.external_dir = os.path.join(self.tmp_dir, 'external')
 
         os.makedirs(self.external_dir, exist_ok=True)
@@ -88,30 +93,29 @@ class Generator():
             shutil.copytree(self.repo_path, repo_dir)
 
         if kernel_bootstrap:
-            self.create_builder_hex0_disk_image(os.path.join(self.tmp_dir, 'disk.img'))
+            self.create_builder_hex0_disk_image(self.tmp_dir + '.img', target_size)
 
         if kernel_bootstrap and (self.external_sources or self.repo_path):
-            self.tmpdir.umount_disk('external')
+            tmpdir.umount_disk('external')
         elif using_kernel:
-            self.tmpdir.umount_disk('disk')
+            tmpdir.umount_disk('disk')
 
     def steps(self):
         """Copy in steps."""
-        source_manifest = self.get_source_manifest()
-        self.get_packages(source_manifest)
+        self.get_packages()
 
         shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.tmp_dir, 'steps'))
 
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
         stage0_posix_base_dir = os.path.join(self.git_dir, 'seed', 'stage0-posix')
-        for f in os.listdir(stage0_posix_base_dir):
-            orig = os.path.join(stage0_posix_base_dir, f)
-            to = os.path.join(self.tmp_dir, f)
+        for entry in os.listdir(stage0_posix_base_dir):
+            orig = os.path.join(stage0_posix_base_dir, entry)
+            target = os.path.join(self.tmp_dir, entry)
             if os.path.isfile(orig):
-                shutil.copy2(orig, to)
+                shutil.copy2(orig, target)
             else:
-                shutil.copytree(orig, to)
+                shutil.copytree(orig, target)
 
         arch = stage0_arch_map.get(self.arch, self.arch)
         kaem_optional_seed = os.path.join(self.git_dir, 'seed', 'stage0-posix', 'bootstrap-seeds',
@@ -121,11 +125,12 @@ class Generator():
     def seed(self):
         """Copy in extra seed files"""
         seed_dir = os.path.join(self.git_dir, 'seed')
-        for f in os.listdir(seed_dir):
-            if os.path.isfile(os.path.join(seed_dir, f)):
-                shutil.copy2(os.path.join(seed_dir, f), os.path.join(self.tmp_dir, f))
+        for entry in os.listdir(seed_dir):
+            if os.path.isfile(os.path.join(seed_dir, entry)):
+                shutil.copy2(os.path.join(seed_dir, entry), os.path.join(self.tmp_dir, entry))
 
-    def add_fiwix_files(self, file_list_path, dirpath):
+    @staticmethod
+    def add_fiwix_files(file_list_path, dirpath):
         """Add files to the list to populate Fiwix file system"""
         for root, _, filepaths in os.walk(dirpath):
             if 'stage0-posix' in root:
@@ -151,13 +156,11 @@ class Generator():
     def distfiles(self):
         """Copy in distfiles"""
         def copy_no_network_distfiles(out):
-            # Note that no network == no disk for kernel bootstrap mode
-            pre_src_path = os.path.join(self.git_dir, 'steps', 'pre-network-sources')
-            with open(pre_src_path, 'r', encoding="utf-8") as source_list:
-                for file in source_list.readlines():
-                    file = file.strip()
-                    shutil.copy2(os.path.join(self.distfiles_dir, file),
-                                 os.path.join(out, file))
+            # Note that "no disk" implies "no network" for kernel bootstrap mode
+            for file in self.source_manifest:
+                file = file[3].strip()
+                shutil.copy2(os.path.join(self.distfiles_dir, file),
+                             os.path.join(out, file))
 
         early_distfile_dir = os.path.join(self.tmp_dir, 'external', 'distfiles')
         main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
@@ -167,7 +170,6 @@ class Generator():
             copy_no_network_distfiles(early_distfile_dir)
 
         if self.external_sources:
-            os.mkdir(main_distfile_dir)
             shutil.copytree(self.distfiles_dir, main_distfile_dir)
         else:
             os.mkdir(main_distfile_dir)
@@ -224,7 +226,7 @@ class Generator():
 
         os.chdir(save_cwd)
 
-    def create_builder_hex0_disk_image(self, image_file_name):
+    def create_builder_hex0_disk_image(self, image_file_name, size):
         """Create builder-hex0 disk image"""
         shutil.copyfile(os.path.join('seed', 'stage0-posix', 'bootstrap-seeds',
                                      'NATIVE', 'x86', 'builder-hex0-x86-stage1.img'),
@@ -252,13 +254,13 @@ class Generator():
             image_file.write(b'\0' * round_up)
         current_size += round_up
 
-        # fill file with zeros up to desired size, one megabyte at a time
-        with open(image_file_name, 'ab') as image_file:
-            while current_size < 16384 * megabyte:
-                image_file.write(b'\0' * megabyte)
-                current_size += megabyte
+        # extend file up to desired size
+        if current_size < size * megabyte:
+            with open(image_file_name, 'ab') as image_file:
+                image_file.truncate(size * megabyte)
 
-    def check_file(self, file_name, expected_hash):
+    @staticmethod
+    def check_file(file_name, expected_hash):
         """Check hash of downloaded source file."""
         with open(file_name, "rb") as downloaded_file:
             downloaded_content = downloaded_file.read() # read entire file as bytes
@@ -271,7 +273,8 @@ actual:   {readable_hash}\n\
 When in doubt, try deleting the file in question -- it will be downloaded again when running \
 this script the next time")
 
-    def download_file(self, url, directory, file_name):
+    @staticmethod
+    def download_file(url, directory, file_name):
         """
         Download a single source archive.
         """
@@ -293,45 +296,53 @@ this script the next time")
                 with open(abs_file_name, 'wb') as target_file:
                     target_file.write(response.raw.read())
             else:
-                raise requests.HTTPError("Download failed.")
+                raise requests.HTTPError("Download failed: HTTP " +
+                    response.status_code + " " + response.reason)
         return abs_file_name
 
-    def get_packages(self, source_manifest):
+    def get_packages(self):
         """Prepare remaining sources"""
-        for line in source_manifest.split("\n"):
-            line = line.strip().split(" ")
-
+        for line in self.source_manifest:
             path = self.download_file(line[2], line[1], line[3])
             self.check_file(path, line[0])
 
     @classmethod
-    def get_source_manifest(cls):
+    def get_source_manifest(cls, pre_network=False):
         """
         Generate a source manifest for the system.
         """
-        manifest_lines = []
+        entries = []
         directory = os.path.relpath(cls.distfiles_dir, cls.git_dir)
 
         # Find all source files
         steps_dir = os.path.join(cls.git_dir, 'steps')
-        for file in os.listdir(steps_dir):
-            if os.path.isdir(os.path.join(steps_dir, file)):
-                sourcef = os.path.join(steps_dir, file, "sources")
+        with open(os.path.join(steps_dir, 'manifest'), 'r', encoding="utf_8") as file:
+            for line in file:
+                if pre_network and line.strip().startswith("improve: ") and "network" in line:
+                    break
+
+                if not line.strip().startswith("build: "):
+                    continue
+
+                step = line.split(" ")[1].split("#")[0].strip()
+                sourcef = os.path.join(steps_dir, step, "sources")
                 if os.path.exists(sourcef):
                     # Read sources from the source file
                     with open(sourcef, "r", encoding="utf_8") as sources:
-                        for line in sources.readlines():
-                            line = line.strip().split(" ")
+                        for source in sources.readlines():
+                            source = source.strip().split(" ")
 
-                            if len(line) > 2:
-                                file_name = line[2]
+                            if len(source) > 2:
+                                file_name = source[2]
                             else:
                                 # Automatically determine file name based on URL.
-                                file_name = os.path.basename(line[0])
+                                file_name = os.path.basename(source[0])
 
-                            manifest_lines.append(f"{line[1]} {directory} {line[0]} {file_name}")
+                            entry = (source[1], directory, source[0], file_name)
+                            if entry not in entries:
+                                entries.append(entry)
 
-        return "\n".join(manifest_lines)
+        return entries
 
 stage0_arch_map = {
     "amd64": "AMD64",
