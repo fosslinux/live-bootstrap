@@ -17,7 +17,7 @@ src_prepare() {
     ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 
     # Regenerate autoconf
-    for dir in bfd binutils gas gold gprof gprofng intl ld libctf libiberty libsframe opcodes; do
+    for dir in bfd binutils gas gold gprof intl ld libctf libiberty libsframe opcodes; do
         cd $dir
         ACLOCAL=aclocal-1.15 AUTOMAKE=automake-1.15 autoreconf-2.69 -fi
         cd ..
