@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+---
 name: Run under bubblewrap
 
 on:
@@ -16,35 +17,42 @@ jobs:
     name: Run up to Linux build under bubblewrap
     runs-on: ubuntu-latest
     steps:
-      - name: Install bubblewrap
+      - &install-bubblewrap
+        name: Install bubblewrap
         run: sudo apt install bubblewrap
-      - name: Checkout repo
+      - &checkout-repo
+        name: Checkout repo &checkout-repo
         uses: actions/checkout@v3
         with:
           submodules: recursive
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
-      - name: Query cache for sources
+      - &query-sources
+        name: Query cache for sources
         id: cache
         uses: actions/cache/restore@v3
         with:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Get sources
+      - &get-sources
+        name: Get sources
         if: steps.cache.outputs.cache-hit != 'true'
         run: ./download-distfiles.sh
-      - name: Cache sources
+      - &cache-sources
+        name: Cache sources
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v3
         with:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Run bootstrap
+      - &run-bootstrap
+        name: Run bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass1
-      - name: Archive created packages
+      - &archive-packages
+        name: Archive created packages
         if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v3
         with:
@@ -63,46 +71,19 @@ jobs:
     needs: pass1
     runs-on: ubuntu-latest
     steps:
-      - name: Install bubblewrap
-        run: sudo apt install bubblewrap
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          # There is a strange bug(?) in nongnu, when you clone a git repository
-          # against a commit != HEAD with depth=1, it errors out.
-          fetch-depth: 0
+      - *install-bubblewrap
+      - *checkout-repo
       - name: Get pass1_image
         uses: actions/download-artifact@v3
         with:
           name: internal_pass1_image
       - name: Extract pass1_image
         run: tar -xf pass1_image.tar
-      - name: Query cache for sources
-        id: cache
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            distfiles
-          key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Get sources
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: ./download-distfiles.sh
-      - name: Cache sources
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            distfiles
-          key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass2
-      - name: Archive created packages
-        if: failure() # archive failed builds progress
-        uses: actions/upload-artifact@v3
-        with:
-          name: internal_packages_pass2
-          path: tmp/external/repo/**
+      - *query-sources
+      - *get-sources
+      - *cache-sources
+      - *run-bootstrap
+      - *archive-packages
       - name: Tar pass2 image
         run: tar -cf pass2_image.tar tmp
       - name: Archive pass2_image
@@ -116,43 +97,17 @@ jobs:
     needs: pass2
     runs-on: ubuntu-latest
     steps:
-      - name: Install bubblewrap
-        run: sudo apt install bubblewrap
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          # There is a strange bug(?) in nongnu, when you clone a git repository
-          # against a commit != HEAD with depth=1, it errors out.
-          fetch-depth: 0
+      - *install-bubblewrap
+      - *checkout-repo
       - name: Get pass2_image
         uses: actions/download-artifact@v3
         with:
           name: internal_pass2_image
       - name: Extract pass2_image
         run: tar -xf pass2_image.tar
-      - name: Query cache for sources
-        id: cache
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            distfiles
-          key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Get sources
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: ./download-distfiles.sh
-      - name: Cache sources
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            distfiles
-          key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --preserve --cores 2 --internal-ci pass3
-      - name: Archive created packages
+      - *query-sources
+      - *get-sources
+      - *cache-sources
+      - *run-bootstrap
+      - <<: *archive-packages
         if: always() # archive both failed and successful builds
-        uses: actions/upload-artifact@v3
-        with:
-          name: packages
-          path: tmp/external/repo/**
