@@ -15,7 +15,6 @@ you can run bootstap inside chroot.
 
 import argparse
 import os
-import shutil
 
 from lib.utils import run, run_as_root
 from lib.tmpdir import Tmpdir
@@ -32,7 +31,7 @@ def create_configuration_file(args):
         config.write(f"CHROOT={args.chroot or args.bwrap}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
-        config.write(f"INTERNAL_CI={args.internal_ci}\n")
+        config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"BARE_METAL={args.bare_metal}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
@@ -187,50 +186,33 @@ print(shutil.which('chroot'))
         run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.tmp_dir, init)
 
     elif args.bwrap:
+        init = '/init'
         if not args.internal_ci or args.internal_ci == "pass1":
             generator.prepare(tmpdir, using_kernel=False)
 
             arch = stage0_arch_map.get(args.arch, args.arch)
             init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-            run('bwrap', '--unshare-user',
-                         '--uid', '0',
-                         '--gid', '0',
-                         '--unshare-net',
-                         '--clearenv',
-                         '--setenv', 'PATH', '/usr/bin',
-                         '--bind', generator.tmp_dir, '/',
-                         '--dir', '/dev',
-                         '--dev-bind', '/dev/null', '/dev/null',
-                         '--dev-bind', '/dev/zero', '/dev/zero',
-                         '--dev-bind', '/dev/random', '/dev/random',
-                         '--dev-bind', '/dev/urandom', '/dev/urandom',
-                         '--dev-bind', '/dev/ptmx', '/dev/ptmx',
-                         '--dev-bind', '/dev/tty', '/dev/tty',
-                         init)
+        else:
+            generator.reuse(tmpdir)
 
-        if not args.internal_ci or args.internal_ci == "pass2" or args.internal_ci == "pass3":
-            os.makedirs(os.path.join(generator.tmp_dir, 'stage2', 'steps'), exist_ok=True)
-            shutil.copy2(os.path.join('steps', 'bootstrap.cfg'),
-                         os.path.join(generator.tmp_dir, 'stage2', 'steps', 'bootstrap.cfg'))
-            run('bwrap', '--unshare-user',
-                         '--uid', '0',
-                         '--gid', '0',
-                         '--unshare-net' if args.external_sources else None,
-                         '--clearenv',
-                         '--setenv', 'PATH', '/usr/bin',
-                         '--bind', os.path.join(generator.tmp_dir, "stage2"), '/',
-                         '--dir', '/dev',
-                         '--dev-bind', '/dev/null', '/dev/null',
-                         '--dev-bind', '/dev/zero', '/dev/zero',
-                         '--dev-bind', '/dev/random', '/dev/random',
-                         '--dev-bind', '/dev/urandom', '/dev/urandom',
-                         '--dev-bind', '/dev/ptmx', '/dev/ptmx',
-                         '--dev-bind', '/dev/tty', '/dev/tty',
-                         '--tmpfs', '/dev/shm',
-                         '--proc', '/proc',
-                         '--bind', '/sys', '/sys',
-                         '--tmpfs', '/tmp',
-                         '/init')
+        run('env', '-i', 'bwrap', '--unshare-user',
+                                  '--uid', '0',
+                                  '--gid', '0',
+                                  '--unshare-net' if args.external_sources else None,
+                                  '--setenv', 'PATH', '/usr/bin',
+                                  '--bind', generator.tmp_dir, '/',
+                                  '--dir', '/dev',
+                                  '--dev-bind', '/dev/null', '/dev/null',
+                                  '--dev-bind', '/dev/zero', '/dev/zero',
+                                  '--dev-bind', '/dev/random', '/dev/random',
+                                  '--dev-bind', '/dev/urandom', '/dev/urandom',
+                                  '--dev-bind', '/dev/ptmx', '/dev/ptmx',
+                                  '--dev-bind', '/dev/tty', '/dev/tty',
+                                  '--tmpfs', '/dev/shm',
+                                  '--proc', '/proc',
+                                  '--bind', '/sys', '/sys',
+                                  '--tmpfs', '/tmp',
+                                  init)
 
     elif args.bare_metal:
         if args.kernel:

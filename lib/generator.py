@@ -32,6 +32,14 @@ class Generator():
         self.tmp_dir = None
         self.external_dir = None
 
+    def reuse(self, tmpdir):
+        """
+        Reuse a previously prepared bwrap environment for further stages.
+        """
+        self.tmp_dir = tmpdir.path
+        self.external_dir = os.path.join(self.tmp_dir, 'external')
+        self.distfiles()
+
     def prepare(self, tmpdir, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
@@ -166,11 +174,11 @@ class Generator():
         main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
         if early_distfile_dir != main_distfile_dir:
-            os.makedirs(early_distfile_dir)
+            os.makedirs(early_distfile_dir, exist_ok=True)
             copy_no_network_distfiles(early_distfile_dir)
 
         if self.external_sources:
-            shutil.copytree(self.distfiles_dir, main_distfile_dir)
+            shutil.copytree(self.distfiles_dir, main_distfile_dir, dirs_exist_ok=True)
         else:
             os.mkdir(main_distfile_dir)
             copy_no_network_distfiles(main_distfile_dir)
