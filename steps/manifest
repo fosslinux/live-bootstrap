@@ -151,7 +151,7 @@ build: patch-2.7.6
 build: gettext-0.21
 build: texinfo-6.7
 build: gcc-4.7.4
-build: binutils-2.38
+build: binutils-2.41
 build: gperf-3.1
 build: libunistring-0.9.10
 build: libffi-3.3
@@ -175,6 +175,6 @@ build: python-3.4.10
 build: python-3.8.16
 build: python-3.11.1
 build: gcc-10.4.0
-build: binutils-2.38
+build: binutils-2.41
 build: gcc-13.1.0
 improve: null_time ( FORCE_TIMESTAMPS == True )

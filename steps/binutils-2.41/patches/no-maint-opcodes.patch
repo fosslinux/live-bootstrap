@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
+SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Ensure i386-tbl.h dependencies are satisfied.
+
+--- opcodes/Makefile.am	2023-12-08 17:13:05.669136957 +1100
++++ opcodes/Makefile.am	2023-12-08 17:13:18.410480026 +1100
+@@ -540,7 +540,7 @@
+ # i386-gen will generate all headers in one go.  Use a pattern rule to properly
+ # express this, with the inner dash ('-') arbitrarily chosen to be the stem.
+ $(srcdir)/i386%tbl.h $(srcdir)/i386%init.h $(srcdir)/i386%mnem.h: \
+-		@MAINT@ i386-gen$(EXEEXT_FOR_BUILD) i386-opc.tbl i386-reg.tbl i386-opc.h
++		i386-gen$(EXEEXT_FOR_BUILD) i386-opc.tbl i386-reg.tbl i386-opc.h
+ 	$(AM_V_GEN)$(CPP) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) - \
+ 		< $(srcdir)/i386-opc.tbl \
+ 		| ./i386-gen$(EXEEXT_FOR_BUILD) --srcdir $(srcdir)
