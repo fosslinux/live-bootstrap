@@ -461,8 +461,10 @@ void output_call_script(FILE *out, char *type, char *name, int using_bash, int s
 		fputs("kaem --file ", out);
 	}
 	fputs("/steps/", out);
-	fputs(type, out);
-	fputs("/", out);
+	if (strlen(type) != 0) {
+		fputs(type, out);
+		fputs("/", out);
+	}
 	fputs(name, out);
 	fputs(".sh\n", out);
 }
