@@ -51,7 +51,7 @@ jobs:
           name: packages
           path: tmp/external/repo/**
       - name: Tar pass1 image
-        run: tar -cf pass1_image.tar tmp
+        run: tar -cf pass1_image.tar --exclude "tmp/external/distfiles" tmp
       - name: Archive pass1_image
         uses: actions/upload-artifact@v3
         with:
@@ -104,7 +104,7 @@ jobs:
           name: internal_packages_pass2
           path: tmp/external/repo/**
       - name: Tar pass2 image
-        run: tar -cf pass2_image.tar tmp
+        run: tar -cf pass2_image.tar --exclude "tmp/external/distfiles" tmp
       - name: Archive pass2_image
         uses: actions/upload-artifact@v3
         with:
