@@ -114,6 +114,7 @@ build: bc-1.07.1
 define: BUILD_LINUX = ( CHROOT == False || BUILD_KERNELS == True )
 build: kexec-linux-1.0.0 ( BUILD_LINUX == True )
 build: kexec-tools-2.0.22 ( BUILD_LINUX == True )
+improve: clean_sources
 build: linux-4.9.10 ( BUILD_LINUX == True )
 jump: break ( INTERNAL_CI == pass1 )
 jump: linux ( CHROOT == False )
@@ -180,3 +181,4 @@ build: gcc-10.4.0
 build: binutils-2.41
 build: gcc-13.1.0
 improve: null_time ( FORCE_TIMESTAMPS == True )
+improve: update_checksums ( UPDATE_CHECKSUMS == True )

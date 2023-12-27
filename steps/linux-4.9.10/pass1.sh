@@ -6,14 +6,6 @@
 # XXX: Fix package after builder-hex0
 
 src_unpack() {
-    # Remove all previous source tarballs
-    mkdir /tmp/keep
-    for keep in deblob-4.9 ${pkg}.tar.gz musl-1.2.4.tar.gz curl-7.88.1.tar.bz2; do
-        mv "${DISTFILES}/${keep}" /tmp/keep
-    done
-    rm -r "${DISTFILES}/"*
-    mv /tmp/keep/* "${DISTFILES}"
-
     mkdir "${pkg}"
     mv "${DISTFILES}/deblob-4.9" "${pkg}/"
     default || true # Predictable link errors - not a problem
