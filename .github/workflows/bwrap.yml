@@ -45,7 +45,7 @@ jobs:
       - name: Run seed bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci start
       - name: Tar seed image
-        run: tar -cf seed_image.tar target
+        run: tar -cf seed_image.tar --exclude "target/external/distfiles" target
       - name: Archive seed_image
         uses: actions/upload-artifact@v3
         with:
