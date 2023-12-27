@@ -29,26 +29,26 @@ class Generator():
         self.external_sources = external_sources
         self.repo_path = repo_path
         self.source_manifest = self.get_source_manifest(not self.external_sources)
-        self.tmp_dir = None
+        self.target_dir = None
         self.external_dir = None
 
-    def reuse(self, tmpdir):
+    def reuse(self, target):
         """
         Reuse a previously prepared bwrap environment for further stages.
         """
-        self.tmp_dir = tmpdir.path
-        self.external_dir = os.path.join(self.tmp_dir, 'external')
+        self.target_dir = target.path
+        self.external_dir = os.path.join(self.target_dir, 'external')
         self.distfiles()
 
-    def prepare(self, tmpdir, using_kernel=False, kernel_bootstrap=False, target_size=0):
+    def prepare(self, target, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
         /steps -- contains steps to be built
         / -- contains seed to allow steps to be built, containing custom
              scripts and stage0-posix
         """
-        self.tmp_dir = tmpdir.path
-        self.external_dir = os.path.join(self.tmp_dir, 'external')
+        self.target_dir = target.path
+        self.external_dir = os.path.join(self.target_dir, 'external')
 
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
@@ -59,33 +59,33 @@ class Generator():
         # argument matrix ... or we could just use ext3 instead which
         # is effectively universally the same
         if kernel_bootstrap:
-            init_path = os.path.join(self.tmp_dir, 'init')
+            init_path = os.path.join(self.target_dir, 'init')
 
             os.mkdir(init_path)
-            self.tmp_dir = init_path
+            self.target_dir = init_path
 
             if self.repo_path or self.external_sources:
-                tmpdir.add_disk("external", filesystem="ext3")
-                tmpdir.mount_disk("external", "external")
+                target.add_disk("external", filesystem="ext3")
+                target.mount_disk("external", "external")
             else:
-                self.external_dir = os.path.join(self.tmp_dir, 'external')
+                self.external_dir = os.path.join(self.target_dir, 'external')
         elif using_kernel:
-            self.tmp_dir = os.path.join(self.tmp_dir, 'disk')
-            tmpdir.add_disk("disk",
+            self.target_dir = os.path.join(self.target_dir, 'disk')
+            target.add_disk("disk",
                             filesystem="ext3",
                             size=(target_size + "M") if target_size else "16G",
                             bootable=True)
-            tmpdir.mount_disk("disk", "disk")
-            self.external_dir = os.path.join(self.tmp_dir, 'external')
+            target.mount_disk("disk", "disk")
+            self.external_dir = os.path.join(self.target_dir, 'external')
 
         os.makedirs(self.external_dir, exist_ok=True)
 
         if self.early_preseed:
             # Extract tar containing preseed
             with tarfile.open(self.early_preseed, "r") as seed:
-                seed.extractall(self.tmp_dir)
+                seed.extractall(self.target_dir)
             shutil.copy2(os.path.join(self.git_dir, 'seed', 'preseeded.kaem'),
-                         os.path.join(self.tmp_dir, 'kaem.x86'))
+                         os.path.join(self.target_dir, 'kaem.x86'))
         else:
             self.stage0_posix()
             self.seed()
@@ -101,25 +101,25 @@ class Generator():
             shutil.copytree(self.repo_path, repo_dir)
 
         if kernel_bootstrap:
-            self.create_builder_hex0_disk_image(self.tmp_dir + '.img', target_size)
+            self.create_builder_hex0_disk_image(self.target_dir + '.img', target_size)
 
         if kernel_bootstrap and (self.external_sources or self.repo_path):
-            tmpdir.umount_disk('external')
+            target.umount_disk('external')
         elif using_kernel:
-            tmpdir.umount_disk('disk')
+            target.umount_disk('disk')
 
     def steps(self):
         """Copy in steps."""
         self.get_packages()
 
-        shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.tmp_dir, 'steps'))
+        shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.target_dir, 'steps'))
 
     def stage0_posix(self):
         """Copy in all of the stage0-posix"""
         stage0_posix_base_dir = os.path.join(self.git_dir, 'seed', 'stage0-posix')
         for entry in os.listdir(stage0_posix_base_dir):
             orig = os.path.join(stage0_posix_base_dir, entry)
-            target = os.path.join(self.tmp_dir, entry)
+            target = os.path.join(self.target_dir, entry)
             if os.path.isfile(orig):
                 shutil.copy2(orig, target)
             else:
@@ -128,14 +128,14 @@ class Generator():
         arch = stage0_arch_map.get(self.arch, self.arch)
         kaem_optional_seed = os.path.join(self.git_dir, 'seed', 'stage0-posix', 'bootstrap-seeds',
                                           'POSIX', arch, 'kaem-optional-seed')
-        shutil.copy2(kaem_optional_seed, os.path.join(self.tmp_dir, 'init'))
+        shutil.copy2(kaem_optional_seed, os.path.join(self.target_dir, 'init'))
 
     def seed(self):
         """Copy in extra seed files"""
         seed_dir = os.path.join(self.git_dir, 'seed')
         for entry in os.listdir(seed_dir):
             if os.path.isfile(os.path.join(seed_dir, entry)):
-                shutil.copy2(os.path.join(seed_dir, entry), os.path.join(self.tmp_dir, entry))
+                shutil.copy2(os.path.join(seed_dir, entry), os.path.join(self.target_dir, entry))
 
     @staticmethod
     def add_fiwix_files(file_list_path, dirpath):
@@ -149,14 +149,14 @@ class Generator():
 
     def create_fiwix_file_list(self):
         """Create a list of files to populate Fiwix file system"""
-        file_list_path = os.path.join(self.tmp_dir, 'steps', 'lwext4-1.0.0-lb1',
+        file_list_path = os.path.join(self.target_dir, 'steps', 'lwext4-1.0.0-lb1',
                                       'files', 'fiwix-file-list.txt')
-        shutil.copyfile(os.path.join(self.tmp_dir, 'steps', 'lwext4-1.0.0-lb1',
+        shutil.copyfile(os.path.join(self.target_dir, 'steps', 'lwext4-1.0.0-lb1',
                                      'files', 'early-artifacts-needed-after-fiwix.txt'),
                         file_list_path)
 
         save_cwd = os.getcwd()
-        os.chdir(self.tmp_dir)
+        os.chdir(self.target_dir)
         self.add_fiwix_files(file_list_path, 'steps')
         self.add_fiwix_files(file_list_path, 'distfiles')
         os.chdir(save_cwd)
@@ -170,7 +170,7 @@ class Generator():
                 shutil.copy2(os.path.join(self.distfiles_dir, file),
                              os.path.join(out, file))
 
-        early_distfile_dir = os.path.join(self.tmp_dir, 'external', 'distfiles')
+        early_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
         main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
         if early_distfile_dir != main_distfile_dir:
@@ -217,7 +217,7 @@ class Generator():
         """Append srcfs file system to disk image"""
         save_cwd = os.getcwd()
 
-        os.chdir(self.tmp_dir)
+        os.chdir(self.target_dir)
         self.output_tree(image_file, '.')
 
         # Add commands to kick off stage0-posix
