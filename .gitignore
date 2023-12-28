@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: MIT 
 
-tmp/
+target/
 kernel
 distfiles/
 __pycache__
