@@ -29,6 +29,7 @@ class Generator():
         self.external_sources = external_sources
         self.repo_path = repo_path
         self.source_manifest = self.get_source_manifest(not self.external_sources)
+        self.early_source_manifest = self.get_source_manifest(True)
         self.target_dir = None
         self.external_dir = None
 
@@ -159,9 +160,10 @@ class Generator():
 
     def distfiles(self):
         """Copy in distfiles"""
-        def copy_no_network_distfiles(out):
+        def copy_no_network_distfiles(out, early):
             # Note that "no disk" implies "no network" for kernel bootstrap mode
-            for file in self.source_manifest:
+            manifest = self.early_source_manifest if early else self.source_manifest
+            for file in manifest:
                 file = file[3].strip()
                 shutil.copy2(os.path.join(self.distfiles_dir, file),
                              os.path.join(out, file))
@@ -171,13 +173,13 @@ class Generator():
 
         if early_distfile_dir != main_distfile_dir:
             os.makedirs(early_distfile_dir, exist_ok=True)
-            copy_no_network_distfiles(early_distfile_dir)
+            copy_no_network_distfiles(early_distfile_dir, True)
 
         if self.external_sources:
             shutil.copytree(self.distfiles_dir, main_distfile_dir, dirs_exist_ok=True)
         else:
             os.mkdir(main_distfile_dir)
-            copy_no_network_distfiles(main_distfile_dir)
+            copy_no_network_distfiles(main_distfile_dir, False)
 
     @staticmethod
     def output_dir(srcfs_file, dirpath):
