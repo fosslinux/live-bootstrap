@@ -22,7 +22,9 @@ while ! dd if=/dev/${DISK} of=/dev/null bs=512 count=1; do
 done
 
 # Create partition if it doesn't exist
-if [ $(($(stat -c "%Lr" "/dev/${DISK}") % 8)) -eq 0 ]; then
+# 'stat -c "%T"' prints the minor device type in hexadecimal.
+# The decimal version (with "%Lr") is not available in this version of stat.
+if [ $((0x$(stat -c "%T" "/dev/${DISK}") % 8)) -eq 0 ]; then
     echo "Creating partition table..."
     # Start at 1GiB, use -S32 -H64 to align to MiB rather than cylinder boundary
     echo "2097152;" | sfdisk -uS -S32 -H64 --force "/dev/${DISK}"
