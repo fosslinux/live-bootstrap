@@ -59,26 +59,16 @@ class Generator():
         # argument matrix ... or we could just use ext3 instead which
         # is effectively universally the same
         if kernel_bootstrap:
-            init_path = os.path.join(self.target_dir, 'init')
+            self.target_dir = os.path.join(self.target_dir, 'init')
+            os.mkdir(self.target_dir)
 
-            os.mkdir(init_path)
-            self.target_dir = init_path
-
-            if self.repo_path or self.external_sources:
-                target.add_disk("external", filesystem="ext3")
-                target.mount_disk("external", "external")
-            else:
+            if not self.repo_path and not self.external_sources:
                 self.external_dir = os.path.join(self.target_dir, 'external')
         elif using_kernel:
             self.target_dir = os.path.join(self.target_dir, 'disk')
-            target.add_disk("disk",
-                            filesystem="ext3",
-                            size=(str(target_size) + "M") if target_size else "16G",
-                            bootable=True)
-            target.mount_disk("disk", "disk")
             self.external_dir = os.path.join(self.target_dir, 'external')
 
-        os.makedirs(self.external_dir, exist_ok=True)
+        os.makedirs(self.external_dir)
 
         if self.early_preseed:
             # Extract tar containing preseed
@@ -103,10 +93,16 @@ class Generator():
         if kernel_bootstrap:
             self.create_builder_hex0_disk_image(self.target_dir + '.img', target_size)
 
-        if kernel_bootstrap and (self.external_sources or self.repo_path):
-            target.umount_disk('external')
+            if self.repo_path or self.external_sources:
+                mkfs_args = ['-d', os.path.join(target.path, 'external')]
+                target.add_disk("external", filesystem="ext3", mkfs_args=mkfs_args)
         elif using_kernel:
-            target.umount_disk('disk')
+            mkfs_args = ['-d', os.path.join(target.path, 'disk')]
+            target.add_disk("disk",
+                            filesystem="ext3",
+                            size=(str(target_size) + "M") if target_size else "16G",
+                            bootable=True,
+                            mkfs_args=mkfs_args)
 
     def steps(self):
         """Copy in steps."""
