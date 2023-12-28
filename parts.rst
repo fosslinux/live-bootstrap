@@ -747,7 +747,7 @@ kexec-linux
 ===========
 
 If the kernel bootstrap option is enabled then a C program ``kexec-linux`` is compiled.
-This can be used to launch a Linux kernel from Fiwix.
+This can be used to launch a Linux kernel from Fiwix (when not using ``--kernel``).
 
 kexec-tools 2.0.22
 ==================
@@ -755,7 +755,8 @@ kexec-tools 2.0.22
 ``kexec`` is a utility for the Linux kernel that allows the re-execution of the
 Linux kernel without a manual restart from within a running system. It is a
 kind of soft-restart. It is only built for non-chroot mode, as we only use it
-in non-chroot mode. It is used to go into sysb/sysc.
+in non-chroot mode. It is used to boot the Linux kernel that will be built next
+from the current Linux kernel (when using ``--kernel``).
 
 Linux kernel 4.9.10
 ===================
@@ -767,7 +768,7 @@ However, the docs are also wrong, as the latest of the 4.9.x series does not
 work with our version of binutils. However, a much earlier 4.9.10 does
 (selected arbitrarily, could go newer but did not test), with a small amount
 of patching. This is also modern enough for most hardware and to cause few
-problems with software built in sysc. Secondly, the linux-libre scripts are used
+problems with software built afterwards. Secondly, the linux-libre scripts are used
 to deblob the kernel.  Every other pregenerated file is appended with ``_shipped``
 so we use a ``find`` command to remove those, which are automatically regenerated.
 The kernel config was originally taken from Void Linux, and was then modified
@@ -778,11 +779,18 @@ subsequent systems, and we do not have ``modprobe``.
 We then kexec to use the new Linux kernel, using ``kexec-tools`` for a Linux
 kernel and ``kexec-linux`` for Fiwix.
 
+musl 1.2.4
+==========
+
+At this point, it is guaranteed that we are running on Linux with thread support,
+so we rebuild musl with thread support.
+
 curl 7.88.1
 ===========
 
 ``curl`` is used to download files using various protocols including HTTP and HTTPS.
-However, this first build does not support encrypted HTTPS yet.
+However, this first build does not support encrypted HTTPS yet. ``curl`` requires
+Linux and musl with thread support, which are now available.
 
 bash 5.2.15
 ===========
@@ -791,16 +799,6 @@ This new version of ``bash`` compiles without any patches, provides new features
 and is built with GNU readline support so it can be used as a fully-featured
 interactive shell. ``autoconf-2.69`` is used to regenerate the configure
 script and ``bison`` is used to recreate some included generated files.
-
-curl 7.83.0
-===========
-
-``curl`` is built in sysc because Linux must be running with support for threads
-(which is not the case if kernel bootstrapping is being used). curl requires
-musl with thread support, which was built at the end of sysa.
-``curl`` is built first in sysc so the rest of the packages can be downloaded.
-Note that the tar file for curl itself was copied over from sysa because
-curl is not yet available to download it.
 
 xz 5.4.1
 ========
