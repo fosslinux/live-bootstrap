@@ -37,16 +37,13 @@ def create_disk(image, disk_type, fs_type, size, bootable=False, mkfs_args=None)
     if mkfs_args is None:
         mkfs_args = []
     run('truncate', '-s', size, image)
-    # First find the device we will use, then actually use it
-    loop_dev = run_as_root('losetup', '-f', capture_output=True).stdout.decode().strip()
-    run_as_root('losetup', '-P', loop_dev, image)
     # Create the partition
     if disk_type != "none":
-        run_as_root('parted', '--script', image, 'mklabel', disk_type, 'mkpart',
-                'primary', fs_type, '1GiB' if bootable else '1MiB', '100%')
-        run_as_root('partprobe', loop_dev)
-        run_as_root('mkfs.' + fs_type, loop_dev + "p1", *mkfs_args)
-    return loop_dev
+        # 1 GiB if bootable, 1 MiB otherwise
+        offset = str(1024 * 1024 * (1024 if bootable else 1))
+        run('parted', '--script', image, 'mklabel', disk_type, 'mkpart',
+            'primary', fs_type, offset + 'B', '100%')
+        run('mkfs.' + fs_type, image, '-E', 'offset=' + offset, *mkfs_args)
 
 def mount(source, target, fs_type, options='', **kwargs):
     """Mount filesystem"""
