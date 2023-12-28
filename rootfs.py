@@ -168,7 +168,7 @@ def main():
 
 def bootstrap(args, generator, target, size):
     """Kick off bootstrap process."""
-    print(f"Bootstrapping {args.arch}")
+    print(f"Bootstrapping {args.arch}", flush=True)
     if args.chroot:
         find_chroot = """
 import shutil
