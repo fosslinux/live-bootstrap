@@ -8,38 +8,39 @@ Disable help.
 diff -ru src/Makefile.inc src/Makefile.inc
 --- src/Makefile.inc
 +++ src/Makefile.inc
-@@ -70,11 +70,9 @@
+@@ -76,12 +76,10 @@
    tool_formparse.c \
    tool_getparam.c \
    tool_getpass.c \
 -  tool_help.c \
    tool_helpers.c \
    tool_hugehelp.c \
+   tool_ipfs.c \
    tool_libinfo.c \
 -  tool_listhelp.c \
    tool_main.c \
    tool_msgs.c \
    tool_operate.c \
-@@ -111,7 +109,6 @@
+@@ -120,7 +118,6 @@
    tool_formparse.h \
    tool_getparam.h \
    tool_getpass.h \
 -  tool_help.h \
    tool_helpers.h \
    tool_hugehelp.h \
-   tool_libinfo.h \
+   tool_ipfs.h \
 diff -ru src/tool_operate.c src/tool_operate.c
 --- src/tool_operate.c
 +++ src/tool_operate.c
-@@ -80,7 +80,6 @@
+@@ -78,7 +78,6 @@
  #include "tool_writeout.h"
  #include "tool_xattr.h"
  #include "tool_vms.h"
 -#include "tool_help.h"
  #include "tool_hugehelp.h"
  #include "tool_progress.h"
- #include "dynbuf.h"
-@@ -2703,19 +2702,7 @@
+ #include "tool_ipfs.h"
+@@ -2746,19 +2745,7 @@
      if(res) {
        result = CURLE_OK;
  

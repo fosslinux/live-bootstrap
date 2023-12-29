@@ -120,7 +120,7 @@ jump: break ( INTERNAL_CI == pass1 )
 jump: linux ( CHROOT == False )
 improve: finalize_fhs
 build: musl-1.2.4
-build: curl-7.88.1
+build: curl-8.5.0
 improve: populate_device_nodes
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
 improve: get_network ( CHROOT == False )
@@ -145,7 +145,7 @@ build: perl-5.32.1
 build: libarchive-3.5.2
 build: openssl-1.1.1l
 build: ca-certificates-3.95
-build: curl-7.88.1
+build: curl-8.5.0
 build: zlib-1.2.13
 build: automake-1.16.3
 build: autoconf-2.71
