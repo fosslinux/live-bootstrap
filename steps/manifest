@@ -118,6 +118,7 @@ improve: clean_sources
 build: linux-4.9.10 ( BUILD_LINUX == True )
 jump: break ( INTERNAL_CI == pass1 )
 jump: linux ( CHROOT == False )
+improve: update_jobs
 improve: finalize_fhs
 build: musl-1.2.4
 build: curl-8.5.0
