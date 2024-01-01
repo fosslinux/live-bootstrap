@@ -16,7 +16,6 @@ if [ "${KERNEL_BOOTSTRAP}" = True ]; then
     find / -xdev -type d -printf "dir %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type f -printf "file %p %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type l -printf "slink %p %l %m %U %G\n" >> /initramfs.list
-    find / -xdev -type c -or -type b -not -name "ram*" -printf "nod %p %m %U %G %y " -exec stat -c '%Hr %Lr' {} \; >> /initramfs.list
     kexec-linux "/dev/ram1" "/boot/linux-4.9.10" "!$(command -v gen_init_cpio) /initramfs.list"
 else
     mkdir /etc
