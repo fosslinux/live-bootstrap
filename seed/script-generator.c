@@ -407,7 +407,7 @@ void add_to_fiwix_filelist(char *filename) {
 }
 
 /* Script generator. */
-FILE *start_script(int id, int using_bash) {
+FILE *start_script(int id, int bash_build) {
 	/* Create the file /steps/$id.sh */
 	char *filename = calloc(MAX_STRING, sizeof(char));
 	strcpy(filename, "/steps/");
@@ -423,9 +423,19 @@ FILE *start_script(int id, int using_bash) {
 		exit(1);
 	}
 
-	if (using_bash) {
+	if (bash_build) {
 		fputs("#!/bin/bash\n", out);
-		fputs("set -e\n", out);
+		if (strcmp(get_var("INTERACTIVE"), "True") == 0) {
+			if (bash_build != 1) {
+				fputs("set -E\ntrap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
+			} else {
+				fputs("set -E\ntrap 'bash -c '\"'\"'while true; do printf \""
+				"[TRAP - use Ctrl+D] $(pwd) # \"; $(cat); done'\"'\"'' ERR\n",
+				out);
+			}
+		} else {
+			fputs("set -e\n", out);
+		}
 		fputs("cd /steps\n", out);
 		fputs(". ./bootstrap.cfg\n", out);
 		fputs(". ./env\n", out);
@@ -450,8 +460,8 @@ FILE *start_script(int id, int using_bash) {
 	return out;
 }
 
-void output_call_script(FILE *out, char *type, char *name, int using_bash, int source) {
-	if (using_bash) {
+void output_call_script(FILE *out, char *type, char *name, int bash_build, int source) {
+	if (bash_build) {
 		if (source) {
 			fputs(". ", out);
 		} else {
@@ -469,8 +479,8 @@ void output_call_script(FILE *out, char *type, char *name, int using_bash, int s
 	fputs(".sh\n", out);
 }
 
-void output_build(FILE *out, Directive *directive, int pass_no, int using_bash) {
-	if (using_bash) {
+void output_build(FILE *out, Directive *directive, int pass_no, int bash_build) {
+	if (bash_build) {
 		fputs("build ", out);
 		fputs(directive->arg, out);
 		fputs(" pass", out);
@@ -510,9 +520,9 @@ void generate(Directive *directives) {
 	int counter = 0;
 
 	/* Initially, we use kaem, not bash. */
-	int using_bash = 0;
+	int bash_build = 0;
 
-	FILE *out = start_script(counter, using_bash);
+	FILE *out = start_script(counter, bash_build);
 	counter += 1;
 
 	Directive *directive;
@@ -528,24 +538,24 @@ void generate(Directive *directives) {
 					pass_no += 1;
 				}
 			}
-			output_build(out, directive, pass_no, using_bash);
+			output_build(out, directive, pass_no, bash_build);
 			if (strncmp(directive->arg, "bash-", 5) == 0) {
-				if (!using_bash) {
+				if (!bash_build) {
 					/*
 					 * We are transitioning from bash to kaem, the point at which "early
 					 * preseed" occurs. So generate the preseed jump script at this point.
 					 */
 					generate_preseed_jump(counter);
 				}
-				using_bash = 1;
+				bash_build = 1;
 				/* Create call to new script. */
-				output_call_script(out, "", int2str(counter, 10, 0), using_bash, 0);
+				output_call_script(out, "", int2str(counter, 10, 0), bash_build, 0);
 				fclose(out);
-				out = start_script(counter, using_bash);
+				out = start_script(counter, bash_build);
 				counter += 1;
 			}
 		} else if (directive->type == TYPE_IMPROVE) {
-			output_call_script(out, "improve", directive->arg, using_bash, 1);
+			output_call_script(out, "improve", directive->arg, bash_build, 1);
 		} else if (directive->type == TYPE_JUMP) {
 			/*
 			 * Create /init to call new script.
@@ -553,7 +563,7 @@ void generate(Directive *directives) {
 			 * moving that to /init at the appropriate time.
 			 */
 			filename = calloc(MAX_STRING, sizeof(char));
-			if (using_bash) {
+			if (bash_build) {
 				fputs("mv /init /init.bak\n", out);
 				/* Move new init to /init. */
 				strcpy(filename, "/init.");
@@ -572,7 +582,7 @@ void generate(Directive *directives) {
 				fputs("chmod 755 /init\n", out);
 			}
 
-			output_call_script(out, "jump", directive->arg, using_bash, 1);
+			output_call_script(out, "jump", directive->arg, bash_build, 1);
 			fclose(out);
 
 			/*
@@ -581,7 +591,7 @@ void generate(Directive *directives) {
 			 */
 			add_to_fiwix_filelist(filename);
 
-			if (using_bash) {
+			if (bash_build) {
 				out = fopen(filename, "w");
 				if (out == NULL) {
 					fputs("Error opening /init\n", stderr);
@@ -596,12 +606,12 @@ void generate(Directive *directives) {
 				}
 				fputs("set -ex\n", out);
 			}
-			output_call_script(out, "", int2str(counter, 10, 0), using_bash, 0);
+			output_call_script(out, "", int2str(counter, 10, 0), bash_build, 0);
 			fclose(out);
-			out = start_script(counter, using_bash);
+			out = start_script(counter, bash_build);
 			counter += 1;
 		} else if (directive->type == TYPE_MAINT) {
-			output_call_script(out, "maint", directive->arg, using_bash, 1);
+			output_call_script(out, "maint", directive->arg, bash_build, 1);
 		}
 	}
 	fclose(out);
