@@ -425,7 +425,17 @@ FILE *start_script(int id, int using_bash) {
 
 	if (using_bash) {
 		fputs("#!/bin/bash\n", out);
-		fputs("set -e\n", out);
+		if (strcmp(get_var("INTERACTIVE"), "True") == 0) {
+			if (using_bash != 1) {
+				fputs("trap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
+			} else {
+				fputs("trap 'bash -c '\"'\"'while true; do printf \""
+				"[TRAP - use Ctrl+D] $(pwd) # \"; $(cat); done'\"'\"'' ERR\n",
+				out);
+			}
+		} else {
+			fputs("set -e\n", out);
+		}
 		fputs("cd /steps\n", out);
 		fputs(". ./bootstrap.cfg\n", out);
 		fputs(". ./env\n", out);
@@ -537,7 +547,7 @@ void generate(Directive *directives) {
 					 */
 					generate_preseed_jump(counter);
 				}
-				using_bash = 1;
+				using_bash += 1;
 				/* Create call to new script. */
 				output_call_script(out, "", int2str(counter, 10, 0), using_bash, 0);
 				fclose(out);
