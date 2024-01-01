@@ -785,8 +785,8 @@ musl 1.2.4
 At this point, it is guaranteed that we are running on Linux with thread support,
 so we rebuild musl with thread support.
 
-curl 7.88.1
-===========
+curl 8.5.0
+==========
 
 ``curl`` is used to download files using various protocols including HTTP and HTTPS.
 However, this first build does not support encrypted HTTPS yet. ``curl`` requires
@@ -927,8 +927,8 @@ openssl 1.1.1l
 
 OpenSSL is a C library for secure communications/cryptography.
 
-curl 7.88.1
-===========
+curl 8.5.0
+==========
 
 We rebuild curl with support for OpenSSL.
 

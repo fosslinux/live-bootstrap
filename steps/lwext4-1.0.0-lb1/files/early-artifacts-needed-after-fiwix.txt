@@ -174,4 +174,4 @@
 /external/distfiles/v2.0.22.tar.gz
 /external/distfiles/linux-4.9.10.tar.gz
 /external/distfiles/deblob-4.9
-/external/distfiles/curl-7.88.1.tar.bz2
+/external/distfiles/curl-8.5.0.tar.bz2
