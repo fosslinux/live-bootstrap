@@ -6,7 +6,8 @@
 #include "multiboot1.h"
 
 #define MULTIBOOT_MAGIC 0x2BADB002
-#define INITRD_MB 1152
+#define INITRD_MB 1280
+#define KEXEC_MB 256
 
 int main() {
 	/* Read the kernel */
@@ -81,11 +82,11 @@ int main() {
 	char *bare_metal = getenv("BARE_METAL");
 	if (bare_metal != NULL && strcmp(bare_metal, "True") == 0)
 	{
-		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=280000 kexec_cmdline=\"init=/init\"", INITRD_MB * 1024);
+		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init consoleblank=0\"", INITRD_MB * 1024, KEXEC_MB * 1024);
 	}
 	else
 	{
-		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=280000 kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024);
+		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024, KEXEC_MB * 1024);
 	}
 	char * boot_loader_name = "kexec-fiwix";
 
@@ -127,13 +128,13 @@ int main() {
 
 	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
 	pmultiboot_memory_map->addr = 0x00000000;
-	pmultiboot_memory_map->len  = 0x0009FC00;
+	pmultiboot_memory_map->len  = 0x00080000;
 	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_AVAILABLE;
 	pmultiboot_memory_map++;
 
 	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0x0009FC00;
-	pmultiboot_memory_map->len  = 0x00000400;
+	pmultiboot_memory_map->addr = 0x00080000;
+	pmultiboot_memory_map->len  = 0x00020000;
 	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
 	pmultiboot_memory_map++;
 
@@ -145,13 +146,13 @@ int main() {
 
 	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
 	pmultiboot_memory_map->addr = 0x00100000;
-	pmultiboot_memory_map->len  = 0xBFEE0000;
+	pmultiboot_memory_map->len  = 0xBC000000;
 	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_AVAILABLE;
 	pmultiboot_memory_map++;
 
 	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0XBFFE0000;
-	pmultiboot_memory_map->len  = 0x00020000;
+	pmultiboot_memory_map->addr = 0XBC000000;
+	pmultiboot_memory_map->len  = 0x04000000;
 	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
 	pmultiboot_memory_map++;
 
@@ -208,6 +209,7 @@ int main() {
 		0xF3, 0xA4,                     /* rep movsb           */
 		0xB8, 0x00, 0x00, 0x00, 0x00,   /* mov eax, 0x00000000 */
 		0xBB, 0x00, 0x00, 0x00, 0x00,   /* mov ebx, 0x00000000 */
+		0xFB,                           /* sti                 */
 		0xEA, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00  /* jmp far 0x0008:0x00000000 */
 	};
 
@@ -217,7 +219,7 @@ int main() {
 	*((unsigned int *) &trampoline[11]) = INITRD_MB * 1024 * 1024;
 	*((unsigned int *) &trampoline[19])  = magic;
 	*((unsigned int *) &trampoline[24])  = multiboot_info_num;
-	*((unsigned int *) &trampoline[29])  = e_entry;
+	*((unsigned int *) &trampoline[30])  = e_entry;
 
 	memcpy((void *)0x4000, trampoline, sizeof(trampoline));
 
