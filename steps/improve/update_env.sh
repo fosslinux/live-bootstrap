@@ -6,7 +6,7 @@
 
 unset GUILE_LOAD_PATH
 
-cat > /steps/env <<- EOF
+cat >> /steps/env <<- 'EOF'
 export PATH=${PREFIX}/bin
 PREFIX=${PREFIX}
 LIBDIR=${LIBDIR}
