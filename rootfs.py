@@ -12,6 +12,7 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2023-24 Gábor Stefanik <netrolller.3d@gmail.com>
 
 import argparse
 import os
@@ -32,6 +33,7 @@ def create_configuration_file(args):
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"FINAL_JOBS={args.cores}\n")
+        config.write(f"SWAP_SIZE={args.swap}\n")
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
         config.write(f"BARE_METAL={args.bare_metal}\n")
@@ -46,7 +48,7 @@ def create_configuration_file(args):
             config.write("KERNEL_BOOTSTRAP=False\n")
         config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
 
-# pylint: disable=too-many-statements
+# pylint: disable=too-many-statements,too-many-branches
 def main():
     """
     A few command line arguments to customize bootstrap.
@@ -91,6 +93,8 @@ def main():
     parser.add_argument("--early-preseed",
                         help="Skip early stages of live-bootstrap", nargs=None)
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
+    parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
+                        default=0)
 
     # QEMU arguments
     parser.add_argument("-q", "--qemu", help="Use QEMU",
@@ -147,6 +151,13 @@ def main():
             (1024 if str(args.target_size).lower().endswith('g') else 1))
     else:
         args.target_size = 0
+
+    # Swap file size validation
+    if args.qemu or args.bare_metal:
+        args.swap = (int(str(args.swap).rstrip('gGmM')) *
+            (1024 if str(args.swap).lower().endswith('g') else 1))
+    else:
+        args.swap = 0
 
     # bootstrap.cfg
     try:
