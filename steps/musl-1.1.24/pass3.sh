@@ -28,6 +28,5 @@ src_compile() {
 }
 
 src_install() {
-    rm -rf "${PREFIX}/include"
     make PREFIX="${PREFIX}" DESTDIR="${DESTDIR}" install
 }

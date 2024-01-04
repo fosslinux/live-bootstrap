@@ -42,21 +42,23 @@ jobs:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass1
+      - name: Run seed bootstrap
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci start
+      - name: Tar seed image
+        run: tar -cf seed_image.tar --exclude "target/external/distfiles" target
+      - name: Archive seed_image
+        uses: actions/upload-artifact@v3
+        with:
+          name: seed_image
+          path: seed_image.tar
+      - name: Run pass1 bootstrap
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci continue
       - name: Archive created packages
-        if: failure() # archive failed builds progress
+        if: always() # archive both failed and successful builds
         uses: actions/upload-artifact@v3
         with:
-          name: packages
+          name: packages_pass1
           path: target/external/repo/**
-      - name: Tar pass1 image
-        run: tar -cf pass1_image.tar target
-      - name: Archive pass1_image
-        uses: actions/upload-artifact@v3
-        with:
-          name: internal_pass1_image
-          path: pass1_image.tar
 
   pass2:
     name: Run up to Python bootstrap under bubblewrap
@@ -72,12 +74,17 @@ jobs:
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
-      - name: Get pass1_image
+      - name: Get seed_image
         uses: actions/download-artifact@v3
         with:
-          name: internal_pass1_image
-      - name: Extract pass1_image
-        run: tar -xf pass1_image.tar
+          name: seed_image
+      - name: Extract seed_image
+        run: tar -xf seed_image.tar
+      - name: Get pass1 packages
+        uses: actions/download-artifact@v3
+        with:
+          name: packages_pass1
+          path: target/external/repo-preseeded/
       - name: Query cache for sources
         id: cache
         uses: actions/cache/restore@v3
@@ -95,21 +102,16 @@ jobs:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2
+      - name: Preseed bootstrap with pass1
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci continue
+      - name: Run pass2 bootstrap
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci continue
       - name: Archive created packages
-        if: failure() # archive failed builds progress
+        if: always() # archive both failed and successful builds
         uses: actions/upload-artifact@v3
         with:
-          name: internal_packages_pass2
+          name: packages_pass2
           path: target/external/repo/**
-      - name: Tar pass2 image
-        run: tar -cf pass2_image.tar target
-      - name: Archive pass2_image
-        uses: actions/upload-artifact@v3
-        with:
-          name: internal_pass2_image
-          path: pass2_image.tar
 
   pass3:
     name: Run remaining builds under bubblewrap
@@ -125,12 +127,17 @@ jobs:
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
-      - name: Get pass2_image
+      - name: Get seed_image
         uses: actions/download-artifact@v3
         with:
-          name: internal_pass2_image
-      - name: Extract pass2_image
-        run: tar -xf pass2_image.tar
+          name: seed_image
+      - name: Extract seed_image
+        run: tar -xf seed_image.tar
+      - name: Get pass2 packages
+        uses: actions/download-artifact@v3
+        with:
+          name: packages_pass2
+          path: target/external/repo-preseeded/
       - name: Query cache for sources
         id: cache
         uses: actions/cache/restore@v3
@@ -148,8 +155,12 @@ jobs:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
-      - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass3
+      - name: Preseed bootstrap with pass1
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci continue
+      - name: Preseed bootstrap with pass2
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci continue
+      - name: Run pass3 bootstrap
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci continue
       - name: Archive created packages
         if: always() # archive both failed and successful builds
         uses: actions/upload-artifact@v3

@@ -185,7 +185,7 @@ print(shutil.which('chroot'))
 
     elif args.bwrap:
         init = '/init'
-        if not args.internal_ci or args.internal_ci == "pass1":
+        if not args.internal_ci or args.internal_ci == "start":
             generator.prepare(target, using_kernel=False)
 
             arch = stage0_arch_map.get(args.arch, args.arch)
