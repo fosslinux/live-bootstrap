@@ -1,0 +1,6 @@
+#undef CHILD_MAX
+#define CHILD_MAX	4096
+#undef OPEN_MAX
+#define OPEN_MAX	1536
+#undef FD_SETSIZE
+#define FD_SETSIZE	OPEN_MAX 
