@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: 2024 Richard Masters <grick23@gmail.com> */
+/* SPDX-License-Identifier: MIT */
 #undef NR_PROCS
 #define NR_PROCS	4096
 #undef NR_CALLOUTS
