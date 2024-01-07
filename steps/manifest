@@ -26,7 +26,7 @@
 # Other features:
 # - predicate; based on variables set in bootstrap.cfg, require for something to execute
 #   must be enclosed in brackets with spaces padded
-#   eg, build: fiwix-1.4.0-lb3 ( BUILD_FIWIX == True )
+#   eg, build: fiwix-1.5.0-lb1 ( BUILD_FIWIX == True )
 
 build: checksum-transcriber-1.0
 build: simple-patch-1.0
@@ -34,7 +34,7 @@ build: mes-0.25
 build: tcc-0.9.26
 build: tcc-0.9.27
 define: BUILD_FIWIX = ( KERNEL_BOOTSTRAP == True || BUILD_KERNELS == True )
-build: fiwix-1.4.0-lb3 ( BUILD_FIWIX == True )
+build: fiwix-1.5.0-lb1 ( BUILD_FIWIX == True )
 build: lwext4-1.0.0-lb1 ( BUILD_FIWIX == True )
 build: kexec-fiwix-1.0 ( BUILD_FIWIX == True )
 jump: fiwix ( KERNEL_BOOTSTRAP == True )
