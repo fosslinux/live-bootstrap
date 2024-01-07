@@ -14,9 +14,7 @@ if [ "${INTERACTIVE}" = True ]; then
 fi
 
 if [ "${CHROOT}" = False ]; then
-    echo s > /proc/sysrq_trigger # force sync
-    sleep 1
-    echo u > /proc/sysrq_trigger # remount everything R/O
-    sleep 1
+    sync
+    mount -o remount,ro /
     echo o > /proc/sysrq_trigger # power off
 fi
