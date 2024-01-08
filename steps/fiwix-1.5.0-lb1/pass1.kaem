@@ -18,9 +18,15 @@ cd build
 untar --file ../src/${pkg}.tar
 cd ${pkg}
 
-alias as="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DNO_CONFIG_OFFSET64 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -traditional -I${SRCDIR}/${pkg}/build/${pkg}/include"
+cp ../../files/custom_config.h include/fiwix
+cp ../../files/custom_limits.h include/fiwix
+cp ../../files/custom_kernel.h include/fiwix
+cp ../../files/custom_system.h include/fiwix
 
-alias cc="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DMAX_PID_VALUE=64000000 -DCONFIG_MMAP2 -DNO_CONFIG_OFFSET64 -DCONFIG_64BIT_SYSCALLS -DCONFIG_KEXEC -DNR_PROCS=4096 -DCHILD_MAX=4096 -DOPEN_MAX=1536 -DNR_OPENS=1536 -DINIT_PROGRAM=\"/init\" -DUTS_SYSNAME=\"Linux\" -D__VERSION__=\"tcc\" -I${SRCDIR}/${pkg}/build/${pkg}/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes"
+
+alias as="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DCUSTOM_CONFIG_H -DCUSTOM_LIMITS_H -DCUSTOM_KERNEL_H -DCUSTOM_SYSTEM_H -D__VERSION__=\"tcc\" -traditional -I/${SRCDIR}/${pkg}/build/${pkg}/include"
+
+alias cc="tcc -m32 -march=i386 -std=c89 -D__KERNEL__ -DCUSTOM_CONFIG_H -DCUSTOM_LIMITS_H -DCUSTOM_KERNEL_H -DCUSTOM_SYSTEM_H -D__VERSION__=\"tcc\" -I/${SRCDIR}/${pkg}/build/${pkg}/include -O2 -fno-pie -fno-common -ffreestanding -Wall -Wstrict-prototypes"
 
 cd kernel
 as -c -o boot.o boot.S
@@ -59,7 +65,6 @@ cc -c -o fdatasync.o fdatasync.c
 cc -c -o chmod.o chmod.c
 cc -c -o mmap2.o mmap2.c
 cc -c -o msgsnd.o msgsnd.c
-cc -c -o madvise.o madvise.c
 cc -c -o exit.o exit.c
 cc -c -o readlink.o readlink.c
 cc -c -o socketcall.o socketcall.c
@@ -132,10 +137,8 @@ cc -c -o pause.o pause.c
 cc -c -o utime.o utime.c
 cc -c -o statfs.o statfs.c
 cc -c -o ioperm.o ioperm.c
-cc -c -o exit_group.o exit_group.c
 cc -c -o ftime.o ftime.c
 cc -c -o truncate.o truncate.c
-cc -c -o pipe2.o pipe2.c
 cc -c -o old_mmap.o old_mmap.c
 cc -c -o olduname.o olduname.c
 cc -c -o kill.o kill.c
@@ -164,6 +167,7 @@ cc -c -o nanosleep.o nanosleep.c
 cc -c -o close.o close.c
 cc -c -o chroot.o chroot.c
 cc -c -o ftruncate64.o ftruncate64.c
+cc -c -o truncate64.o truncate64.c
 cc -c -o msgrcv.o msgrcv.c
 cc -c -o umount2.o umount2.c
 cc -c -o time.o time.c
@@ -185,6 +189,7 @@ cc -c -o getpgrp.o getpgrp.c
 cc -c -o fchown.o fchown.c
 cc -c -o execve.o execve.c
 cc -c -o shmget.o shmget.c
+cc -c -o lchown.o lchown.c
 cd ../..
 
 cd mm
@@ -304,7 +309,7 @@ cc -c -o printk.o printk.c
 cd ..
 
 mkdir /boot
-tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
+tcc -m32 -Wl,-Ttext=0x80100000 -static -nostdlib -nostdinc \
 	kernel/boot.o \
        	kernel/core386.o \
 	kernel/main.o kernel/init.o \
@@ -338,7 +343,6 @@ tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
 	kernel/syscalls/chmod.o \
 	kernel/syscalls/mmap2.o \
 	kernel/syscalls/msgsnd.o \
-	kernel/syscalls/madvise.o \
 	kernel/syscalls/exit.o \
 	kernel/syscalls/readlink.o \
 	kernel/syscalls/socketcall.o \
@@ -411,10 +415,8 @@ tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
 	kernel/syscalls/utime.o \
 	kernel/syscalls/statfs.o \
 	kernel/syscalls/ioperm.o \
-	kernel/syscalls/exit_group.o \
 	kernel/syscalls/ftime.o \
 	kernel/syscalls/truncate.o \
-	kernel/syscalls/pipe2.o \
 	kernel/syscalls/old_mmap.o \
 	kernel/syscalls/olduname.o \
 	kernel/syscalls/kill.o \
@@ -443,6 +445,7 @@ tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
 	kernel/syscalls/close.o \
 	kernel/syscalls/chroot.o \
 	kernel/syscalls/ftruncate64.o \
+	kernel/syscalls/truncate64.o \
 	kernel/syscalls/msgrcv.o \
 	kernel/syscalls/umount2.o \
 	kernel/syscalls/time.o \
@@ -464,6 +467,7 @@ tcc -m32 -Wl,-Ttext=0xC0100000 -static -nostdlib -nostdinc \
 	kernel/syscalls/fchown.o \
 	kernel/syscalls/execve.o \
 	kernel/syscalls/shmget.o \
+	kernel/syscalls/lchown.o \
 	mm/bios_map.o \
 	mm/buddy_low.o \
 	mm/memory.o \
