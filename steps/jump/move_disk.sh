@@ -27,5 +27,6 @@ mkdir -p /rootonly
 # This doesn't recursively mount - that's why we're able to copy everything over
 mount --bind / /rootonly
 cp -ar /rootonly/* /newroot/
+sed -e 's/newroot//' /rootonly/etc/mtab | grep -v 'rootonly' > /newroot/etc/mtab
 umount /rootonly
 switch_root /newroot /init
