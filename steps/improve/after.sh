@@ -14,7 +14,11 @@ if [ "${INTERACTIVE}" = True ]; then
 fi
 
 if [ "${CHROOT}" = False ]; then
+    # ignore errors due to fstab or swapfile not existing
+    swapoff -a &> /dev/null || true
     sync
+    # sysrq to avoid device busy; then mount to wait for it to finish
+    echo u > /proc/sysrq_trigger
     mount -o remount,ro /
     echo o > /proc/sysrq_trigger # power off
 fi
