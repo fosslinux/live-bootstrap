@@ -214,11 +214,12 @@ Token *logic(Token *tok, char **val) {
 	/* logic = "("
 	 *         (name |
 	 *         (name "==" value) |
+         *         (name "!=" value) |
 	 *         (logic "||" logic) |
 	 *         (logic "&&" logic))
 	 *         ")"
 	 */
-	
+
 	char *lhs = tok->val;
 	char *rhs;
 	tok = tok->next;
@@ -235,8 +236,17 @@ Token *logic(Token *tok, char **val) {
 		} else {
 			lhs = "False";
 		}
-	} else {
-		fputs("Expected == after ", stderr);
+	} else if (strcmp(tok->val, "!=") == 0) {
+                /* Case for inequality. */
+                rhs = tok->next->val;
+                tok = tok->next->next;
+                if (strcmp(get_var(lhs), rhs) == 0) {
+                        lhs = "False";
+                } else {
+                        lhs = "True";
+                }
+        } else {
+		fputs("Expected == or != after ", stderr);
 		fputs(lhs, stderr);
 		fputs(" in logic\n", stderr);
 		exit(1);
