@@ -437,9 +437,9 @@ FILE *start_script(int id, int using_bash) {
 		fputs("#!/bin/bash\n", out);
 		if (strcmp(get_var("INTERACTIVE"), "True") == 0) {
 			if (using_bash != 1) {
-				fputs("trap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
+				fputs("set -E\ntrap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
 			} else {
-				fputs("trap 'bash -c '\"'\"'while true; do printf \""
+				fputs("set -E\ntrap 'bash -c '\"'\"'while true; do printf \""
 				"[TRAP - use Ctrl+D] $(pwd) # \"; $(cat); done'\"'\"'' ERR\n",
 				out);
 			}
