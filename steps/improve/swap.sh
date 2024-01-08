@@ -10,10 +10,10 @@
 . /steps/bootstrap.cfg
 . /steps/env
 
-if ! test -f /swap
+if ! test -f /swapfile
 then
     echo "Making swap..."
-    dd if=/dev/zero of=/swap bs=1M count=${SWAP_SIZE}
-    mkswap /swap
+    dd if=/dev/zero of=/swapfile bs=1M count=${SWAP_SIZE}
+    mkswap /swapfile
 fi
-swapon /swap
+swapon /swapfile
