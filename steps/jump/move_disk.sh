@@ -4,7 +4,11 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-set -ex
+set -e
+# mount might fail if /etc doesn't exist because of fstab and mtab
+mkdir -p /dev /etc
+mount -t devtmpfs none /dev &> /junk || true # no /dev/null yet
+rm /junk &> /dev/null || true
 
 # Create partition if it doesn't exist
 if [ $(($(stat -c "%Lr" "/dev/${DISK}") % 8)) -eq 0 ]; then
