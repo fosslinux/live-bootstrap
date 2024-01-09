@@ -18,7 +18,7 @@ if [ "${CHROOT}" = False ]; then
     swapoff -a &> /dev/null || true
     sync
     # sysrq to avoid device busy; then mount to wait for it to finish
-    echo u > /proc/sysrq_trigger
+    echo u > /proc/sysrq-trigger
     mount -o remount,ro /
-    echo o > /proc/sysrq_trigger # power off
+    echo o > /proc/sysrq-trigger # power off
 fi
