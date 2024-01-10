@@ -179,7 +179,7 @@ tcc-boot0 \
     -D HAVE_BITFIELD=1 \
     -D HAVE_LONG_LONG=0 \
     -D HAVE_SETJMP=1 \
-    -I /usr/include/ \
+    -I /usr/include/mes/ \
     -I . \
     -I ${PREFIX}/include \
     -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
