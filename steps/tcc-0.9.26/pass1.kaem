@@ -383,7 +383,7 @@ tcc -ar cr ${LIBDIR}/libgetopt.a getopt.o
 cd ../..
 
 # Checksums
-if match x${UPDATE_CHECKSUMS} xTrue; then
+if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xTrueFalse; then
     sha256sum -o ${pkg}.checksums \
         /usr/bin/tcc-mes \
         /usr/bin/tcc-boot0 \
@@ -397,6 +397,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/lib/mes/tcc/libtcc1.a
 
     cp ${pkg}.checksums ${SRCDIR}
-else
+fi
+if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xFalseFalse; then
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
