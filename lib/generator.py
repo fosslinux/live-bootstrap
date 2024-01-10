@@ -73,7 +73,7 @@ class Generator():
             self.target_dir = os.path.join(self.target_dir, 'disk')
             target.add_disk("disk",
                             filesystem="ext3",
-                            size=(target_size + "M") if target_size else "16G",
+                            size=(str(target_size) + "M") if target_size else "16G",
                             bootable=True)
             target.mount_disk("disk", "disk")
             self.external_dir = os.path.join(self.target_dir, 'external')
