@@ -362,7 +362,9 @@ cp include/sys/wait.h ${INCDIR}/sys/wait.h
 
 cd ../..
 
-if match x${TCC_BOOTSTRAP_ALT} xFalse; then
+if match x${TCC_BOOTSTRAP_ALT} xTrue; then
+
+else
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.${ARCH}.checksums \
