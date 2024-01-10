@@ -6,8 +6,6 @@
 
 set -ex
 
-TCC_BOOTSTRAP_ALT_PKG=tcc_bootstrap_alt-0.1
-
 # Check tarball checksums
 checksum-transcriber sources
 sha256sum -c sources.SHA256SUM
@@ -16,12 +14,12 @@ sha256sum -c sources.SHA256SUM
 mkdir src
 
 cd src
-ungz --file ${distfiles}/${TCC_BOOTSTRAP_ALT_PKG}.tar.gz --output ${TCC_BOOTSTRAP_ALT_PKG}.tar
+ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
 
-untar --non-strict --file ./${TCC_BOOTSTRAP_ALT_PKG}.tar
+untar --non-strict --file ./${pkg}.tar
 
 # Build
-cd ./${TCC_BOOTSTRAP_ALT_PKG}
+cd ./${pkg}
 /bootstrap-seeds/POSIX/x86/hex0-seed ./x86/hex0_x86.hex0 ./x86/artifact/hex0-seed
 chmod 755 ./x86/artifact/hex0-seed
 /bootstrap-seeds/POSIX/x86/hex0-seed ./x86/kaem-minimal.hex0 ./x86/artifact/kaem-optional-seed
