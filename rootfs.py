@@ -43,6 +43,7 @@ def create_configuration_file(args):
             config.write("DISK=sda1\n")
             config.write("KERNEL_BOOTSTRAP=False\n")
         config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
+        config.write(f"TCC_BOOTSTRAP_ALT={args.tcc_bootstrap_alt}\n")
 
 # pylint: disable=too-many-statements
 def main():
@@ -99,6 +100,9 @@ def main():
     parser.add_argument("-qk", "--kernel", help="Custom early kernel to use")
 
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
+                        action="store_true")
+    parser.add_argument("--tcc_bootstrap_alt",
+                        help="Use tcc_bootstrap_alt.",
                         action="store_true")
 
     args = parser.parse_args()
