@@ -381,6 +381,7 @@ if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xTrueFalse; then
         /usr/lib/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-footer-single-main.hex2
 
     cp ${pkg}.${ARCH}.checksums ${SRCDIR}
-else
+fi
+if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xFalseFalse; then
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
