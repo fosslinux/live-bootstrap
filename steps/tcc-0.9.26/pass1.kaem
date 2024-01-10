@@ -111,7 +111,7 @@ cd ..
 
 if match x${TCC_BOOTSTRAP_ALT} xTrue; then
 # Recompile libc: crt{1,n,i}, libtcc.a, libc.a
-tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
+tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
 else
 # crt1.o
 tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
@@ -130,8 +130,8 @@ if match ${ARCH}${TCC_BOOTSTRAP_ALT} x86False; then
 fi
 
 if match ${ARCH}${TCC_BOOTSTRAP_ALT} x86True; then
-    tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
-    tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${libdir}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
+    tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
+    tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
 fi
 
 if match x${TCC_BOOTSTRAP_ALT} xTrue; then
@@ -181,14 +181,14 @@ tcc-boot0 \
     -D HAVE_SETJMP=1 \
     -I /usr/include/ \
     -I . \
-    -I ${prefix}/include \
+    -I ${PREFIX}/include \
     -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
-    -D CONFIG_TCCDIR=\"${libdir}/tcc\" \
-    -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
+    -D CONFIG_TCCDIR=\"${LIBDIR}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include/mes\" \
-    -D TCC_LIBGCC=\"${libdir}/libc.a\" \
+    -D CONFIG_TCC_LIBPATHS=\"${LIBDIR}:${LIBDIR}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
+    -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
     -D CONFIG_TCC_STATIC=1 \
@@ -201,7 +201,7 @@ tcc-boot0 -static -nostdlib /usr/lib/mes/crt1.o ../mes-0.25/unified-libc.o ../me
 
 #replace tcc-boot0 with full one
 
-cp tcc-boot0-new ${bindir}/tcc-boot0
+cp tcc-boot0-new ${BINDIR}/tcc-boot0
 
 
 else
