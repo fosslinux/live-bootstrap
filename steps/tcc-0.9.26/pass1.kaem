@@ -187,7 +187,7 @@ tcc-boot0 \
     -D CONFIG_TCC_CRTPREFIX=\"${libdir}\" \
     -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
     -D CONFIG_TCC_LIBPATHS=\"${libdir}:${libdir}/tcc\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${prefix}/include/mes\" \
     -D TCC_LIBGCC=\"${libdir}/libc.a\" \
     -D TCC_LIBTCC1=\"libtcc1.a\" \
     -D CONFIG_TCCBOOT=1 \
