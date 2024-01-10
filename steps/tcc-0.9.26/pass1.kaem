@@ -157,7 +157,7 @@ if match x${ARCH}${TCC_BOOTSTRAP_ALT} xx86False; then
 fi
 
 if match x${TCC_BOOTSTRAP_ALT} xTrue; then
-tcc-boot0 -c -D__linux__ -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
+tcc-boot0 -c -D__linux__ -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -I /usr/include/mes/ -o unified-libc.o unified-libc.c
 else
 # libgetopt.a
 tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} lib/posix/getopt.c
