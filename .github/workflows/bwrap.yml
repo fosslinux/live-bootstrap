@@ -43,7 +43,7 @@ jobs:
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass1 --tcc_bootstrap_alt
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass1
       - name: Archive created packages
         if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v3
