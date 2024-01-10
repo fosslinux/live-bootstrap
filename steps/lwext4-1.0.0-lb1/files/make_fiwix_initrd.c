@@ -48,7 +48,7 @@
 
 #define BLOCK_SIZE 1024
 #define FILENAME_LENGTH 256
-#define INITRD_MB 1152
+#define INITRD_MB 1280
 
 const char *input_name = NULL;
 /**@brief   Block device handle.*/
