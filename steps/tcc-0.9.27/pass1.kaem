@@ -84,3 +84,6 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
 else
     sha256sum -c ${pkg}.checksums
 fi
+
+# LJW HACK stop here
+exit 1
