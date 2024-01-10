@@ -245,17 +245,24 @@ print(shutil.which('chroot'))
         if args.kernel:
             generator.prepare(target, using_kernel=True, target_size=size)
 
-            run(args.qemu_cmd,
+            arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + target.get_disk("disk") + ',format=raw',
-                '-drive', 'file=' + target.get_disk("external") + ',format=raw',
+                '-drive', 'file=' + target.get_disk("disk") + ',format=raw'
+            ]
+            if target.get_disk("external") is not None:
+                arg_list += [
+                    '-drive', 'file=' + target.get_disk("external") + ',format=raw',
+                ]
+            arg_list += [
                 '-nic', 'user,ipv6=off,model=e1000',
                 '-kernel', args.kernel,
                 '-nographic',
-                '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw')
+                '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw'
+            ]
+            run(args.qemu_cmd, *arg_list)
         else:
             generator.prepare(target, kernel_bootstrap=True, target_size=size)
             arg_list = [
