@@ -34,6 +34,7 @@ def create_configuration_file(args):
         config.write(f"JOBS={args.cores}\n")
         config.write(f"SWAP_SIZE={args.swap}\n")
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
+        config.write(f"INTERACTIVE={args.interactive}\n")
         config.write(f"BARE_METAL={args.bare_metal}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
@@ -72,21 +73,24 @@ def main():
                         help="Force all files timestamps to be 0 unix time",
                         action="store_true")
     parser.add_argument("--update-checksums",
-                        help="Update checksum files.",
+                        help="Update checksum files",
                         action="store_true")
     parser.add_argument("--external-sources",
-                        help="Download sources externally from live-bootstrap.",
+                        help="Download sources externally from live-bootstrap",
                         action="store_true")
     parser.add_argument("--build-kernels",
-                        help="Also build kernels in chroot and bwrap builds.",
+                        help="Also build kernels in chroot and bwrap builds",
                         action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
                         action="store_true")
+    parser.add_argument("-i", "--interactive",
+                        help="Use interactive prompts to resolve issues during bootstrap",
+                        action="store_true")
     parser.add_argument("-r", "--repo",
-                        help="Path to prebuilt binary packages.", nargs=None)
+                        help="Path to prebuilt binary packages", nargs=None)
     parser.add_argument("--early-preseed",
-                        help="Skip early stages of live-bootstrap.", nargs=None)
+                        help="Skip early stages of live-bootstrap", nargs=None)
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
