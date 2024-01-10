@@ -1,0 +1,50 @@
+SPDX-FileCopyrightText: 2021 Alexander Sosedkin <monk@unboiled.info>
+
+SPDX-License-Identifier: LGPL-2.0-or-later
+
+From da11cf651576f94486dbd043dbfcde469e497574 Mon Sep 17 00:00:00 2001
+From: Alexander Sosedkin <monk@unboiled.info>
+Date: Sat, 30 Oct 2021 16:04:11 +0200
+Subject: [PATCH] Don't skip weak symbols during ar creation
+
+```
+$ echo 'int __attribute__((__weak__)) f(void) { return 4; }' > w.c
+$ tcc -c w.c -o w.o
+
+$ tcc-old -ar rc w.a w.o; nm -s w.a  # previous behaviour, not indexed
+w.o:
+0000000000000000 W f
+
+$ ar rc w.a w.o; nm -s w.a           # GNU binutils behaviour, indexed
+Archive index:
+f in w.o
+
+0000000000000000 W f
+
+$ tcc-new rc w.a w.o; nm -s w.a      # new behaviour, indexed
+Archive index:
+f in w.o
+
+0000000000000000 W f
+```
+---
+ tcctools.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/tcctools.c b/tcctools.c
+index cf174965..4567b81a 100644
+--- tcctools.c
++++ tcctools.c
+@@ -200,6 +200,9 @@ ST_FUNC int tcc_tool_ar(TCCState *s1, int argc, char **argv)
+                     (sym->st_info == 0x10
+                     || sym->st_info == 0x11
+                     || sym->st_info == 0x12
++                    || sym->st_info == 0x20
++                    || sym->st_info == 0x21
++                    || sym->st_info == 0x22
+                     )) {
+                     //printf("symtab: %2Xh %4Xh %2Xh %s\n", sym->st_info, sym->st_size, sym->st_shndx, strtab + sym->st_name);
+                     istrlen = strlen(strtab + sym->st_name)+1;
+-- 
+2.11.4.GIT
+
