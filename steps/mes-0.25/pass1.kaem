@@ -362,11 +362,8 @@ cp include/sys/wait.h ${INCDIR}/sys/wait.h
 
 cd ../..
 
-if match x${TCC_BOOTSTRAP_ALT} xTrue; then
-
-else
 # Checksums
-if match x${UPDATE_CHECKSUMS} xTrue; then
+if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xTrueFalse; then
     sha256sum -o ${pkg}.${ARCH}.checksums \
         /usr/bin/mes \
         /usr/bin/mes-m2 \
@@ -386,5 +383,4 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     cp ${pkg}.${ARCH}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.${ARCH}.checksums
-fi
 fi
