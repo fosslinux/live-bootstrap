@@ -294,7 +294,8 @@ this script the next time")
 
         # Actually download the file
         headers = {
-                "Accept-Encoding": "identity"
+                "Accept-Encoding": "identity",
+                "User-Agent": "curl/7.88.1"
         }
         if not os.path.isfile(abs_file_name):
             print(f"Downloading: {file_name}")
