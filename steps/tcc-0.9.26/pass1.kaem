@@ -168,6 +168,10 @@ cd ../${TCC_PKG}
 
 if match x${TCC_BOOTSTRAP_ALT} xTrue; then
 mkdir /usr/lib/mes/tcc/
+
+# dummy tcc-mes
+catm /usr/bin/tcc-mes
+
 # boot1
 tcc-boot0 \
     -nostdinc \
