@@ -76,10 +76,10 @@ build: coreutils-6.10
 build: gawk-3.0.4
 build: perl-5.000
 build: perl-5.003
-uninstall: perl-5.000
 build: perl5.004-05
 build: perl5.005-03
 build: perl-5.6.2
+uninstall: perl-5.000 perl-5.003 perl5.004-05 perl5.005-03
 improve: populate_device_nodes
 build: autoconf-2.52
 build: automake-1.6.3
@@ -150,6 +150,7 @@ build: bison-3.4.2
 build: perl-5.10.1
 build: dist-3.5-236
 build: perl-5.32.1
+uninstall: perl-5.6.2 perl-5.10.1
 build: libarchive-3.5.2
 build: openssl-1.1.1l
 build: ca-certificates-3.95
