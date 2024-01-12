@@ -369,6 +369,7 @@ tcc-boot2 -ar cr ${LIBDIR}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
 # rebuild tcc-boot2 with itself
+# LJW FIXME find a neater way to repeat this step (maybe a separate kaem script)
 tcc-boot2 \
     -g \
     -v \
@@ -438,9 +439,6 @@ cd ../..
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
-        /usr/bin/tcc-mes \
-        /usr/bin/tcc-boot0 \
-        /usr/bin/tcc-boot1 \
         /usr/bin/tcc \
         /usr/lib/mes/libc.a \
         /usr/lib/mes/libgetopt.a \
@@ -453,3 +451,8 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
 else
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
+
+# LJW FIXME only check hashes for following files when doing mes builds:
+#        /usr/bin/tcc-mes \
+#        /usr/bin/tcc-boot0 \
+#        /usr/bin/tcc-boot1 \
