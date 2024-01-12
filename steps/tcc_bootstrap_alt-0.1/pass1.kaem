@@ -28,6 +28,8 @@ kaem --file kaem.x86
 cp artifacts/tcc_27_boot_static.exe /usr/bin/tcc-boot0
 chmod 755 /usr/bin/tcc-boot0
 
+cd ../..
+
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.${ARCH}.checksums \
