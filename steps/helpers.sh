@@ -157,6 +157,7 @@ uninstall() {
                     fi
                 done
                 cd "${oldpwd}"
+                rm -rf "/tmp/removing"
                 ;;
         esac
         shift
