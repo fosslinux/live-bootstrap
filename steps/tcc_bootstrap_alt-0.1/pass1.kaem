@@ -27,3 +27,13 @@ chmod 755 ./x86/artifact/kaem-optional-seed
 kaem --file kaem.x86
 cp artifacts/tcc_27_boot_static.exe /usr/bin/tcc-boot0
 chmod 755 /usr/bin/tcc-boot0
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.${ARCH}.checksums \
+        /usr/bin/tcc-boot0
+
+    cp ${pkg}.checksums ${SRCDIR}
+else
+    sha256sum -c ${pkg}.${ARCH}.checksums
+fi
