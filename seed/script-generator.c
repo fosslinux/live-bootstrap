@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <bootstrappable.h>
 
 struct Token {
 	char *val;
@@ -23,6 +22,7 @@ typedef struct Token Token;
 #define TYPE_IMPROVE 2
 #define TYPE_DEFINE 3
 #define TYPE_JUMP 4
+#define TYPE_UNINSTALL 5
 
 struct Directive {
 	Token *tok;
@@ -212,12 +212,12 @@ Token *fill(Token *tok, Directive *directive, int type) {
 
 Token *logic(Token *tok, char **val) {
 	/* logic = "("
-	 *         (name |
-	 *         (name "==" value) |
-     *         (name "!=" value) |
-	 *         (logic "||" logic) |
-	 *         (logic "&&" logic))
-	 *         ")"
+	 *	 (name |
+	 *	 (name "==" value) |
+	 *	 (name "!=" value) |
+	 *	 (logic "||" logic) |
+	 *	 (logic "&&" logic))
+	 *	 ")"
 	 */
 
 	char *lhs = tok->val;
@@ -237,15 +237,15 @@ Token *logic(Token *tok, char **val) {
 			lhs = "False";
 		}
 	} else if (strcmp(tok->val, "!=") == 0) {
-                /* Case for inequality. */
-                rhs = tok->next->val;
-                tok = tok->next->next;
-                if (strcmp(get_var(lhs), rhs) == 0) {
-                        lhs = "False";
-                } else {
-                        lhs = "True";
-                }
-        } else {
+		/* Case for inequality. */
+		rhs = tok->next->val;
+		tok = tok->next->next;
+		if (strcmp(get_var(lhs), rhs) == 0) {
+			lhs = "False";
+		} else {
+			lhs = "True";
+		}
+	} else {
 		fputs("Expected == or != after ", stderr);
 		fputs(lhs, stderr);
 		fputs(" in logic\n", stderr);
@@ -360,7 +360,7 @@ Token *define(Token *tok, Directive *directive) {
 }
 
 int interpret(Directive *directive) {
-	/* directive = (build | improve | define | jump) predicate? */
+	/* directive = (build | improve | define | jump | uninstall) predicate? */
 	Token *tok = directive->tok;
 	if (strcmp(tok->val, "build:") == 0) {
 		tok = fill(tok->next, directive, TYPE_BUILD);
@@ -371,6 +371,20 @@ int interpret(Directive *directive) {
 	} else if (strcmp(tok->val, "define:") == 0) {
 		tok = define(tok->next, directive);
 		return 1; /* There is no codegen for a define. */
+	} else if (strcmp(tok->val, "uninstall:") == 0) {
+		tok = fill(tok->next, directive, TYPE_UNINSTALL);
+		while (tok != NULL) {
+			if (strcmp(tok->val, "(") == 0) {
+				break;
+			}
+			if (strlen(directive->arg) + strlen(tok->val) + 1 > MAX_STRING) {
+				fputs("somehow you have managed to have too many uninstall arguments.\n", stderr);
+				exit(1);
+			}
+			directive->arg = strcat(directive->arg, " ");
+			directive->arg = strcat(directive->arg, tok->val);
+			tok = tok->next;
+		}
 	}
 
 	if (tok != NULL) {
@@ -618,6 +632,10 @@ void generate(Directive *directives) {
 			fclose(out);
 			out = start_script(counter, bash_build);
 			counter += 1;
+		} else if (directive->type == TYPE_UNINSTALL) {
+			fputs("uninstall ", out);
+			fputs(directive->arg, out);
+			fputs("\n", out);
 		}
 	}
 	fclose(out);

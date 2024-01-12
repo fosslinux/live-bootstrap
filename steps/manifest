@@ -15,6 +15,9 @@
 #   eg, define: BUILD_FIWIX = KERNEL_BOOTSTRAP == True || BUILD_KERNELS == True
 # - jump: jump (usually) to a new kernel, executes a script with that name
 #   eg, jump: fiwix
+# - uninstall; removes a package or filenames
+#   eg, uninstall: perl-5.6.2
+#   eg, uninstall: /usr/bin/lex /usr/bin/flex
 #
 # The following directives have special significance:
 # - build directives beginning with "bash" (as well as jumps) trigger the generation of
