@@ -95,11 +95,6 @@ bin_preseed() {
         if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
             mv "${pkg}_${revision}"* /external/repo || return 1
-            if [[ "${pkg}" == bash-* ]]; then
-                # tar does not like overwriting running bash
-                # shellcheck disable=SC2153
-                rm -f "${PREFIX}/bin/bash" "${PREFIX}/bin/sh"
-            fi
             cd "/external/repo"
             rm -f /tmp/filelist.txt
             src_apply "${pkg}" $((revision))
@@ -469,6 +464,11 @@ src_apply() {
         mkdir -p /tmp
         cp "${PREFIX}/bin/tar" "/tmp/tar"
         TAR_PREFIX="/tmp/"
+    fi
+
+    # Bash does not like to be overwritten
+    if [[ "${pkg}" == bash-* ]]; then
+        rm "${PREFIX}/bin/bash"
     fi
 
     # Overwriting files is mega busted, so do it manually

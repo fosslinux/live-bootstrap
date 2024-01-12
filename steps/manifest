@@ -74,6 +74,7 @@ build: coreutils-6.10
 build: gawk-3.0.4
 build: perl-5.000
 build: perl-5.003
+uninstall: perl-5.000
 build: perl5.004-05
 build: perl5.005-03
 build: perl-5.6.2
