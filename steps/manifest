@@ -117,6 +117,7 @@ build: kexec-tools-2.0.22 ( BUILD_LINUX == True )
 improve: clean_sources
 build: linux-4.9.10 ( BUILD_LINUX == True )
 jump: break ( INTERNAL_CI == pass1 )
+improve: populate_device_nodes
 jump: linux ( CHROOT == False )
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
 improve: finalize_job_count
