@@ -368,6 +368,55 @@ tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unifi
 tcc-boot2 -ar cr ${LIBDIR}/libc.a unified-libc.o
 cd ../${TCC_PKG}
 
+# rebuild tcc-boot2 with itself
+tcc-boot2 \
+    -g \
+    -v \
+    -static \
+    -o tcc-boot2 \
+    -D BOOTSTRAP=1 \
+    -D HAVE_BITFIELD=1 \
+    -D HAVE_FLOAT=1 \
+    -D HAVE_LONG_LONG=1 \
+    -D HAVE_SETJMP=1 \
+    -I . \
+    -I ${PREFIX}/include/mes \
+    -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
+    -D CONFIG_TCCDIR=\"${LIBDIR}/tcc\" \
+    -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
+    -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
+    -D CONFIG_TCC_LIBPATHS=\"${LIBDIR}:${LIBDIR}/tcc\" \
+    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
+    -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
+    -D TCC_LIBTCC1=\"libtcc1.a\" \
+    -D CONFIG_TCCBOOT=1 \
+    -D CONFIG_TCC_STATIC=1 \
+    -D CONFIG_USE_LIBGCC=1 \
+    -D TCC_VERSION=\"0.9.26\" \
+    -D ONE_SOURCE=1 \
+    -L . \
+    tcc.c
+cp tcc-boot2 ${BINDIR}
+chmod 755 ${BINDIR}/tcc-boot2
+cd ../${MES_PKG}
+tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crt1.o lib/linux/${MES_ARCH}-mes-${MES_LIBC_SUFFIX}/crt1.c
+if match ${ARCH} x86; then
+    tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
+    tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
+fi
+
+tcc-boot2 -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o libtcc1.o lib/libtcc1.c
+if match ${ARCH} riscv64; then
+    tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
+    tcc-boot2 -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o lib-arm64.o
+else
+    tcc-boot2 -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o
+fi
+
+tcc-boot2 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
+tcc-boot2 -ar cr ${LIBDIR}/libc.a unified-libc.o
+cd ../${TCC_PKG}
+
 # Test boot2
 tcc-boot2 -version
 
