@@ -315,6 +315,7 @@ fi
 
 tcc-boot0 -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
 tcc-boot0 -ar cr ${LIBDIR}/libc.a unified-libc.o
+cd ../${TCC_PKG}
 
 # rebuild tcc-boot0 with itself again
 tcc-boot0 \
