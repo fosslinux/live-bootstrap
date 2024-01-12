@@ -73,7 +73,7 @@ class Generator():
             self.target_dir = os.path.join(self.target_dir, 'disk')
             target.add_disk("disk",
                             filesystem="ext3",
-                            size=(target_size + "M") if target_size else "16G",
+                            size=(str(target_size) + "M") if target_size else "16G",
                             bootable=True)
             target.mount_disk("disk", "disk")
             self.external_dir = os.path.join(self.target_dir, 'external')
@@ -294,7 +294,8 @@ this script the next time")
 
         # Actually download the file
         headers = {
-                "Accept-Encoding": "identity"
+                "Accept-Encoding": "identity",
+                "User-Agent": "curl/7.88.1"
         }
         if not os.path.isfile(abs_file_name):
             print(f"Downloading: {file_name}")
@@ -305,7 +306,7 @@ this script the next time")
                     target_file.write(response.raw.read())
             else:
                 raise requests.HTTPError("Download failed: HTTP " +
-                    response.status_code + " " + response.reason)
+                    str(response.status_code) + " " + response.reason)
         return abs_file_name
 
     def get_packages(self):

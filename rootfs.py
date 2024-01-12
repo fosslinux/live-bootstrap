@@ -12,6 +12,7 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Bastian Bittorf <bb@npl.de>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2023-24 Gábor Stefanik <netrolller.3d@gmail.com>
 
 import argparse
 import os
@@ -31,7 +32,10 @@ def create_configuration_file(args):
         config.write(f"CHROOT={args.chroot or args.bwrap}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
+        config.write(f"SWAP_SIZE={args.swap}\n")
+        config.write(f"FINAL_JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
+        config.write(f"INTERACTIVE={args.interactive}\n")
         config.write(f"BARE_METAL={args.bare_metal}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
@@ -45,7 +49,7 @@ def create_configuration_file(args):
         config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
         config.write(f"TCC_BOOTSTRAP_ALT={args.tcc_bootstrap_alt}\n")
 
-# pylint: disable=too-many-statements
+# pylint: disable=too-many-statements,too-many-branches
 def main():
     """
     A few command line arguments to customize bootstrap.
@@ -71,22 +75,27 @@ def main():
                         help="Force all files timestamps to be 0 unix time",
                         action="store_true")
     parser.add_argument("--update-checksums",
-                        help="Update checksum files.",
+                        help="Update checksum files",
                         action="store_true")
     parser.add_argument("--external-sources",
-                        help="Download sources externally from live-bootstrap.",
+                        help="Download sources externally from live-bootstrap",
                         action="store_true")
     parser.add_argument("--build-kernels",
-                        help="Also build kernels in chroot and bwrap builds.",
+                        help="Also build kernels in chroot and bwrap builds",
                         action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
                         action="store_true")
+    parser.add_argument("-i", "--interactive",
+                        help="Use interactive prompts to resolve issues during bootstrap",
+                        action="store_true")
     parser.add_argument("-r", "--repo",
-                        help="Path to prebuilt binary packages.", nargs=None)
+                        help="Path to prebuilt binary packages", nargs=None)
     parser.add_argument("--early-preseed",
-                        help="Skip early stages of live-bootstrap.", nargs=None)
+                        help="Skip early stages of live-bootstrap", nargs=None)
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
+    parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
+                        default=0)
 
     # QEMU arguments
     parser.add_argument("-q", "--qemu", help="Use QEMU",
@@ -146,6 +155,13 @@ def main():
             (1024 if str(args.target_size).lower().endswith('g') else 1))
     else:
         args.target_size = 0
+
+    # Swap file size validation
+    if args.qemu or args.bare_metal:
+        args.swap = (int(str(args.swap).rstrip('gGmM')) *
+            (1024 if str(args.swap).lower().endswith('g') else 1))
+    else:
+        args.swap = 0
 
     # bootstrap.cfg
     try:
@@ -233,17 +249,24 @@ print(shutil.which('chroot'))
         if args.kernel:
             generator.prepare(target, using_kernel=True, target_size=size)
 
-            run(args.qemu_cmd,
+            arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
                 '-no-reboot',
-                '-drive', 'file=' + target.get_disk("disk") + ',format=raw',
-                '-drive', 'file=' + target.get_disk("external") + ',format=raw',
+                '-drive', 'file=' + target.get_disk("disk") + ',format=raw'
+            ]
+            if target.get_disk("external") is not None:
+                arg_list += [
+                    '-drive', 'file=' + target.get_disk("external") + ',format=raw',
+                ]
+            arg_list += [
                 '-nic', 'user,ipv6=off,model=e1000',
                 '-kernel', args.kernel,
                 '-nographic',
-                '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw')
+                '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw'
+            ]
+            run(args.qemu_cmd, *arg_list)
         else:
             generator.prepare(target, kernel_bootstrap=True, target_size=size)
             arg_list = [

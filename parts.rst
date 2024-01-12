@@ -381,9 +381,7 @@ C library. Our previous Mes C library was incomplete which prevented us
 from building many newer or more complex programs.
 
 ``tcc`` has slight problems when building and linking ``musl``, so we
-apply a few patches. In particular, we replace all weak symbols with
-strong symbols and will patch ``tcc`` in the next step to ignore
-duplicate symbols.
+apply a few patches.
 
 We do not use any of ``/usr/lib/mes`` or ``/usr/include/mes`` any longer, rather
 using ``/usr/lib`` and ``/usr/include`` like normal.
@@ -657,14 +655,13 @@ and the GNU assembler ``as``.
 musl 1.1.24 (v3)
 ================
 
-We rebuild musl for the third time. This time we use GNU ar rather than ``tcc -ar``,
-so we can drop weak symbols patch. Also, we can use GNU as to build assembly source files,
+We rebuild musl for the third time. This time we can use GNU as to build assembly source files,
 so those assembly files that tcc failed to compile no longer have to be patched.
 
 tcc 0.9.27 (musl v3)
 ====================
 
-We rebuild tcc against new musl and without a patch to ignore duplicate symbols.
+We rebuild tcc against new musl.
 
 gcc 4.0.4
 =========

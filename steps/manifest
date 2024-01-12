@@ -119,11 +119,12 @@ improve: clean_sources
 build: linux-4.9.10 ( BUILD_LINUX == True )
 jump: break ( INTERNAL_CI == pass1 )
 jump: linux ( CHROOT == False )
+jump: move_disk ( KERNEL_BOOTSTRAP == True )
+improve: finalize_job_count
 improve: finalize_fhs
+improve: swap ( SWAP_SIZE != 0 )
 build: musl-1.2.4
 build: curl-8.5.0
-improve: populate_device_nodes
-jump: move_disk ( KERNEL_BOOTSTRAP == True )
 improve: get_network ( CHROOT == False )
 build: bash-5.2.15
 build: xz-5.4.1
@@ -183,3 +184,4 @@ build: binutils-2.41
 build: gcc-13.1.0
 improve: null_time ( FORCE_TIMESTAMPS == True )
 improve: update_checksums ( UPDATE_CHECKSUMS == True )
+improve: after
