@@ -435,6 +435,7 @@ cd ../..
 
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
+# LJW FIXME is this a bug? should it say pkg and ARCH?
     sha256sum -o ${pkg}.checksums \
         /usr/bin/tcc \
         /usr/lib/mes/libc.a \
