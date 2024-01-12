@@ -53,6 +53,7 @@ build: heirloom-devtools-070527
 build: bash-2.05b
 improve: setup_repo
 improve: update_env
+improve: merged_usr
 build: flex-2.5.11
 build: tcc-0.9.27
 improve: musl_libdir
