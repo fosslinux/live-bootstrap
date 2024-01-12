@@ -65,6 +65,7 @@ build: sed-4.0.9
 build: bzip2-1.0.8
 build: m4-1.4.7
 build: flex-2.6.4
+uninstall: /usr/bin/yacc
 build: bison-3.4.1
 build: bison-3.4.1
 build: bison-3.4.1
