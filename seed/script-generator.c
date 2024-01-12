@@ -7,6 +7,7 @@
 #define MAX_TOKEN 64
 #define MAX_STRING 2048
 
+#include <bootstrappable.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +23,6 @@ typedef struct Token Token;
 #define TYPE_IMPROVE 2
 #define TYPE_DEFINE 3
 #define TYPE_JUMP 4
-#define TYPE_MAINT 5
 
 struct Directive {
 	Token *tok;
@@ -214,7 +214,7 @@ Token *logic(Token *tok, char **val) {
 	/* logic = "("
 	 *         (name |
 	 *         (name "==" value) |
-         *         (name "!=" value) |
+     *         (name "!=" value) |
 	 *         (logic "||" logic) |
 	 *         (logic "&&" logic))
 	 *         ")"
@@ -360,7 +360,7 @@ Token *define(Token *tok, Directive *directive) {
 }
 
 int interpret(Directive *directive) {
-	/* directive = (build | improve | define | jump | maint) predicate? */
+	/* directive = (build | improve | define | jump) predicate? */
 	Token *tok = directive->tok;
 	if (strcmp(tok->val, "build:") == 0) {
 		tok = fill(tok->next, directive, TYPE_BUILD);
@@ -368,8 +368,6 @@ int interpret(Directive *directive) {
 		tok = fill(tok->next, directive, TYPE_IMPROVE);
 	} else if (strcmp(tok->val, "jump:") == 0) {
 		tok = fill(tok->next, directive, TYPE_JUMP);
-	} else if (strcmp(tok->val, "maint:") == 0) {
-		tok = fill(tok->next, directive, TYPE_MAINT);
 	} else if (strcmp(tok->val, "define:") == 0) {
 		tok = define(tok->next, directive);
 		return 1; /* There is no codegen for a define. */
@@ -620,8 +618,6 @@ void generate(Directive *directives) {
 			fclose(out);
 			out = start_script(counter, bash_build);
 			counter += 1;
-		} else if (directive->type == TYPE_MAINT) {
-			output_call_script(out, "maint", directive->arg, bash_build, 1);
 		}
 	}
 	fclose(out);
