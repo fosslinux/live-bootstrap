@@ -154,7 +154,7 @@ else
     IS_RISCV64=False
 fi
 
-if match xIS_RISCV64${TCC_BOOTSTRAP_ALT} xFalseFalse; then
+if match x${IS_RISCV64}${TCC_BOOTSTRAP_ALT} xFalseFalse; then
     tcc-mes -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o
 fi
 
