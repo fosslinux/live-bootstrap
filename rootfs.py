@@ -34,7 +34,7 @@ def create_configuration_file(args):
         config.write(f"ARCH={args.arch}\n")
         config.write(f"ARCH_DIR={stage0_arch_map.get(args.arch, args.arch)}\n")
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
-        config.write(f"CHROOT={args.chroot or args.bwrap}\n")
+        config.write(f"CHROOT={args.chroot or args.bwrap or args.docker}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"SWAP_SIZE={args.swap}\n")
@@ -74,6 +74,8 @@ def main():
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
                         action="store_true")
     parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
+                        action="store_true")
+    parser.add_argument("-do", "--docker", help="Run inside a docker build",
                         action="store_true")
     parser.add_argument("-t", "--target", help="Target directory",
                         default="target")
@@ -140,15 +142,17 @@ def main():
             count += 1
         if args.bwrap:
             count += 1
+        if args.docker:
+            count += 1
         if args.bare_metal:
             count += 1
         return count
 
     if check_types() > 1:
-        raise ValueError("No more than one of qemu, chroot, bwrap, bare metal"
+        raise ValueError("No more than one of qemu, chroot, bwrap, docker, bare metal"
                          "may be used.")
     if check_types() == 0:
-        raise ValueError("One of qemu, chroot, bwrap, or bare metal must be selected.")
+        raise ValueError("One of qemu, chroot, bwrap, docker, or bare metal must be selected.")
 
     # Arch validation
     if args.arch != "x86":
@@ -249,6 +253,16 @@ print(shutil.which('chroot'))
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init,
                     cleanup=cleanup)
+
+    elif args.docker:
+        generator.prepare(target, using_kernel=False)
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+        print(generator.target_dir, init)
+        run('env', '-i', 'DOCKER_BUILDKIT=1', 'docker', 'build',
+                                                 '--progress=plain',
+                                                 '-t', 'local/live',
+                                                 '.')
 
     elif args.bwrap:
         init = '/init'
