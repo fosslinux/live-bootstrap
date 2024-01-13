@@ -147,12 +147,14 @@ tcc-mes -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I 
 fi
 
 if match ${ARCH} riscv64; then
+    IS_RISCV64=True
     tcc-mes -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
     tcc-mes -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o lib-arm64.o
+else
+    IS_RISCV64=False
 fi
 
-# LJW FIXME breaks other arches
-if match x${ARCH}${TCC_BOOTSTRAP_ALT} xx86False; then
+if match xIS_RISCV64${TCC_BOOTSTRAP_ALT} xFalseFalse; then
     tcc-mes -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o
 fi
 
