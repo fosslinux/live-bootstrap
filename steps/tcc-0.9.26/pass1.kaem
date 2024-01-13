@@ -450,7 +450,17 @@ else
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
 
-# LJW FIXME only check hashes for following files when doing mes builds:
-#        /usr/bin/tcc-mes \
-#        /usr/bin/tcc-boot0 \
-#        /usr/bin/tcc-boot1 \
+# Check extra hashes when doing mes build
+if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xTrueFalse; then
+# LJW FIXME is this a bug? should it say pkg and ARCH?
+    sha256sum -o ${pkg}_mes.checksums \
+        /usr/bin/tcc-mes \
+        /usr/bin/tcc-boot0 \
+        /usr/bin/tcc-boot1
+
+    cp ${pkg}.checksums ${SRCDIR}
+fi
+
+if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xFalseFalse; then
+    sha256sum -c ${pkg}_mes.${ARCH}.checksums
+fi
