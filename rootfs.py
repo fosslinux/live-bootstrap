@@ -37,6 +37,7 @@ def create_configuration_file(args):
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
         config.write(f"BARE_METAL={args.bare_metal}\n")
+        config.write(f"EXTERNAL_SOURCES={args.external_sources}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
                 config.write("DISK=sdb1\n")

@@ -23,6 +23,8 @@ mount | grep '/sys' &> /dev/null || (mkdir -p /sys; mount -t sysfs sysfs /sys)
 mount | grep '/tmp' &> /dev/null || (mkdir -p /tmp; mount -t tmpfs tmpfs /tmp)
 mount | grep '/dev/shm' &> /dev/null || (mkdir -p /dev/shm; mount -t tmpfs tmpfs /dev/shm)
 
-# Add /etc/resolv.conf
-echo 'nameserver 1.1.1.1' > /etc/resolv.conf
-echo 'nameserver 1.1.1.1' > /etc/resolv.conf.head
+if [ "${EXTERNAL_SOURCES}" = "False" ]; then
+    # Add /etc/resolv.conf
+    echo 'nameserver 1.1.1.1' > /etc/resolv.conf
+    echo 'nameserver 1.1.1.1' > /etc/resolv.conf.head
+fi
