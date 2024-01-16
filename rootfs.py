@@ -175,6 +175,9 @@ def main():
     else:
         args.target_size = 0
 
+    if args.docker:
+        args.external_sources = True
+
     # Swap file size validation
     if args.qemu or args.bare_metal:
         args.swap = (int(str(args.swap).rstrip('gGmM')) *
@@ -259,9 +262,13 @@ print(shutil.which('chroot'))
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         print(generator.target_dir, init)
-        run('env', '-i', 'DOCKER_BUILDKIT=1', 'docker', 'build',
+        run('env', '-i', 'DOCKER_BUILDKIT=1', 'SOURCE_DATE_EPOCH=1',
+                                                 'docker', 'build',
+                                                 '--build-arg=SOURCE_DATE_EPOCH=1',
                                                  '--progress=plain',
-                                                 '-t', 'local/live',
+                                                 '--platform=linux/amd64',
+                                                 '--target=package',
+                                                 '-t', 'local/live-bootstrap',
                                                  '.')
 
     elif args.bwrap:
