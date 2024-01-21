@@ -5,3 +5,7 @@
 [submodule "seed/stage0-posix"]
 	path = seed/stage0-posix
 	url = https://github.com/oriansj/stage0-posix
+
+[submodule "builder-hex0"]
+	path = builder-hex0
+	url = https://github.com/ironmeld/builder-hex0
