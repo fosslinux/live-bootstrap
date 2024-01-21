@@ -21,4 +21,5 @@ if [ "${CHROOT}" = False ]; then
     echo u > /proc/sysrq-trigger
     mount -o remount,ro /
     echo o > /proc/sysrq-trigger # power off
+    while true; do sleep 1; done
 fi

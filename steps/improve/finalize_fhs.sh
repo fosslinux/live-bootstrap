@@ -21,6 +21,7 @@ mount | grep '/proc' &> /dev/null || (mkdir -p /proc; mount -t proc proc /proc)
 mount | grep '/sys' &> /dev/null || (mkdir -p /sys; mount -t sysfs sysfs /sys)
 # Make /tmp a ramdisk (speeds up configure etc significantly)
 mount | grep '/tmp' &> /dev/null || (mkdir -p /tmp; mount -t tmpfs tmpfs /tmp)
+mount | grep '/dev/shm' &> /dev/null || (mkdir -p /dev/shm; mount -t tmpfs tmpfs /dev/shm)
 
 # Add /etc/resolv.conf
 echo 'nameserver 1.1.1.1' > /etc/resolv.conf
