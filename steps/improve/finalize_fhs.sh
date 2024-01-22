@@ -16,6 +16,11 @@ mount | grep '/sys' &> /dev/null || (mkdir -p /sys; mount -t sysfs sysfs /sys)
 mount | grep '/tmp' &> /dev/null || (mkdir -p /tmp; mount -t tmpfs tmpfs /tmp)
 mount | grep '/dev/shm' &> /dev/null || (mkdir -p /dev/shm; mount -t tmpfs tmpfs /dev/shm)
 
+if [ "${CHROOT}" = False ]; then
+    rm /etc/mtab
+    ln -s /proc/mounts /etc/mtab
+fi
+
 # Add /etc/resolv.conf
 if [ ! -e "/etc/resolv.conf" ]; then
     echo 'nameserver 1.1.1.1' > /etc/resolv.conf
