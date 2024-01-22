@@ -236,13 +236,14 @@ class Generator():
 
     def create_builder_hex0_disk_image(self, image_file_name, size):
         """Create builder-hex0 disk image"""
-        shutil.copyfile(os.path.join('seed', 'stage0-posix', 'bootstrap-seeds',
-                                     'NATIVE', 'x86', 'builder-hex0-x86-stage1.img'),
-                        image_file_name)
-
         with open(image_file_name, 'ab') as image_file:
+            # Compile and write stage1 binary seed
+            with open(os.path.join('builder-hex0', 'builder-hex0-x86-stage1.hex0'),
+                      encoding="utf-8") as infile:
+                for line in infile:
+                    image_file.write(bytes.fromhex(line.split('#')[0].split(';')[0].strip()))
             # Append stage2 hex0 source
-            with open(os.path.join('kernel-bootstrap', 'builder-hex0-x86-stage2.hex0'),
+            with open(os.path.join('builder-hex0', 'builder-hex0-x86-stage2.hex0'),
                       encoding="utf-8") as infile:
                 image_file.write(infile.read().encode())
             # Pad to next sector
