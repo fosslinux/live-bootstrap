@@ -82,7 +82,7 @@ int main() {
 	char *bare_metal = getenv("BARE_METAL");
 	if (bare_metal != NULL && strcmp(bare_metal, "True") == 0)
 	{
-		sprintf(cmdline, "fiwix root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init consoleblank=0\"", INITRD_MB * 1024, KEXEC_MB * 1024);
+		sprintf(cmdline, "fiwix console=/dev/tty1 root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init consoleblank=0\"", INITRD_MB * 1024, KEXEC_MB * 1024);
 	}
 	else
 	{
