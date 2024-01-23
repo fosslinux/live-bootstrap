@@ -10,7 +10,7 @@
 . /steps/env
 
 if [ "${INTERACTIVE}" = True ]; then
-    env - PATH=${PREFIX}/bin PS1="\w # " bash -i
+    env - PATH=${PREFIX}/bin PS1="\w # " setsid openvt -fec1 -- bash -i
 fi
 
 if [ "${CHROOT}" = False ]; then
