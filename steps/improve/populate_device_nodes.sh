@@ -23,6 +23,8 @@ if mount --version >/dev/null 2>&1; then
 fi
 
 if [ "${CHROOT}" = False ]; then
+    test -c "/dev/tty1" || mknod -m 666 "/dev/tty1" c 4 1
+    test -c "/dev/tty2" || mknod -m 666 "/dev/tty2" c 4 2
     test -c "/dev/console" || mknod -m 666 "/dev/console" c 5 1
     test -b "/dev/sda" || mknod -m 600 "/dev/sda" b 8 0
     test -b "/dev/sda1" || mknod -m 600 "/dev/sda1" b 8 1

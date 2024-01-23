@@ -54,6 +54,9 @@ build: bash-2.05b
 improve: setup_repo
 improve: update_env
 improve: merged_usr
+improve: populate_device_nodes
+define: CONSOLES = ( INTERACTIVE == True && CHROOT == False )
+improve: open_console ( CONSOLES == True )
 build: flex-2.5.11
 build: tcc-0.9.27
 improve: musl_libdir
@@ -80,7 +83,6 @@ build: perl5.004-05
 build: perl5.005-03
 build: perl-5.6.2
 uninstall: perl-5.000 perl-5.003 perl5.004-05 perl5.005-03
-improve: populate_device_nodes
 build: autoconf-2.52
 build: automake-1.6.3
 build: automake-1.6.3
@@ -128,11 +130,13 @@ jump: linux ( CHROOT == False )
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
 improve: finalize_job_count
 improve: finalize_fhs
+improve: open_console ( CONSOLES == True )
 improve: swap ( SWAP_SIZE != 0 )
 build: musl-1.2.4
 build: curl-8.5.0
 improve: get_network ( CHROOT == False )
 build: bash-5.2.15
+improve: open_console ( CONSOLES == True )
 build: xz-5.4.1
 build: file-5.44
 build: libtool-2.4.7
