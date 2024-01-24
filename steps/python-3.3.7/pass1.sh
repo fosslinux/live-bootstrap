@@ -21,21 +21,21 @@ src_prepare() {
     mkdir Tools/unicode/in Tools/unicode/out
     mv ../CP437.TXT Tools/unicode/in/
     pushd Tools/unicode
-    python gencodec.py in/ ../../Lib/encodings/
+    python -B gencodec.py in/ ../../Lib/encodings/
     popd
 
     # Regenerate unicode
     rm Modules/unicodedata_db.h Modules/unicodename_db.h Objects/unicodetype_db.h
     mv ../*.txt ../*.zip .
-    python Tools/unicode/makeunicodedata.py
+    python -B Tools/unicode/makeunicodedata.py
 
     # Regenerate sre_constants.h
     rm Modules/sre_constants.h
     cp Lib/sre_constants.py .
-    python sre_constants.py
+    python -B sre_constants.py
 
     # Regenerate _ssl_data.h
-    python Tools/ssl/make_ssl_data.py /usr/include/openssl Modules/_ssl_data.h
+    python -B Tools/ssl/make_ssl_data.py /usr/include/openssl Modules/_ssl_data.h
 
     # Regenerate autoconf
     autoreconf-2.71 -fi
@@ -55,21 +55,21 @@ src_configure() {
 
 src_compile() {
     # Build pgen
-    make "${MAKEJOBS}" Parser/pgen
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" Parser/pgen
     # Regen graminit.c and graminit.h
-    make "${MAKEJOBS}" Include/graminit.h
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" Include/graminit.h
 
     # Regenerate some Python scripts using the other regenerated files
     # Must move them out to avoid using Lib/ module files which are
     # incompatible with running version of Python
     cp Lib/{symbol,keyword,token}.py .
     cp token.py _token.py
-    python symbol.py
-    python keyword.py
-    python token.py
+    python -B symbol.py
+    python -B keyword.py
+    python -B token.py
 
     # Now build the main program
-    make -j1 CFLAGS="-U__DATE__ -U__TIME__"
+    PYTHONDONTWRITEBYTECODE=1 make -j1 CFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {
