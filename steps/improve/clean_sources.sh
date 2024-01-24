@@ -1,4 +1,5 @@
 # SPDX-FileCopyrightText: 2023 Eduardo Sánchez Muñoz <eduardosm-dev@e64.io>
+# SPDX-FileCopyrightText: 2024 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -36,6 +37,11 @@ for source in "${DISTFILES}/"*; do
     # Delete this source
     rm "${source}"
 done
+
+if [ -e "/external/repo-preseeded/linux-4.9.10_0.tar.bz2" ]; then
+    # This is done in src_extract out of necessity usually -- I can't think of a better solution :(
+    rm -f "${DISTFILES}/linux-4.9.10.tar.gz"
+fi
 
 unset get_source_filename
 unset pkgs pkg line
