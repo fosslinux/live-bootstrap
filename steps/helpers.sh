@@ -225,6 +225,7 @@ build() {
     call $build_stage
 
     echo "${pkg}: install to fakeroot."
+    mkdir -p "${DESTDIR}"
     build_stage=src_install
     call $build_stage
 
@@ -241,7 +242,6 @@ build() {
     echo "${pkg}: cleaning up."
     rm -rf "${SRCDIR}/${pkg}/build"
     rm -rf "${DESTDIR}"
-    mkdir -p "${DESTDIR}"
 
     echo "${pkg}: installing package."
     src_apply "${pkg}" "${revision}"
