@@ -113,11 +113,12 @@ bin_preseed() {
 # that can be overridden on per package basis in the build script.
 # build takes two arguments:
 # 1) name-version of the package
-# 2) optionally specify build script. Default is name-version.sh
+# 2) optionally specify build script. Default is pass$((revision+1)).sh
 # 3) optionally specify directory to cd into
 build() {
     pkg=$1
-    script_name=${2:-${pkg}.sh}
+    get_revision "${pkg}"
+    script_name=${2:-pass$((revision+1)).sh}
     dirname=${3:-${pkg}}
 
     # shellcheck disable=SC2015
@@ -176,7 +177,6 @@ build() {
     call $build_stage
 
     echo "${pkg}: creating package."
-    get_revision "${pkg}"
     cd "${DESTDIR}"
     src_pkg
 

@@ -8,10 +8,9 @@ Contains a class that represents a target directory
 """
 
 import enum
-import getpass
 import os
 
-from lib.utils import mount, umount, create_disk, run_as_root
+from lib.utils import mount, create_disk
 
 class TargetType(enum.Enum):
     """Different types of target dirs we can have"""
@@ -24,7 +23,6 @@ class Target:
     """
 
     _disks = {}
-    _disk_filesystems = {}
     _mountpoints = {}
 
     def __init__(self, path="target"):
@@ -33,15 +31,6 @@ class Target:
 
         if not os.path.exists(self.path):
             os.mkdir(self.path)
-
-    def __del__(self):
-        for path in self._mountpoints:
-            print(f"Unmounting {path}")
-            umount(path)
-
-        for disk in self._disks.values():
-            print(f"Detaching {disk}")
-            run_as_root("losetup", "-d", disk)
 
     def tmpfs(self, size="8G"):
         """Mount a tmpfs"""
@@ -59,32 +48,13 @@ class Target:
                  mkfs_args=None):
         """Add a disk"""
         disk_path = os.path.join(self.path, f"{name}.img")
-        self._disks[name] = create_disk(disk_path,
-                                        tabletype,
-                                        filesystem,
-                                        size,
-                                        bootable,
-                                        mkfs_args)
-        self._disk_filesystems[name] = filesystem
-        # Allow executing user to access it
-        run_as_root("chown", getpass.getuser(), self._disks[name])
-
-    def mount_disk(self, name, mountpoint=None):
-        """Mount the disk"""
-        if mountpoint is None:
-            mountpoint = f"{name}_mnt"
-        mountpoint = os.path.join(self.path, mountpoint)
-        os.mkdir(mountpoint)
-        mount(self._disks[name] + "p1", mountpoint, self._disk_filesystems[name])
-        # Allow executing user to access it
-        run_as_root("chown", getpass.getuser(), mountpoint)
-        self._mountpoints[name] = mountpoint
-        return mountpoint
-
-    def umount_disk(self, name):
-        """Unmount a disk"""
-        umount(self._mountpoints[name])
-        del self._mountpoints[name]
+        create_disk(disk_path,
+                    tabletype,
+                    filesystem,
+                    size,
+                    bootable,
+                    mkfs_args)
+        self._disks[name] = disk_path
 
     def get_disk(self, name):
         """Get the path to a device of a disk"""

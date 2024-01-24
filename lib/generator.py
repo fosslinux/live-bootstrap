@@ -29,6 +29,7 @@ class Generator():
         self.external_sources = external_sources
         self.repo_path = repo_path
         self.source_manifest = self.get_source_manifest(not self.external_sources)
+        self.early_source_manifest = self.get_source_manifest(True)
         self.target_dir = None
         self.external_dir = None
 
@@ -59,26 +60,16 @@ class Generator():
         # argument matrix ... or we could just use ext3 instead which
         # is effectively universally the same
         if kernel_bootstrap:
-            init_path = os.path.join(self.target_dir, 'init')
+            self.target_dir = os.path.join(self.target_dir, 'init')
+            os.mkdir(self.target_dir)
 
-            os.mkdir(init_path)
-            self.target_dir = init_path
-
-            if self.repo_path or self.external_sources:
-                target.add_disk("external", filesystem="ext3")
-                target.mount_disk("external", "external")
-            else:
+            if not self.repo_path and not self.external_sources:
                 self.external_dir = os.path.join(self.target_dir, 'external')
         elif using_kernel:
             self.target_dir = os.path.join(self.target_dir, 'disk')
-            target.add_disk("disk",
-                            filesystem="ext3",
-                            size=(str(target_size) + "M") if target_size else "16G",
-                            bootable=True)
-            target.mount_disk("disk", "disk")
             self.external_dir = os.path.join(self.target_dir, 'external')
 
-        os.makedirs(self.external_dir, exist_ok=True)
+        os.makedirs(self.external_dir)
 
         if self.early_preseed:
             # Extract tar containing preseed
@@ -103,10 +94,16 @@ class Generator():
         if kernel_bootstrap:
             self.create_builder_hex0_disk_image(self.target_dir + '.img', target_size)
 
-        if kernel_bootstrap and (self.external_sources or self.repo_path):
-            target.umount_disk('external')
+            if self.repo_path or self.external_sources:
+                mkfs_args = ['-d', os.path.join(target.path, 'external')]
+                target.add_disk("external", filesystem="ext3", mkfs_args=mkfs_args)
         elif using_kernel:
-            target.umount_disk('disk')
+            mkfs_args = ['-d', os.path.join(target.path, 'disk')]
+            target.add_disk("disk",
+                            filesystem="ext3",
+                            size=(str(target_size) + "M") if target_size else "16G",
+                            bootable=True,
+                            mkfs_args=mkfs_args)
 
     def steps(self):
         """Copy in steps."""
@@ -163,9 +160,10 @@ class Generator():
 
     def distfiles(self):
         """Copy in distfiles"""
-        def copy_no_network_distfiles(out):
+        def copy_no_network_distfiles(out, early):
             # Note that "no disk" implies "no network" for kernel bootstrap mode
-            for file in self.source_manifest:
+            manifest = self.early_source_manifest if early else self.source_manifest
+            for file in manifest:
                 file = file[3].strip()
                 shutil.copy2(os.path.join(self.distfiles_dir, file),
                              os.path.join(out, file))
@@ -175,13 +173,13 @@ class Generator():
 
         if early_distfile_dir != main_distfile_dir:
             os.makedirs(early_distfile_dir, exist_ok=True)
-            copy_no_network_distfiles(early_distfile_dir)
+            copy_no_network_distfiles(early_distfile_dir, True)
 
         if self.external_sources:
             shutil.copytree(self.distfiles_dir, main_distfile_dir, dirs_exist_ok=True)
         else:
             os.mkdir(main_distfile_dir)
-            copy_no_network_distfiles(main_distfile_dir)
+            copy_no_network_distfiles(main_distfile_dir, False)
 
     @staticmethod
     def output_dir(srcfs_file, dirpath):
@@ -236,13 +234,14 @@ class Generator():
 
     def create_builder_hex0_disk_image(self, image_file_name, size):
         """Create builder-hex0 disk image"""
-        shutil.copyfile(os.path.join('seed', 'stage0-posix', 'bootstrap-seeds',
-                                     'NATIVE', 'x86', 'builder-hex0-x86-stage1.img'),
-                        image_file_name)
-
         with open(image_file_name, 'ab') as image_file:
+            # Compile and write stage1 binary seed
+            with open(os.path.join('builder-hex0', 'builder-hex0-x86-stage1.hex0'),
+                      encoding="utf-8") as infile:
+                for line in infile:
+                    image_file.write(bytes.fromhex(line.split('#')[0].split(';')[0].strip()))
             # Append stage2 hex0 source
-            with open(os.path.join('kernel-bootstrap', 'builder-hex0-x86-stage2.hex0'),
+            with open(os.path.join('builder-hex0', 'builder-hex0-x86-stage2.hex0'),
                       encoding="utf-8") as infile:
                 image_file.write(infile.read().encode())
             # Pad to next sector
