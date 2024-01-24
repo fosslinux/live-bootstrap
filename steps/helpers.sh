@@ -7,6 +7,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Set constant umask
+umask 022
+
 # Get a list of files
 get_files() {
     echo "."
