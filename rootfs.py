@@ -268,7 +268,7 @@ print(shutil.which('chroot'))
                                                  '--progress=plain',
                                                  '--platform=linux/amd64',
                                                  '--target=package',
-                                                 '-t', 'local/live-bootstrap',
+                                                 '--tag', 'local/live-bootstrap',
                                                  '.')
 
     elif args.bwrap:
