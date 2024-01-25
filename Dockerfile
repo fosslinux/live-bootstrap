@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Lance Vick <lance@vick.house>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 FROM scratch as build
 ADD target/ /
 RUN ["/bootstrap-seeds/POSIX/x86/kaem-optional-seed"]

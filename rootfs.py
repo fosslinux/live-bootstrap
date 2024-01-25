@@ -13,6 +13,7 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-23 Samuel Tyler <samuel@samuelt.me>
 # SPDX-FileCopyrightText: 2023-24 Gábor Stefanik <netrolller.3d@gmail.com>
+# SPDX-FileCopyrightText: 2024 Lance Vick <lance@vick.house>
 
 import argparse
 import os
