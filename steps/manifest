@@ -156,6 +156,7 @@ build: openssl-1.1.1l
 build: ca-certificates-3.95
 build: curl-8.5.0
 build: zlib-1.2.13
+build: libarchive-3.5.2
 build: automake-1.16.3
 build: autoconf-2.71
 build: patch-2.7.6
