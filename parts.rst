@@ -1236,3 +1236,11 @@ libbsd 0.11.8
 
 libbsd provides BSD-centric functions. We need this in order to build shadow,
 which expects either glibc or libbsd.
+
+shadow 4.14.3
+=============
+
+shadow provides a variety of command line utilites to work with users and
+groups, avoiding the need for manual modification of ``/etc/passwd`` and
+``/etc/group``. This allows unprivileged users to be created by, or for,
+post-bootstrap build systems.
