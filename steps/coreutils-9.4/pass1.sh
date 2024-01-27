@@ -20,7 +20,7 @@ regenerate_files() {
 
     . ../../import-gnulib.sh
 
-    VERSION=$(basename "${BASH_SOURCE[0]}" .sh | sed 's/coreutils-//')
+    VERSION=$(basename "${PWD}" | sed 's/coreutils-//')
     echo "$VERSION" > .tarball-version
 
     # We don't have autopoint from gettext yet.
