@@ -191,6 +191,7 @@ jump: break ( INTERNAL_CI == pass1 ) # scripts are generated in pass1
 build: gcc-10.4.0
 build: binutils-2.41
 build: gcc-13.1.0
+build: gzip-1.13
 build: diffutils-3.10
 build: libmd-1.1.0
 build: libbsd-0.11.8
