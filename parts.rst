@@ -1244,3 +1244,11 @@ shadow provides a variety of command line utilites to work with users and
 groups, avoiding the need for manual modification of ``/etc/passwd`` and
 ``/etc/group``. This allows unprivileged users to be created by, or for,
 post-bootstrap build systems.
+
+opendoas 6.8.2
+==============
+
+opendoas is a port of 'doas' from OpenBSD to Linux. It has all functions of sudo
+that could be conceivably needed in live-bootstrap, and is much simpler to
+build. This allows build systems that expect sudo after live-bootstrap to use
+it.
