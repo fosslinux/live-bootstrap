@@ -557,7 +557,7 @@ void generate(Directive *directives) {
 					 */
 					generate_preseed_jump(counter);
 				}
-				bash_build = 1;
+				bash_build += 1;
 				/* Create call to new script. */
 				output_call_script(out, "", int2str(counter, 10, 0), bash_build, 0);
 				fclose(out);
