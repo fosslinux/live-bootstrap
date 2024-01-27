@@ -312,6 +312,13 @@ extract_file() {
                         esac
                     fi
                     ;;
+                *.zip)
+                    if test -e "${PREFIX}/bin/bsdtar"; then
+                        bsdtar -xf "${DISTFILES}/${f}"
+                    else
+                        cp "${DISTFILES}/${f}" .
+                    fi
+                    ;;
                 *)
                     cp "${DISTFILES}/${f}" .
                     ;;
@@ -417,7 +424,7 @@ src_pkg() {
     # So this does not need a command -v grep.
     if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
         tar -C "${DESTDIR}" --sort=name --hard-dereference \
-            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}" .
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw -cf "${dest_tar}" .
     else
         local olddir
         olddir=$PWD
@@ -432,7 +439,7 @@ src_pkg() {
             get_files . > ${filelist}
         fi
         tar --no-recursion ${null} --files-from "${filelist}" \
-                --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}"
+                --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw -cf "${dest_tar}"
         rm -f "$filelist"
         cd "$olddir"
     fi
