@@ -1225,6 +1225,7 @@ to ensure the compiler is suitable for downstream consumption;
 * LTO now fully functions correctly, despite both the linker and the compiler
   being static binaries.
 
+<<<<<<< HEAD
 libmd 1.1.0
 ===========
 
@@ -1252,3 +1253,11 @@ opendoas is a port of 'doas' from OpenBSD to Linux. It has all functions of sudo
 that could be conceivably needed in live-bootstrap, and is much simpler to
 build. This allows build systems that expect sudo after live-bootstrap to use
 it.
+
+gzip 1.13
+=========
+
+The version of gzip we have been using up until now is really old, all the way
+back from mes libc era! Somehow we've managed not to have any problems with it,
+though. This builds a gzip that is properly packaged and can be handled by all
+modern build systems.
