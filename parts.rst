@@ -1230,3 +1230,9 @@ libmd 1.1.0
 
 libmd provides message digest functions. In GNU/Linux, this is typically
 provided by glibc, but we need libmd to provide it since we are using musl.
+
+libbsd 0.11.8
+=============
+
+libbsd provides BSD-centric functions. We need this in order to build shadow,
+which expects either glibc or libbsd.
