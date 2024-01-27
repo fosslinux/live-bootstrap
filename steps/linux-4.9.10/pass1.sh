@@ -7,7 +7,7 @@
 
 src_unpack() {
     mkdir "${pkg}"
-    mv "${DISTFILES}/deblob-4.9" "${pkg}/"
+    cp "${DISTFILES}/deblob-4.9" "${pkg}/"
     default || true # Predictable link errors - not a problem
     rm "${DISTFILES}/${pkg}.tar.gz"
 }

@@ -20,7 +20,7 @@ src_prepare() {
     mkdir Tools/unicode/in Tools/unicode/out
     mv ../CP437.TXT Tools/unicode/in/
     pushd Tools/unicode
-    python gencodec.py in/ ../../Lib/encodings/
+    python -B gencodec.py in/ ../../Lib/encodings/
     popd
 
     # Regenerate unicode
@@ -29,7 +29,7 @@ src_prepare() {
         mv "../${f}-3.2.0.txt" .
         mv "../${f}-5.1.0.txt" "${f}.txt"
     done
-    python Tools/unicode/makeunicodedata.py
+    python -B Tools/unicode/makeunicodedata.py
 
     # Regenerate sre_constants.h
     rm Modules/sre_constants.h
@@ -57,22 +57,22 @@ src_compile() {
     # Temporarily break include cycle
     patch -Np0 -i graminit-regen.patch
     # Build pgen
-    make "${MAKEJOBS}" Parser/pgen
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" Parser/pgen
     # Regen graminit.c and graminit.h
-    make "${MAKEJOBS}" Include/graminit.h
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" Include/graminit.h
 
     # Regenerate some Python scripts using the other regenerated files
     # Must move them out to avoid using Lib/ module files which are
     # incompatible with running version of Python
     cp Lib/{symbol,keyword,token}.py .
-    python symbol.py
-    python keyword.py
-    python token.py
+    python -B symbol.py
+    python -B keyword.py
+    python -B token.py
 
     # Undo change
     patch -Np0 -R -i graminit-regen.patch
     # Now build the main program
-    make "${MAKEJOBS}" CFLAGS="-U__DATE__ -U__TIME__"
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" CFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {

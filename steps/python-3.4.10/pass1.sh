@@ -21,23 +21,23 @@ src_prepare() {
     mkdir Tools/unicode/in Tools/unicode/out
     mv ../CP437.TXT Tools/unicode/in/
     pushd Tools/unicode
-    python gencodec.py in/ ../../Lib/encodings/
+    python -B gencodec.py in/ ../../Lib/encodings/
     popd
 
     # Regenerate clinic
     find . -name "*.c" -or -name "*.h" | \
         xargs grep 'clinic input' -l | \
-        xargs -L 1 python Tools/clinic/clinic.py
+        xargs -L 1 python -B Tools/clinic/clinic.py
 
     # Regenerate unicode
     rm Modules/unicodedata_db.h Modules/unicodename_db.h Objects/unicodetype_db.h
     mv ../*.txt ../*.zip .
-    python Tools/unicode/makeunicodedata.py
+    python -B Tools/unicode/makeunicodedata.py
 
     # Regenerate sre_constants.h
     rm Modules/sre_constants.h
     cp Lib/sre_constants.py .
-    python sre_constants.py
+    python -B sre_constants.py
     mv sre_constants.h Modules/
 
     # Regenerate autoconf
@@ -58,21 +58,21 @@ src_configure() {
 
 src_compile() {
     # Build pgen
-    make -j1 Parser/pgen
+    PYTHONDONTWRITEBYTECODE=1 make -j1 Parser/pgen
     # Regen graminit.c and graminit.h
-    make -j1 Include/graminit.h
+    PYTHONDONTWRITEBYTECODE=1 make -j1 Include/graminit.h
 
     # Regenerate some Python scripts using the other regenerated files
     # Must move them out to avoid using Lib/ module files which are
     # incompatible with running version of Python
     cp Lib/{symbol,keyword,token}.py .
     cp token.py _token.py
-    python symbol.py
-    python keyword.py
-    python token.py
+    python -B symbol.py
+    python -B keyword.py
+    python -B token.py
 
     # Now build the main program
-    make -j1 CFLAGS="-U__DATE__ -U__TIME__"
+    PYTHONDONTWRITEBYTECODE=1 make -j1 CFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {

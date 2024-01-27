@@ -28,10 +28,3 @@ src_prepare() {
     mv ext/Digest-SHA ext/Digest/SHA
     mv ext/Data-Dumper ext/Data/Dumper
 }
-
-src_install() {
-    # Remove old perl
-    rm -rf "${PREFIX}"/lib/perl5/
-
-    default
-}

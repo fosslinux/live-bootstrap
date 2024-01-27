@@ -11,7 +11,7 @@ src_prepare() {
 
     # Regenerate ssl_data for ssl module
     rm Modules/_ssl_data_300.h Modules/_ssl_data.h
-    python Tools/ssl/make_ssl_data.py ../openssl-1.1.1l Modules/_ssl_data_111.h
+    python -B Tools/ssl/make_ssl_data.py ../openssl-1.1.1l Modules/_ssl_data_111.h
     sed -i 's#$(srcdir)/Modules/_ssl_data.h ##' Makefile.pre.in
     sed -i 's#$(srcdir)/Modules/_ssl_data_300.h ##' Makefile.pre.in
 
@@ -20,27 +20,27 @@ src_prepare() {
     mkdir Tools/unicode/in Tools/unicode/out
     mv ../CP437.TXT Tools/unicode/in/
     pushd Tools/unicode
-    python gencodec.py in/ ../../Lib/encodings/
+    python -B gencodec.py in/ ../../Lib/encodings/
     popd
 
     # Regenerate stringprep
     rm Lib/stringprep.py
     mv ../rfc3454.txt .
-    python Tools/unicode/mkstringprep.py > Lib/stringprep.py
+    python -B Tools/unicode/mkstringprep.py > Lib/stringprep.py
 
     # Regenerate unicode
     rm Modules/unicodedata_db.h Modules/unicodename_db.h Objects/unicodetype_db.h
     mkdir -p Tools/unicode/data
     mv ../*.txt ../*.zip Tools/unicode/data/
-    python Tools/unicode/makeunicodedata.py
+    python -B Tools/unicode/makeunicodedata.py
 
     # Regenerate Lib/re/_casefix.py
     rm Lib/re/_casefix.py
-    python Tools/scripts/generate_re_casefix.py Lib/re/_casefix.py
+    python -B Tools/scripts/generate_re_casefix.py Lib/re/_casefix.py
 
     # Regenerate Programs/test_frozenmain.h
     rm Programs/test_frozenmain.h
-    python Programs/freeze_test_frozenmain.py Programs/test_frozenmain.h
+    python -B Programs/freeze_test_frozenmain.py Programs/test_frozenmain.h
 
     # Create dummy Python/stdlib_module_names.h
     echo 'static const char* _Py_stdlib_module_names[] = {};' > Python/stdlib_module_names.h
@@ -69,7 +69,9 @@ src_compile() {
     # We have to choose the order ourselves because the Makefile is extremely lax about the order
     # First of all, do everything that doesn't use any C
     rm Modules/_blake2/blake2s_impl.c
-    make "${MAKEJOBS}" regen-opcode \
+    PYTHONDONTWRITEBYTECODE=1 \
+        make "${MAKEJOBS}" \
+        regen-opcode \
         regen-opcode-targets \
         regen-typeslots \
         regen-token \
@@ -82,17 +84,17 @@ src_compile() {
         regen-global-objects
 
     # Do the freeze regen process
-    make "${MAKEJOBS}" regen-frozen
-    make "${MAKEJOBS}" regen-deepfreeze
-    make "${MAKEJOBS}" regen-global-objects
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" regen-frozen
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" regen-deepfreeze
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" regen-global-objects
 
     make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
 
     # Regen Python/stdlib_module_names.h (you must have an existing build first)
-    make "${MAKEJOBS}" regen-stdlib-module-names
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" regen-stdlib-module-names
 
     # Now rebuild with proper stdlib_module_names.h
-    make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {
