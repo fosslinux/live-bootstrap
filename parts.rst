@@ -1224,3 +1224,9 @@ to ensure the compiler is suitable for downstream consumption;
   really be handled by the libc, which is what most distributions do.
 * LTO now fully functions correctly, despite both the linker and the compiler
   being static binaries.
+
+libmd 1.1.0
+===========
+
+libmd provides message digest functions. In GNU/Linux, this is typically
+provided by glibc, but we need libmd to provide it since we are using musl.
