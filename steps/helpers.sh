@@ -329,6 +329,7 @@ extract_file() {
 
 # Default unpacking function that unpacks all sources.
 default_src_unpack() {
+    local first_line found
     # Handle the first one differently
     first_line=$(head -n 1 ../sources)
     # Again, we want to split out into words.
@@ -339,10 +340,14 @@ default_src_unpack() {
     if ! [ -e "${dirname}" ]; then
         for i in *; do
             if [ -d "${i}" ]; then
+                found="yes"
                 dirname="${i}"
                 break
             fi
         done
+        if [ -z "${found}" ]; then
+            dirname="."
+        fi
     fi
     # shellcheck disable=SC2162
     tail -n +2 ../sources | while read line; do

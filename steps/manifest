@@ -208,3 +208,4 @@ build: libxslt-1.1.38
 build: docbook-xml-4.5
 build: docbook-xsl-nons-1.79.2
 improve: populate_catalog
+build: wget-curl-1.0
