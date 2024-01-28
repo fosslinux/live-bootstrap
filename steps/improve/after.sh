@@ -9,6 +9,19 @@
 . /steps/bootstrap.cfg
 . /steps/env
 
+curl -o /usr/bin/wget https://raw.githubusercontent.com/somasis/wget-curl/master/wget
+chmod +x /usr/bin/wget /usr/bin/sudo
+
+
+useradd user
+mkdir -p /home/user
+chown user:user /home/user
+usermod -aG wheel user
+echo 'permit nopass :wheel' > /etc/doas.conf
+chown root:root /etc/doas.conf
+chmod 0400 /etc/doas.conf
+chmod u+s /usr/bin/doas
+
 if [ "${INTERACTIVE}" = True ]; then
     env - PATH=${PREFIX}/bin PS1="\w # " bash -i
 fi
