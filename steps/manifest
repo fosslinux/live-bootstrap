@@ -203,3 +203,4 @@ improve: null_time ( FORCE_TIMESTAMPS == True )
 improve: update_checksums ( UPDATE_CHECKSUMS == True )
 improve: after
 build: git-2.43.0
+build: libxml2-2.10.4
