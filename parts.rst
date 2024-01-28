@@ -417,8 +417,8 @@ bzip2 1.0.8
 ``bzip2`` is rebuilt unpatched with the new tcc and musl fixing issues
 with reading files from stdin that existed in the previous build.
 
-m4 1.4.7
-========
+m4 1.4.10
+=========
 
 ``m4`` is the first piece of software we need in the autotools suite,
 flex 2.6.4 and bison. It allows macros to be defined and files to be
