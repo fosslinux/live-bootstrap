@@ -204,3 +204,4 @@ improve: update_checksums ( UPDATE_CHECKSUMS == True )
 improve: after
 build: git-2.43.0
 build: libxml2-2.10.4
+build: libxslt-1.1.38
