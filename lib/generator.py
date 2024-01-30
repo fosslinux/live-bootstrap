@@ -98,7 +98,7 @@ class Generator():
                 mkfs_args = ['-d', os.path.join(target.path, 'external')]
                 target.add_disk("external", filesystem="ext3", mkfs_args=mkfs_args)
         elif using_kernel:
-            mkfs_args = ['-d', os.path.join(target.path, 'disk')]
+            mkfs_args = ['-F', '-d', os.path.join(target.path, 'disk')]
             target.add_disk("disk",
                             filesystem="ext3",
                             size=(str(target_size) + "M") if target_size else "16G",
