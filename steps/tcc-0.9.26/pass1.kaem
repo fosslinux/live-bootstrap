@@ -460,7 +460,7 @@ if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xTrueFalse; then
         /usr/bin/tcc-boot0 \
         /usr/bin/tcc-boot1
 
-    cp ${pkg}.checksums ${SRCDIR}
+    cp ${pkg}_mes.checksums ${SRCDIR}
 fi
 
 if match x${UPDATE_CHECKSUMS}${TCC_BOOTSTRAP_ALT} xFalseFalse; then

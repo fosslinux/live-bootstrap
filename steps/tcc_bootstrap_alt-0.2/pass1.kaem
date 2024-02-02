@@ -35,7 +35,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.${ARCH}.checksums \
         /usr/bin/tcc-boot0
 
-    cp ${pkg}.checksums ${SRCDIR}
+    cp ${pkg}.${ARCH}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
