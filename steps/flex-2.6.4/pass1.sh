@@ -20,7 +20,4 @@ src_install() {
     cd src
     default
     cd ..
-
-    # Remove yacc, we won't need it any longer
-    rm "${PREFIX}/bin/yacc"
 }

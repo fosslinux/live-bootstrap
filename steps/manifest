@@ -15,6 +15,9 @@
 #   eg, define: BUILD_FIWIX = KERNEL_BOOTSTRAP == True || BUILD_KERNELS == True
 # - jump: jump (usually) to a new kernel, executes a script with that name
 #   eg, jump: fiwix
+# - uninstall; removes a package or filenames
+#   eg, uninstall: perl-5.6.2
+#   eg, uninstall: /usr/bin/lex /usr/bin/flex
 #
 # The following directives have special significance:
 # - build directives beginning with "bash" (as well as jumps) trigger the generation of
@@ -51,6 +54,10 @@ build: heirloom-devtools-070527
 build: bash-2.05b
 improve: setup_repo
 improve: update_env
+improve: merged_usr
+improve: populate_device_nodes
+define: CONSOLES = ( INTERACTIVE == True && CHROOT == False )
+improve: open_console ( CONSOLES == True )
 build: flex-2.5.11
 build: tcc-0.9.27
 improve: musl_libdir
@@ -62,6 +69,7 @@ build: sed-4.0.9
 build: bzip2-1.0.8
 build: m4-1.4.7
 build: flex-2.6.4
+uninstall: /usr/bin/yacc
 build: bison-3.4.1
 build: bison-3.4.1
 build: bison-3.4.1
@@ -75,7 +83,7 @@ build: perl-5.003
 build: perl5.004-05
 build: perl5.005-03
 build: perl-5.6.2
-improve: populate_device_nodes
+uninstall: perl-5.000 perl-5.003 perl5.004-05 perl5.005-03
 build: autoconf-2.52
 build: automake-1.6.3
 build: automake-1.6.3
@@ -123,11 +131,13 @@ jump: linux ( CHROOT == False )
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
 improve: finalize_job_count
 improve: finalize_fhs
+improve: open_console ( CONSOLES == True )
 improve: swap ( SWAP_SIZE != 0 )
 build: musl-1.2.4
 build: curl-8.5.0
 improve: get_network ( CHROOT == False )
 build: bash-5.2.15
+improve: open_console ( CONSOLES == True )
 build: xz-5.4.1
 build: file-5.44
 build: libtool-2.4.7
@@ -145,6 +155,7 @@ build: bison-3.4.2
 build: perl-5.10.1
 build: dist-3.5-236
 build: perl-5.32.1
+uninstall: perl-5.6.2 perl-5.10.1
 build: libarchive-3.5.2
 build: openssl-1.1.1l
 build: ca-certificates-3.95
@@ -179,10 +190,12 @@ build: python-3.3.7
 build: python-3.4.10
 build: python-3.8.16
 build: python-3.11.1
+uninstall: python-2.0.1 python-2.3.7 python-3.1.5 python-3.3.7 python-3.4.10 python-3.8.16
 jump: break ( INTERNAL_CI == pass1 ) # scripts are generated in pass1
 build: gcc-10.4.0
 build: binutils-2.41
 build: gcc-13.1.0
+improve: cleanup_filesystem
 improve: null_time ( FORCE_TIMESTAMPS == True )
 improve: update_checksums ( UPDATE_CHECKSUMS == True )
 improve: after

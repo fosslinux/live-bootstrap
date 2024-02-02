@@ -204,3 +204,18 @@ Python 2.0 does not support DESTDIR, so add it in.
  			fi; \
  		done
  
+@@ -249,10 +249,10 @@
+ $(DESTSHARED): 
+ 		@for i in $(DESTDIRS); \
+ 		do \
+-			if test ! -d $$i; then \
+-				echo "Creating directory $$i"; \
+-				mkdir $$i; \
+-				chmod 755 $$i; \
++			if test ! -d $(DESTDIR)$$i; then \
++				echo "Creating directory $(DESTDIR)$$i"; \
++				mkdir $(DESTDIR)$$i; \
++				chmod 755 $(DESTDIR)$$i; \
+ 			else	true; \
+ 			fi; \
+ 		done
