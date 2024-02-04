@@ -199,6 +199,7 @@ build: libbsd-0.11.8
 build: shadow-4.14.3
 build: opendoas-6.8.2
 build: gzip-1.13
+build: diffutils-3.10
 improve: cleanup_filesystem
 improve: null_time ( FORCE_TIMESTAMPS == True )
 improve: update_checksums ( UPDATE_CHECKSUMS == True )

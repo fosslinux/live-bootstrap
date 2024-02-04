@@ -1226,6 +1226,7 @@ to ensure the compiler is suitable for downstream consumption;
   being static binaries.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 libmd 1.1.0
 ===========
 
@@ -1261,3 +1262,10 @@ The version of gzip we have been using up until now is really old, all the way
 back from mes libc era! Somehow we've managed not to have any problems with it,
 though. This builds a gzip that is properly packaged and can be handled by all
 modern build systems.
+
+diffutils 3.10
+==============
+
+We already have a perfectly functional diffutils, but some core modern software
+does require newer diffutils (understandably, given our diffutils is from 1994).
+This also gives the additional diffutils commands ``diff3`` and ``sdiff``.
