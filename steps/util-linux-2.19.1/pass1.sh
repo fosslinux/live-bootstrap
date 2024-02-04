@@ -6,7 +6,7 @@ src_prepare() {
     default
 
     # We don't have gettext (autopoint) yet.
-    AUTOPOINT=true AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
+    AUTOPOINT=true AUTOMAKE=automake-1.10 AUTOCONF=autoconf-2.64 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {
