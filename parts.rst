@@ -1225,8 +1225,6 @@ to ensure the compiler is suitable for downstream consumption;
 * LTO now fully functions correctly, despite both the linker and the compiler
   being static binaries.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 libmd 1.1.0
 ===========
 
