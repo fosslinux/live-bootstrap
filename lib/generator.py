@@ -85,8 +85,6 @@ class Generator():
 
         self.distfiles()
 
-        self.create_fiwix_file_list()
-
         if self.repo_path:
             repo_dir = os.path.join(self.external_dir, 'repo-preseeded')
             shutil.copytree(self.repo_path, repo_dir)
@@ -133,30 +131,6 @@ class Generator():
         for entry in os.listdir(seed_dir):
             if os.path.isfile(os.path.join(seed_dir, entry)):
                 shutil.copy2(os.path.join(seed_dir, entry), os.path.join(self.target_dir, entry))
-
-    @staticmethod
-    def add_fiwix_files(file_list_path, dirpath):
-        """Add files to the list to populate Fiwix file system"""
-        for root, _, filepaths in os.walk(dirpath):
-            if 'stage0-posix' in root:
-                continue
-            with open(file_list_path, 'a', encoding="utf-8") as file_list:
-                for filepath in filepaths:
-                    file_list.write(f"/{os.path.join(root, filepath)}\n")
-
-    def create_fiwix_file_list(self):
-        """Create a list of files to populate Fiwix file system"""
-        file_list_path = os.path.join(self.target_dir, 'steps', 'lwext4-1.0.0-lb1',
-                                      'files', 'fiwix-file-list.txt')
-        shutil.copyfile(os.path.join(self.target_dir, 'steps', 'lwext4-1.0.0-lb1',
-                                     'files', 'early-artifacts-needed-after-fiwix.txt'),
-                        file_list_path)
-
-        save_cwd = os.getcwd()
-        os.chdir(self.target_dir)
-        self.add_fiwix_files(file_list_path, 'steps')
-        self.add_fiwix_files(file_list_path, 'distfiles')
-        os.chdir(save_cwd)
 
     def distfiles(self):
         """Copy in distfiles"""

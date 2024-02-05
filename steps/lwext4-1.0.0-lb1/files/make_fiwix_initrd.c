@@ -47,7 +47,7 @@
 #include "../blockdev/windows/file_windows.h"
 
 #define BLOCK_SIZE 1024
-#define FILENAME_LENGTH 256
+#define FILENAME_LENGTH 1024
 #define INITRD_MB 1280
 
 const char *input_name = NULL;
@@ -131,29 +131,34 @@ bool lwext4_umount(void)
 
 bool copy_file(char *src_path, char *dest_path)
 {
+	ext4_file dest_file;
+	int err;
+	err = ext4_inode_exist(dest_path, EXT4_DE_UNKNOWN);
+	if (err == EOK) {
+		/* file already copied or directory already created */
+		return EXIT_SUCCESS;
+	}
 
 	printf("copy_file: %s\n", src_path);
-	ext4_file dest_file;
+
 	FILE *src_file = fopen(src_path, "rb");
 	if (!src_file) {
-                printf("fopen '%s' error.\n", src_path);
-                return EXIT_FAILURE;
+		printf("fopen '%s' error.\n", src_path);
+		return EXIT_FAILURE;
 	}
-        fseek(src_file, 0, SEEK_END);
-        int src_len = ftell(src_file);
-        char * src_mem = malloc(src_len);
-	int err;
+	fseek(src_file, 0, SEEK_END);
+	int src_len = ftell(src_file);
 
-        fseek(src_file, 0, SEEK_SET);
-	if (src_len > 0) {
-        	int read_len = fread(src_mem, src_len, 1, src_file);
-        	fclose(src_file);
-        	if (read_len < 1) {
-                	printf("src fread error file: '%s' read count: %d\n", src_path, read_len);
-        	}
+	fseek(src_file, 0, SEEK_SET);
+
+	char * src_mem = malloc(src_len);
+	int read_len = fread(src_mem, src_len, 1, src_file);
+	fclose(src_file);
+	if (read_len < 1) {
+		printf("src fread error file: '%s' read count: %d\n", src_path, read_len);
 	}
 
-        err = ext4_fopen(&dest_file, dest_path, "wb");
+	err = ext4_fopen(&dest_file, dest_path, "wb");
 	if (err != EOK) {
 		printf("ext4_open error: %d\n", err);
 		return EXIT_FAILURE;
@@ -176,23 +181,23 @@ bool copy_file(char *src_path, char *dest_path)
 	free(src_mem);
 }
 
-bool copy_file_list(char *file_list_path)
+bool copy_file_system()
 {
-	char src_filename[FILENAME_LENGTH];
-	char dst_filename[FILENAME_LENGTH];
-
-	FILE *file_list = fopen(file_list_path, "r");
-	while(fgets(src_filename, FILENAME_LENGTH, file_list)) {
-		/* Skip comments */
-		if (src_filename[0] == '#') {
+	int filenum;
+	unsigned int filename_addr;
+	/* +4 to account for /mp and null termination */
+	char dst_filename[FILENAME_LENGTH + 4];
+	for (filenum = 14335, filename_addr = 0xfff000; filenum >= 4; filenum--, filename_addr -= FILENAME_LENGTH) {
+		/* Avoid including fiwix.ext2 in itself */
+		if (((char *) filename_addr)[0] != '/' ||
+			!strcmp((char *) filename_addr, "/") ||
+			!strcmp((char *) filename_addr, "/boot/fiwix.ext2")) {
 			continue;
 		}
-		src_filename[strlen(src_filename) - 1] = 0; /* strip newline */
 		strcpy(dst_filename, "/mp");
-		strcat(dst_filename, src_filename);
-		copy_file(src_filename, dst_filename);
+		strcat(dst_filename, (char *) filename_addr);
+		copy_file((char *) filename_addr, dst_filename);
 	}
-	fclose(file_list);
 }
 
 int main(int argc, char **argv)
@@ -202,8 +207,20 @@ int main(int argc, char **argv)
 	char zeros[BLOCK_SIZE];
 
 	unsigned int next_file_address;
+	int filenum;
+	unsigned int filename_addr;
+	unsigned int file_addr;
 
-	next_file_address = *((unsigned int *) 0x7F8D);
+	next_file_address = 0;
+	for (filenum = 14335, filename_addr = 0xfff000, file_addr = 0x1037FF4;
+		 filenum >= 4;
+		 filenum--, filename_addr -= FILENAME_LENGTH, file_addr -= 16) {
+		if (((char *) filename_addr)[0] == '/') {
+			next_file_address = *((unsigned int *) file_addr);
+			next_file_address += *((unsigned int *) (file_addr + 4));
+			break;
+		}
+	}
 
 	printf("Starting fiwix.ext2 at addr 0x%08x\n", next_file_address);
 
@@ -285,7 +302,7 @@ int main(int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	copy_file_list("/steps/lwext4-1.0.0-lb1/files/fiwix-file-list.txt");
+	copy_file_system();
 
 	if (!lwext4_umount())
 		return EXIT_FAILURE;

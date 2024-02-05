@@ -10,13 +10,14 @@ set -e
 
 # Perform the actual kexec
 if [ "${KERNEL_BOOTSTRAP}" = True ]; then
+    mv "/High Level Prototypes" "/High_Level_Prototypes"
     sync
     # We don't use the gen_initramfs_list.sh script because it is so *SLOW*
     # This emulates the same thing it does
     find / -xdev -type d -printf "dir %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type f -printf "file %p %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type l -printf "slink %p %l %m %U %G\n" >> /initramfs.list
-    kexec-linux "/dev/ram1" "/boot/linux-4.9.10" "!$(command -v gen_init_cpio) /initramfs.list"
+    kexec-linux "/dev/ram1" "/boot/linux-4.9.10" "!gen_init_cpio /initramfs.list | gzip -c"
 else
     mkdir /etc
     # kexec time
