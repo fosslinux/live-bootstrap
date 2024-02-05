@@ -32,6 +32,7 @@ if [ $((0x$(stat -c "%T" "/dev/${DISK}") % 8)) -eq 0 ]; then
     echo "Creating ext4 partition..."
     mkfs.ext4 -F -F "/dev/${DISK}1"
     DISK="${DISK}1"
+    echo DISK="${DISK}" >> /steps/bootstrap.cfg
 fi
 
 # Mount the partition, move everything into /external

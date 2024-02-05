@@ -1,4 +1,3 @@
-
 #!/bin/sh
 #
 # SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
