@@ -42,9 +42,6 @@ src_configure() {
 }
 
 src_install() {
-    # Remove old perl
-    rm -rf "${PREFIX}"/lib/perl5/
-
     default
 
     # Remove messed up manpages

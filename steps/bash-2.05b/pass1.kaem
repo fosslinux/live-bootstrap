@@ -47,10 +47,7 @@ make
 
 # Install
 install bash ${PREFIX}/bin/
-mkdir /bin/
-ln -s ${PREFIX}/bin/bash /bin/bash
-ln -s ${PREFIX}/bin/bash /bin/sh
-ln -s ${PREFIX}/bin/bash ${PREFIX}/bin/sh
+install bash ${PREFIX}/bin/sh
 
 cd ../..
 

@@ -14,14 +14,3 @@ src_prepare() {
 src_compile() {
     make -j1 PREFIX="${PREFIX}"
 }
-
-src_install() {
-    if test -d /lex; then
-        # Remove lex, later make install will symlink lex to flex
-        rm -rf /lex
-        rm -f "${PREFIX}/bin/lex"
-        rm -f "${PREFIX}/lib/mes/libl.a"
-    fi
-    
-    default
-}

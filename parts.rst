@@ -417,8 +417,8 @@ bzip2 1.0.8
 ``bzip2`` is rebuilt unpatched with the new tcc and musl fixing issues
 with reading files from stdin that existed in the previous build.
 
-m4 1.4.7
-========
+m4 1.4.10
+=========
 
 ``m4`` is the first piece of software we need in the autotools suite,
 flex 2.6.4 and bison. It allows macros to be defined and files to be
@@ -1224,3 +1224,46 @@ to ensure the compiler is suitable for downstream consumption;
   really be handled by the libc, which is what most distributions do.
 * LTO now fully functions correctly, despite both the linker and the compiler
   being static binaries.
+
+libmd 1.1.0
+===========
+
+libmd provides message digest functions. In GNU/Linux, this is typically
+provided by glibc, but we need libmd to provide it since we are using musl.
+
+libbsd 0.11.8
+=============
+
+libbsd provides BSD-centric functions. We need this in order to build shadow,
+which expects either glibc or libbsd.
+
+shadow 4.14.3
+=============
+
+shadow provides a variety of command line utilites to work with users and
+groups, avoiding the need for manual modification of ``/etc/passwd`` and
+``/etc/group``. This allows unprivileged users to be created by, or for,
+post-bootstrap build systems.
+
+opendoas 6.8.2
+==============
+
+opendoas is a port of 'doas' from OpenBSD to Linux. It has all functions of sudo
+that could be conceivably needed in live-bootstrap, and is much simpler to
+build. This allows build systems that expect sudo after live-bootstrap to use
+it.
+
+gzip 1.13
+=========
+
+The version of gzip we have been using up until now is really old, all the way
+back from mes libc era! Somehow we've managed not to have any problems with it,
+though. This builds a gzip that is properly packaged and can be handled by all
+modern build systems.
+
+diffutils 3.10
+==============
+
+We already have a perfectly functional diffutils, but some core modern software
+does require newer diffutils (understandably, given our diffutils is from 1994).
+This also gives the additional diffutils commands ``diff3`` and ``sdiff``.

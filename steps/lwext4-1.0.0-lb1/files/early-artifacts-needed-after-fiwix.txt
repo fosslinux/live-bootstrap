@@ -112,7 +112,7 @@
 /external/distfiles/tcc-0.9.27.tar.bz2
 /external/distfiles/sed-4.0.9.tar.gz
 /external/distfiles/bzip2-1.0.8.tar.gz
-/external/distfiles/m4-1.4.7.tar.gz
+/external/distfiles/m4-1.4.10.tar.gz
 /external/distfiles/flex-2.6.4.tar.gz
 /external/distfiles/bison-3.4.1.tar.gz
 /external/distfiles/bison-3.4.1.tar.gz

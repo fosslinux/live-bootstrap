@@ -7,6 +7,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Set constant umask
+umask 022
+
 # Get a list of files
 get_files() {
     echo "."
@@ -79,9 +82,11 @@ _grep() {
 
 get_revision() {
     local pkg=$1
+    local oldpwd="${PWD}"
     cd "/external/repo"
     # Get revision (n time this package has been built)
     revision=$( (ls -1 "${pkg}"* 2>/dev/null || true) | wc -l | sed 's/ *//g')
+    cd "${oldpwd}"
 }
 
 # Installs binary packages from an earlier run
@@ -93,11 +98,6 @@ bin_preseed() {
         if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
             mv "${pkg}_${revision}"* /external/repo || return 1
-            if [[ "${pkg}" == bash-* ]]; then
-                # tar does not like overwriting running bash
-                # shellcheck disable=SC2153
-                rm -f "${PREFIX}/bin/bash" "${PREFIX}/bin/sh"
-            fi
             cd "/external/repo"
             rm -f /tmp/filelist.txt
             src_apply "${pkg}" $((revision))
@@ -106,6 +106,65 @@ bin_preseed() {
         fi
     fi
     return 1
+}
+
+# Removes either an existing package or file
+uninstall() {
+    local in_fs in_pkg symlinks
+    while [ $# -gt 0 ]; do
+        removing="$1"
+        case "${removing}" in
+            /*)
+                # Removing a file
+                echo "removing file: ${removing}."
+                rm -f "${removing}"
+                ;;
+            *)
+                echo "${removing}: uninstalling."
+                local oldpwd="${PWD}"
+                mkdir -p "/tmp/removing"
+                cd "/tmp/removing"
+                get_revision "${removing}"
+                local filename="/external/repo/${removing}_$((revision-1)).tar.bz2"
+                # Initial bzip2 built against meslibc has broken pipes
+                bzip2 -dc "${filename}" | tar -xf -
+                # reverse to have files before directories
+                if command -v find >/dev/null 2>&1; then
+                    find . | sort -r > ../filelist
+                else
+                    get_files . | tac > ../filelist
+                fi
+                # shellcheck disable=SC2162
+                while read file; do
+                    if [ -d "${file}" ]; then
+                        if [ -z "$(ls -A "/${file}")" ]; then
+                            rmdir "/${file}"
+                        fi
+                    else
+                        # in some cases we might be uninstalling a file that has already been overwritten
+                        # in this case we don't want to remove it
+                        in_fs="$(sha256sum "${file}" 2>/dev/null | cut -d' ' -f1)"
+                        in_pkg="$(sha256sum "/${file}" 2>/dev/null | cut -d' ' -f1)"
+                        if [ "${in_fs}" = "${in_pkg}" ]; then
+                            rm -f "/${file}"
+                        fi
+                        if [ -h "${file}" ]; then
+                            symlinks="${symlinks} ${file}"
+                        fi
+                    fi
+                done < ../filelist
+                rm -f ../filelist
+                for link in ${symlinks}; do
+                    if [ ! -e "/${link}" ]; then
+                        rm -f "/${link}"
+                    fi
+                done
+                cd "${oldpwd}"
+                rm -rf "/tmp/removing"
+                ;;
+        esac
+        shift
+    done
 }
 
 # Common build steps
@@ -169,6 +228,7 @@ build() {
     call $build_stage
 
     echo "${pkg}: install to fakeroot."
+    mkdir -p "${DESTDIR}"
     build_stage=src_install
     call $build_stage
 
@@ -185,7 +245,6 @@ build() {
     echo "${pkg}: cleaning up."
     rm -rf "${SRCDIR}/${pkg}/build"
     rm -rf "${DESTDIR}"
-    mkdir -p "${DESTDIR}"
 
     echo "${pkg}: installing package."
     src_apply "${pkg}" "${revision}"
@@ -236,6 +295,7 @@ extract_file() {
         *)
             case "${f}" in
                 *.tar* | *.tgz)
+                    # shellcheck disable=SC2153
                     if test -e "${PREFIX}/libexec/rmt"; then
                         # Again, we want to split out into words.
                         # shellcheck disable=SC2086
@@ -357,7 +417,7 @@ src_pkg() {
     # So this does not need a command -v grep.
     if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
         tar -C "${DESTDIR}" --sort=name --hard-dereference \
-            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}" .
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw -cf "${dest_tar}" .
     else
         local olddir
         olddir=$PWD
@@ -372,7 +432,7 @@ src_pkg() {
             get_files . > ${filelist}
         fi
         tar --no-recursion ${null} --files-from "${filelist}" \
-                --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw,a-s -cf "${dest_tar}"
+                --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw -cf "${dest_tar}"
         rm -f "$filelist"
         cd "$olddir"
     fi
@@ -408,6 +468,11 @@ src_apply() {
         mkdir -p /tmp
         cp "${PREFIX}/bin/tar" "/tmp/tar"
         TAR_PREFIX="/tmp/"
+    fi
+
+    # Bash does not like to be overwritten
+    if [[ "${pkg}" == bash-* ]]; then
+        rm "${PREFIX}/bin/bash"
     fi
 
     # Overwriting files is mega busted, so do it manually

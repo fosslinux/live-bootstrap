@@ -168,6 +168,9 @@ def main():
     else:
         args.swap = 0
 
+    # Set constant umask
+    os.umask(0o022)
+
     # bootstrap.cfg
     try:
         os.remove(os.path.join('steps', 'bootstrap.cfg'))

@@ -37,10 +37,3 @@ src_prepare() {
 src_compile() {
     make -j1 PREFIX="${PREFIX}"
 }
-
-src_install() {
-    # Remove old perl
-    rm -rf "${PREFIX}"/lib/perl5/
-
-    default
-}

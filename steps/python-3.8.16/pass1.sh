@@ -15,24 +15,24 @@ src_prepare() {
     mkdir Tools/unicode/in Tools/unicode/out
     mv ../CP437.TXT Tools/unicode/in/
     pushd Tools/unicode
-    python gencodec.py in/ ../../Lib/encodings/
+    python -B gencodec.py in/ ../../Lib/encodings/
     popd
 
     # Regenerate unicode
     rm Modules/unicodedata_db.h Modules/unicodename_db.h Objects/unicodetype_db.h
     mv ../*.txt ../*.zip .
-    python Tools/unicode/makeunicodedata.py
+    python -B Tools/unicode/makeunicodedata.py
 
     # Regenerate sre_constants.h
     rm Modules/sre_constants.h
     cp Lib/sre_constants.py .
-    python sre_constants.py
+    python -B sre_constants.py
     rm sre_constants.py
     mv sre_constants.h Modules/
 
     # Regenerate stringprep
     rm Lib/stringprep.py
-    python Tools/unicode/mkstringprep.py > Lib/stringprep.py
+    python -B Tools/unicode/mkstringprep.py > Lib/stringprep.py
 
     # Regenerate autoconf
     autoreconf-2.71 -fi
@@ -42,6 +42,7 @@ src_configure() {
     MACHDEP=linux ac_sys_system=Linux \
     CPPFLAGS="-U__DATE__ -U__TIME__" \
     LDFLAGS="-L${LIBDIR}" \
+    PYTHON_FOR_BUILD="python -B" \
         ./configure \
         --build=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
@@ -53,9 +54,9 @@ src_configure() {
 src_compile() {
     # Regenerations
     rm Modules/_blake2/blake2s_impl.c
-    make "${MAKEJOBS}" regen-all
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" regen-all
 
-    make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
+    PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" CPPFLAGS="-U__DATE__ -U__TIME__"
 }
 
 src_install() {
