@@ -451,8 +451,9 @@ FILE *start_script(int id, int bash_build) {
 			if (bash_build != 1) {
 				fputs("set -E\ntrap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
 			} else {
-				fputs("set -E\ntrap 'bash -c '\"'\"'while true; do printf \""
-				"[TRAP - use Ctrl+D] $(pwd) # \"; $(cat); done'\"'\"'' ERR\n",
+				/* FIXME early bash has buggy ERR trap handling */
+				fputs("set -e\ntrap 'bash -c '\"'\"'while true; do printf \""
+				"[TRAP - use Ctrl+D] $(pwd) # \"; eval \"$(cat)\"; done'\"'\"'' EXIT\n",
 				out);
 			}
 		} else {
