@@ -1274,3 +1274,10 @@ gawk 5.3.0
 Similarly to diffutils, our gawk is currently very ancient (1999). That doesn't
 cut it for modern software such as glibc. We update gawk to a much more modern
 version.
+
+m4 1.4.19
+=========
+
+We are in need of a newer version of m4 for some modern software. Attempts to
+update m4 1.4.7 earlier in the bootstrap demonstrate some issues with Fiwix,
+so we build a newer m4 at the end of the bootstrap instead.
