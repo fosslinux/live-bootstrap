@@ -1267,3 +1267,10 @@ diffutils 3.10
 We already have a perfectly functional diffutils, but some core modern software
 does require newer diffutils (understandably, given our diffutils is from 1994).
 This also gives the additional diffutils commands ``diff3`` and ``sdiff``.
+
+gawk 5.3.0
+==========
+
+Similarly to diffutils, our gawk is currently very ancient (1999). That doesn't
+cut it for modern software such as glibc. We update gawk to a much more modern
+version.
