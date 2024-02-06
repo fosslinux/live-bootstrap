@@ -7,9 +7,14 @@ src_prepare() {
 
     autoreconf-2.71 -fi
     rm man/*.1
+    rm doc/*.info
 
     # gperf
     rm lib/iconv_open*.h
+
+    # Don't use in tree help2man
+    rm man/help2man
+    ln -s "${PREFIX}/bin/help2man" man/help2man
 
     . ../../import-gnulib.sh
 }
