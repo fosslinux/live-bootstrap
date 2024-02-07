@@ -26,7 +26,7 @@ set timeout=5
 set default=0
 menuentry 'Linux live-bootstrap (4.9.10)' {
     insmod part_msdos
-    set root='grub-probe -d /dev/${DISK} -t bios_hints | sed -e 's/ //g')'
+    set root='$(grub-probe -d /dev/${DISK} -t bios_hints | sed -e 's/ //g')'
     linux /boot/linux-4.9.10 root=/dev/${DISK} rw $(cat /proc/cmdline)
 }
 EOF
