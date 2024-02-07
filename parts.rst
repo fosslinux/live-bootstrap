@@ -417,8 +417,8 @@ bzip2 1.0.8
 ``bzip2`` is rebuilt unpatched with the new tcc and musl fixing issues
 with reading files from stdin that existed in the previous build.
 
-m4 1.4.10
-=========
+m4 1.4.7
+========
 
 ``m4`` is the first piece of software we need in the autotools suite,
 flex 2.6.4 and bison. It allows macros to be defined and files to be
@@ -1274,3 +1274,10 @@ gawk 5.3.0
 Similarly to diffutils, our gawk is currently very ancient (1999). That doesn't
 cut it for modern software such as glibc. We update gawk to a much more modern
 version.
+
+m4 1.4.19
+=========
+
+We are in need of a newer version of m4 for some modern software. Attempts to
+update m4 1.4.7 earlier in the bootstrap demonstrate some issues with Fiwix,
+so we build a newer m4 at the end of the bootstrap instead.

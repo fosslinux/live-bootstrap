@@ -66,7 +66,7 @@ build: musl-1.1.24
 build: tcc-0.9.27
 build: sed-4.0.9
 build: bzip2-1.0.8
-build: m4-1.4.10
+build: m4-1.4.7
 build: flex-2.6.4
 uninstall: /usr/bin/yacc
 build: bison-3.4.1
@@ -203,6 +203,7 @@ build: opendoas-6.8.2
 build: gzip-1.13
 build: diffutils-3.10
 build: gawk-5.3.0
+build: m4-1.4.19
 improve: cleanup_filesystem
 improve: null_time ( FORCE_TIMESTAMPS == True )
 improve: update_checksums ( UPDATE_CHECKSUMS == True )
