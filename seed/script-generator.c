@@ -412,22 +412,6 @@ Directive *interpreter(Directive *directives) {
 	return directives;
 }
 
-void add_to_fiwix_filelist(char *filename) {
-	/* Add the filename to fiwix-file-list.txt */
-	FILE *fiwix_list = fopen("/steps/lwext4-1.0.0-lb1/files/fiwix-file-list.txt", "r");
-	fseek(fiwix_list, 0, SEEK_END);
-	long size = ftell(fiwix_list);
-	char *contents = calloc(size, sizeof(char));
-	fseek(fiwix_list, 0, SEEK_SET);
-	fread(contents, 1, size, fiwix_list);
-	fclose(fiwix_list);
-	fiwix_list = fopen("/steps/lwext4-1.0.0-lb1/files/fiwix-file-list.txt", "w");
-	fwrite(contents, 1, size, fiwix_list);
-	fputs(filename, fiwix_list);
-	fputc('\n', fiwix_list);
-	fclose(fiwix_list);
-}
-
 /* Script generator. */
 FILE *start_script(int id, int bash_build) {
 	/* Create the file /steps/$id.sh */
@@ -435,7 +419,6 @@ FILE *start_script(int id, int bash_build) {
 	strcpy(filename, "/steps/");
 	strcat(filename, int2str(id, 10, 0));
 	strcat(filename, ".sh");
-	add_to_fiwix_filelist(filename);
 
 	FILE *out = fopen(filename, "w");
 	if (out == NULL) {
@@ -607,12 +590,6 @@ void generate(Directive *directives) {
 
 			output_call_script(out, "jump", directive->arg, bash_build, 1);
 			fclose(out);
-
-			/*
-			 * This cannot go before here as builder-hex0 does not like having
-			 * multiple files open at once!
-			 */
-			add_to_fiwix_filelist(filename);
 
 			if (bash_build) {
 				out = fopen(filename, "w");
