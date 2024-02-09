@@ -30,6 +30,7 @@ cp /${ARCH_DIR}/bin/sha256sum ${BINDIR}/sha256sum
 cp /${ARCH_DIR}/bin/unbz2 ${BINDIR}/unbz2
 cp /${ARCH_DIR}/bin/ungz ${BINDIR}/ungz
 cp /${ARCH_DIR}/bin/untar ${BINDIR}/untar
+cp /${ARCH_DIR}/bin/unxz ${BINDIR}/unxz
 cp /${ARCH_DIR}/bin/cp ${BINDIR}/cp
 cp /${ARCH_DIR}/bin/replace ${BINDIR}/replace
 cp /${ARCH_DIR}/bin/rm ${BINDIR}/rm
@@ -50,6 +51,7 @@ chmod 755 ${BINDIR}/sha256sum
 chmod 755 ${BINDIR}/unbz2
 chmod 755 ${BINDIR}/ungz
 chmod 755 ${BINDIR}/untar
+chmod 755 ${BINDIR}/unxz
 chmod 755 ${BINDIR}/replace
 chmod 755 ${BINDIR}/rm
 
