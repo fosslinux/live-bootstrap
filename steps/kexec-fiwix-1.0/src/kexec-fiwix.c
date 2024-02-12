@@ -6,14 +6,68 @@
 #include "multiboot1.h"
 
 #define MULTIBOOT_MAGIC 0x2BADB002
-#define INITRD_MB 1280
-#define KEXEC_MB 256
 
-int main() {
+multiboot_uint32_t get_memmap(char *filename, void *memmap_addr) {
+
+	if (!filename) {
+		return 0;
+	}
+
+	multiboot_uint32_t memmap_length = 0;
+
+	FILE *memmap_file = fopen(filename, "r");
+	if (!memmap_file) {
+		return 0;
+	}
+
+	fseek(memmap_file, 0, SEEK_END);
+	memmap_length = ftell(memmap_file);
+	if (!memmap_length) {
+		fclose(memmap_file);
+		return 0;
+	}
+	printf("kexec-fiwix: Memory map file length: %d\n", memmap_length);
+
+	puts("kexec-fiwix: Reading memory map file...");
+	fseek(memmap_file, 0, SEEK_SET);
+	int memmap_read_len = fread(memmap_addr, memmap_length, 1, memmap_file);
+	fclose(memmap_file);
+
+	if (memmap_read_len < 1) {
+		printf("kexec-fiwix: memory map fread error: %d\n", memmap_read_len);
+		return 0;
+	}
+
+	return memmap_length;
+}
+
+int main(int argc, char **argv) {
+
+	char *fiwix_filename = "/boot/fiwix";
+	char *initrd_filename = "/boot/fiwix.ext2";
+	char *cmdline = NULL;
+	char *memmap = NULL;
+	int i;
+
+	for (i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "-c")) {
+			i++;
+			cmdline = argv[i];
+		} else if (!strcmp(argv[i], "-i")) {
+			i++;
+			initrd_filename = argv[i];
+		} else if (!strcmp(argv[i], "-m")) {
+			i++;
+			memmap = argv[i];
+		} else {
+			fiwix_filename = argv[i];
+		}
+	}
+
 	/* Read the kernel */
 
-	printf("kexec-fiwix: starting...\n\n");
-	FILE *fiwix_file = fopen("/boot/fiwix", "r");
+	printf("kexec-fiwix: starting kernel %s...\n\n", fiwix_filename);
+	FILE *fiwix_file = fopen(fiwix_filename, "r");
 	fseek(fiwix_file, 0, SEEK_END);
 	int fiwix_len = ftell(fiwix_file);
 	printf("kexec-fiwix: Fiwix kernel file length: %d\n", fiwix_len);
@@ -77,17 +131,6 @@ int main() {
 
 	puts("Preparing multiboot info for kernel...");
 
-	char cmdline[256];
-	/* Don't use a serial console if configured for bare metal */
-	char *bare_metal = getenv("BARE_METAL");
-	if (bare_metal != NULL && strcmp(bare_metal, "True") == 0)
-	{
-		sprintf(cmdline, "fiwix console=/dev/tty1 root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init consoleblank=0\"", INITRD_MB * 1024, KEXEC_MB * 1024);
-	}
-	else
-	{
-		sprintf(cmdline, "fiwix console=/dev/ttyS0 root=/dev/ram0 ramdisksize=%d initrd=fiwix.ext2 kexec_proto=linux kexec_size=%d kexec_cmdline=\"init=/init console=ttyS0\"", INITRD_MB * 1024, KEXEC_MB * 1024);
-	}
 	char * boot_loader_name = "kexec-fiwix";
 
 	unsigned int next_avail_mem = 0x9800;
@@ -96,7 +139,6 @@ int main() {
 
 	pmultiboot_info->flags = MULTIBOOT_INFO_BOOT_LOADER_NAME
 		| MULTIBOOT_INFO_MEMORY
-		| MULTIBOOT_INFO_CMDLINE
 		| MULTIBOOT_INFO_MODS
 		| MULTIBOOT_INFO_MEM_MAP;
 
@@ -106,16 +148,33 @@ int main() {
 	pmultiboot_info->mem_upper = 0x002FFB80;
 
 	/* Set command line */
-	pmultiboot_info->cmdline = next_avail_mem;
-	strcpy((char *) next_avail_mem, cmdline);
-	next_avail_mem += (strlen(cmdline) + 1);
+	if (cmdline != NULL) {
+		pmultiboot_info->flags = pmultiboot_info->flags | MULTIBOOT_INFO_CMDLINE;
+		pmultiboot_info->cmdline = next_avail_mem;
+		strcpy((char *) next_avail_mem, cmdline);
+		next_avail_mem += (strlen(cmdline) + 1);
+	}
+
+	int filenum;
+	unsigned int filename_addr;
+	for (filenum = 4, filename_addr = 0x201000; filenum <= 14335; filenum++, filename_addr += 1024) {
+		if (!strcmp((char *) filename_addr, initrd_filename)) {
+			printf("Found image at filenum %d\n", filenum);
+			break;
+		}
+	}
+
+	unsigned int initrd_src = *((unsigned int *) (0x01000000 + (16 * filenum) + 4));
+	unsigned int initrd_len = *((unsigned int *) (0x01000000 + (16 * filenum) + 8));
+	printf("initrd_src: 0x%08x\n", initrd_src);
+	printf("initrd_len: 0x%08x\n", initrd_len);
 
 	/* Set ramdrive info */
 	pmultiboot_info->mods_count = 1;
 	pmultiboot_info->mods_addr = next_avail_mem;
 	multiboot_module_t *pmultiboot_module = (multiboot_module_t *) next_avail_mem;
 	pmultiboot_module->mod_start = 0x1C6000;
-	pmultiboot_module->mod_end = 0x1C6000 + (INITRD_MB * 1024 * 1024);
+	pmultiboot_module->mod_end = 0x1C6000 + initrd_len;
 	next_avail_mem += sizeof(multiboot_module_t);
 	pmultiboot_module->cmdline = next_avail_mem;
 	strcpy((char *) next_avail_mem, "fiwix.ext2");
@@ -123,50 +182,55 @@ int main() {
 
 	/* Set memory map info */
 	pmultiboot_info->mmap_addr = next_avail_mem;
-	pmultiboot_info->mmap_length = 7 * sizeof(multiboot_memory_map_t);
-	multiboot_memory_map_t *pmultiboot_memory_map = (multiboot_memory_map_t *) next_avail_mem;
+	pmultiboot_info->mmap_length = get_memmap(memmap, (void *) pmultiboot_info->mmap_addr);
 
-	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0x00000000;
-	pmultiboot_memory_map->len  = 0x00080000;
-	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_AVAILABLE;
-	pmultiboot_memory_map++;
+	/* if we have no memory map, fall back to a safe default */
+	if (pmultiboot_info->mmap_length == 0) {
+		pmultiboot_info->mmap_length = 7 * sizeof(multiboot_memory_map_t);
+		multiboot_memory_map_t *pmultiboot_memory_map = (multiboot_memory_map_t *) next_avail_mem;
 
-	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0x00080000;
-	pmultiboot_memory_map->len  = 0x00020000;
-	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
-	pmultiboot_memory_map++;
+		pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+		pmultiboot_memory_map->addr = 0x00000000;
+		pmultiboot_memory_map->len  = 0x00080000;
+		pmultiboot_memory_map->type = MULTIBOOT_MEMORY_AVAILABLE;
+		pmultiboot_memory_map++;
 
-	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0x000F0000;
-	pmultiboot_memory_map->len =  0x00010000;
-	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
-	pmultiboot_memory_map++;
+		pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+		pmultiboot_memory_map->addr = 0x00080000;
+		pmultiboot_memory_map->len  = 0x00020000;
+		pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
+		pmultiboot_memory_map++;
 
-	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0x00100000;
-	pmultiboot_memory_map->len  = 0xBC000000;
-	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_AVAILABLE;
-	pmultiboot_memory_map++;
+		pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+		pmultiboot_memory_map->addr = 0x000F0000;
+		pmultiboot_memory_map->len =  0x00010000;
+		pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
+		pmultiboot_memory_map++;
 
-	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0XBC000000;
-	pmultiboot_memory_map->len  = 0x04000000;
-	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
-	pmultiboot_memory_map++;
+		pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+		pmultiboot_memory_map->addr = 0x00100000;
+		pmultiboot_memory_map->len  = 0xBBF00000;
+		pmultiboot_memory_map->type = MULTIBOOT_MEMORY_AVAILABLE;
+		pmultiboot_memory_map++;
 
-	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0XFEFFC000;
-	pmultiboot_memory_map->len  = 0x00004000;
-	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
-	pmultiboot_memory_map++;
+		pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+		pmultiboot_memory_map->addr = 0XBC000000;
+		pmultiboot_memory_map->len  = 0x04000000;
+		pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
+		pmultiboot_memory_map++;
 
-	pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
-	pmultiboot_memory_map->addr = 0XFFFC0000;
-	pmultiboot_memory_map->len  = 0x00040000;
-	pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
-	pmultiboot_memory_map++;
+		pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+		pmultiboot_memory_map->addr = 0XFEFFC000;
+		pmultiboot_memory_map->len  = 0x00004000;
+		pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
+		pmultiboot_memory_map++;
+
+		pmultiboot_memory_map->size = sizeof(multiboot_memory_map_t) - sizeof(multiboot_uint32_t);
+		pmultiboot_memory_map->addr = 0XFFFC0000;
+		pmultiboot_memory_map->len  = 0x00040000;
+		pmultiboot_memory_map->type = MULTIBOOT_MEMORY_RESERVED;
+		pmultiboot_memory_map++;
+	}
 
 	next_avail_mem += pmultiboot_info->mmap_length;
 
@@ -180,19 +244,6 @@ int main() {
 	unsigned int dummy = 0;
 	unsigned int multiboot_info_num = (unsigned int) pmultiboot_info;
 
-	int filenum;
-	unsigned int filename_addr;
-	for (filenum = 4, filename_addr = 0x201000; filenum <= 14335; filenum++, filename_addr += 1024) {
-		if (!strcmp((char *) filename_addr, "/boot/fiwix.ext2")) {
-			printf("Found image at filenum %d\n", filenum);
-			break;
-		}
-	}
-
-	unsigned int initrd_src = *((unsigned int *) (0x01000000 + (16 * filenum) + 4));
-	unsigned int initrd_len = *((unsigned int *) (0x01000000 + (16 * filenum) + 8));
-	printf("initrd_src: 0x%08x\n", initrd_src);
-	printf("initrd_len: 0x%08x\n", initrd_len);
 	printf("Preparing trampoline...\n");
 
 	/* The ramdrive needs to be written to a location that would overwrite this program.
@@ -216,7 +267,7 @@ int main() {
 	/* Set place holder values */
 	*((unsigned int *) &trampoline[1])  = initrd_src;
 	*((unsigned int *) &trampoline[6])  = 0x001C6000;
-	*((unsigned int *) &trampoline[11]) = INITRD_MB * 1024 * 1024;
+	*((unsigned int *) &trampoline[11]) = initrd_len;
 	*((unsigned int *) &trampoline[19])  = magic;
 	*((unsigned int *) &trampoline[24])  = multiboot_info_num;
 	*((unsigned int *) &trampoline[30])  = e_entry;

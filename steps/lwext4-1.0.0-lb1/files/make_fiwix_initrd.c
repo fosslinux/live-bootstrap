@@ -48,7 +48,6 @@
 
 #define BLOCK_SIZE 1024
 #define FILENAME_LENGTH 1024
-#define INITRD_MB 1280
 
 const char *input_name = NULL;
 /**@brief   Block device handle.*/
@@ -187,7 +186,7 @@ bool copy_file_system()
 	unsigned int filename_addr;
 	/* +4 to account for /mp and null termination */
 	char dst_filename[FILENAME_LENGTH + 4];
-	for (filenum = 14335, filename_addr = 0xfff000; filenum >= 4; filenum--, filename_addr -= FILENAME_LENGTH) {
+	for (filenum = 14335, filename_addr = 0xfffc00; filenum >= 3; filenum--, filename_addr -= FILENAME_LENGTH) {
 		/* Avoid including fiwix.ext2 in itself */
 		if (((char *) filename_addr)[0] != '/' ||
 			!strcmp((char *) filename_addr, "/") ||
@@ -210,10 +209,12 @@ int main(int argc, char **argv)
 	int filenum;
 	unsigned int filename_addr;
 	unsigned int file_addr;
+	unsigned int initrd_size;
+	int i;
 
-	next_file_address = 0;
-	for (filenum = 14335, filename_addr = 0xfff000, file_addr = 0x1037FF4;
-		 filenum >= 4;
+	next_file_address = 0x54000000;
+	for (filenum = 14335, filename_addr = 0xfffc00, file_addr = 0x1037FF4;
+		 filenum >= 3;
 		 filenum--, filename_addr -= FILENAME_LENGTH, file_addr -= 16) {
 		if (((char *) filename_addr)[0] == '/') {
 			next_file_address = *((unsigned int *) file_addr);
@@ -222,15 +223,25 @@ int main(int argc, char **argv)
 		}
 	}
 
-	printf("Starting fiwix.ext2 at addr 0x%08x\n", next_file_address);
-
 	/* Create zeroed out disk image file */
 	input_name = "/boot/fiwix.ext2";
+	initrd_size = 262144;
+
+	for (i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "-s")) {
+			i++;
+			initrd_size = atoi(argv[i]);
+		} else {
+			input_name = argv[i];
+		}
+	}
+
+	printf("Starting %s at addr 0x%08x\n", input_name, next_file_address);
 
 	memset(zeros, 0, BLOCK_SIZE);
 	FILE *ext2file = fopen(input_name, "w");
 	int b;
-	for (b=0; b < (BLOCK_SIZE * INITRD_MB); b++)
+	for (b=0; b < initrd_size; b++)
 		fwrite(zeros, BLOCK_SIZE, 1, ext2file);
 	fclose(ext2file);
 
