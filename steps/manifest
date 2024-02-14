@@ -123,6 +123,7 @@ define: BUILD_LINUX = ( CHROOT == False || BUILD_KERNELS == True )
 build: kexec-linux-1.0.0 ( BUILD_LINUX == True )
 build: kexec-tools-2.0.22 ( BUILD_LINUX == True )
 improve: clean_sources
+improve: clean_artifacts
 build: linux-4.9.10 ( BUILD_LINUX == True )
 jump: break ( INTERNAL_CI == pass1 )
 improve: populate_device_nodes
