@@ -78,7 +78,7 @@ class Generator():
             shutil.copy2(os.path.join(self.git_dir, 'seed', 'preseeded.kaem'),
                          os.path.join(self.target_dir, 'kaem.x86'))
         else:
-            self.stage0_posix()
+            self.stage0_posix(kernel_bootstrap)
             self.seed()
 
         self.steps()
@@ -109,10 +109,12 @@ class Generator():
 
         shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.target_dir, 'steps'))
 
-    def stage0_posix(self):
+    def stage0_posix(self, kernel_bootstrap=False):
         """Copy in all of the stage0-posix"""
         stage0_posix_base_dir = os.path.join(self.git_dir, 'seed', 'stage0-posix')
         for entry in os.listdir(stage0_posix_base_dir):
+            if kernel_bootstrap and entry == 'bootstrap-seeds':
+                continue
             orig = os.path.join(stage0_posix_base_dir, entry)
             target = os.path.join(self.target_dir, entry)
             if os.path.isfile(orig):
@@ -120,10 +122,12 @@ class Generator():
             else:
                 shutil.copytree(orig, target)
 
-        arch = stage0_arch_map.get(self.arch, self.arch)
-        kaem_optional_seed = os.path.join(self.git_dir, 'seed', 'stage0-posix', 'bootstrap-seeds',
-                                          'POSIX', arch, 'kaem-optional-seed')
-        shutil.copy2(kaem_optional_seed, os.path.join(self.target_dir, 'init'))
+        if not kernel_bootstrap:
+            arch = stage0_arch_map.get(self.arch, self.arch)
+            kaem_optional_seed = os.path.join(self.git_dir, 'seed', 'stage0-posix',
+                                              'bootstrap-seeds', 'POSIX', arch,
+                                              'kaem-optional-seed')
+            shutil.copy2(kaem_optional_seed, os.path.join(self.target_dir, 'init'))
 
     def seed(self):
         """Copy in extra seed files"""
@@ -193,17 +197,32 @@ class Generator():
         self.output_tree(image_file, '.')
 
         # Add commands to kick off stage0-posix
-        cmd = ' '.join(['hex0',
-                        './bootstrap-seeds/POSIX/x86/hex0_x86.hex0',
-                        './bootstrap-seeds/POSIX/x86/hex0-seed\n'])
+        cmd = ' '.join(['src',
+                        '0',
+                        '/bootstrap-seeds\n'])
+        image_file.write(cmd.encode())
+        cmd = ' '.join(['src',
+                        '0',
+                        '/bootstrap-seeds/POSIX\n'])
+        image_file.write(cmd.encode())
+        cmd = ' '.join(['src',
+                        '0',
+                        '/bootstrap-seeds/POSIX/x86\n'])
         image_file.write(cmd.encode())
         cmd = ' '.join(['hex0',
-                        './bootstrap-seeds/POSIX/x86/kaem-minimal.hex0',
-                        './bootstrap-seeds/POSIX/x86/kaem-optional-seed\n'])
+                        '/x86/hex0_x86.hex0',
+                        '/bootstrap-seeds/POSIX/x86/hex0-seed\n'])
         image_file.write(cmd.encode())
-        cmd = ' '.join(['./bootstrap-seeds/POSIX/x86/kaem-optional-seed', './kaem.x86\n'])
+        cmd = ' '.join(['hex0',
+                        '/x86/kaem-minimal.hex0',
+                        '/bootstrap-seeds/POSIX/x86/kaem-optional-seed\n'])
         image_file.write(cmd.encode())
-
+        cmd = ' '.join(['hex0',
+                        '/x86/kaem-minimal.hex0',
+                        '/init\n'])
+        image_file.write(cmd.encode())
+        cmd = ' '.join(['/bootstrap-seeds/POSIX/x86/kaem-optional-seed', '/kaem.x86\n'])
+        image_file.write(cmd.encode())
         os.chdir(save_cwd)
 
     def create_builder_hex0_disk_image(self, image_file_name, size):
