@@ -32,19 +32,16 @@ checksum-transcriber sources
 sha256sum -c sources.SHA256SUM
 
 # Unpack
-mkdir src build
-cd src
+mkdir build
+cd build
 ungz --file ${DISTFILES}/${NYACC_PKG}.tar.gz --output ${NYACC_PKG}.tar
 ungz --file ${DISTFILES}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
-cd ..
-
-cd build
-untar --file ../src/${NYACC_PKG}.tar
-untar --non-strict --file ../src/${MES_PKG}.tar # ignore symlinks
+untar --file ${NYACC_PKG}.tar
+untar --non-strict --file ${MES_PKG}.tar # ignore symlinks
 mes_run=${MES_PREFIX}/kaem.run
 replace --file ${mes_run} --output ${mes_run} --match-on 0x1000000 --replace-with 0x8048000
 
-rm ../src/${NYACC_PKG}.tar ../src/${MES_PKG}.tar
+rm ${NYACC_PKG}.tar ${MES_PKG}.tar
 
 cp ../files/config.h ${MES_PREFIX}/include/mes
 

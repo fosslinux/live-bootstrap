@@ -22,21 +22,18 @@ checksum-transcriber sources
 sha256sum -c sources.SHA256SUM
 
 # Unpack
-mkdir src build
-
-cd src
-ungz --file ${DISTFILES}/${TCC_TAR}.tar.gz --output ${TCC_TAR}.tar
-ungz --file ${DISTFILES}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
-cd ..
+mkdir build
 
 cd build
-untar --non-strict --file ../src/${TCC_TAR}.tar
+ungz --file ${DISTFILES}/${TCC_TAR}.tar.gz --output ${TCC_TAR}.tar
+ungz --file ${DISTFILES}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
+untar --non-strict --file ${TCC_TAR}.tar
 simple-patch ${TCC_PKG}/tcctools.c \
     ../simple-patches/remove-fileopen.before ../simple-patches/remove-fileopen.after
 simple-patch ${TCC_PKG}/tcctools.c \
     ../simple-patches/addback-fileopen.before ../simple-patches/addback-fileopen.after
 
-untar --non-strict --file ../src/${MES_PKG}.tar
+untar --non-strict --file ${MES_PKG}.tar
 
 # Create config.h
 catm ${MES_PKG}/include/mes/config.h

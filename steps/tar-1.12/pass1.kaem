@@ -19,7 +19,7 @@ cd build
 cp ${DISTFILES}/${pkg}.tar.gz ../src/
 gzip -d -f ../src/${pkg}.tar.gz
 untar --file ../src/${pkg}.tar
-rm ../src/${pkg}.tar
+rm -r ../src
 
 cd ${pkg}
 
