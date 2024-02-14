@@ -9,13 +9,10 @@ checksum-transcriber sources
 sha256sum -c sources.SHA256SUM
 
 # Extract
-mkdir build src
-cd src
-ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
-cd ..
-
+mkdir build
 cd build
-untar --file ../src/${pkg}.tar
+ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
+untar --file ${pkg}.tar
 cd ${pkg}
 
 cp ../../files/custom_config.h include/fiwix

@@ -19,6 +19,7 @@ cd build
 cp ${DISTFILES}/${pkg}.tar.gz ../src/
 gzip -d -f ../src/${pkg}.tar.gz
 tar xf ../src/${pkg}.tar
+rm -r ../src
 cd ${pkg}
 cp ../../mk/main.mk Makefile
 

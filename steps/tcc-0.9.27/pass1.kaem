@@ -12,14 +12,11 @@ checksum-transcriber sources
 sha256sum -c sources.SHA256SUM
 
 # Extract
-mkdir build src
-cd src
+mkdir build
+cd build
 unbz2 --file ${DISTFILES}/${pkg}.tar.bz2 --output ${pkg}.tar
 ungz --file ${DISTFILES}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
-cd ..
-
-cd build
-untar --file ../src/${pkg}.tar
+untar --file ${pkg}.tar
 simple-patch tcc-0.9.27/tcctools.c \
     ../simple-patches/remove-fileopen.before ../simple-patches/remove-fileopen.after
 simple-patch tcc-0.9.27/tcctools.c \
@@ -29,7 +26,7 @@ simple-patch tcc-0.9.27/tccelf.c \
 # Fix SIGSEGV while building lwext4
 simple-patch tcc-0.9.27/tccelf.c \
     ../simple-patches/check-reloc-null.before ../simple-patches/check-reloc-null.after
-untar --non-strict --file ../src/${MES_PKG}.tar
+untar --non-strict --file ${MES_PKG}.tar
 cd ${pkg}
 
 # Create config.h

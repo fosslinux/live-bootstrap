@@ -10,13 +10,13 @@ set -ex
 checksum-transcriber sources
 sha256sum -c sources.SHA256SUM
 
-mkdir build src
+mkdir build
 cd build 
 
 # Extract
-unbz2 --file ${DISTFILES}/${pkg}.tar.bz2 --output ../src/${pkg}.tar
-untar --file ../src/${pkg}.tar
-rm ../src/${pkg}.tar
+unbz2 --file ${DISTFILES}/${pkg}.tar.bz2 --output ${pkg}.tar
+untar --file ${pkg}.tar
+rm ${pkg}.tar
 cd ${pkg}
 
 # Create .h files

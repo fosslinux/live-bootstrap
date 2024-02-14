@@ -20,6 +20,7 @@ cd build
 cp ${DISTFILES}/${pkg}.tar.bz2 ../src/
 bunzip2 -f ../src/${pkg}.tar.bz2
 tar xf ../src/${pkg}.tar
+rm -r ../src
 cd ${pkg}
 cp ../../mk/main.mk Makefile
 

@@ -4,13 +4,10 @@
 
 set -ex
 
-mkdir build src
-cd src
-ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
-cd ..
-
+mkdir build
 cd build
-untar --file ../src/${pkg}.tar
+ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
+untar --file ${pkg}.tar
 cd ${pkg}
 
 mkdir -p build_generic/include/generated
