@@ -9,7 +9,7 @@ src_unpack() {
     mkdir "${pkg}"
     cp "${DISTFILES}/deblob-4.9" "${pkg}/"
     default || true # Predictable link errors - not a problem
-    rm "${DISTFILES}/${pkg}.tar.gz"
+    rm "${DISTFILES}/${pkg}.tar.xz"
 }
 
 generate_autoconf_h() {

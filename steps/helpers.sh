@@ -307,8 +307,13 @@ extract_file() {
                         *.tar.bz2)
                             # Initial bzip2 built against meslibc has broken pipes
                             bzip2 -dc "${DISTFILES}/${f}" | tar -xf - ${extract} ;;
-                        *.tar.xz)
-                            tar -xf "${DISTFILES}/${f}" --use-compress-program=xz ${extract} ;;
+                        *.tar.xz | *.tar.lzma)
+                            if test -e "${PREFIX}/bin/xz"; then
+                                tar -xf "${DISTFILES}/${f}" --use-compress-program=xz ${extract}
+                            else
+                                unxz --file "${DISTFILES}/${f}" | tar -xf - ${extract}
+                            fi
+                            ;;
                         esac
                     fi
                     ;;

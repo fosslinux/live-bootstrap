@@ -40,7 +40,7 @@ done
 
 if [ -e "/external/repo-preseeded/linux-4.9.10_0.tar.bz2" ]; then
     # This is done in src_extract out of necessity usually -- I can't think of a better solution :(
-    rm -f "${DISTFILES}/linux-4.9.10.tar.gz"
+    rm -f "${DISTFILES}/linux-4.9.10.tar.xz"
 fi
 
 unset get_source_filename

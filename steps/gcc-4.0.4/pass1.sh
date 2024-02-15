@@ -4,7 +4,7 @@
 
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-EXTRA_DISTFILES="automake-1.16.3.tar.gz"
+EXTRA_DISTFILES="automake-1.16.3.tar.xz"
 
 src_prepare() {
     default
