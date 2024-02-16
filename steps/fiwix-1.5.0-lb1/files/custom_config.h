@@ -5,7 +5,7 @@
 #undef NR_CALLOUTS
 #define NR_CALLOUTS	NR_PROCS
 #undef NR_OPENS
-#define NR_OPENS	1536
+#define NR_OPENS	4096
 #undef NR_FLOCKS
 #define NR_FLOCKS	(NR_PROCS * 5)
 #undef MAX_PID_VALUE

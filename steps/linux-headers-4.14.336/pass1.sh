@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-extract="linux-4.9.10/scripts linux-4.9.10/include linux-4.9.10/arch/x86/include linux-4.9.10/arch/x86/entry"
+extract="linux-4.14.336/scripts linux-4.14.336/include linux-4.14.336/arch/x86/include linux-4.14.336/arch/x86/entry"
 
 src_prepare() {
     default
@@ -49,8 +49,8 @@ src_install() {
     # Generate linux/version.h
     # Rules are from makefile
     VERSION=4
-    PATCHLEVEL=9
-    SUBLEVEL=10
+    PATCHLEVEL=14
+    SUBLEVEL=336
     VERSION_CODE="$((VERSION * 65536 + PATCHLEVEL * 256 + SUBLEVEL))"
     echo '#define LINUX_VERSION_CODE '"${VERSION_CODE}" \
         > "${DESTDIR}${PREFIX}/include/linux/version.h"

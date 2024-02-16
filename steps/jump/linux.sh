@@ -17,15 +17,15 @@ if [ "${KERNEL_BOOTSTRAP}" = True ]; then
     find / -xdev -type d -printf "dir %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type f -printf "file %p %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type l -printf "slink %p %l %m %U %G\n" >> /initramfs.list
-    kexec-linux "/dev/ram1" "/boot/linux-4.9.10" "!gen_init_cpio /initramfs.list | gzip -c"
+    kexec-linux "/dev/ram1" "/boot/vmlinuz" "!gen_init_cpio /initramfs.list | gzip -c"
 else
     mkdir /etc
     # kexec time
     if [ "${BARE_METAL}" = True ]; then
-        kexec -l "/boot/linux-4.9.10" \
+        kexec -l "/boot/vmlinuz" \
             --append="root=/dev/sda1 rootfstype=ext3 init=/init rw"
     else
-        kexec -l "/boot/linux-4.9.10" --console-serial \
+        kexec -l "/boot/vmlinuz" --console-serial \
             --append="console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw"
     fi
     kexec -e

@@ -1,0 +1,60 @@
+SPDX-FileCopyrightText: 2022 Sean Christopherson <seanjc@google.com>
+
+SPDX-License-Identifier: GPL-2.0-only
+
+Revert the following patch:
+From ddfd117714014cebe7b5d008fdec8eaec620cba1 Mon Sep 17 00:00:00 2001
+From: Sean Christopherson <seanjc@google.com>
+Date: Wed, 30 Nov 2022 23:36:48 +0000
+Subject: [PATCH] x86/virt: Force GIF=1 prior to disabling SVM (for reboot
+ flows)
+
+commit 6a3236580b0b1accc3976345e723104f74f6f8e6 upstream.
+
+Set GIF=1 prior to disabling SVM to ensure that INIT is recognized if the
+kernel is disabling SVM in an emergency, e.g. if the kernel is about to
+jump into a crash kernel or may reboot without doing a full CPU RESET.
+If GIF is left cleared, the new kernel (or firmware) will be unabled to
+awaken APs.  Eat faults on STGI (due to EFER.SVME=0) as it's possible
+that SVM could be disabled via NMI shootdown between reading EFER.SVME
+and executing STGI.
+
+Link: https://lore.kernel.org/all/cbcb6f35-e5d7-c1c9-4db9-fe5cc4de579a@amd.com
+Cc: stable@vger.kernel.org
+Cc: Andrew Cooper <Andrew.Cooper3@citrix.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20221130233650.1404148-3-seanjc@google.com
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/virtext.h | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/virtext.h b/arch/x86/include/asm/virtext.h
+index 0116b2ee9e64f..4699acd602af4 100644
+--- arch/x86/include/asm/virtext.h
++++ arch/x86/include/asm/virtext.h
+@@ -114,21 +114,7 @@ static inline void cpu_svm_disable(void)
+ 
+ 	wrmsrl(MSR_VM_HSAVE_PA, 0);
+ 	rdmsrl(MSR_EFER, efer);
+-	if (efer & EFER_SVME) {
+-		/*
+-		 * Force GIF=1 prior to disabling SVM to ensure INIT and NMI
+-		 * aren't blocked, e.g. if a fatal error occurred between CLGI
+-		 * and STGI.  Note, STGI may #UD if SVM is disabled from NMI
+-		 * context between reading EFER and executing STGI.  In that
+-		 * case, GIF must already be set, otherwise the NMI would have
+-		 * been blocked, so just eat the fault.
+-		 */
+-		asm_volatile_goto("1: stgi\n\t"
+-				  _ASM_EXTABLE(1b, %l[fault])
+-				  ::: "memory" : fault);
+-fault:
+-		wrmsrl(MSR_EFER, efer & ~EFER_SVME);
+-	}
++	wrmsrl(MSR_EFER, efer & ~EFER_SVME);
+ }
+ 
+ /** Makes sure SVM is disabled, if it is supported on the CPU

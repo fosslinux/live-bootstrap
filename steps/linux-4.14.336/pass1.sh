@@ -3,11 +3,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# XXX: Fix package after builder-hex0
-
 src_unpack() {
     mkdir "${pkg}"
-    cp "${DISTFILES}/deblob-4.9" "${pkg}/"
     default || true # Predictable link errors - not a problem
     rm "${DISTFILES}/${pkg}.tar.xz"
 }
@@ -32,12 +29,11 @@ src_prepare() {
 
     generate_autoconf_h
 
-    # Deblob the kernel
-    chmod +x deblob-4.9
-    ./deblob-4.9 --force
-
     # Remove shipped files
     find . -name "*_shipped*" -delete
+
+    # Remove documentation to save space
+    rm -rf Documentation
 }
 
 src_compile() {
@@ -54,7 +50,7 @@ src_compile() {
 }
 
 src_install() {
-    install -D -m 644 arch/i386/boot/bzImage "${DESTDIR}/boot/linux-4.9.10"
+    install -D -m 644 arch/i386/boot/bzImage "${DESTDIR}/boot/vmlinuz"
     install -D -m 755 usr/gen_init_cpio "${DESTDIR}${PREFIX}/bin/gen_init_cpio"
     install -D -m 755 scripts/gen_initramfs_list.sh "${DESTDIR}${PREFIX}/bin/gen_initramfs_list.sh"
 }

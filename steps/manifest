@@ -110,7 +110,7 @@ improve: populate_device_nodes
 build: gcc-4.0.4
 build: findutils-4.2.33
 build: musl-1.2.4
-build: linux-headers-4.9.10
+build: linux-headers-4.14.336
 build: gcc-4.0.4
 build: util-linux-2.19.1
 build: e2fsprogs-1.45.7
@@ -124,7 +124,7 @@ build: kexec-linux-1.0.0 ( BUILD_LINUX == True )
 build: kexec-tools-2.0.22 ( BUILD_LINUX == True )
 improve: clean_sources
 improve: clean_artifacts
-build: linux-4.9.10 ( BUILD_LINUX == True )
+build: linux-4.14.336 ( BUILD_LINUX == True )
 jump: break ( INTERNAL_CI == pass1 )
 improve: populate_device_nodes
 jump: linux ( CHROOT == False )

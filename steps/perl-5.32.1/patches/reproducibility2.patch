@@ -41,7 +41,7 @@ NOTE: this patch CANNOT be applied to a non-live-bootstrap environment.
  	linux) osname=linux
  		case "$3" in
 -		*)	osvers="$3" ;;
-+		*)	osvers="4.9.10-gnu_1" ;;
++		*)	osvers="4.14.336" ;;
  		esac
  		;;
  	MiNT) osname=mint

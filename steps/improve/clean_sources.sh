@@ -38,9 +38,9 @@ for source in "${DISTFILES}/"*; do
     rm "${source}"
 done
 
-if [ -e "/external/repo-preseeded/linux-4.9.10_0.tar.bz2" ]; then
+if [ -e "/external/repo-preseeded/linux-4.14.336_0.tar.bz2" ]; then
     # This is done in src_extract out of necessity usually -- I can't think of a better solution :(
-    rm -f "${DISTFILES}/linux-4.9.10.tar.xz"
+    rm -f "${DISTFILES}/linux-4.14.336.tar.xz"
 fi
 
 unset get_source_filename

@@ -34,7 +34,7 @@ NOTE: this patch CANNOT be applied to a non-live-bootstrap environment.
  # because the A-Z/a-z are not consecutive.
 -myuname=`echo $myuname | $sed -e "s,['/],,g" | \
 -	./tr '[A-Z]' '[a-z]' | $tr $trnl ' '`
-+myuname="linux (none) 4.9.10-gnu_1 #1 mon jan 1 00:00:01 1970 i686 gnulinux"
++myuname="linux (none) 4.14.336 #1 mon jan 1 00:00:01 1970 i686 gnulinux"
  ?X: Save the value we just computed to reset myuname after we get done here.
  newmyuname="$myuname"
  dflt=n
@@ -43,7 +43,7 @@ NOTE: this patch CANNOT be applied to a non-live-bootstrap environment.
  ?X: into using the SysV case!
  		gnu)	osname=gnu
 -			osvers="$3" ;;
-+			osvers="4.9.10-gnu_1" ;;
++			osvers="4.14.336" ;;
  ?X: HP-UX uname -a gives something like
  ?X: HP-UX foobar B.10.20 A 9000/735 2016483812 two-user license
  ?X: Preserve the full 10.20 string instead of the previous plain '10'.
