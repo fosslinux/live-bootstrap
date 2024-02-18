@@ -23,10 +23,10 @@ else
     # kexec time
     if [ "${BARE_METAL}" = True ]; then
         kexec -l "/boot/vmlinuz" \
-            --append="root=/dev/sda1 rootfstype=ext3 init=/init rw"
+            --append="root=/dev/sda1 rootfstype=ext3 init=/init rw rootwait"
     else
         kexec -l "/boot/vmlinuz" --console-serial \
-            --append="console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw"
+            --append="console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw rootwait"
     fi
     kexec -e
 fi
