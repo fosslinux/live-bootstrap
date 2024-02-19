@@ -274,7 +274,7 @@ When in doubt, try deleting the file in question -- it will be downloaded again 
 this script the next time")
 
     @staticmethod
-    def download_file(url, directory, file_name):
+    def download_file(url, directory, file_name, silent=False):
         """
         Download a single source archive.
         """
@@ -290,7 +290,8 @@ this script the next time")
                 "User-Agent": "curl/7.88.1"
         }
         if not os.path.isfile(abs_file_name):
-            print(f"Downloading: {file_name}")
+            if not silent:
+                print(f"Downloading: {file_name}")
             response = requests.get(url, allow_redirects=True, stream=True,
                     headers=headers, timeout=20)
             if response.status_code == 200:

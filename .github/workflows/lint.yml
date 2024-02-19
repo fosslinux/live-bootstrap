@@ -21,7 +21,7 @@ jobs:
       - name: Install pylint
         run: sudo pip3 install pylint
       - name: pylint
-        run: pylint rootfs.py lib/utils.py lib/generator.py lib/target.py --disable=duplicate-code
+        run: pylint rootfs.py lib/utils.py lib/generator.py lib/target.py check_substitutes.py --disable=duplicate-code
 
   shellcheck:
     name: Lint shell files
@@ -42,3 +42,12 @@ jobs:
         run: sudo pip3 install reuse
       - name: reuse
         run: reuse lint
+
+  substitutes:
+    name: Check validity of substituted tarballs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Check validity of substitutes
+        run: ./check_substitutes.py
