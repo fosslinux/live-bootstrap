@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -43,10 +44,19 @@ src_compile() {
 
     # Allow use of patched initramfs_list.sh (which is required anyway)
     make "${MAKEJOBS}" ARCH=i386 prepare
-    PATH="${PWD}/usr:${PATH}" make "${MAKEJOBS}" ARCH=i386
+
+    # Build just the vmlinux, because a full build will not fit our ramdisk
+    PATH="${PWD}/usr:${PATH}" make "${MAKEJOBS}" ARCH=i386 vmlinux
 
     # Clear up more space
+    find . -name '*.o' -not -path './drivers/firmware/efi/libstub/*' -delete
+
+    # Now that we have space, build bzImage, taking care not to rebuild what we've just deleted
+    PATH="${PWD}/usr:${PATH}" make "${MAKEJOBS}" ARCH=i386 -o vmlinux bzImage
+
+    # Clear up one more time
     find . -name '*.o' -delete
+    rm vmlinux
 }
 
 src_install() {
