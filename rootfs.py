@@ -13,6 +13,7 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 # SPDX-FileCopyrightText: 2023-24 Gábor Stefanik <netrolller.3d@gmail.com>
+# SPDX-FileCopyrightText: 2024 Lance Vick <lance@vick.house>
 
 import argparse
 import os
@@ -31,7 +32,7 @@ def create_configuration_file(args):
         config.write(f"ARCH={args.arch}\n")
         config.write(f"ARCH_DIR={stage0_arch_map.get(args.arch, args.arch)}\n")
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
-        config.write(f"CHROOT={args.chroot or args.bwrap}\n")
+        config.write(f"CHROOT={args.chroot or args.bwrap or args.docker}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"SWAP_SIZE={args.swap}\n")
@@ -39,6 +40,7 @@ def create_configuration_file(args):
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
         config.write(f"BARE_METAL={args.bare_metal}\n")
+        config.write(f"EXTERNAL_SOURCES={args.external_sources}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
                 config.write("DISK=sdb1\n")
@@ -63,6 +65,8 @@ def main():
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
                         action="store_true")
     parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
+                        action="store_true")
+    parser.add_argument("-do", "--docker", help="Run inside a docker build",
                         action="store_true")
     parser.add_argument("-t", "--target", help="Target directory",
                         default="target")
@@ -123,15 +127,17 @@ def main():
             count += 1
         if args.bwrap:
             count += 1
+        if args.docker:
+            count += 1
         if args.bare_metal:
             count += 1
         return count
 
     if check_types() > 1:
-        raise ValueError("No more than one of qemu, chroot, bwrap, bare metal"
+        raise ValueError("No more than one of qemu, chroot, bwrap, docker, bare metal"
                          "may be used.")
     if check_types() == 0:
-        raise ValueError("One of qemu, chroot, bwrap, or bare metal must be selected.")
+        raise ValueError("One of qemu, chroot, bwrap, docker, or bare metal must be selected.")
 
     # Arch validation
     if args.arch != "x86":
@@ -153,6 +159,9 @@ def main():
             (1024 if str(args.target_size).lower().endswith('g') else 1))
     else:
         args.target_size = 0
+
+    if args.docker:
+        args.external_sources = True
 
     # Swap file size validation
     if args.qemu or args.bare_metal:
@@ -203,6 +212,20 @@ print(shutil.which('chroot'))
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init)
+
+    elif args.docker:
+        generator.prepare(target, using_kernel=False)
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+        print(generator.target_dir, init)
+        run('env', '-i', 'DOCKER_BUILDKIT=1', 'SOURCE_DATE_EPOCH=1',
+                                                 'docker', 'build',
+                                                 '--build-arg=SOURCE_DATE_EPOCH=1',
+                                                 '--progress=plain',
+                                                 '--platform=linux/amd64',
+                                                 '--target=package',
+                                                 '--tag', 'local/live-bootstrap',
+                                                 '.')
 
     elif args.bwrap:
         init = '/init'
