@@ -38,7 +38,7 @@ def create_configuration_file(args):
         config.write(f"FINAL_JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
-        config.write(f"BARE_METAL={args.bare_metal}\n")
+        config.write(f"BARE_METAL={args.bare_metal or (args.qemu and args.interactive)}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
                 config.write("DISK=sdb1\n")
@@ -254,7 +254,6 @@ print(shutil.which('chroot'))
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
-                '-no-reboot',
                 '-drive', 'file=' + target.get_disk("disk") + ',format=raw'
             ]
             if target.get_disk("external") is not None:
@@ -264,17 +263,20 @@ print(shutil.which('chroot'))
             arg_list += [
                 '-nic', 'user,ipv6=off,model=e1000',
                 '-kernel', args.kernel,
-                '-nographic',
-                '-append', 'console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw'
+                '-append',
             ]
-            run(args.qemu_cmd, *arg_list)
+            if args.interactive:
+                arg_list += ['consoleblank=0 earlyprintk=vga root=/dev/sda1 '
+                             'rootfstype=ext3 init=/init rw']
+            else:
+                arg_list += ['console=ttyS0 earlycon=uart8250,io,0x3f8,115200n8 '
+                             'root=/dev/sda1 rootfstype=ext3 init=/init rw']
         else:
             generator.prepare(target, kernel_bootstrap=True, target_size=size)
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
-                '-no-reboot',
                 '-drive', 'file=' + generator.target_dir + '.img' + ',format=raw'
             ]
             if target.get_disk("external") is not None:
@@ -283,10 +285,11 @@ print(shutil.which('chroot'))
                 ]
             arg_list += [
                 '-machine', 'kernel-irqchip=split',
-                '-nic', 'user,ipv6=off,model=e1000',
-                '-nographic'
+                '-nic', 'user,ipv6=off,model=e1000'
             ]
-            run(args.qemu_cmd, *arg_list)
+        if not args.interactive:
+            arg_list += ['-no-reboot', '-nographic']
+        run(args.qemu_cmd, *arg_list)
 
 if __name__ == "__main__":
     main()
