@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2024 Liam Wilson <cosinusoidally@gmail.com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
+# Unpack
+mkdir src
+
+cd src
+ungz --file ${DISTFILES}/${pkg}.tar.gz --output ${pkg}.tar
+
+untar --non-strict --file ./${pkg}.tar
+
+# Build
+cd ./${pkg}
+/bootstrap-seeds/POSIX/x86/hex0-seed ./x86/hex0_x86.hex0 ./x86/artifact/hex0-seed
+chmod 755 ./x86/artifact/hex0-seed
+/bootstrap-seeds/POSIX/x86/hex0-seed ./x86/kaem-minimal.hex0 ./x86/artifact/kaem-optional-seed
+chmod 755 ./x86/artifact/kaem-optional-seed
+kaem --file kaem.x86
+cp artifacts/tcc_27_boot_static.exe /usr/bin/tcc-boot0
+chmod 755 /usr/bin/tcc-boot0
+
+cd ../..
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.${ARCH}.checksums \
+        /usr/bin/tcc-boot0
+
+    cp ${pkg}.${ARCH}.checksums ${SRCDIR}
+else
+    sha256sum -c ${pkg}.${ARCH}.checksums
+fi
