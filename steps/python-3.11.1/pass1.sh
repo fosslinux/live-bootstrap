@@ -10,10 +10,10 @@ src_prepare() {
         Misc/stable_abi.toml
 
     # Regenerate ssl_data for ssl module
-    rm Modules/_ssl_data_300.h Modules/_ssl_data.h
-    python -B Tools/ssl/make_ssl_data.py ../openssl-1.1.1l Modules/_ssl_data_111.h
+    rm Modules/_ssl_data_111.h Modules/_ssl_data.h
+    python -B Tools/ssl/make_ssl_data.py ../openssl-3.0.13 Modules/_ssl_data_300.h
     sed -i 's#$(srcdir)/Modules/_ssl_data.h ##' Makefile.pre.in
-    sed -i 's#$(srcdir)/Modules/_ssl_data_300.h ##' Makefile.pre.in
+    sed -i 's#$(srcdir)/Modules/_ssl_data_111.h ##' Makefile.pre.in
 
     # Regenerate encodings
     grep generated -r . -l | grep encodings | xargs rm
