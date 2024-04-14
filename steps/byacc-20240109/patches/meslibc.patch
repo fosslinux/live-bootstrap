@@ -1,0 +1,170 @@
+SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Remove usages of tmpfile(), rewind(), fgetpos(), fsetpos() and bsearch(),
+which are unsupported by meslibc, and add missing declaration for strdup.
+
+License note: Berkeley Yacc is in the public domain, but it's linked with
+meslibc, which is GPL-3.0-or-later, so we apply that license here too.
+
+diff -ru ../byacc-20240109.bak/main.c ./main.c
+--- ../byacc-20240109.bak/main.c	2024-04-14 16:06:09.646465507 +0200
++++ ./main.c	2024-04-14 20:41:56.227083399 +0200
+@@ -788,7 +788,7 @@
+ 	(void)umask(save_umask);
+     }
+ #else
+-    result = tmpfile();
++    result = fopen(label, "w+");
+ #endif
+ 
+     if (result == 0)
+diff -ru ../byacc-20240109.bak/output.c ./output.c
+--- ../byacc-20240109.bak/output.c	2024-04-14 16:06:09.646465507 +0200
++++ ./output.c	2024-04-14 16:06:24.636465897 +0200
+@@ -1289,7 +1289,7 @@
+ 	{
+ 	    if (union_file != 0)
+ 	    {
+-		rewind(union_file);
++		fseek(union_file, 0, SEEK_SET);
+ 		while ((c = getc(union_file)) != EOF)
+ 		    putc_code(fp, c);
+ 	    }
+@@ -1314,7 +1314,7 @@
+ 
+     if (text_file == NULL)
+ 	open_error("text_file");
+-    rewind(text_file);
++    fseek(text_file, 0, SEEK_SET);
+     in = text_file;
+     if ((c = getc(in)) == EOF)
+ 	return;
+@@ -1684,7 +1684,7 @@
+     int state;
+     char line_state[20];
+ 
+-    rewind(action_file);
++    fseek(action_file, 0, SEEK_SET);
+     if ((c = getc(action_file)) == EOF)
+ 	return;
+ 
+diff -ru ../byacc-20240109.bak/reader.c ./reader.c
+--- ../byacc-20240109.bak/reader.c	2024-04-14 16:06:09.646465507 +0200
++++ ./reader.c	2024-04-14 20:40:58.387082748 +0200
+@@ -70,7 +70,7 @@
+     char *line_data;	/* saved input-line */
+     size_t line_used;	/* position within saved input-line */
+     size_t line_size;	/* length of saved input-line */
+-    fpos_t line_fpos;	/* pointer before reading past saved input-line */
++    long line_fpos;	/* pointer before reading past saved input-line */
+ }
+ SAVE_LINE;
+ 
+@@ -315,7 +315,7 @@
+ 	line = save_area.line_data;
+ 	cptr = save_area.line_used + line;
+ 	linesize = save_area.line_size;
+-	if (fsetpos(input_file, &save_area.line_fpos) != 0)
++	if (fseek(input_file, save_area.line_fpos, SEEK_SET) != 0)
+ 	    on_error();
+ 	memset(&save_area, 0, sizeof(save_area));
+     }
+@@ -338,7 +338,7 @@
+ 	save_area.line_size = linesize;
+ 	NO_SPACE(save_area.line_data);
+ 	memcpy(save_area.line_data, line, linesize);
+-	if (fgetpos(f, &save_area.line_fpos) != 0)
++	if ((save_area.line_fpos = ftell(f)) == -1)
+ 	    on_error();
+ 	must_save = -must_save;
+     }
+@@ -572,6 +572,36 @@
+     return strcmp(p->name, q->name);
+ }
+ 
++/*
++ * Compare keyword to cached token, treating '_' and '-' the same.  Some
++ * grammars rely upon this misfeature.
++ */
++static int
++matchec(const char *name)
++{
++    const char *p = cache;
++    const char *q = name;
++    int code = 0;	/* assume mismatch */
++
++    while (*p != '\0' && *q != '\0')
++    {
++	char a = *p++;
++	char b = *q++;
++	if (a == '_')
++	    a = '-';
++	if (b == '_')
++	    b = '-';
++	if (a != b)
++	    break;
++	if (*p == '\0' && *q == '\0')
++	{
++	    code = 1;
++	    break;
++	}
++    }
++    return code;
++}
++
+ static int
+ keyword(void)
+ {
+@@ -612,10 +642,36 @@
+ 	}
+ 	cachec(NUL);
+ 
+-	if ((key = bsearch(cache, keywords,
+-			   sizeof(keywords) / sizeof(*key),
+-			   sizeof(*key), compare_keys)))
+-	    return key->token;
++	if (matchec("token") || matchec("term"))
++	    return (TOKEN);
++	if (matchec("type"))
++	    return (TYPE);
++	if (matchec("left"))
++	    return (LEFT);
++	if (matchec("right"))
++	    return (RIGHT);
++	if (matchec("nonassoc") || matchec("binary"))
++	    return (NONASSOC);
++	if (matchec("start"))
++	    return (START);
++	if (matchec("union"))
++	    return (UNION);
++	if (matchec("ident"))
++	    return (IDENT);
++	if (matchec("expect"))
++	    return (EXPECT);
++	if (matchec("expect-rr"))
++	    return (EXPECT_RR);
++	if (matchec("pure-parser"))
++	    return (PURE_PARSER);
++	if (matchec("parse-param"))
++	    return (PARSE_PARAM);
++	if (matchec("lex-param"))
++	    return (LEX_PARAM);
++	if (matchec("token-table"))
++	    return (TOKEN_TABLE);
++	if (matchec("yacc"))
++	    return (POSIX_YACC);
+     }
+     else
+     {
+@@ -1178,6 +1234,9 @@
+     return result;
+ }
+ 
++char *
++strdup (char const *s);
++
+ static void
+ save_param(int k, char *buffer, int name, int type2)
+ {
