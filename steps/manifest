@@ -49,6 +49,7 @@ build: tar-1.12
 build: sed-4.0.9
 build: bzip2-1.0.8
 build: coreutils-5.0
+build: byacc-20240109
 build: heirloom-devtools-070527
 build: bash-2.05b
 improve: setup_repo
