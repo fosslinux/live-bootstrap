@@ -30,14 +30,14 @@ patch -Np0 -i ../../patches/meslibc.patch
 make CC=tcc AR=tcc\ -ar CFLAGS=-DMAXPATHLEN=100\ -DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
 
 # Install yacc
-install yacc ${BINDIR}/byacc
+install yacc ${BINDIR}/yacc
 
 cd ../..
 
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.checksums \
-        /usr/bin/byacc
+        /usr/bin/yacc
 
     install ${pkg}.checksums ${SRCDIR}
 else
