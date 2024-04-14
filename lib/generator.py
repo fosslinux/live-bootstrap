@@ -12,6 +12,7 @@ import hashlib
 import os
 import shutil
 import tarfile
+import traceback
 import requests
 
 # pylint: disable=too-many-instance-attributes
@@ -305,7 +306,12 @@ this script the next time")
     def get_packages(self):
         """Prepare remaining sources"""
         for line in self.source_manifest:
-            path = self.download_file(line[2], line[1], line[3])
+            try:
+                path = self.download_file(line[2], line[1], line[3])
+            except requests.HTTPError:
+                print(traceback.format_exc())
+        for line in self.source_manifest:
+            path = os.path.join(line[1], line[3])
             self.check_file(path, line[0])
 
     @classmethod

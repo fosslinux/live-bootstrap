@@ -257,14 +257,25 @@ build() {
     unset extract
 }
 
-interpret_source_line() {
+download_source_line() {
     url="${1}"
     checksum="${2}"
     fname="${3}"
     # Default to basename of url if not given
     fname="${fname:-$(basename "${url}")}"
     if ! [ -e "${fname}" ]; then
-        curl --fail --retry 5 --location "${url}" --output "${fname}"
+        curl --fail --retry 5 --location "${url}" --output "${fname}" || true
+    fi
+}
+
+check_source_line() {
+    url="${1}"
+    checksum="${2}"
+    fname="${3}"
+    # Default to basename of url if not given
+    fname="${fname:-$(basename "${url}")}"
+    if ! [ -e "${fname}" ]; then
+        false
     fi
     echo "${checksum}  ${fname}" > "${fname}.sum"
     sha256sum -c "${fname}.sum"
@@ -279,7 +290,13 @@ default_src_get() {
     while read line; do
         # This is intentional - we want to split out ${line} into separate arguments.
         # shellcheck disable=SC2086
-        interpret_source_line ${line}
+        download_source_line ${line}
+    done < "${base_dir}/sources"
+    # shellcheck disable=SC2162
+    while read line; do
+        # This is intentional - we want to split out ${line} into separate arguments.
+        # shellcheck disable=SC2086
+        check_source_line ${line}
     done < "${base_dir}/sources"
     cd -
 }
