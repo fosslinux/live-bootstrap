@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
+mkdir build src
+cd build
+
+# Extract
+cp ${DISTFILES}/${pkg}.tgz ../src/${pkg}.tar.gz
+gunzip -f ../src/${pkg}.tar.gz
+tar xf ../src/${pkg}.tar
+rm -r ../src/
+cd ${pkg}
+
+# Prepare and patch
+cp ../../files/Makefile .
+patch -Np0 -i ../../patches/meslibc.patch
+
+# Build yacc
+make CC=tcc AR=tcc\ -ar CFLAGS=-DMAXPATHLEN=100\ -DEILSEQ=84\ -DMB_LEN_MAX=100 LDFLAGS=-lgetopt\ -static RANLIB=true
+
+# Install yacc
+install yacc ${BINDIR}/yacc
+
+cd ../..
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /usr/bin/yacc
+
+    install ${pkg}.checksums ${SRCDIR}
+else
+    sha256sum -c ${pkg}.checksums
+fi
