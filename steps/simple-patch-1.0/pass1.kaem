@@ -11,10 +11,10 @@ M2-Mesoplanet --architecture ${ARCH} -f src/simple-patch.c -o ${BINDIR}/simple-p
 
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
-    sha256sum -o ${pkg}.checksums \
+    sha256sum -o ${pkg}.${ARCH}.checksums \
         /usr/bin/simple-patch
 
-    cp ${pkg}.checksums ${SRCDIR}
+    cp ${pkg}.${ARCH}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi

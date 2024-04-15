@@ -312,7 +312,7 @@ cd ../..
 
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
-    sha256sum -o ${pkg}.checksums \
+    sha256sum -o ${pkg}.${ARCH}.checksums \
         /usr/bin/tcc-mes \
         /usr/bin/tcc-boot0 \
         /usr/bin/tcc-boot1 \
@@ -324,7 +324,7 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/lib/mes/crtn.o \
         /usr/lib/mes/tcc/libtcc1.a
 
-    cp ${pkg}.checksums ${SRCDIR}
+    cp ${pkg}.${ARCH}.checksums ${SRCDIR}
 else
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
