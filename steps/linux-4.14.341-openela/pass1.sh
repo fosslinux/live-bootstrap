@@ -4,10 +4,12 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+dirname=linux-4.14.336
+
 src_unpack() {
-    mkdir "${pkg}"
+    mkdir "linux-4.14.336"
     default || true # Predictable link errors - not a problem
-    rm "${DISTFILES}/${pkg}.tar.xz"
+    rm "${DISTFILES}/linux-4.14.336.tar.xz"
 }
 
 generate_autoconf_h() {
