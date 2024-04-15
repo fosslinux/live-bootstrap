@@ -34,7 +34,7 @@ sha256sum -c sources.SHA256SUM
 # Unpack
 mkdir build
 cd build
-ungz --file ${DISTFILES}/${NYACC_PKG}.tar.gz --output ${NYACC_PKG}.tar
+ungz --file ${DISTFILES}/${NYACC_PKG}-lb1.tar.gz --output ${NYACC_PKG}.tar
 ungz --file ${DISTFILES}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
 untar --file ${NYACC_PKG}.tar
 untar --non-strict --file ${MES_PKG}.tar # ignore symlinks
@@ -61,6 +61,20 @@ cp mes/module/srfi/srfi-9/gnu-struct.mes mes/module/srfi/srfi-9/gnu.mes
 kaem --verbose --strict --file kaem.${MES_ARCH}
 cp bin/mes-m2 ${BINDIR}/mes-m2
 chmod 755 ${BINDIR}/mes-m2
+
+# Rebuild pregenerated files in nyacc
+cd ../${NYACC_PKG}
+rm module/nyacc/lang/c99/mach.d/c99-act.scm module/nyacc/lang/c99/mach.d/c99-tab.scm \
+    module/nyacc/lang/c99/mach.d/c99cx-act.scm module/nyacc/lang/c99/mach.d/c99cx-tab.scm \
+    module/nyacc/lang/c99/mach.d/c99x-act.scm module/nyacc/lang/c99/mach.d/c99x-tab.scm \
+    module/nyacc/lang/c99/mach.d/cpp-act.scm module/nyacc/lang/c99/mach.d/cpp-tab.scm
+${MES} -L module gen-cpp-files.scm
+# More RAM for this one!
+MES_ARENA=32000000
+${MES} -L module gen-c99-files.scm
+MES_ARENA=20000000
+${MES} -L module gen-c99cx-files.scm
+cd ../${MES_PKG}
 
 # Create mescc.scm
 mescc_in=scripts/mescc.scm.in
