@@ -34,7 +34,7 @@ sha256sum -c sources.SHA256SUM
 # Unpack
 mkdir build
 cd build
-ungz --file ${DISTFILES}/${NYACC_PKG}.tar.gz --output ${NYACC_PKG}.tar
+ungz --file ${DISTFILES}/${NYACC_PKG}-lb1.tar.gz --output ${NYACC_PKG}.tar
 ungz --file ${DISTFILES}/${MES_PKG}.tar.gz --output ${MES_PKG}.tar
 untar --file ${NYACC_PKG}.tar
 untar --non-strict --file ${MES_PKG}.tar # ignore symlinks
@@ -62,12 +62,29 @@ kaem --verbose --strict --file kaem.${MES_ARCH}
 cp bin/mes-m2 ${BINDIR}/mes-m2
 chmod 755 ${BINDIR}/mes-m2
 
+# Rebuild pregenerated files in nyacc
+cd ../${NYACC_PKG}
+rm module/nyacc/lang/c99/mach.d/c99-act.scm module/nyacc/lang/c99/mach.d/c99-tab.scm \
+    module/nyacc/lang/c99/mach.d/c99cx-act.scm module/nyacc/lang/c99/mach.d/c99cx-tab.scm \
+    module/nyacc/lang/c99/mach.d/c99x-act.scm module/nyacc/lang/c99/mach.d/c99x-tab.scm \
+    module/nyacc/lang/c99/mach.d/cpp-act.scm module/nyacc/lang/c99/mach.d/cpp-tab.scm
+${MES} -L module gen-cpp-files.scm
+# More RAM for this one!
+MES_ARENA=32000000
+${MES} -L module gen-c99-files.scm
+MES_ARENA=20000000
+${MES} -L module gen-c99cx-files.scm
+cd ../${MES_PKG}
+
 # Create mescc.scm
 mescc_in=scripts/mescc.scm.in
 replace --file ${mescc_in} --output ${mescc_in} --match-on @prefix@ --replace-with ${PREFIX}
 replace --file ${mescc_in} --output ${mescc_in} --match-on @VERSION@ --replace-with ${MES_VERSION}
 replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_cpu@ --replace-with ${MES_ARCH}
 replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_kernel@ --replace-with linux
+
+# Patch out double compilation bug
+replace --file ${mescc_in} --output ${mescc_in} --match-on "(mescc:main (command-line))" --replace-with ");"
 
 mescc_scm=${BINDIR}/mescc.scm
 cp ${mescc_in} ${mescc_scm}
@@ -134,6 +151,8 @@ mescc lib/posix/open.c
 mescc lib/posix/buffered-read.c
 mescc lib/posix/setenv.c
 mescc lib/posix/wait.c
+mescc lib/dirent/closedir.c
+mescc lib/dirent/opendir.c
 mescc lib/stdio/fgetc.c
 mescc lib/stdio/fputc.c
 mescc lib/stdio/fputs.c
@@ -142,6 +161,7 @@ mescc lib/stdio/getchar.c
 mescc lib/stdio/putc.c
 mescc lib/stdio/putchar.c
 mescc lib/stdio/ungetc.c
+mescc lib/stdlib/calloc.c
 mescc lib/stdlib/free.c
 mescc lib/stdlib/realloc.c
 mescc lib/string/memchr.c
@@ -155,6 +175,7 @@ mescc lib/string/strncmp.c
 mescc lib/posix/raise.c
 mescc lib/linux/access.c
 mescc lib/linux/brk.c
+mescc lib/linux/chdir.c
 mescc lib/linux/chmod.c
 mescc lib/linux/clock_gettime.c
 mescc lib/linux/dup.c
@@ -168,15 +189,32 @@ mescc lib/linux/ioctl3.c
 mescc lib/linux/malloc.c
 mescc lib/linux/_open3.c
 mescc lib/linux/_read.c
+mescc lib/linux/readdir.c
+mescc lib/linux/rename.c
 mescc lib/linux/time.c
+mescc lib/linux/umask.c
+mescc lib/linux/uname.c
 mescc lib/linux/unlink.c
+mescc lib/linux/utimensat.c
 mescc lib/linux/wait4.c
 mescc lib/linux/waitpid.c
 mescc lib/linux/${MES_ARCH}-mes-mescc/syscall.c
 mescc lib/linux/getpid.c
 mescc lib/linux/kill.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libc.a __init_io.o eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o isnumber.o abtol.o cast.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o assert_msg.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o raise.o access.o brk.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl3.o _open3.o _read.o time.o unlink.o wait4.o waitpid.o syscall.o getpid.o kill.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libc.s __init_io.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s isnumber.s abtol.s cast.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s assert_msg.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s raise.s access.s brk.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl3.s _open3.s _read.s time.s unlink.s wait4.s waitpid.s syscall.s getpid.s kill.s
+mescc lib/linux/pipe.c
+mescc lib/linux/stat.c
+mescc lib/linux/lstat.c
+mescc lib/linux/mkdir.c
+mescc lib/linux/rmdir.c
+mescc lib/linux/link.c
+mescc lib/linux/symlink.c
+mescc lib/linux/close.c
+mescc lib/linux/nanosleep.c
+mescc lib/linux/fcntl.c
+mescc lib/linux/fstat.c
+mescc lib/linux/getdents.c
+catm ${LIBDIR}/${MES_ARCH}-mes/libc.a __init_io.o eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o isnumber.o abtol.o cast.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o assert_msg.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o closedir.o opendir.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o calloc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o raise.o access.o brk.o chdir.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl3.o _open3.o _read.o readdir.o rename.o time.o umask.o uname.o unlink.o utimensat.o wait4.o waitpid.o syscall.o getpid.o kill.o pipe.o stat.o lstat.o mkdir.o rmdir.o link.o symlink.o close.o nanosleep.o fcntl.o fstat.o getdents.o
+catm ${LIBDIR}/${MES_ARCH}-mes/libc.s __init_io.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s isnumber.s abtol.s cast.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s assert_msg.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s closedir.s opendir.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s calloc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s raise.s access.s brk.s chdir.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl3.s _open3.s _read.s readdir.s rename.s time.s umask.s uname.s unlink.s utimensat.s wait4.s waitpid.s syscall.s getpid.s kill.s pipe.s stat.s lstat.s mkdir.s rmdir.s link.s symlink.s close.s nanosleep.s fcntl.s fstat.s getdents.s
 
 # Build mes itself
 mescc src/builtins.c
@@ -197,10 +235,11 @@ mescc src/stack.c
 mescc src/string.c
 mescc src/struct.c
 mescc src/symbol.c
+mescc src/variable.c
 mescc src/vector.c
 
 # Link everything into new mes executable
-${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${LIBDIR} -o ${BINDIR}/mes builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o vector.o -lc -lmescc
+${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${LIBDIR} -o ${BINDIR}/mes builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o variable.o vector.o -lc -lmescc
 
 # libc+tcc.a
 alias mescc="${BINDIR}/mes -e main ${BINDIR}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -c"
@@ -233,7 +272,6 @@ mescc lib/stdio/vsnprintf.c
 mescc lib/stdio/vsprintf.c
 mescc lib/stdio/vsscanf.c
 mescc lib/stdlib/abort.c
-mescc lib/stdlib/calloc.c
 mescc lib/stdlib/qsort.c
 mescc lib/stdlib/strtod.c
 mescc lib/stdlib/strtof.c
@@ -259,8 +297,8 @@ mescc lib/${MES_ARCH}-mes-mescc/setjmp.c
 mescc lib/linux/close.c
 mescc lib/linux/rmdir.c
 mescc lib/linux/stat.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${LIBDIR}/${MES_ARCH}-mes/libc.a islower.o isupper.o tolower.o toupper.o abtod.o dtoab.o search-path.o execvp.o fclose.o fdopen.o ferror.o fflush.o fopen.o fprintf.o fread.o fseek.o ftell.o fwrite.o printf.o remove.o snprintf.o sprintf.o sscanf.o vfprintf.o vprintf.o vsnprintf.o vsprintf.o vsscanf.o abort.o calloc.o qsort.o strtod.o strtof.o strtol.o strtold.o strtoll.o strtoul.o strtoull.o memmem.o strcat.o strchr.o strlwr.o strncpy.o strrchr.o strstr.o strupr.o sigaction.o ldexp.o mprotect.o localtime.o sigemptyset.o setjmp.o close.o rmdir.o stat.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${LIBDIR}/${MES_ARCH}-mes/libc.s islower.s isupper.s tolower.s toupper.s abtod.s dtoab.s search-path.s execvp.s fclose.s fdopen.s ferror.s fflush.s fopen.s fprintf.s fread.s fseek.s ftell.s fwrite.s printf.s remove.s snprintf.s sprintf.s sscanf.s vfprintf.s vprintf.s vsnprintf.s vsprintf.s vsscanf.s abort.s calloc.s qsort.s strtod.s strtof.s strtol.s strtold.s strtoll.s strtoul.s strtoull.s memmem.s strcat.s strchr.s strlwr.s strncpy.s strrchr.s strstr.s strupr.s sigaction.s ldexp.s mprotect.s localtime.s sigemptyset.s setjmp.s close.s rmdir.s stat.s
+catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${LIBDIR}/${MES_ARCH}-mes/libc.a islower.o isupper.o tolower.o toupper.o abtod.o dtoab.o search-path.o execvp.o fclose.o fdopen.o ferror.o fflush.o fopen.o fprintf.o fread.o fseek.o ftell.o fwrite.o printf.o remove.o snprintf.o sprintf.o sscanf.o vfprintf.o vprintf.o vsnprintf.o vsprintf.o vsscanf.o abort.o qsort.o strtod.o strtof.o strtol.o strtold.o strtoll.o strtoul.o strtoull.o memmem.o strcat.o strchr.o strlwr.o strncpy.o strrchr.o strstr.o strupr.o sigaction.o ldexp.o mprotect.o localtime.o sigemptyset.o setjmp.o close.o rmdir.o stat.o
+catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${LIBDIR}/${MES_ARCH}-mes/libc.s islower.s isupper.s tolower.s toupper.s abtod.s dtoab.s search-path.s execvp.s fclose.s fdopen.s ferror.s fflush.s fopen.s fprintf.s fread.s fseek.s ftell.s fwrite.s printf.s remove.s snprintf.s sprintf.s sscanf.s vfprintf.s vprintf.s vsnprintf.s vsprintf.s vsscanf.s abort.s qsort.s strtod.s strtof.s strtol.s strtold.s strtoll.s strtoul.s strtoull.s memmem.s strcat.s strchr.s strlwr.s strncpy.s strrchr.s strstr.s strupr.s sigaction.s ldexp.s mprotect.s localtime.s sigemptyset.s setjmp.s close.s rmdir.s stat.s
 
 # Make directories
 mkdir ${PREFIX}/lib/linux ${INCDIR}/mes ${INCDIR}/sys ${INCDIR}/linux ${INCDIR}/arch
