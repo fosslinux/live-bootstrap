@@ -9,6 +9,10 @@
 . /steps/bootstrap.cfg
 . /steps/env
 
+if [ -d /steps/after ]; then
+    find /steps/after -maxdepth 1 -name '*.sh' -exec bash {} \;
+fi
+
 if [ "${INTERACTIVE}" = True ]; then
     env - PATH=${PREFIX}/bin PS1="\w # " setsid openvt -fec1 -- bash -i
 fi
