@@ -11,5 +11,5 @@ set -ex
 
 PATH=/${ARCH_DIR}/bin
 
-catm seed-full.kaem /steps/env seed.kaem
+catm seed-full.kaem /steps/bootstrap.cfg /steps/env seed.kaem
 kaem --file seed-full.kaem
