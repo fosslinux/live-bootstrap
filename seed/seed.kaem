@@ -65,5 +65,11 @@ MES_PREFIX=${SRCDIR}/${MES_PKG}/build/${MES_PKG}
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${SRCDIR}/${MES_PKG}/build/${NYACC_PKG}/module
 
 M2-Mesoplanet --architecture ${ARCH} -f script-generator.c -o script-generator
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o script-generator.${ARCH}.checksums script-generator
+else
+    sha256sum -c script-generator.${ARCH}.checksums
+fi
 ./script-generator /steps/manifest
 kaem --file /steps/0.sh
