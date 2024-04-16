@@ -31,7 +31,7 @@ Without using Python:
    metal. (All of this *can* be automated, but not in a trustable way. See
    further below.)
    a. **chroot:** Create a directory where the chroot will reside, run
-   ``./download-distfiles.sh``, and copy:
+      ``./download-distfiles.sh``, and copy:
       * The entire contents of ``seed/stage0-posix`` into that directory.
       * All other files in ``seed`` into that directory.
       * ``steps/`` and ``distfiles/`` into that directory.
