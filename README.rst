@@ -40,16 +40,17 @@ Without using Python:
       * Run ``/bootstrap-seeds/POSIX/x86/kaem-optional-seed`` in the chroot.
         (Eg, ``chroot rootfs /bootstrap-seeds/POSIX/x86/kaem-optional-seed``).
    b. **QEMU:** Create two blank disk images.
-      * On the first image, write
-        ``seed/stage0-posix/bootstrap-seeds/NATIVE/x86/builder-hex0-x86-stage1.img``
-        to it, followed by ``kernel-bootstrap/builder-hex0-x86-stage2.hex0``,
-        followed by zeros padding the disk to the next sector.
+      * Generate ``builder-hex0-x86-stage1.img`` from hex0 source:
+        ``sed 's/[;#].*$//g' builder-hex0/builder-hex0-x86-stage1-hex0 | xxd -r -p``
+      * On the first image, write ``builder-hex0-x86-stage1.img`` to it, followed
+        by ``kernel-bootstrap/builder-hex0-x86-stage2.hex0``, followed by zeros
+        padding the disk to the next sector.
       * distfiles can be obtained using ``./download-distfiles.sh``.
       * See the list in part a. For every file within that list, write a line to
         the disk ``src <size-of-file> <path-to-file>``, followed by the contents
         of the file.
-        * *Only* copy distfiles listed in ``steps/pre-network-sources`` into
-          this disk.
+        * *Only* copy distfiles listed in ``sources`` files for ``build:`` steps
+          manifested before ``improve: get_network`` into this disk.
       * Optionally (if you don't do this, distfiles will be network downloaded):
         * On the second image, create an MSDOS partition table and one ext3
           partition.
