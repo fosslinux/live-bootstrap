@@ -4,6 +4,7 @@
 .. SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 .. SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
 .. SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
+.. SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
 
 .. SPDX-License-Identifier: CC-BY-SA-4.0
 
@@ -152,8 +153,9 @@ mescc-tools-extra
 utilities ``cp`` and ``chown``. This allows us to have one unified
 directory for our binaries. Furthermore, we also build ``sha256sum``, a
 checksumming tool, that we use to ensure reproducibility and authenticity
-of generated binaries. We also build initial ``untar``, ``ungz`` and ``unbz2``
-utilities to deal with compressed archives.
+of generated binaries. We also build initial ``untar``, ``ungz``, ``unxz``
+and ``unbz2`` utilities to deal with compressed archives, as well as
+``replace``, a trivial search-and-replace program.
 
 live-bootstrap seed
 ===================
@@ -179,8 +181,9 @@ The following directives are supported:
 * ``build``, builds a particular package defined in ``steps/``.
 * ``improve``, runs a script making a distinct and logical improvement to the
   live bootstrap system.
-* ``define``, define a variable evaluated from other constants/variables.
+* ``define``, defines a variable evaluated from other constants/variables.
 * ``jump``, moves into a new rootfs/kernel using a custom script.
+* ``uninstall``, removes a previously built package for file.
 
 checksum-transcriber 1.0
 ========================
@@ -196,7 +199,7 @@ simple-patch 1.0
 text block given to it, and replacing it with another text block. This is
 sufficient for the early patching required before we have full proper GNU patch.
 
-mes 0.25
+mes 0.26
 ========
 
 GNU ``mes`` is a scheme interpreter. It runs the sister project ``mescc``,
@@ -208,6 +211,10 @@ to this part:
    *only* the Mes interpreter, not the libc or anything else.
 2. We then use this to recompile the Mes interpreter as well as building
    the libc. This second interpreter is faster and less buggy.
+
+The ``mescc`` component depends on the ``nyacc`` parsing library, version 1.00.2.
+We use a modified version, 1.00.2-lb1, which incorporates Timothy Sample's
+changes required to bootstrap ``mescc`` without relying on pregenerated files.
 
 From this point until musl, we are capable of making non-standard and strange
 libraries. All libraries are in ``/usr/lib/mes``, and includes are in
@@ -243,13 +250,13 @@ using older versions compilable by tinycc. Prior to this point, all tools
 have been adapted significantly for the bootstrap; now, we will be using
 old tooling instead.
 
-fiwix 1.4.0-lb1
+fiwix 1.5.0-lb1
 ===============
 
 If the kernel bootstrap option is enabled then the Fiwix kernel is built next.
 This is a Linux 2.0 clone which is much simpler to understand and build than
-Linux.  This version of Fiwix is a fork of 1.4.0 that contains many
-modifications and enhancements to support live-boostrap.
+Linux. This version of Fiwix is an intermediate release on top of 1.5.0 that
+contains many modifications and enhancements to support live-boostrap.
 
 lwext4 1.0.0-lb1
 ================
@@ -265,20 +272,6 @@ kexec-fiwix
 
 If the kernel bootstrap option is enabled then a C program `kexec-fiwix` is compiled
 and run which places the Fiwix ram drive in memory and launches the Fiwix kernel.
-
-esfu 1.0
-========
-
-This is an extremely crippled basic implementation of ``mount`` and ``mknod``.
-Sufficient only for the next step.
-
-early_mount_disk
-================
-
-When using kernel bootstrap, distfiles from this point exist on an external
-disk. Using ``esfu``'s ``mount`` and ``mknod``, we are able to mount this disk.
-This is unnecessary when not using kernel bootstrap as everything is done on the
-disk.
 
 make 3.82
 =========
@@ -329,13 +322,15 @@ we skip them.
 
 The ``cp`` in this stage replaces the ``mescc-tools-extra`` ``cp``.
 
-heirloom devtools
-=================
+byacc 20240109
+==============
 
-``lex`` and ``yacc`` from the Heirloom project. The Heirloom project is
-a collection of standard UNIX utilities derived from code by Caldera and
-Sun. Differently from the analogous utilities from the GNU project, they
-can be compiled with a simple ``Makefile``.
+The Berkeley Yacc parser generator, a public-domain implementation of the
+``yacc`` utility. Differently from the analogous ``bison`` utility from the
+GNU project, it can be compiled with a simple ``Makefile``.
+
+Some code is backported from an earlier version of byacc, 20140101, because
+of an incompatibility of newer versions with meslibc.
 
 bash 2.05b
 ==========
@@ -346,7 +341,19 @@ kaem, including proper POSIX sh support, globbing, etc.
 
 Bash ships with a bison pre-generated file here which we delete.
 Unfortunately, we have not bootstrapped bison but fortunately for us,
-heirloom yacc is able to cope here.
+Berkeley Yacc is able to cope here.
+
+setup_repo
+==========
+
+This is a simple script that sets up the ``/external/repo`` directory to hold
+binary tarballs of artifacts built in each step. It also creates ``base.tar.bz2``,
+a tarball containing every artifact built before ``setup_repo``, which have no
+individual repository tarballs corresponding to them.
+
+From this point on, every package is built and installed into a temporary
+directory, packaged from there into a repository tarball, and then installed
+onto the live system from the newly built repository tarball.
 
 update_env
 ==========
@@ -354,17 +361,26 @@ update_env
 This is a simple script that makes some small updates to the env file that were
 not possible when using kaem.
 
-flex 2.5.11
-===========
+merged_usr
+==========
 
-``flex`` is a tool for generating lexers or scanners: programs that
-recognize lexical patterns.
+Sets up symlinks from folders outside the ``/usr`` hierarchy to the corresponding
+``/usr`` ones ("merged-usr" file system layout).
 
-Unfortunately ``flex`` also depends on itself for compiling its own
-scanner, so first flex 2.5.11 is compiled, with its scanner definition
-manually modified so that it can be processed by lex from the Heirloom
-project (the required modifications are mostly syntactical, plus a few
-workarounds to avoid some flex advanced features).
+populate_device_nodes
+=====================
+
+Sets up important device nodes under ``/dev``. These nodes are temporary, as once
+the Linux kernel is started, ``devtmpfs`` is used to maintain ``/dev``.
+
+open_console
+============
+
+In interactive mode only, sets up an interactive Bash console, accessible by
+pressing Ctrl+Alt+F2. Because the early Bash doesn't support true interactive
+operation, we emulate it using a REPL. A side effect of this is that after every
+command entered, one must press Enter followed by Ctrl+D, rather than just Enter
+as with a real interactive shell.
 
 tcc 0.9.27 (patched)
 ====================
@@ -423,6 +439,30 @@ m4 1.4.7
 ``m4`` is the first piece of software we need in the autotools suite,
 flex 2.6.4 and bison. It allows macros to be defined and files to be
 generated from those macros.
+
+heirloom devtools
+=================
+
+``lex`` from the Heirloom project. The Heirloom project is a collection
+of standard UNIX utilities derived from code by Caldera and Sun.
+Differently from the analogous utilities from the GNU project, they can
+be compiled with a simple ``Makefile``.
+
+Because issues with the Heirloom version of ``yacc`` compiled against musl,
+we continue using Berkeley Yacc together with Heirloom ``lex`` for the next
+few steps.
+
+flex 2.5.11
+===========
+
+``flex`` is a tool for generating lexers or scanners: programs that
+recognize lexical patterns.
+
+Unfortunately ``flex`` also depends on itself for compiling its own
+scanner, so first flex 2.5.11 is compiled, with its scanner definition
+manually modified so that it can be processed by lex from the Heirloom
+project (the required modifications are mostly syntactical, plus a few
+workarounds to avoid some flex advanced features).
 
 flex 2.6.4
 ==========
@@ -690,11 +730,18 @@ GCC can build the latest as of the time of writing musl version.
 We also don't need any of the TCC patches that we used before.
 To accomodate Fiwix, there are patches to avoid syscalls set_thread_area and clone.
 
-Linux headers 5.10.41
-=====================
+Linux headers 4.14.341-openela
+==============================
 
 This gets some headers out of the Linux kernel that are required to use the
 kernel ABI, needed for ``util-linux``.
+
+The version of the Linux kernel used comes from the Open Enterprise Linux
+Association, who maintain this version as a continuation of the now ended
+4.14 LTS release, to the same maintenance standards as the LTS.
+Because this isn't directly available as an efficiently compressed tarball,
+we start with the final LTS release, version 4.14.336, and apply the
+differences using a patch file.
 
 gcc 4.0.4
 =========
@@ -708,14 +755,13 @@ util-linux 2.19.1
 This gives us access to a much less crippled version of ``mount`` and ``mknod``.
 The latest version is not used because of autotools/GCC incompatibilities.
 
-move_disk
-=========
+dhcpcd 10.0.1
+=============
 
-In ``kernel-bootstrap`` mode, we have been working off an initramfs for some
-things up until now. At this point we are now capable of moving to it entirely,
-so we do so.
+``dhcpcd`` is a DHCP client daemon, which we later use to obtain an IP address.
+Only wired interfaces are supported at the moment.
 
-kbd-1.15
+kbd 1.15
 ========
 
 ``kbd`` contains ``loadkeys`` which is required for building the Linux kernel.
@@ -755,26 +801,83 @@ kind of soft-restart. It is only built for non-chroot mode, as we only use it
 in non-chroot mode. It is used to boot the Linux kernel that will be built next
 from the current Linux kernel (when using ``--kernel``).
 
-Linux kernel 4.9.10
-===================
+clean_sources
+=============
+
+A script to remove source tarballs no longer needed for subsequent build steps from
+distfiles. This frees space for the Linux kernel build.
+
+clean_artifacts
+===============
+
+More space freeing in preparation for the kernel build. This time, we clear out any
+artifacts left over from previous builds that weren't packaged in a proper repository
+tarball or ``base.tar.bz2``
+
+Linux kernel 4.14.341-openela
+=============================
 
 A lot going on here. This is the first (and currently only) time the Linux kernel
-is built. Firstly, Linux kernel version 4.9.x is used because newer versions
-require much more stringent requirements on the make, GCC, binutils versions.
-However, the docs are also wrong, as the latest of the 4.9.x series does not
-work with our version of binutils. However, a much earlier 4.9.10 does
-(selected arbitrarily, could go newer but did not test), with a small amount
-of patching. This is also modern enough for most hardware and to cause few
-problems with software built afterwards. Secondly, the linux-libre scripts are used
-to deblob the kernel.  Every other pregenerated file is appended with ``_shipped``
+is built. Firstly, Linux kernel version 4.14.y is used because newer versions
+require much more stringent requirements on the make and GCC versions. This is also
+modern enough for most hardware and to cause few problems with software built
+afterwards. Secondly, since 4.14.y is no longer supported by kernel.org, we use the
+last available kernel.org tarball, 4.14.336, and patch it up to 4.14.341-openela,
+maintained by the Open Enterprise Linux Association as an ELTS version.
+Pregenerated files in the kernel have file names appended with ``_shipped``
 so we use a ``find`` command to remove those, which are automatically regenerated.
 The kernel config was originally taken from Void Linux, and was then modified
 for the requirements of live-bootstrap, including compiler features, drivers,
 and removing modules. Modules are unused. They are difficult to transfer to
 subsequent systems, and we do not have ``modprobe``.
 
+The linux-libre scripts are no longer used to deblob the kernel, due to undersirable
+modifications they make beyond just deblobbing. Instead, the remaining 4 drivers that
+ship binary blobs in line with source code are stripped using a patch - neither of
+these drivers are relevant to bootstrapping.
+
+The kernel is built in 2 stages:
+
+1. We build ``vmlinux`` and all of its dependencies.
+2. After clearing away any unnecessary intermediate files, we build the final
+   ``bzImage`` kernel. This is necessary because the whole build wouldn't fit
+   in Fiwix's initrd image all at once.
+
 We then kexec to use the new Linux kernel, using ``kexec-tools`` for a Linux
 kernel and ``kexec-linux`` for Fiwix.
+
+move_disk
+=========
+
+In ``kernel-bootstrap`` mode, we have been working off an initramfs for some
+things up until now. At this point we are now capable of moving to it entirely,
+so we do so.
+
+finalize_job_count
+==================
+
+In ``kernel-bootstrap`` mode,, up until this point, we had no multiprocessor
+support, and very limited RAM, so all builds used only one thread.
+At this point, we allow the full selected thread count to take effect,
+speeding up subsequent builds thanks to parallelization.
+
+finalize_fhs
+============
+
+Sets up the file system as per the Filesystem Hierarchy Standard (FHS), creating
+directories and mounting pseudo-filesystems as necessary.
+
+open_console
+============
+
+In interactive mode only, sets up an interactive Bash console, accessible by
+pressing Ctrl+Alt+F2, again. This is still the early Bash, requiring Ctrl+D.
+
+swap
+====
+
+If enabled in ``bootstrap.cfg``, creates and activates a swap file under the
+name ``/swapfile``.
 
 musl 1.2.4
 ==========
@@ -782,12 +885,15 @@ musl 1.2.4
 At this point, it is guaranteed that we are running on Linux with thread support,
 so we rebuild musl with thread support.
 
-curl 8.5.0
-==========
+curl 8.5.0 and get_network
+==========================
 
 ``curl`` is used to download files using various protocols including HTTP and HTTPS.
 However, this first build does not support encrypted HTTPS yet. ``curl`` requires
 Linux and musl with thread support, which are now available.
+
+Once curl is built, we use dhcpcd to set up networking for downloading subsequent
+source packages.
 
 bash 5.2.15
 ===========
@@ -796,6 +902,13 @@ This new version of ``bash`` compiles without any patches, provides new features
 and is built with GNU readline support so it can be used as a fully-featured
 interactive shell. ``autoconf-2.69`` is used to regenerate the configure
 script and ``bison`` is used to recreate some included generated files.
+
+open_console
+============
+
+Now that we have a proper interactive shell available, open another interactive
+console (only in interactive mode), this time accessible using Ctrl+Shift+F3, since
+Ctrl+Shift+F2 is already occupied by our previous console, running the old Bash.
 
 xz 5.4.1
 ========
@@ -822,10 +935,10 @@ tar 1.34
 Newer tar has better support for decompressing .tar.bz2 and .tar.xz archives.
 It also deals better with modern tar archives with extra metadata.
 
-coreutils 8.32
+coreutils 9.4
 ==============
 
-We build the latest available coreutils 8.32 which adds needed options to make
+We build the latest available coreutils 9.4 which adds needed options to make
 results of build metadata reproducible. For example, timestamps are changed with
 ``touch --no-dereference``.
 
@@ -883,7 +996,7 @@ bison 2.3
 
 This is an older version of bison required for the bison files in perl 5.10.1.
 We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
-in 2.3. This parser works sufficiently well for perl 5.10.5.
+in 2.3. This parser works sufficiently well for perl 5.10.1.
 
 bison 3.4.2
 ===========
@@ -919,10 +1032,12 @@ libarchive 3.5.2
 
 ``libarchive`` is a C library used to read and write archives.
 
-openssl 1.1.1l
+openssl 3.0.13
 ==============
 
 OpenSSL is a C library for secure communications/cryptography.
+
+We do not use the latest 3.3.0 release because it causes lockups in curl.
 
 curl 8.5.0
 ==========
@@ -975,7 +1090,7 @@ We also add in two patchsets to the compiler;
 * one to add support for musl shared library support
 * one providing a few compiler flags/features that are required later to build GCC 10
 
-binutils 2.38
+binutils 2.41
 =============
 
 This version of binutils provides a more comprehensive set of programming tools for
@@ -1190,14 +1305,14 @@ C/C++ standards available in GCC 4.7. Instead of manually configuring & compilin
 every subdirectory, since we now have ``autogen`` available we are able to use
 the top-level configure to build the project. We do not use GCC's bootstrap mode,
 where GCC is recompiled with itself after being built, since we're just going
-to use this GCC to compile GCC 12, it adds build time for little benefit.
+to use this GCC to compile GCC 13, it adds build time for little benefit.
 
-binutils 2.38 (pass 2)
+binutils 2.41 (pass 2)
 ======================
 
 We recompile Binutils with the full intended autogen top-level build system,
 instead of the subdirectory build system used before. This creates a binutils
-that functions completely correctly for the build of GCC 12 (eg, fixes the
+that functions completely correctly for the build of GCC 13 (eg, fixes the
 mistaken plugin loading support). Other modern features are added, including;
 
 * threaded linking
@@ -1281,3 +1396,29 @@ m4 1.4.19
 We are in need of a newer version of m4 for some modern software. Attempts to
 update m4 1.4.7 earlier in the bootstrap demonstrate some issues with Fiwix,
 so we build a newer m4 at the end of the bootstrap instead.
+
+cleanup_filesystem
+==================
+
+Remove any remaining loose build artifacts from ``steps``.
+If preseeding was used, this step also removes the ``repo-preseeded`` directory.
+
+null_time
+=========
+
+If FORCE_TIMESTAMPS is enabled, resets all file times in the file system to the
+Unix epoch, to ensure maximum file system reproducibility.
+
+update_checksums
+================
+
+If checksum updating is enabled, regenerates SHA256SUMS.pkgs to contain the actual
+hashes of the packages just built.
+
+after
+=====
+
+At the end of the bootstrap, executes any additional shell scripts placed in the
+``/steps/after`` directory (if it exists), opens an interactive console (only in
+interactive mode), and finally ensures a clean shutdown of the bootstrap system
+(only needed in qemu and on bare metal).
