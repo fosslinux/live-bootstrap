@@ -831,7 +831,7 @@ for the requirements of live-bootstrap, including compiler features, drivers,
 and removing modules. Modules are unused. They are difficult to transfer to
 subsequent systems, and we do not have ``modprobe``.
 
-The linux-libre scripts are no longer used to deblob the kernel, due to undersirable
+The linux-libre scripts are no longer used to deblob the kernel, due to undesirable
 modifications they make beyond just deblobbing. Instead, the remaining 4 drivers that
 ship binary blobs in line with source code are stripped using a patch - neither of
 these drivers are relevant to bootstrapping.
@@ -856,7 +856,7 @@ so we do so.
 finalize_job_count
 ==================
 
-In ``kernel-bootstrap`` mode,, up until this point, we had no multiprocessor
+In ``kernel-bootstrap`` mode, up until this point, we had no multiprocessor
 support, and very limited RAM, so all builds used only one thread.
 At this point, we allow the full selected thread count to take effect,
 speeding up subsequent builds thanks to parallelization.
