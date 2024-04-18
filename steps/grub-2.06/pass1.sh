@@ -32,4 +32,5 @@ src_configure() {
 src_install() {
     default
     rm "${DESTDIR}${PREFIX}/share/info/dir"
+    rm "${DESTDIR}${PREFIX}/share/man/man8/grub-install.8"
 }
