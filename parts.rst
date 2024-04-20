@@ -1294,8 +1294,8 @@ Differences to 3.8.16:
 * A new generated script ``Lib/re/_casefix.py`` is introduced.
 * The ssl module, now unbroken, can be built again.
 * Very recent Python versions allow for the use of ``SOURCE_DATE_EPOCH`` to
-  remove determinism from precompiled Python libraries (``.pyc``). Finally, we
-  can re-enable compiling of Python modules.
+  make output of precompiled Python libraries (``.pyc``) deterministic.
+  Finally, we can re-enable compiling of Python modules.
 
 gcc 10.4.0
 ==========
