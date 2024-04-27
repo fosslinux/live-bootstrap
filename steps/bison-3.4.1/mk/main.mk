@@ -15,7 +15,7 @@ bison: src.a lib.a
 %.a: FORCE
 	set -e ;\
 	DIR=$(basename $@ .a) ;\
-	$(MAKE) CC=$(CC) AR=$(AR) CFLAGS=$(CGLAGS) -C $$DIR $@ ;\
+	$(MAKE) CC=$(CC) AR=$(AR) CFLAGS=$(CFLAGS) -C $$DIR $@ ;\
 	cp $$DIR/$@ $@
 
 FORCE:
