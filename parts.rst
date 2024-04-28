@@ -1039,6 +1039,12 @@ OpenSSL is a C library for secure communications/cryptography.
 
 We do not use the latest 3.3.0 release because it causes lockups in curl.
 
+ca-certificates 3.99
+====================
+
+Install TLS root certificates from nss. This will allows us to use HTTPS for downloads
+once curl is rebuilt against OpenSSL.
+
 curl 8.5.0
 ==========
 
