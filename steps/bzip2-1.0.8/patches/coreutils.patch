@@ -19,9 +19,9 @@ diff -r -N -U3 Makefile Makefile
  
  # Where you want it installed when you do 'make install'
  PREFIX=/usr/local
-@@ -44,11 +44,6 @@
- 
+@@ -46,11 +46,6 @@
  libbz2.a: $(OBJS)
+ 	rm -f libbz2.a
  	$(AR) cq libbz2.a $(OBJS)
 -	@if ( test -f $(RANLIB) -o -f /usr/bin/ranlib -o \
 -		-f /bin/ranlib -o -f /usr/ccs/bin/ranlib ) ; then \
@@ -31,7 +31,7 @@ diff -r -N -U3 Makefile Makefile
  
  check: test
  test: bzip2
-@@ -114,7 +108,6 @@
+@@ -114,7 +109,6 @@
  	sample1.tst sample2.tst sample3.tst
  
  blocksort.o: blocksort.c
