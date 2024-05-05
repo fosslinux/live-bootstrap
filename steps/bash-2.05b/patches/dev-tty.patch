@@ -17,3 +17,4 @@ diff --color -ru shell.c
 -
  #ifdef __CYGWIN__
    _cygwin32_check_tmp ();
+ #endif /* __CYGWIN__ */

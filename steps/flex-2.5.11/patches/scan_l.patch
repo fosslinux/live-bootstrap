@@ -10,7 +10,7 @@ diff --git scan.l scan.l
 index 18d0de8..c251a5e 100644
 --- scan.l
 +++ scan.l
-@@ -334,8 +335,8 @@ LEXOPT		[aceknopr]
+@@ -335,8 +335,8 @@ LEXOPT		[aceknopr]
  
  
  <SECT2PROLOG>{
@@ -21,7 +21,7 @@ index 18d0de8..c251a5e 100644
  
  	^{WS}.*	ACTION_ECHO;	/* indented code in prolog */
  
-@@ -480,11 +481,11 @@ LEXOPT		[aceknopr]
+@@ -481,11 +481,11 @@ LEXOPT		[aceknopr]
  				}
  			}
  
