@@ -8,7 +8,7 @@
 
 src_compile() {
     cd lex
-    make -f Makefile.mk CC=tcc AR=tcc\ -ar LDFLAGS=-static RANLIB=true
+    make -f Makefile.mk CC=tcc AR="tcc -ar" LDFLAGS=-static RANLIB=true LIBDIR="${LIBDIR}"
     cd ..
 }
 
@@ -18,4 +18,3 @@ src_install() {
     install lex/libl.a "${DESTDIR}${LIBDIR}"
     install -m 644 lex/ncform "${DESTDIR}${LIBDIR}/lex"
 }
-

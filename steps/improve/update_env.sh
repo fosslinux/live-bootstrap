@@ -21,4 +21,15 @@ export SHELL=/usr/bin/bash
 DESTDIR=/tmp/destdir
 EOF
 
+# The following values are set up in the kaem environment.
+# As these are then passed through to the bash shell, they are considered
+# automatically exported variables. We don't want them exported.
+unset PREFIX
+unset BINDIR
+unset LIBDIR
+unset INCDIR
+unset SRCDIR
+unset TMPDIR
+unset DISTFILES
+
 . /steps/env
