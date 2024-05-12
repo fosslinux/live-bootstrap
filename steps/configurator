@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: 2024 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# The structure of this file:
+# <option type> <id> <variable> <type> <default> <short description>
+# <long description>
+#
+# repeat
+
+m /general _ _ _ General configuration
+Settings for how you would like live-bootstrap to run.
+
+o /general/timestamps FORCE_TIMESTAMPS bool False Zero timestamps at end
+At the end of the bootstrap, set the timestamps of all files to 0 UNIX time.
+
+o /general/swap SWAP_SIZE size 0 Swap size
+The size of a swapfile to be created once swap is supported in live-bootsrap.
+Intended for systems with low RAM.
+
+o /general/kernel_bootstrap KERNEL_BOOTSTRAP bool True Use the kernel bootstrap
+This only applies if you are not in a chroot-like environment. You should
+already know whether you want this flag or not. If you booted using
+builder-hex0, this flag should be true; if you booted using your own Linux
+kernel, this flag should be false.
+
+o /general/interactive INTERACTIVE bool True Drop to a shell post-bootstrap
+At the end of the bootstrap, drop to a shell which you can do further things
+in.
+
+o /general/disk DISK "" _ [IMPORTANT] [DANGER] Disk
+live-bootstrap needs a disk which the final system will be installed onto.
+This should be in the form of the name of the device node, eg sda. If you
+have externally downloaded sources or the like, place in here the device
+node with the appropriate partition, eg sda1.
+Disclaimer for bare metal users:
+It is highly recommended that all disks other than this disk are removed
+from the system to avoid accidental data loss. It is vital that you choose
+this correctly, otherwise you risk overwriting an existing disk on your
+system. LIVE-BOOTSTRAP TAKES NO LIABILITY FOR ANY DATA LOSS RESULTING FROM
+ITS USE.
+
+m /sysinfo _ _ _ System information
+Details about your specific system and the environment live-bootstrap is
+running in.
+
+o /sysinfo/chroot CHROOT bool False Chroot-like environment
+Only set to True if live-bootstrap is running in a chroot-like environment.
+This might be in a chroot, on bubblewrap, or similar. QEMU is not a
+chroot-like environment.
+
+o /sysinfo/baremetal BARE_METAL bool False Bare metal environment
+Only set to True if live-bootstrap is running directly on bare metal, without
+another kernel or virtualisation layer in between. A chroot, bubblewrap, or
+QEMU is not bare metal.
+
+o /sysinfo/jobs JOBS int _ Number of jobs
+The number of jobs that packages should be compiled with. A sensible value
+would be the number of threads on your system.
+
+m /sysinfo/internal _ _ _ [INTERNAL] Advanced configuration
+Internal configuration. You should not touch this unless you know what you
+are doing!
+
+o /sysinfo/internal/arch ARCH "x86|amd64|riscv64" _ Architecture
+The architecture live-bootstrap is running on. This should already be correct!
+
+o /sysinfo/internal/ci INTERNAL_CI bool False Internal CI
+If you are seeing this, it should not be set to true. (Flag for live-bootstrap
+CI).
+
+m /dev _ _ _ [DEV] Development options
+Options intended for live-bootstrap development or debugging.
+
+o /dev/update_checksums UPDATE_CHECKSUMS bool False [DEV] Update checksums of packages
+Rather than checking checksums of packages against the existing list, generate
+a new list for the checksums of packages.
+
+o /dev/build_kernels BUILD_KERNELS bool _ [DEV] Build kernels
+Even when they are not required, still build kernels/kernel adjacent packages.
