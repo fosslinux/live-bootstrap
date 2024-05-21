@@ -70,17 +70,21 @@ class Generator():
             self.target_dir = os.path.join(self.target_dir, 'disk')
             self.external_dir = os.path.join(self.target_dir, 'external')
 
-        os.makedirs(self.external_dir)
-
         if self.early_preseed:
             # Extract tar containing preseed
             with tarfile.open(self.early_preseed, "r") as seed:
                 seed.extractall(self.target_dir)
+            if os.path.exists(os.path.join(self.target_dir, 'steps')):
+                shutil.rmtree(os.path.join(self.target_dir, 'steps'))
+            if os.path.exists(self.external_dir):
+                shutil.rmtree(self.external_dir)
             shutil.copy2(os.path.join(self.git_dir, 'seed', 'preseeded.kaem'),
                          os.path.join(self.target_dir, 'kaem.x86'))
         else:
             self.stage0_posix(kernel_bootstrap)
             self.seed()
+
+        os.makedirs(self.external_dir)
 
         self.steps()
 
