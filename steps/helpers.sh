@@ -95,6 +95,7 @@ bin_preseed() {
     if [ -d "/external/repo-preseeded" ]; then
         get_revision "${pkg}"
         cd "/external/repo-preseeded"
+        test -e "${pkg}_${revision}.tar.bz2" || return 1
         if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
             mv "${pkg}_${revision}"* /external/repo || return 1
