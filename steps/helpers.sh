@@ -253,7 +253,7 @@ build() {
 
     cd "${SRCDIR}"
 
-    unset -f src_unpack src_prepare src_configure src_compile src_install src_postprocess
+    unset -f src_get src_unpack src_prepare src_configure src_compile src_install src_postprocess
     unset extract
 }
 
