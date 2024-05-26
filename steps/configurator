@@ -58,23 +58,24 @@ o /sysinfo/jobs FINAL_JOBS int _ Number of jobs
 The number of jobs that packages should be compiled with. A sensible value
 would be the number of threads on your system.
 
+o /sysinfo/arch ARCH "x86|amd64|riscv64" _ Architecture
+The architecture live-bootstrap is running on.
+
 m /sysinfo/internal _ _ _ [INTERNAL] Advanced configuration
 Internal configuration. You should not touch this unless you know what you
 are doing!
-
-o /sysinfo/internal/arch ARCH "x86|amd64|riscv64" _ Architecture
-The architecture live-bootstrap is running on. This should already be correct!
 
 o /sysinfo/internal/ci INTERNAL_CI bool False Internal CI
 If you are seeing this, it should not be set to true. (Flag for live-bootstrap
 CI).
 
 m /dev _ _ _ [DEV] Development options
-Options intended for live-bootstrap development or debugging.
+Options intended for primarily live-bootstrap development or debugging.
 
 o /dev/update_checksums UPDATE_CHECKSUMS bool False [DEV] Update checksums of packages
 Rather than checking checksums of packages against the existing list, generate
 a new list for the checksums of packages.
 
-o /dev/build_kernels BUILD_KERNELS bool _ [DEV] Build kernels
+o /dev/build_kernels BUILD_KERNELS bool _ Build kernels
 Even when they are not required, still build kernels/kernel adjacent packages.
+This option has no effect when using KERNEL_BOOTSTRAP.
