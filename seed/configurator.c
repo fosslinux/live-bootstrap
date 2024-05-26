@@ -665,7 +665,7 @@ void no_input(Entry *head) {
 	fputs("Likely, you are currently running under builder-hex0.\n", stdout);
 	fputs("That's ok! We're going to make some assumptions; namely, that you do need\n", stdout);
 	fputs("the kernel bootstrap, and that you'll get a chance to configure later.\n", stdout);
-	write_cfg_values(head, "KERNEL_BOOTSTRAP=True\n", FALSE);
+	write_cfg_values(head, "KERNEL_BOOTSTRAP=True\nBUILD_KERNELS=True\n", FALSE);
 }
 
 int main(int argc, char **argv, char **envp) {

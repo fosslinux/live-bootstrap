@@ -54,7 +54,7 @@ Only set to True if live-bootstrap is running directly on bare metal, without
 another kernel or virtualisation layer in between. A chroot, bubblewrap, or
 QEMU is not bare metal.
 
-o /sysinfo/jobs JOBS int _ Number of jobs
+o /sysinfo/jobs FINAL_JOBS int _ Number of jobs
 The number of jobs that packages should be compiled with. A sensible value
 would be the number of threads on your system.
 
