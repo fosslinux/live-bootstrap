@@ -17,7 +17,7 @@ if [ "${KERNEL_BOOTSTRAP}" = True ]; then
     find / -xdev -type d -printf "dir %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type f -printf "file %p %p %m %U %G\n" >> /initramfs.list
     find / -xdev -type l -printf "slink %p %l %m %U %G\n" >> /initramfs.list
-    kexec-linux "/dev/ram1" "/boot/vmlinuz" "!gen_init_cpio /initramfs.list | gzip -c"
+    kexec-linux "/dev/ram1" "/boot/vmlinuz" "!gen_init_cpio /initramfs.list | bzip2 -c"
 else
     mkdir /etc
     # kexec time
