@@ -176,30 +176,8 @@ char *get_var(char *name) {
 		last = var;
 	}
 
-	/* If the variable is unset, prompt the user. */
-	if (variables == NULL) {
-		variables = calloc(1, sizeof(Variable));
-		var = variables;
-	} else {
-		last->next = calloc(1, sizeof(Variable));
-		var = last->next;
-	}
-	var->name = calloc(strlen(name) + 1, sizeof(char));
-	strcpy(var->name, name);
-	var->val = calloc(MAX_STRING, sizeof(char));
-	fputs("You have not set a value for ", stdout);
-	fputs(name, stdout);
-	fputs(" in bootstrap.cfg. Please set it now:\n", stdout);
-	while (fgets(var->val, MAX_STRING, stdin) == 0 || var->val[0] == '\n') {
-		fputs("Error inputting, try again:\n", stdout);
-	}
-	if (var->val[0] == 0) {
-		fputs("You put in an EOF!\n", stderr);
-		exit(1);
-	}
-	/* Trim the newline. */
-	var->val[strlen(var->val)] = 0;
-	return var->val;
+	/* If the variable is unset, take it to be the empty string. */
+	return "";
 }
 
 /* Recursive descent interpreter. */

@@ -49,6 +49,7 @@ def create_configuration_file(args):
             config.write("DISK=sda1\n")
             config.write("KERNEL_BOOTSTRAP=False\n")
         config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
+        config.write(f"CONFIGURATOR={args.configurator}\n")
 
 # pylint: disable=too-many-statements,too-many-branches
 def main():
@@ -89,6 +90,9 @@ def main():
                         action="store_true")
     parser.add_argument("-i", "--interactive",
                         help="Use interactive prompts to resolve issues during bootstrap",
+                        action="store_true")
+    parser.add_argument("--configurator",
+                        help="Run the interactive configurator",
                         action="store_true")
     parser.add_argument("-r", "--repo",
                         help="Path to prebuilt binary packages", nargs=None)

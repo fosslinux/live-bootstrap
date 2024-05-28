@@ -41,6 +41,7 @@ build: fiwix-1.5.0-lb1 ( BUILD_FIWIX == True )
 build: lwext4-1.0.0-lb1 ( BUILD_FIWIX == True )
 build: kexec-fiwix-1.0 ( BUILD_FIWIX == True )
 jump: fiwix ( KERNEL_BOOTSTRAP == True )
+improve: reconfigure ( CONFIGURATOR != True )
 define: JOBS = 1 ( KERNEL_BOOTSTRAP == True )
 build: make-3.82
 build: patch-2.5.9
