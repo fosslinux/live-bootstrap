@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: Run under qemu
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  run:
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '@ci qemu')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check permissions
+        id: perms
+        uses: actions-cool/check-user-permission@v2
+        with:
+          require: "write"
+      - name: Fail if no appropriate permissions
+        if: steps.perms.outputs.check-result == 'false'
+        run: exit 1
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+      - name: Query cache for sources
+        id: cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            sysa/distfiles
+            sysc/distfiles
+          key: cache-${{ hashFiles('sys*/*/sources') }}
+      - name: Get sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: ./download-distfiles.sh
+      - name: Cache sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            sysa/distfiles
+            sysc/distfiles
+          key: cache-${{ hashFiles('sys*/*/sources') }}
+      - name: Install dependencies
+        run: sudo apt install pwgen
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Start up ssh-agent
+        run: eval $(ssh-agent) && echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> $GITHUB_ENV && echo "SSH_AGENT_PID=${SSH_AGENT_PID}" >> $GITHUB_ENV
+      - name: Add CI key to ssh-agent
+        run: ssh-add <(echo ${SSH_PRIV_KEY})
+      - name: Create a name for DO droplet 
+        run: echo "NAME=$(pwgen -A0 8 1)" >> $GITHUB_ENV
+      - name: Create DO droplet
+        run: echo "IP=$(doctl compute droplet create --image ubuntu-22-04-x64 --size s-2vcpu-4gb --region nyc1 --ssh-keys 37952169 --user-data-file cloud-init.yaml --wait ${NAME} | tail -n 1 | sed 's/  */ /g' | cut -d' ' -f3)" >> $GITHUB_ENV
+      - name: Wait for droplet to become available
+        run: while ! nc -z $IP 22; do sleep 1; done && sleep 5 # Extra wait for cloud-init to create user
+      - name: Copy checkout to droplet
+        run: rsync -ar . build@$IP:~
+      - name: Run bootstrap
+        id: bootstrap
+        run: ssh build@$IP ./ci-qemu.expect
+      - name: Mount artifact image in droplet
+        if: steps.bootstrap.conclusion == 'success'
+        run: ssh build@$IP 'bash -c "sudo mount $(sudo losetup | grep sysc.img | cut -d' ' -f1)p1 /mnt"'
+      - name: Get artifacts from droplet
+        if: steps.bootstrap.conclusion == 'success'
+        run: rsync -ar build@$IP:/mnt/usr/src/repo ./repo
+      - name: Delete droplet
+        if: always()
+        run: doctl compute droplet delete ${NAME}
+      - name: Archive created packages
+        if: steps.bootstrap.conclusion == 'success'
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: ./repo/**
