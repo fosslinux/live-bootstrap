@@ -47,8 +47,9 @@ cp ../files/config.h ${MES_PREFIX}/include/mes
 
 cd ${MES_PREFIX}
 mkdir include/arch
-cp include/linux/${MES_ARCH}/syscall.h include/arch/syscall.h
 cp include/linux/${MES_ARCH}/kernel-stat.h include/arch/kernel-stat.h
+cp include/linux/${MES_ARCH}/signal.h include/arch/signal.h
+cp include/linux/${MES_ARCH}/syscall.h include/arch/syscall.h
 
 # Remove pregenerated files
 rm mes/module/mes/psyntax.pp mes/module/mes/psyntax.pp.header
@@ -83,13 +84,9 @@ replace --file ${mescc_in} --output ${mescc_in} --match-on @VERSION@ --replace-w
 replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_cpu@ --replace-with ${MES_ARCH}
 replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_kernel@ --replace-with linux
 
-# Patch out double compilation bug
-replace --file ${mescc_in} --output ${mescc_in} --match-on "(mescc:main (command-line))" --replace-with ");"
-
 mescc_scm=${BINDIR}/mescc.scm
 cp ${mescc_in} ${mescc_scm}
 chmod 755 ${mescc_scm}
-
 
 # Recompile Mes and Mes C library using mes-m2 bootstrapped Mes
 
@@ -343,6 +340,7 @@ cp include/pwd.h ${INCDIR}/pwd.h
 cp include/setjmp.h ${INCDIR}/setjmp.h
 cp include/signal.h ${INCDIR}/signal.h
 cp include/stdarg.h ${INCDIR}/stdarg.h
+cp include/linux/${MES_ARCH}/signal.h ${INCDIR}/arch/signal.h
 cp include/stdbool.h ${INCDIR}/stdbool.h
 cp include/stddef.h ${INCDIR}/stddef.h
 cp include/stdint.h ${INCDIR}/stdint.h
