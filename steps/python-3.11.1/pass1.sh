@@ -54,14 +54,12 @@ src_configure() {
     MACHDEP=linux ac_sys_system=Linux \
     CPPFLAGS="-U__DATE__ -U__TIME__" \
     PKG_CONFIG_PATH="${LIBDIR}/pkgconfig/" \
-    LDFLAGS="-static" \
         ./configure \
         --build=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --with-system-ffi \
-        --disable-shared
+        --with-system-ffi
 }
 
 src_compile() {

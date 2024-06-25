@@ -56,7 +56,7 @@ src_configure() {
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
             --build=i386-unknown-linux-musl \
-            --disable-shared \
+            --enable-shared \
             --disable-jit
         popd
     done
