@@ -199,8 +199,8 @@ simple-patch 1.0
 text block given to it, and replacing it with another text block. This is
 sufficient for the early patching required before we have full proper GNU patch.
 
-mes 0.26
-========
+mes 0.26.1
+==========
 
 GNU ``mes`` is a scheme interpreter. It runs the sister project ``mescc``,
 which is a C compiler written in scheme, which links against the Mes C
