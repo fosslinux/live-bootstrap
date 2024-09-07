@@ -30,17 +30,22 @@ Without using Python:
 3. Consider whether you are going to run this in a chroot, in QEMU, or on bare
    metal. (All of this *can* be automated, but not in a trustable way. See
    further below.)
+
    a. **chroot:** Create a directory where the chroot will reside, run
       ``./download-distfiles.sh``, and copy:
+
       * The entire contents of ``seed/stage0-posix`` into that directory.
       * All other files in ``seed`` into that directory.
       * ``steps/`` and ``distfiles/`` into that directory.
+
         * At least all files listed in ``steps/pre-network-sources`` must be
           copied in. All other files will be obtained from the network.
       * Run ``/bootstrap-seeds/POSIX/x86/kaem-optional-seed`` in the chroot.
         (Eg, ``chroot rootfs /bootstrap-seeds/POSIX/x86/kaem-optional-seed``).
    b. **QEMU:** Create two blank disk images.
+
       * Generate ``builder-hex0-x86-stage1.img`` from hex0 source:
+
         ``sed 's/[;#].*$//g' builder-hex0/builder-hex0-x86-stage1-hex0 | xxd -r -p``
       * On the first image, write ``builder-hex0-x86-stage1.img`` to it, followed
         by ``kernel-bootstrap/builder-hex0-x86-stage2.hex0``, followed by zeros
@@ -49,17 +54,19 @@ Without using Python:
       * See the list in part a. For every file within that list, write a line to
         the disk ``src <size-of-file> <path-to-file>``, followed by the contents
         of the file.
+
         * *Only* copy distfiles listed in ``sources`` files for ``build:`` steps
           manifested before ``improve: get_network`` into this disk.
       * Optionally (if you don't do this, distfiles will be network downloaded):
+
         * On the second image, create an MSDOS partition table and one ext3
           partition.
         * Copy ``distfiles/`` into this disk.
       * Run QEMU, with 4+G RAM, optionally SMP (multicore), both drives (in the
-        order introduced above), a NIC with model E1000 (``-nic
-        user,model=e1000``), and ``-machine kernel-irqchip=split``.
+        order introduced above), a NIC with model E1000
+        (``-nic user,model=e1000``), and ``-machine kernel-irqchip=split``.
    c. **Bare metal:** Follow the same steps as QEMU, but the disks need to be
-   two different *physical* disks, and boot from the first disk.
+      two different *physical* disks, and boot from the first disk.
 
 Background
 ----------
