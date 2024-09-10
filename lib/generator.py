@@ -42,7 +42,7 @@ class Generator():
         self.external_dir = os.path.join(self.target_dir, 'external')
         self.distfiles()
 
-    def prepare(self, target, using_kernel=False, kernel_bootstrap=False, target_size=0):
+    def prepare(self, target, using_kernel=False, kernel_bootstrap=False, wrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
         /steps -- contains steps to be built
@@ -82,7 +82,7 @@ class Generator():
                          os.path.join(self.target_dir, 'kaem.x86'))
         else:
             self.stage0_posix(kernel_bootstrap)
-            self.seed()
+            self.seed(wrap)
 
         os.makedirs(self.external_dir)
 
@@ -134,12 +134,15 @@ class Generator():
                                               'kaem-optional-seed')
             shutil.copy2(kaem_optional_seed, os.path.join(self.target_dir, 'init'))
 
-    def seed(self):
+    def seed(self, wrap):
         """Copy in extra seed files"""
         seed_dir = os.path.join(self.git_dir, 'seed')
         for entry in os.listdir(seed_dir):
             if os.path.isfile(os.path.join(seed_dir, entry)):
                 shutil.copy2(os.path.join(seed_dir, entry), os.path.join(self.target_dir, entry))
+        if wrap:
+            shutil.copy2(os.path.join(seed_dir, 'after-wrap.kaem'), os.path.join(self.target_dir, 'after.kaem'))
+            shutil.copy2(os.path.join(seed_dir, 'after.kaem'), os.path.join(self.target_dir, 'after-wrapped.kaem'))
 
     def distfiles(self):
         """Copy in distfiles"""
