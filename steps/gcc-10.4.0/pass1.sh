@@ -80,7 +80,6 @@ src_configure() {
     # For this GCC, we only build one stage, as extra is superfluous,
     # since we build GCC 12 straight after.
     CFLAGS="-std=gnu11" \
-    LDFLAGS="-static" \
     ../configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
@@ -88,7 +87,6 @@ src_configure() {
         --target=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
         --disable-bootstrap \
-        --enable-static \
         --program-transform-name= \
         --enable-languages=c,c++ \
         --with-system-zlib \

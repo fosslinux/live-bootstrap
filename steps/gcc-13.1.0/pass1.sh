@@ -75,7 +75,6 @@ src_configure() {
     mkdir build
     cd build
 
-    LDFLAGS="-static" \
     ../configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
@@ -83,7 +82,6 @@ src_configure() {
         --target=i386-unknown-linux-musl \
         --host=i386-unknown-linux-musl \
         --enable-bootstrap \
-        --enable-static \
         --disable-plugins \
         --disable-libssp \
         --disable-libsanitizer \
@@ -95,5 +93,5 @@ src_configure() {
 }
 
 src_compile() {
-    make "${MAKEJOBS}" BOOT_LDFLAGS="-static"
+    make "${MAKEJOBS}"
 }
