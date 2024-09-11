@@ -9,6 +9,6 @@ Source: https://github.com/fosslinux/live-bootstrap
 # Copyright: $YEAR $NAME <$CONTACT>
 # License: ...
 
-Files: steps/*/sources steps/*/*.checksums steps/SHA256SUMS.pkgs steps/*/simple-patches/* seed/*.checksums
+Files: steps/*/sources steps/*/*.checksums steps/SHA256SUMS.pkgs steps/*/simple-patches/* seed/*.checksums seed/wrap-bootstrap.cfg
 Copyright: none
 License: MIT
