@@ -243,10 +243,15 @@ print(shutil.which('chroot'))
                                   init)
 
     elif args.wrap:
-        generator.prepare(target, wrap = True)
         arch = stage0_arch_map.get(args.arch, args.arch)
-        init = os.path.join('bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        run(init, cwd = generator.target_dir)
+        if not args.internal_ci or args.internal_ci == "pass1":
+            generator.prepare(target, wrap = True)
+            arg_list = [os.path.join('bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')]
+        else:
+            generator.reuse(target)
+            arg_list = [os.path.join(arch, 'bin', 'wrap'), '/init']
+
+        run(*arg_list, cwd = generator.target_dir)
 
     elif args.bare_metal:
         if args.kernel:

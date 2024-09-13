@@ -42,7 +42,13 @@ class Generator():
         self.external_dir = os.path.join(self.target_dir, 'external')
         self.distfiles()
 
-    def prepare(self, target, using_kernel=False, kernel_bootstrap=False, wrap=False, target_size=0):
+    # pylint: disable=too-many-arguments
+    def prepare(self,
+                target,
+                using_kernel=False,
+                kernel_bootstrap=False,
+                wrap=False,
+                target_size=0):
         """
         Prepare basic media of live-bootstrap.
         /steps -- contains steps to be built
@@ -141,8 +147,10 @@ class Generator():
             if os.path.isfile(os.path.join(seed_dir, entry)):
                 shutil.copy2(os.path.join(seed_dir, entry), os.path.join(self.target_dir, entry))
         if wrap:
-            shutil.copy2(os.path.join(seed_dir, 'after-wrap.kaem'), os.path.join(self.target_dir, 'after.kaem'))
-            shutil.copy2(os.path.join(seed_dir, 'after.kaem'), os.path.join(self.target_dir, 'after-wrapped.kaem'))
+            shutil.copy2(os.path.join(seed_dir, 'after-wrap.kaem'),
+                         os.path.join(self.target_dir, 'after.kaem'))
+            shutil.copy2(os.path.join(seed_dir, 'after.kaem'),
+                         os.path.join(self.target_dir, 'after-wrapped.kaem'))
 
     def distfiles(self):
         """Copy in distfiles"""
