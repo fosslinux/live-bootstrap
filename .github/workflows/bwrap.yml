@@ -56,7 +56,7 @@ jobs:
           name: packages
           path: target/external/repo/**
       - name: Tar pass1 image
-        run: tar -cf pass1_image.tar target
+        run: tar -cf pass1_image_${{matrix.virt-tool}}.tar target
       - name: Archive pass1_image
         uses: actions/upload-artifact@v3
         with:
@@ -114,7 +114,7 @@ jobs:
           name: internal_packages_pass2
           path: target/external/repo/**
       - name: Tar pass2 image
-        run: tar -cf pass2_image.tar target
+        run: tar -cf pass2_image_${{matrix.virt-tool}}.tar target
       - name: Archive pass2_image
         uses: actions/upload-artifact@v3
         with:
