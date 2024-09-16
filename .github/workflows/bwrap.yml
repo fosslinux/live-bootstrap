@@ -56,12 +56,12 @@ jobs:
           name: packages
           path: target/external/repo/**
       - name: Tar pass1 image
-        run: tar -cf pass1_image_${{matrix.virt-tool}}.tar target
+        run: tar -cf pass1_image.tar target
       - name: Archive pass1_image
         uses: actions/upload-artifact@v3
         with:
-          name: internal_pass1_image
-          path: pass1_image_${{matrix.virt-tool}}.tar
+          name: internal_pass1_image_${{matrix.virt-tool}}
+          path: pass1_image.tar
 
   pass2:
     name: Run up to Python bootstrap under (bubble)wrap
@@ -85,9 +85,9 @@ jobs:
       - name: Get pass1_image
         uses: actions/download-artifact@v3
         with:
-          name: internal_pass1_image
+          name: internal_pass1_image_${{matrix.virt-tool}}
       - name: Extract pass1_image
-        run: tar -xf pass1_image_${{matrix.virt-tool}}.tar
+        run: tar -xf pass1_image.tar
       - name: Query cache for sources
         id: cache
         uses: actions/cache/restore@v3
@@ -114,12 +114,12 @@ jobs:
           name: internal_packages_pass2
           path: target/external/repo/**
       - name: Tar pass2 image
-        run: tar -cf pass2_image_${{matrix.virt-tool}}.tar target
+        run: tar -cf pass2_image.tar target
       - name: Archive pass2_image
         uses: actions/upload-artifact@v3
         with:
-          name: internal_pass2_image
-          path: pass2_image_${{matrix.virt-tool}}.tar
+          name: internal_pass2_image_${{matrix.virt-tool}}
+          path: pass2_image.tar
 
   pass3:
     name: Run remaining builds under (bubble)wrap
@@ -143,9 +143,9 @@ jobs:
       - name: Get pass2_image
         uses: actions/download-artifact@v3
         with:
-          name: internal_pass2_image
+          name: internal_pass2_image_${{matrix.virt-tool}}
       - name: Extract pass2_image
-        run: tar -xf pass2_image_${{matrix.virt-tool}}.tar
+        run: tar -xf pass2_image.tar
       - name: Query cache for sources
         id: cache
         uses: actions/cache/restore@v3
