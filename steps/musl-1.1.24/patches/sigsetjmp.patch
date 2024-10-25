@@ -11,7 +11,7 @@ tcc does not like jecxz instruction.
  __sigsetjmp:
  	mov 8(%esp),%ecx
 -	jecxz 1f
-+	cmp %ecx,0
++	cmp $0,%ecx
 +	je 1f
  
  	mov 4(%esp),%eax

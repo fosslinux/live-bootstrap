@@ -38,7 +38,7 @@ class Target:
         mount("tmpfs", self.path, "tmpfs", f"size={size}")
         self._type = TargetType.TMPFS
 
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def add_disk(self,
                  name,
                  size="16G",

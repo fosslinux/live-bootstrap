@@ -31,7 +31,7 @@ def run_as_root(*args, **kwargs):
         return run("sudo", *args, **kwargs)
     return run(*args, **kwargs)
 
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 def create_disk(image, disk_type, fs_type, size, bootable=False, mkfs_args=None):
     """Create a disk image, with a filesystem on it"""
     if mkfs_args is None:

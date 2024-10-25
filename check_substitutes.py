@@ -57,7 +57,7 @@ class Distfile():
 
     def decompress(self):
         """Decompresses the distfile."""
-        compression = self.out_file.split('.')[-1]
+        compression = self.out_file.rsplit('.', maxsplit=1)[-1]
         decompress_func = {
             "gz": gzip.open,
             "tgz": gzip.open,
