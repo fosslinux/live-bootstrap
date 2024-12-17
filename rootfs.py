@@ -220,13 +220,10 @@ print(shutil.which('chroot'))
 
     elif args.bwrap:
         init = '/init'
-        if not args.internal_ci or args.internal_ci == "pass1":
-            generator.prepare(target, using_kernel=False)
+        generator.prepare(target, using_kernel=False)
 
-            arch = stage0_arch_map.get(args.arch, args.arch)
-            init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        else:
-            generator.reuse(target)
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
 
         run('env', '-i', 'bwrap', '--unshare-user',
                                   '--uid', '0',

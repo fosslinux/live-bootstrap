@@ -13,13 +13,13 @@ on:
 
 jobs:
   pass1:
-    name: Run up to Linux build under bubblewrap
+    name: Run up to bash under bubblewrap
     runs-on: ubuntu-latest
     steps:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           # There is a strange bug(?) in nongnu, when you clone a git repository
@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
       - name: Query cache for sources
         id: cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: |
             distfiles
@@ -37,50 +37,42 @@ jobs:
         run: ./download-distfiles.sh
       - name: Cache sources
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
         run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass1
-      - name: Archive created packages
-        if: failure() # archive failed builds progress
-        uses: actions/upload-artifact@v3
+      - name: Create early-preseed.tar
+        run: rm -rf target/external target/steps && tar -C target/ -cf early-preseed.tar .
+      - name: Archive early-preseed
+        uses: actions/upload-artifact@v4
         with:
-          name: packages
-          path: target/external/repo/**
-      - name: Tar pass1 image
-        run: tar -cf pass1_image.tar target
-      - name: Archive pass1_image
-        uses: actions/upload-artifact@v3
-        with:
-          name: internal_pass1_image
-          path: pass1_image.tar
+          name: early-preseed
+          path: early-preseed.tar
 
   pass2:
-    name: Run up to Python bootstrap under bubblewrap
+    name: Run up to just before GCC 10 under bubblewrap
     needs: pass1
     runs-on: ubuntu-latest
     steps:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
-      - name: Get pass1_image
-        uses: actions/download-artifact@v3
+      - name: Get early_preseed
+        uses: actions/download-artifact@v4
         with:
-          name: internal_pass1_image
-      - name: Extract pass1_image
-        run: tar -xf pass1_image.tar
+          name: early-preseed
       - name: Query cache for sources
         id: cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: |
             distfiles
@@ -90,26 +82,18 @@ jobs:
         run: ./download-distfiles.sh
       - name: Cache sources
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2 --early-preseed early-preseed.tar
       - name: Archive created packages
-        if: failure() # archive failed builds progress
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: internal_packages_pass2
           path: target/external/repo/**
-      - name: Tar pass2 image
-        run: tar -cf pass2_image.tar target
-      - name: Archive pass2_image
-        uses: actions/upload-artifact@v3
-        with:
-          name: internal_pass2_image
-          path: pass2_image.tar
 
   pass3:
     name: Run remaining builds under bubblewrap
@@ -119,21 +103,24 @@ jobs:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
-      - name: Get pass2_image
-        uses: actions/download-artifact@v3
+      - name: Get early_preseed
+        uses: actions/download-artifact@v4
+        with:
+          name: early-preseed
+      - name: Get pass2 packages
+        uses: actions/download-artifact@v4
         with:
           name: internal_pass2_image
-      - name: Extract pass2_image
-        run: tar -xf pass2_image.tar
+          path: repo/
       - name: Query cache for sources
         id: cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: |
             distfiles
@@ -143,16 +130,67 @@ jobs:
         run: ./download-distfiles.sh
       - name: Cache sources
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: |
             distfiles
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass3
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass3 --early-preseed early_preseed.tar --repo repo
       - name: Archive created packages
         if: always() # archive both failed and successful builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: target/external/repo/**
+
+  python:
+    name: Run the Python bootstrap
+    needs: pass3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install bubblewrap
+        run: sudo apt install bubblewrap
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # There is a strange bug(?) in nongnu, when you clone a git repository
+          # against a commit != HEAD with depth=1, it errors out.
+          fetch-depth: 0
+      - name: Get early_preseed
+        uses: actions/download-artifact@v4
+        with:
+          name: early-preseed
+      - name: Get full set of packages
+        uses: actions/download-artifact@v4
+        with:
+          name: packages
+          path: repo/
+      - name: Query cache for sources
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            distfiles
+          key: cache-${{ hashFiles('steps/*/sources') }}
+      - name: Get sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: ./download-distfiles.sh
+      - name: Cache sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            distfiles
+          key: cache-${{ hashFiles('steps/*/sources') }}
+      - name: Run bootstrap
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --early-preseed early_preseed.tar --repo repo --extras python
+      - name: Remove non-new packages
+        run: comm -12 <(ls -1 repo) <(ls -1 target/external/repo) | xargs -I{} rm target/external/repo/{}
+      - name: Archive Python packages
+        if: always() # archive both failed and successful builds
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: target/external/repo/**

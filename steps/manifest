@@ -52,6 +52,7 @@ build: bzip2-1.0.8
 build: coreutils-5.0
 build: byacc-20240109
 build: bash-2.05b
+jump: break ( INTERNAL_CI == pass1 )
 improve: setup_repo
 improve: update_env
 improve: merged_usr
@@ -127,7 +128,6 @@ build: kexec-tools-2.0.22 ( BUILD_LINUX == True )
 improve: clean_sources
 improve: clean_artifacts
 build: linux-4.14.341-openela ( BUILD_LINUX == True )
-jump: break ( INTERNAL_CI == pass1 )
 improve: populate_device_nodes
 jump: linux ( CHROOT == False )
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
