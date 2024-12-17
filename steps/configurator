@@ -40,6 +40,13 @@ this correctly, otherwise you risk overwriting an existing disk on your
 system. LIVE-BOOTSTRAP TAKES NO LIABILITY FOR ANY DATA LOSS RESULTING FROM
 ITS USE.
 
+m /extras _ _ _ Extra bootstraps
+Various extra language or package bootstraps that are not core to
+live-bootstrap, but are an optional part of it.
+
+o /extras/python EXTRA_PYTHON bool False Python bootstrap
+Bootstraps Python.
+
 m /sysinfo _ _ _ System information
 Details about your specific system and the environment live-bootstrap is
 running in.

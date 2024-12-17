@@ -49,6 +49,8 @@ def create_configuration_file(args):
             config.write("DISK=sda1\n")
             config.write("KERNEL_BOOTSTRAP=False\n")
         config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
+        for extra in args.extras.split(","):
+            config.write(f"EXTRA_{extra.upper()}=True\n")
         config.write(f"CONFIGURATOR={args.configurator}\n")
 
 # pylint: disable=too-many-statements,too-many-branches
@@ -101,6 +103,8 @@ def main():
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
+    parser.add_argument("-x", "--extras", help="Comma-separated list of extra bootstraps to run (python)",
+                        default="")
 
     # QEMU arguments
     parser.add_argument("-q", "--qemu", help="Use QEMU",
@@ -164,6 +168,12 @@ def main():
             (1024 if str(args.swap).lower().endswith('g') else 1))
     else:
         args.swap = 0
+
+    # Check extra bootstraps
+    valid = ["python"]
+    for extra in args.extras.split(","):
+        if extra != "" and extra not in valid:
+            raise ValueError(f"{extra} is not a known bootstrap")
 
     # Set constant umask
     os.umask(0o022)
