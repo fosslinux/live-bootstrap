@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 This should be declared for gnulib, but for some reason is not, most likely
 use of a different version (but CVS history no longer exists).
 
---- lib/Makefile.am	2021-04-11 13:49:09.414805465 +1000
-+++ lib/Makefile.am	2021-04-11 13:49:26.418916036 +1000
+--- bison-2.3/lib/Makefile.am	2021-04-11 13:49:09.414805465 +1000
++++ bison-2.3/lib/Makefile.am	2021-04-11 13:49:26.418916036 +1000
 @@ -19,6 +19,7 @@
  
  BUILT_SOURCES =

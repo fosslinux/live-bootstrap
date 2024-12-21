@@ -33,8 +33,8 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 diff --git a/arch/x86/include/asm/virtext.h b/arch/x86/include/asm/virtext.h
 index 0116b2ee9e64f..4699acd602af4 100644
---- arch/x86/include/asm/virtext.h
-+++ arch/x86/include/asm/virtext.h
+--- linux-4.14.336/arch/x86/include/asm/virtext.h
++++ linux-4.14.336/arch/x86/include/asm/virtext.h
 @@ -114,21 +114,7 @@ static inline void cpu_svm_disable(void)
  
  	wrmsrl(MSR_VM_HSAVE_PA, 0);

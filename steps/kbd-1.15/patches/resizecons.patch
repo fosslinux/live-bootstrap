@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 Don't build resizecons (will not build in chroot).
 
---- src/Makefile.am	2022-02-26 14:11:22.577168053 +1100
-+++ src/Makefile.am	2022-02-26 14:11:34.641835790 +1100
+--- kbd-1.15/src/Makefile.am	2022-02-26 14:11:22.577168053 +1100
++++ kbd-1.15/src/Makefile.am	2022-02-26 14:11:34.641835790 +1100
 @@ -10,10 +10,6 @@
  PROGS += getkeycodes setkeycodes
  endif
@@ -17,8 +17,8 @@ Don't build resizecons (will not build in chroot).
  if OPTIONAL_PROGS
  PROGS += \
  	screendump setlogcons setvesablank spawn_console spawn_login \
---- configure.ac	2022-02-26 14:10:50.047367229 +1100
-+++ configure.ac	2022-02-26 14:11:15.310765839 +1100
+--- kbd-1.15/configure.ac	2022-02-26 14:10:50.047367229 +1100
++++ kbd-1.15/configure.ac	2022-02-26 14:11:15.310765839 +1100
 @@ -53,12 +53,6 @@
  esac
  AM_CONDITIONAL(KEYCODES_PROGS, test "$KEYCODES_PROGS" = "yes")

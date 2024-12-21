@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 strcoll() does not exist in mes libc, change it to strcmp.
 hard_LC_COLLATE is used but not declared when HAVE_SETLOCALE is unset.
 
---- lib/memcoll.c
-+++ lib/memcoll.c
+--- coreutils-5.0/lib/memcoll.c
++++ coreutils-5.0/lib/memcoll.c
 @@ -47,7 +47,7 @@ memcoll (char *s1, size_t s1len, char *s2, size_t s2len)
    s1[s1len++] = '\0';
    s2[s2len++] = '\0';
@@ -17,8 +17,8 @@ hard_LC_COLLATE is used but not declared when HAVE_SETLOCALE is unset.
        /* strcoll found no difference, but perhaps it was fooled by NUL
  	 characters in the data.  Work around this problem by advancing
 
---- src/sort.c
-+++ src/sort.c
+--- coreutils-5.0/src/sort.c
++++ coreutils-5.0/src/sort.c
 @@ -91,13 +91,13 @@ double strtod ();
  #define NEGATION_SIGN   '-'
  #define NUMERIC_ZERO    '0'

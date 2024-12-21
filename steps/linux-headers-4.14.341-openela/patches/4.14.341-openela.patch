@@ -7,8 +7,8 @@ Patch kernel headers up to 4.14.341-openela
 
 diff --git include/crypto/if_alg.h include/crypto/if_alg.h
 index 2ea6a95ca825..f803dc8c45ad 100644
---- include/crypto/if_alg.h
-+++ include/crypto/if_alg.h
+--- linux-4.14.336/include/crypto/if_alg.h
++++ linux-4.14.336/include/crypto/if_alg.h
 @@ -146,6 +146,7 @@ struct af_alg_async_req {
   * @enc:		Cryptographic operation to be performed when
   *			recvmsg is invoked.
@@ -28,8 +28,8 @@ index 2ea6a95ca825..f803dc8c45ad 100644
  int af_alg_register_type(const struct af_alg_type *type);
 diff --git include/drm/drm_bridge.h include/drm/drm_bridge.h
 index 6522d4cbc9d9..bfbd38c0b609 100644
---- include/drm/drm_bridge.h
-+++ include/drm/drm_bridge.h
+--- linux-4.14.336/include/drm/drm_bridge.h
++++ linux-4.14.336/include/drm/drm_bridge.h
 @@ -161,7 +161,7 @@ struct drm_bridge_funcs {
  	 * or &drm_encoder_helper_funcs.dpms hook.
  	 *
@@ -41,8 +41,8 @@ index 6522d4cbc9d9..bfbd38c0b609 100644
  	 * The post_disable callback is optional.
 diff --git include/drm/drm_mipi_dsi.h include/drm/drm_mipi_dsi.h
 index 689f615471ab..a059f1d968b7 100644
---- include/drm/drm_mipi_dsi.h
-+++ include/drm/drm_mipi_dsi.h
+--- linux-4.14.336/include/drm/drm_mipi_dsi.h
++++ linux-4.14.336/include/drm/drm_mipi_dsi.h
 @@ -163,6 +163,7 @@ struct mipi_dsi_device_info {
   * struct mipi_dsi_device - DSI peripheral device
   * @host: DSI host for this peripheral
@@ -61,8 +61,8 @@ index 689f615471ab..a059f1d968b7 100644
  	unsigned int channel;
 diff --git include/linux/bpf.h include/linux/bpf.h
 index 3aa05ea79ba1..0d7a61df056b 100644
---- include/linux/bpf.h
-+++ include/linux/bpf.h
+--- linux-4.14.336/include/linux/bpf.h
++++ linux-4.14.336/include/linux/bpf.h
 @@ -38,7 +38,11 @@ struct bpf_map_ops {
  	/* funcs called by prog_array and perf_event_array map */
  	void *(*map_fd_get_ptr)(struct bpf_map *map, struct file *map_file,
@@ -78,8 +78,8 @@ index 3aa05ea79ba1..0d7a61df056b 100644
  };
 diff --git include/linux/device.h include/linux/device.h
 index 65e06a066b67..27b70b810463 100644
---- include/linux/device.h
-+++ include/linux/device.h
+--- linux-4.14.336/include/linux/device.h
++++ linux-4.14.336/include/linux/device.h
 @@ -1474,6 +1474,9 @@ do {									\
  	WARN_ONCE(condition, "%s %s: " format, \
  			dev_driver_string(dev), dev_name(dev), ## arg)
@@ -92,8 +92,8 @@ index 65e06a066b67..27b70b810463 100644
  	MODULE_ALIAS("char-major-" __stringify(major) "-" __stringify(minor))
 diff --git include/linux/dmaengine.h include/linux/dmaengine.h
 index 8089e28539f1..d5a7d320e05c 100644
---- include/linux/dmaengine.h
-+++ include/linux/dmaengine.h
+--- linux-4.14.336/include/linux/dmaengine.h
++++ linux-4.14.336/include/linux/dmaengine.h
 @@ -816,7 +816,8 @@ static inline int dmaengine_slave_config(struct dma_chan *chan,
  
  static inline bool is_slave_direction(enum dma_transfer_direction direction)
@@ -106,8 +106,8 @@ index 8089e28539f1..d5a7d320e05c 100644
  static inline struct dma_async_tx_descriptor *dmaengine_prep_slave_single(
 diff --git include/linux/fs.h include/linux/fs.h
 index ff0a992846a3..bd6072556269 100644
---- include/linux/fs.h
-+++ include/linux/fs.h
+--- linux-4.14.336/include/linux/fs.h
++++ linux-4.14.336/include/linux/fs.h
 @@ -296,6 +296,8 @@ enum rw_hint {
  #define IOCB_SYNC		(1 << 5)
  #define IOCB_WRITE		(1 << 6)
@@ -119,8 +119,8 @@ index ff0a992846a3..bd6072556269 100644
  	struct file		*ki_filp;
 diff --git include/linux/lsm_hooks.h include/linux/lsm_hooks.h
 index 569debc49f3d..28ff40daccff 100644
---- include/linux/lsm_hooks.h
-+++ include/linux/lsm_hooks.h
+--- linux-4.14.336/include/linux/lsm_hooks.h
++++ linux-4.14.336/include/linux/lsm_hooks.h
 @@ -466,6 +466,12 @@
   *	simple integer value.  When @arg represents a user space pointer, it
   *	should never be used by the security module.
@@ -153,8 +153,8 @@ index 569debc49f3d..28ff40daccff 100644
  	struct list_head file_mprotect;
 diff --git include/linux/pci_ids.h include/linux/pci_ids.h
 index 83f576d45d78..c977e636a1dd 100644
---- include/linux/pci_ids.h
-+++ include/linux/pci_ids.h
+--- linux-4.14.336/include/linux/pci_ids.h
++++ linux-4.14.336/include/linux/pci_ids.h
 @@ -2953,6 +2953,7 @@
  #define PCI_DEVICE_ID_INTEL_82443GX_0	0x71a0
  #define PCI_DEVICE_ID_INTEL_82443GX_2	0x71a2
@@ -165,8 +165,8 @@ index 83f576d45d78..c977e636a1dd 100644
  #define PCI_DEVICE_ID_INTEL_E6XX_CU	0x8183
 diff --git include/linux/security.h include/linux/security.h
 index 1c8968a267c2..cf77cd971795 100644
---- include/linux/security.h
-+++ include/linux/security.h
+--- linux-4.14.336/include/linux/security.h
++++ linux-4.14.336/include/linux/security.h
 @@ -306,6 +306,8 @@ int security_file_permission(struct file *file, int mask);
  int security_file_alloc(struct file *file);
  void security_file_free(struct file *file);
@@ -192,8 +192,8 @@ index 1c8968a267c2..cf77cd971795 100644
  {
 diff --git include/linux/spi/spi.h include/linux/spi/spi.h
 index a8f6606dd498..5c7741ca3b99 100644
---- include/linux/spi/spi.h
-+++ include/linux/spi/spi.h
+--- linux-4.14.336/include/linux/spi/spi.h
++++ linux-4.14.336/include/linux/spi/spi.h
 @@ -153,6 +153,7 @@ struct spi_device {
  #define	SPI_MODE_1	(0|SPI_CPHA)
  #define	SPI_MODE_2	(SPI_CPOL|0)
@@ -206,7 +206,7 @@ diff --git include/linux/units.h include/linux/units.h
 new file mode 100644
 index 000000000000..a0af6d2ef4e5
 --- /dev/null
-+++ include/linux/units.h
++++ linux-4.14.336/include/linux/units.h
 @@ -0,0 +1,92 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +#ifndef _LINUX_UNITS_H
@@ -302,8 +302,8 @@ index 000000000000..a0af6d2ef4e5
 +#endif /* _LINUX_UNITS_H */
 diff --git include/net/af_unix.h include/net/af_unix.h
 index 7ec1cdb66be8..e514508bdc92 100644
---- include/net/af_unix.h
-+++ include/net/af_unix.h
+--- linux-4.14.336/include/net/af_unix.h
++++ linux-4.14.336/include/net/af_unix.h
 @@ -43,12 +43,6 @@ struct unix_skb_parms {
  
  #define UNIXCB(skb) 	(*(struct unix_skb_parms *)&((skb)->cb))
@@ -340,10 +340,10 @@ index 7ec1cdb66be8..e514508bdc92 100644
  long unix_inq_len(struct sock *sk);
 diff --git include/net/bluetooth/hci_core.h include/net/bluetooth/hci_core.h
 index 8f899ad4a754..bac3d79139b2 100644
---- include/net/bluetooth/hci_core.h
-+++ include/net/bluetooth/hci_core.h
+--- linux-4.14.336/include/net/bluetooth/hci_core.h
++++ linux-4.14.336/include/net/bluetooth/hci_core.h
 @@ -647,7 +647,6 @@ void hci_inquiry_cache_flush(struct hci_dev *hdev);
- /* ----- HCI Connections ----- */
+ /* ----- linux-4.14.336/HCI Connections ----- */
  enum {
  	HCI_CONN_AUTH_PEND,
 -	HCI_CONN_REAUTH_PEND,
@@ -352,8 +352,8 @@ index 8f899ad4a754..bac3d79139b2 100644
  	HCI_CONN_MODE_CHANGE_PEND,
 diff --git include/net/dst_ops.h include/net/dst_ops.h
 index 443863c7b8da..632086b2f644 100644
---- include/net/dst_ops.h
-+++ include/net/dst_ops.h
+--- linux-4.14.336/include/net/dst_ops.h
++++ linux-4.14.336/include/net/dst_ops.h
 @@ -16,7 +16,7 @@ struct dst_ops {
  	unsigned short		family;
  	unsigned int		gc_thresh;
@@ -378,8 +378,8 @@ index 443863c7b8da..632086b2f644 100644
  static inline int dst_entries_init(struct dst_ops *dst)
 diff --git include/net/llc_pdu.h include/net/llc_pdu.h
 index 49aa79c7b278..581cd37aa98b 100644
---- include/net/llc_pdu.h
-+++ include/net/llc_pdu.h
+--- linux-4.14.336/include/net/llc_pdu.h
++++ linux-4.14.336/include/net/llc_pdu.h
 @@ -262,8 +262,7 @@ static inline void llc_pdu_header_init(struct sk_buff *skb, u8 type,
   */
  static inline void llc_pdu_decode_sa(struct sk_buff *skb, u8 *sa)
@@ -402,8 +402,8 @@ index 49aa79c7b278..581cd37aa98b 100644
  /**
 diff --git include/net/netns/ipv6.h include/net/netns/ipv6.h
 index c004d051c2d3..290ca18589ee 100644
---- include/net/netns/ipv6.h
-+++ include/net/netns/ipv6.h
+--- linux-4.14.336/include/net/netns/ipv6.h
++++ linux-4.14.336/include/net/netns/ipv6.h
 @@ -64,8 +64,8 @@ struct netns_ipv6 {
  	struct dst_ops		ip6_dst_ops;
  	rwlock_t		fib6_walker_lock;
@@ -417,8 +417,8 @@ index c004d051c2d3..290ca18589ee 100644
  	struct rt6_info         *ip6_prohibit_entry;
 diff --git include/uapi/linux/btrfs.h include/uapi/linux/btrfs.h
 index 86d2a52b4665..ee7a34c237a5 100644
---- include/uapi/linux/btrfs.h
-+++ include/uapi/linux/btrfs.h
+--- linux-4.14.336/include/uapi/linux/btrfs.h
++++ linux-4.14.336/include/uapi/linux/btrfs.h
 @@ -522,6 +522,9 @@ struct btrfs_ioctl_clone_range_args {
   */
  #define BTRFS_DEFRAG_RANGE_COMPRESS 1
@@ -431,8 +431,8 @@ index 86d2a52b4665..ee7a34c237a5 100644
  	__u64 start;
 diff --git include/uapi/linux/netfilter/nf_tables.h include/uapi/linux/netfilter/nf_tables.h
 index c7bb18ea4962..835e9f345f35 100644
---- include/uapi/linux/netfilter/nf_tables.h
-+++ include/uapi/linux/netfilter/nf_tables.h
+--- linux-4.14.336/include/uapi/linux/netfilter/nf_tables.h
++++ linux-4.14.336/include/uapi/linux/netfilter/nf_tables.h
 @@ -229,9 +229,11 @@ enum nft_rule_attributes {
  /**
   * enum nft_rule_compat_flags - nf_tables rule compat flags

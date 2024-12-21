@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 mes libc + setting locale = not worky.
 
---- locale.c	2021-01-15 09:38:55.729307629 +1100
-+++ locale.c	2021-01-15 11:19:01.929391346 +1100
+--- bash-2.05b/locale.c	2021-01-15 09:38:55.729307629 +1100
++++ bash-2.05b/locale.c	2021-01-15 11:19:01.929391346 +1100
 @@ -190,7 +190,7 @@
  set_lang (var, value)
       char *var, *value;

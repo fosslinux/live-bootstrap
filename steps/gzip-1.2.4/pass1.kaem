@@ -27,11 +27,11 @@ catm gzip.c.new ../../files/stat_override.c gzip.c
 cp gzip.c.new gzip.c
 
 # Remove generated crc table from util.c
-patch -Np0 -i ../../patches/removecrc.patch
+patch -Np1 -i ../../patches/removecrc.patch
 
 # Since IO redirection is not available yet, patch makecrc.c so that it writes
 # C code to file crc.c that can be appended to util.c
-patch -Np0 -i ../../patches/makecrc-write-to-file.patch
+patch -Np1 -i ../../patches/makecrc-write-to-file.patch
 
 tcc -static -o makecrc sample/makecrc.c
 ./makecrc

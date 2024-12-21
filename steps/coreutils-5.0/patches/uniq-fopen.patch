@@ -6,8 +6,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 uniq: don't assume fopen cannot return stdin or stdout.
 Backport of https://git.savannah.gnu.org/cgit/coreutils.git/commit/?id=786ebb2ceca72f69aa2de701671fb41f53cb1489
 
---- src/uniq.c
-+++ src/uniq.c
+--- coreutils-5.0/src/uniq.c
++++ coreutils-5.0/src/uniq.c
 @@ -30,6 +30,7 @@
  #include "error.h"
  #include "hard-locale.h"

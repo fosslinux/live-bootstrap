@@ -12,8 +12,8 @@ We disable the following programs for the following reasons:
 * column: musl incompatibility.
 
 diff --color -ru misc-utils/Makefile.am misc-utils/Makefile.am
---- misc-utils/Makefile.am	2021-06-13 09:34:49.669370352 +1000
-+++ misc-utils/Makefile.am	2021-06-13 09:42:06.644523490 +1000
+--- util-linux-2.19.1/misc-utils/Makefile.am	2021-06-13 09:34:49.669370352 +1000
++++ util-linux-2.19.1/misc-utils/Makefile.am	2021-06-13 09:42:06.644523490 +1000
 @@ -6,8 +6,8 @@
  sbin_PROGRAMS =
  usrsbin_exec_PROGRAMS =
@@ -45,8 +45,8 @@ diff --color -ru misc-utils/Makefile.am misc-utils/Makefile.am
  sbin_PROGRAMS += blkid.static
  blkid_static_SOURCES = $(blkid_SOURCES)
 diff --color -ru sys-utils/Makefile.am sys-utils/Makefile.am
---- sys-utils/Makefile.am	2021-06-13 09:34:49.686370532 +1000
-+++ sys-utils/Makefile.am	2021-06-13 09:42:06.644523490 +1000
+--- util-linux-2.19.1/sys-utils/Makefile.am	2021-06-13 09:34:49.686370532 +1000
++++ util-linux-2.19.1/sys-utils/Makefile.am	2021-06-13 09:42:06.644523490 +1000
 @@ -2,7 +2,7 @@
  
  bin_PROGRAMS =
@@ -68,8 +68,8 @@ diff --color -ru sys-utils/Makefile.am sys-utils/Makefile.am
  
  dist_man_MANS += dmesg.1 ctrlaltdel.8 cytune.8 setarch.8 \
 diff --color -ru text-utils/Makefile.am text-utils/Makefile.am
---- text-utils/Makefile.am	2021-06-13 09:34:49.696370638 +1000
-+++ text-utils/Makefile.am	2021-06-13 09:46:19.230591066 +1000
+--- util-linux-2.19.1/text-utils/Makefile.am	2021-06-13 09:34:49.696370638 +1000
++++ util-linux-2.19.1/text-utils/Makefile.am	2021-06-13 09:46:19.230591066 +1000
 @@ -2,7 +2,7 @@
  
  EXTRA_DIST = README.clear README.col

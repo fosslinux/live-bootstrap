@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 fopen-safer.c for whatever reason does not exist when added by gnulib.
 
---- lib/Makefile.am	2021-04-11 19:01:01.265993928 +1000
-+++ lib/Makefile.am	2021-04-11 19:01:40.413232722 +1000
+--- bison-2.3/lib/Makefile.am	2021-04-11 19:01:01.265993928 +1000
++++ bison-2.3/lib/Makefile.am	2021-04-11 19:01:40.413232722 +1000
 @@ -31,7 +31,8 @@
  lib_SOURCES = \
    get-errno.h get-errno.c \

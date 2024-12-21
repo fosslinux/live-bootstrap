@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 Remove generated CRC table
 
---- util.c
-+++ util.c
+--- gzip-1.2.4/util.c
++++ gzip-1.2.4/util.c
 @@ -406,57 +406,3 @@ voidp xmalloc (size)
  /* ========================================================================
   * Table of CRC-32's of all single-byte values (made by makecrc.c)

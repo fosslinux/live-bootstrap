@@ -7,8 +7,8 @@ not comply with this so the parser in Lib/platform.py fails on it.
 
 Upstream PR: https://github.com/python/cpython/pull/100389
 
---- Modules/getbuildinfo.c	2022-12-21 13:41:18.120573458 +1100
-+++ Modules/getbuildinfo.c	2022-12-21 13:41:30.399716652 +1100
+--- Python-3.11.1/Modules/getbuildinfo.c	2022-12-21 13:41:18.120573458 +1100
++++ Python-3.11.1/Modules/getbuildinfo.c	2022-12-21 13:41:30.399716652 +1100
 @@ -8,7 +8,7 @@
  #ifdef __DATE__
  #define DATE __DATE__

@@ -10,8 +10,8 @@ Date:   Thu Mar 26 18:02:01 2020 +0100
 
 diff --git lib/fseterr.c lib/fseterr.c
 index 8cd68e8..0ec7e2c 100644
---- lib/fseterr.c
-+++ lib/fseterr.c
+--- bison-3.4.1/lib/fseterr.c
++++ bison-3.4.1/lib/fseterr.c
 @@ -53,7 +53,7 @@ fseterr (FILE *fp)
  #elif defined EPLAN9                /* Plan9 */
    if (fp->state != 0 /* CLOSED */)

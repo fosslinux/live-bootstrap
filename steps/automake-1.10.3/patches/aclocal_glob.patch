@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 Fixes aclocal-1.10 to work with our Perl
 
---- aclocal.in	2021-03-25 19:18:10.489134059 +0000
-+++ aclocal.in	2021-03-25 19:18:20.159389339 +0000
+--- automake-1.10.3/aclocal.in	2021-03-25 19:18:10.489134059 +0000
++++ automake-1.10.3/aclocal.in	2021-03-25 19:18:20.159389339 +0000
 @@ -45,6 +45,7 @@
  use Automake::FileUtils;
  use File::Basename;

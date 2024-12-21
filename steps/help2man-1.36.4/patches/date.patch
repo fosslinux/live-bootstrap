@@ -8,8 +8,8 @@ manpage.
 This makes manpages not reproducible.
 
 diff --color -ru help2man.PL help2man.PL
---- help2man.PL	2022-04-02 10:20:20.100234930 +1100
-+++ help2man.PL	2022-04-02 10:20:21.866247540 +1100
+--- help2man-1.36.4/help2man.PL	2022-04-02 10:20:20.100234930 +1100
++++ help2man-1.36.4/help2man.PL	2022-04-02 10:20:21.866247540 +1100
 @@ -303,7 +303,7 @@
  	    $_, $ARGV[0]
  } $help_option, $version_option;

@@ -13,8 +13,8 @@ fixincludes update for musl support
 
 From-SVN: r222327
 
---- fixincludes/mkfixinc.sh
-+++ fixincludes/mkfixinc.sh
+--- gcc-4.7.4/fixincludes/mkfixinc.sh
++++ gcc-4.7.4/fixincludes/mkfixinc.sh
 @@ -20,7 +20,8 @@ case $machine in
      powerpc-*-eabi*    | \
      powerpc-*-rtems*   | \

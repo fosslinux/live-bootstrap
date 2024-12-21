@@ -6,8 +6,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 touch: add -h to change symlink timestamps, where supported
 
 diff -r -U3 coreutils-5.0.orig/src/touch.c coreutils-5.0/src/touch.c
---- src/touch.c	2002-12-20 20:09:22.000000000 +0000
-+++ src/touch.c	2022-05-16 20:31:37.801988595 +0100
+--- coreutils-5.0/src/touch.c	2002-12-20 20:09:22.000000000 +0000
++++ coreutils-5.0/src/touch.c	2022-05-16 20:31:37.801988595 +0100
 @@ -77,6 +77,9 @@
  /* (-r) If nonzero, use times from a reference file. */
  static int use_ref;

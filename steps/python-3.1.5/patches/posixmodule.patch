@@ -5,8 +5,8 @@ SPDX-License-Identifier: PSF-2.0
 musl (correctly) implements the POSIX posix_close function, however
 this was added after Python 3.1.5 was released.
 
---- Modules/posixmodule.c	2022-10-15 10:20:33.311399832 +1100
-+++ Modules/posixmodule.c	2022-10-15 10:21:03.522921510 +1100
+--- Python-3.1.5/Modules/posixmodule.c	2022-10-15 10:20:33.311399832 +1100
++++ Python-3.1.5/Modules/posixmodule.c	2022-10-15 10:21:03.522921510 +1100
 @@ -4993,12 +4993,12 @@
  }
  

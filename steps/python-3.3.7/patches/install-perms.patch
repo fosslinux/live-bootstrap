@@ -5,8 +5,8 @@ SPDX-License-Identifier: PSF-2.0
 Install libraries with 755 instead of 555 so we can strip them. (This
 is what is in modern versions of python).
 
---- Makefile.pre.in	2023-03-15 21:49:08.274186777 +1100
-+++ Makefile.pre.in	2023-03-15 21:50:02.466143662 +1100
+--- Python-3.3.7/Makefile.pre.in	2023-03-15 21:49:08.274186777 +1100
++++ Python-3.3.7/Makefile.pre.in	2023-03-15 21:50:02.466143662 +1100
 @@ -54,8 +54,7 @@
  INSTALL_DATA=	@INSTALL_DATA@
  # Shared libraries must be installed with executable mode on some systems;

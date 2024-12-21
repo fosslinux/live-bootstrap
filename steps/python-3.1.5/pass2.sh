@@ -55,7 +55,7 @@ src_configure() {
 
 src_compile() {
     # Temporarily break include cycle
-    patch -Np0 -i graminit-regen.patch
+    patch -Np1 -i graminit-regen.patch
     # Build pgen
     PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" Parser/pgen
     # Regen graminit.c and graminit.h
@@ -70,7 +70,7 @@ src_compile() {
     python -B token.py
 
     # Undo change
-    patch -Np0 -R -i graminit-regen.patch
+    patch -Np1 -R -i graminit-regen.patch
     # Now build the main program
     PYTHONDONTWRITEBYTECODE=1 make "${MAKEJOBS}" CFLAGS="-U__DATE__ -U__TIME__"
 }

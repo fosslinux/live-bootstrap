@@ -19,7 +19,7 @@ src_prepare() {
     sed -i "/^unicodedata/d" Modules/Setup.in
 
     # Patch
-    patch -Np0 -i disable-unicode.patch
+    patch -Np1 -i disable-unicode.patch
 
     # Regenerate autoconf
     autoreconf-2.71 -fi

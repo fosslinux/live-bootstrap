@@ -12,8 +12,8 @@ ttymsg.
 (This is the main patch file. See -bsd.patch for files with such licensing).
 
 diff --color -ru shlibs/blkid/src/devname.c shlibs/blkid/src/devname.c
---- shlibs/blkid/src/devname.c	2021-06-12 14:24:30.982387640 +1000
-+++ shlibs/blkid/src/devname.c	2021-06-12 14:25:42.934921608 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/devname.c	2021-06-12 14:24:30.982387640 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/devname.c	2021-06-12 14:25:42.934921608 +1000
 @@ -33,6 +33,7 @@
  #include <errno.h>
  #endif
@@ -23,8 +23,8 @@ diff --color -ru shlibs/blkid/src/devname.c shlibs/blkid/src/devname.c
  #include "blkidP.h"
  
 diff --color -ru shlibs/blkid/src/devno.c shlibs/blkid/src/devno.c
---- shlibs/blkid/src/devno.c	2021-06-12 14:24:30.987387677 +1000
-+++ shlibs/blkid/src/devno.c	2021-06-12 14:25:27.750808925 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/devno.c	2021-06-12 14:24:30.987387677 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/devno.c	2021-06-12 14:25:27.750808925 +1000
 @@ -31,6 +31,7 @@
  #endif
  #include <fcntl.h>
@@ -34,8 +34,8 @@ diff --color -ru shlibs/blkid/src/devno.c shlibs/blkid/src/devno.c
  #include "blkidP.h"
  #include "pathnames.h"
 diff --color -ru shlibs/blkid/src/partitions/partitions.c shlibs/blkid/src/partitions/partitions.c
---- shlibs/blkid/src/partitions/partitions.c	2021-06-12 14:24:30.983387647 +1000
-+++ shlibs/blkid/src/partitions/partitions.c	2021-06-12 14:25:24.326783515 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/partitions/partitions.c	2021-06-12 14:24:30.983387647 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/partitions/partitions.c	2021-06-12 14:25:24.326783515 +1000
 @@ -19,6 +19,7 @@
  #include <stdint.h>
  #include <inttypes.h>
@@ -45,8 +45,8 @@ diff --color -ru shlibs/blkid/src/partitions/partitions.c shlibs/blkid/src/parti
  #include "partitions.h"
  
 diff --color -ru shlibs/blkid/src/topology/evms.c shlibs/blkid/src/topology/evms.c
---- shlibs/blkid/src/topology/evms.c	2021-06-12 14:24:30.984387655 +1000
-+++ shlibs/blkid/src/topology/evms.c	2021-06-12 14:25:30.390828517 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/topology/evms.c	2021-06-12 14:24:30.984387655 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/topology/evms.c	2021-06-12 14:25:30.390828517 +1000
 @@ -19,6 +19,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -56,8 +56,8 @@ diff --color -ru shlibs/blkid/src/topology/evms.c shlibs/blkid/src/topology/evms
  #include "topology.h"
  
 diff --color -ru shlibs/blkid/src/topology/lvm.c shlibs/blkid/src/topology/lvm.c
---- shlibs/blkid/src/topology/lvm.c	2021-06-12 14:24:30.984387655 +1000
-+++ shlibs/blkid/src/topology/lvm.c	2021-06-12 14:25:37.510881355 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/topology/lvm.c	2021-06-12 14:24:30.984387655 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/topology/lvm.c	2021-06-12 14:25:37.510881355 +1000
 @@ -18,6 +18,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -67,8 +67,8 @@ diff --color -ru shlibs/blkid/src/topology/lvm.c shlibs/blkid/src/topology/lvm.c
  #include "topology.h"
  
 diff --color -ru shlibs/blkid/src/topology/md.c shlibs/blkid/src/topology/md.c
---- shlibs/blkid/src/topology/md.c	2021-06-12 14:24:30.984387655 +1000
-+++ shlibs/blkid/src/topology/md.c	2021-06-12 14:25:34.679860346 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/topology/md.c	2021-06-12 14:24:30.984387655 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/topology/md.c	2021-06-12 14:25:34.679860346 +1000
 @@ -19,6 +19,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -77,8 +77,8 @@ diff --color -ru shlibs/blkid/src/topology/md.c shlibs/blkid/src/topology/md.c
  
  #include "topology.h"
  
---- shlibs/blkid/src/topology/dm.c	2021-06-12 14:29:01.195392922 +1000
-+++ shlibs/blkid/src/topology/dm.c	2021-06-12 14:29:05.897427816 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/topology/dm.c	2021-06-12 14:29:01.195392922 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/topology/dm.c	2021-06-12 14:29:05.897427816 +1000
 @@ -18,6 +18,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -88,8 +88,8 @@ diff --color -ru shlibs/blkid/src/topology/md.c shlibs/blkid/src/topology/md.c
  #include "topology.h"
  
 diff --color -ru shlibs/blkid/src/evaluate.c shlibs/blkid/src/evaluate.c
---- shlibs/blkid/src/evaluate.c	2021-06-12 16:11:45.893958255 +1000
-+++ shlibs/blkid/src/evaluate.c	2021-06-12 16:12:20.652202397 +1000
+--- util-linux-2.19.1/shlibs/blkid/src/evaluate.c	2021-06-12 16:11:45.893958255 +1000
++++ util-linux-2.19.1/shlibs/blkid/src/evaluate.c	2021-06-12 16:12:20.652202397 +1000
 @@ -21,6 +21,7 @@
  #endif
  #include <stdint.h>
@@ -99,8 +99,8 @@ diff --color -ru shlibs/blkid/src/evaluate.c shlibs/blkid/src/evaluate.c
  #include "pathnames.h"
  #include "canonicalize.h"
 diff --color -ru shlibs/mount/src/fs.c shlibs/mount/src/fs.c
---- shlibs/mount/src/fs.c	2021-06-12 16:11:45.897958283 +1000
-+++ shlibs/mount/src/fs.c	2021-06-12 16:12:14.812161377 +1000
+--- util-linux-2.19.1/shlibs/mount/src/fs.c	2021-06-12 16:11:45.897958283 +1000
++++ util-linux-2.19.1/shlibs/mount/src/fs.c	2021-06-12 16:12:14.812161377 +1000
 @@ -18,6 +18,7 @@
  #include <errno.h>
  #include <blkid.h>
@@ -109,8 +109,8 @@ diff --color -ru shlibs/mount/src/fs.c shlibs/mount/src/fs.c
  
  #include "nls.h"
  #include "mountP.h"
---- shlibs/mount/src/tab_parse.c	2021-06-12 19:04:38.773393353 +1000
-+++ shlibs/mount/src/tab_parse.c	2021-06-12 19:04:51.115474555 +1000
+--- util-linux-2.19.1/shlibs/mount/src/tab_parse.c	2021-06-12 19:04:38.773393353 +1000
++++ util-linux-2.19.1/shlibs/mount/src/tab_parse.c	2021-06-12 19:04:51.115474555 +1000
 @@ -14,6 +14,7 @@
  #include <dirent.h>
  #include <fcntl.h>

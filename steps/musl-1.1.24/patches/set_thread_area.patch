@@ -20,8 +20,8 @@ SYS_set_thread_area's return value being an error) before modifying
 
 diff --git src/thread/i386/__set_thread_area.s src/thread/i386/__set_thread_area.s
 index c2c21dd5..aa6852be 100644
---- src/thread/i386/__set_thread_area.s
-+++ src/thread/i386/__set_thread_area.s
+--- musl-1.1.24/src/thread/i386/__set_thread_area.s
++++ musl-1.1.24/src/thread/i386/__set_thread_area.s
 @@ -28,6 +28,7 @@ __set_thread_area:
  	ret
  2:

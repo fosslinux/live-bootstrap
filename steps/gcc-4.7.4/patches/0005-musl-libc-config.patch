@@ -28,8 +28,8 @@ Co-Authored-By: Szabolcs Nagy <szabolcs.nagy@arm.com>
 
 From-SVN: r222904
 
---- gcc/config.gcc
-+++ gcc/config.gcc
+--- gcc-4.7.4/gcc/config.gcc
++++ gcc-4.7.4/gcc/config.gcc
 @@ -522,7 +522,7 @@ case ${target} in
  esac
  
@@ -49,8 +49,8 @@ From-SVN: r222904
      *)
        tm_defines="$tm_defines DEFAULT_LIBC=LIBC_GLIBC"
        ;;
---- gcc/config/linux.h
-+++ gcc/config/linux.h
+--- gcc-4.7.4/gcc/config/linux.h
++++ gcc-4.7.4/gcc/config/linux.h
 @@ -33,10 +33,12 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)
@@ -204,8 +204,8 @@ From-SVN: r222904
 +    { 0, 0, 0, 0, 0, 0 }				\
 +  }
 +#endif
---- gcc/config/linux.opt
-+++ gcc/config/linux.opt
+--- gcc-4.7.4/gcc/config/linux.opt
++++ gcc-4.7.4/gcc/config/linux.opt
 @@ -28,5 +28,9 @@ Target Report RejectNegative Var(linux_libc,LIBC_GLIBC) Negative(muclibc)
  Use GNU C library
  
@@ -217,8 +217,8 @@ From-SVN: r222904
 +mmusl
 +Target Report RejectNegative Var(linux_libc,LIBC_MUSL) Negative(mbionic)
 +Use musl C library
---- gcc/configure.ac
-+++ gcc/configure.ac
+--- gcc-4.7.4/gcc/configure.ac
++++ gcc-4.7.4/gcc/configure.ac
 @@ -4669,6 +4669,9 @@ AC_CACHE_CHECK(__stack_chk_fail in target C library,
        gcc_cv_libc_provides_ssp,
        [gcc_cv_libc_provides_ssp=no
@@ -247,8 +247,8 @@ From-SVN: r222904
  esac
  GCC_TARGET_TEMPLATE([TARGET_DL_ITERATE_PHDR])
  if test x$gcc_cv_target_dl_iterate_phdr = xyes; then
---- gcc/doc/invoke.texi
-+++ gcc/doc/invoke.texi
+--- gcc-4.7.4/gcc/doc/invoke.texi
++++ gcc-4.7.4/gcc/doc/invoke.texi
 @@ -595,7 +595,7 @@ Objective-C and Objective-C++ Dialects}.
  -mcpu=@var{cpu}}
  

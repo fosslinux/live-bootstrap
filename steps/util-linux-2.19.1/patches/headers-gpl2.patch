@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 headers.patch but for files licensed GPL 2.0 or later.
 
---- misc-utils/findmnt.c	2021-06-12 19:13:40.306009682 +1000
-+++ misc-utils/findmnt.c	2021-06-12 19:13:58.223132046 +1000
+--- util-linux-2.19.1/misc-utils/findmnt.c	2021-06-12 19:13:40.306009682 +1000
++++ util-linux-2.19.1/misc-utils/findmnt.c	2021-06-12 19:13:58.223132046 +1000
 @@ -30,6 +30,7 @@
  #include <sys/ioctl.h>
  #endif
@@ -14,8 +14,8 @@ headers.patch but for files licensed GPL 2.0 or later.
  
  #define USE_UNSTABLE_LIBMOUNT_API
  #include <libmount.h>
---- fsck/fsck.c	2021-06-22 18:30:27.843680552 +1000
-+++ fsck/fsck.c	2021-06-22 18:30:41.327764247 +1000
+--- util-linux-2.19.1/fsck/fsck.c	2021-06-22 18:30:27.843680552 +1000
++++ util-linux-2.19.1/fsck/fsck.c	2021-06-22 18:30:41.327764247 +1000
 @@ -32,6 +32,7 @@
  #include <sys/signal.h>
  #include <sys/stat.h>

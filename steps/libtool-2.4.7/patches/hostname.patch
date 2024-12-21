@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Remove hostname from libtool script.
 
---- m4/libtool.m4	2022-03-17 04:43:39.000000000 +0200
-+++ m4/libtool.m4	2022-09-03 20:04:29.687049292 +0300
+--- libtool-2.4.7/m4/libtool.m4	2022-03-17 04:43:39.000000000 +0200
++++ libtool-2.4.7/m4/libtool.m4	2022-09-03 20:04:29.687049292 +0300
 @@ -730,7 +730,6 @@
      cat <<_LT_EOF >> "$cfgfile"
  #! $SHELL
