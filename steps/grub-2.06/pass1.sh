@@ -18,7 +18,13 @@ src_prepare() {
         patch -d grub-core/lib/gnulib -p2 < "grub-core/lib/gnulib-patches/$patchname.patch"
     done
 
+    # remove unauditable blobs (xz-style attack counter)
+    rm tests/dfly-mbr* tests/file_filter/*
+
     ./autogen.sh
+
+    rm po/*.gmo po/exclude.pot
+    find . -name "*.info*" -delete
 
     cp -a INSTALL INSTALL.grub
     autoreconf-2.69 -vif
