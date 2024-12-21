@@ -19,15 +19,17 @@ jobs:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
+      - name: Work around Ubuntu 24.04 bubblewrap bug
+        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
       - name: Query cache for sources
         id: cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: |
             distfiles
@@ -37,7 +39,7 @@ jobs:
         run: ./download-distfiles.sh
       - name: Cache sources
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: |
             distfiles
@@ -46,14 +48,14 @@ jobs:
         run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass1
       - name: Archive created packages
         if: failure() # archive failed builds progress
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: target/external/repo/**
       - name: Tar pass1 image
         run: tar -cf pass1_image.tar target
       - name: Archive pass1_image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: internal_pass1_image
           path: pass1_image.tar
@@ -66,21 +68,23 @@ jobs:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
+      - name: Work around Ubuntu 24.04 bubblewrap bug
+        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
       - name: Get pass1_image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: internal_pass1_image
       - name: Extract pass1_image
         run: tar -xf pass1_image.tar
       - name: Query cache for sources
         id: cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: |
             distfiles
@@ -90,7 +94,7 @@ jobs:
         run: ./download-distfiles.sh
       - name: Cache sources
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: |
             distfiles
@@ -99,14 +103,14 @@ jobs:
         run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2
       - name: Archive created packages
         if: failure() # archive failed builds progress
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: internal_packages_pass2
           path: target/external/repo/**
       - name: Tar pass2 image
         run: tar -cf pass2_image.tar target
       - name: Archive pass2_image
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: internal_pass2_image
           path: pass2_image.tar
@@ -119,21 +123,23 @@ jobs:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           # There is a strange bug(?) in nongnu, when you clone a git repository
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
+      - name: Work around Ubuntu 24.04 bubblewrap bug
+        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
       - name: Get pass2_image
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: internal_pass2_image
       - name: Extract pass2_image
         run: tar -xf pass2_image.tar
       - name: Query cache for sources
         id: cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: |
             distfiles
@@ -143,7 +149,7 @@ jobs:
         run: ./download-distfiles.sh
       - name: Cache sources
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: |
             distfiles
@@ -152,7 +158,7 @@ jobs:
         run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass3
       - name: Archive created packages
         if: always() # archive both failed and successful builds
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: target/external/repo/**
