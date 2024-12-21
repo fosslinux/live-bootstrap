@@ -31,7 +31,7 @@ def create_configuration_file(args):
         config.write(f"ARCH={args.arch}\n")
         config.write(f"ARCH_DIR={stage0_arch_map.get(args.arch, args.arch)}\n")
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
-        config.write(f"CHROOT={args.chroot or args.bwrap}\n")
+        config.write(f"CHROOT={args.chroot or args.bwrap or args.wrap}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"SWAP_SIZE={args.swap}\n")
@@ -62,6 +62,8 @@ def main():
     parser.add_argument("-a", "--arch", help="Bootstrap architecture",
                         default="x86")
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
+                        action="store_true")
+    parser.add_argument("-w", "--wrap", help="Run inside a minimal sandbox",
                         action="store_true")
     parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
                         action="store_true")
@@ -127,15 +129,18 @@ def main():
             count += 1
         if args.bwrap:
             count += 1
+        if args.wrap:
+            count += 1
         if args.bare_metal:
             count += 1
         return count
 
     if check_types() > 1:
-        raise ValueError("No more than one of qemu, chroot, bwrap, bare metal"
-                         "may be used.")
+        raise ValueError("No more than one of qemu, chroot, bwrap, wrap, bare "
+                         "metal may be used.")
     if check_types() == 0:
-        raise ValueError("One of qemu, chroot, bwrap, or bare metal must be selected.")
+        raise ValueError("One of qemu, chroot, bwrap, wrap, or bare metal must"
+                         " be selected.")
 
     # Arch validation
     if args.arch != "x86":
@@ -236,6 +241,17 @@ print(shutil.which('chroot'))
                                   '--bind', '/sys', '/sys',
                                   '--tmpfs', '/tmp',
                                   init)
+
+    elif args.wrap:
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        if not args.internal_ci or args.internal_ci == "pass1":
+            generator.prepare(target, wrap = True)
+            arg_list = [os.path.join('bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')]
+        else:
+            generator.reuse(target)
+            arg_list = [os.path.join(arch, 'bin', 'wrap'), '/init']
+
+        run(*arg_list, cwd = generator.target_dir)
 
     elif args.bare_metal:
         if args.kernel:

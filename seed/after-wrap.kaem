@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2024 Max Hearnden maxoscarhearnden@gmail.com
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+# detect wether we are in a rootfs.py environment
+if ./${ARCH_DIR}/bin/catm steps/env-saved steps/env; then
+  ./${ARCH_DIR}/bin/wrap /${ARCH_DIR}/bin/kaem --file after-wrapped.kaem
+else
+  # leave seed/stage0-posix
+  cd ../..
+
+  ARCH_DIR=seed/stage0-posix/${ARCH_DIR}
+
+  ./${ARCH_DIR}/bin/wrap /${ARCH_DIR}/bin/kaem --file seed/after.kaem
+fi

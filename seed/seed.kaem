@@ -64,7 +64,12 @@ MES_PKG=mes-0.27
 MES_PREFIX=${SRCDIR}/${MES_PKG}/build/${MES_PKG}
 GUILE_LOAD_PATH=${MES_PREFIX}/mes/module:${MES_PREFIX}/module:${SRCDIR}/${MES_PKG}/build/${NYACC_PKG}/module
 
-M2-Mesoplanet --architecture ${ARCH} -f configurator.c -o configurator
+if M2-Mesoplanet --architecture ${ARCH} -f configurator.c -o configurator; then
+else
+  # using lightweight wrapper
+  M2LIBC_PATH=/seed/stage0-posix/M2libc
+  M2-Mesoplanet --architecture ${ARCH} -f configurator.c -o configurator
+fi
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o configurator.${ARCH}.checksums configurator
