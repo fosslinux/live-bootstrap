@@ -112,6 +112,7 @@ src_configure() {
             --target=i386-unknown-linux-musl \
             --host=i386-unknown-linux-musl \
             --disable-shared \
+            --disable-plugin \
             --program-transform-name= \
             --enable-languages=c,c++ \
             --disable-sjlj-exceptions \
