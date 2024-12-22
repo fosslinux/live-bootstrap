@@ -112,7 +112,7 @@ build: tcc-0.9.27
 improve: populate_device_nodes
 build: gcc-4.0.4
 build: findutils-4.2.33
-build: musl-1.2.4
+build: musl-1.2.5
 build: linux-headers-4.14.341-openela
 build: gcc-4.0.4
 build: util-linux-2.19.1
@@ -136,7 +136,7 @@ improve: finalize_job_count
 improve: finalize_fhs
 improve: open_console ( CONSOLES == True )
 improve: swap ( SWAP_SIZE != 0 )
-build: musl-1.2.4
+build: musl-1.2.5
 build: curl-8.5.0
 improve: get_network ( CHROOT == False )
 build: bash-5.2.15
@@ -181,7 +181,7 @@ build: which-2.21
 build: grep-3.7
 build: sed-4.8
 build: autogen-5.18.16
-build: musl-1.2.4
+build: musl-1.2.5
 build: python-2.0.1
 build: python-2.0.1
 build: python-2.3.7
