@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
---- musl-1.2.4/src/process/posix_spawn.c	2022-04-07 17:12:40.000000000 +0000
-+++ musl-1.2.4/src/process/posix_spawn.c	2023-04-07 12:01:57.217126467 +0000
+--- musl-1.2.5/src/process/posix_spawn.c	2022-04-07 17:12:40.000000000 +0000
++++ musl-1.2.5/src/process/posix_spawn.c	2023-04-07 12:01:57.217126467 +0000
 @@ -190,8 +190,11 @@
  		goto fail;
  	}

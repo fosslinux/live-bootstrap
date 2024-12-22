@@ -286,7 +286,7 @@ patch 2.5.9
 ``patch`` is a very useful tool at this stage, allowing us to make
 significantly more complex edits, including just changes to lines.
 
-gzip 1.2.4
+gzip 1.2.5
 ==========
 
 ``gzip`` is the most common compression format used for software source
@@ -732,7 +732,7 @@ findutils 4.2.33
 GNU Find Utilities can be used to search for files. We are mainly interested
 in ``find`` and ``xargs`` that are often used in scripts.
 
-musl 1.2.4
+musl 1.2.5
 ==========
 
 GCC can build the latest as of the time of writing musl version.
@@ -889,7 +889,7 @@ swap
 If enabled in ``bootstrap.cfg``, creates and activates a swap file under the
 name ``/swapfile``.
 
-musl 1.2.4
+musl 1.2.5
 ==========
 
 At this point, it is guaranteed that we are running on Linux with thread support,
@@ -1183,7 +1183,7 @@ We use the `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-b
 project to rebuild those and create (slightly crippled) ``autogen`` that
 is then able to build a full-featured version.
 
-musl 1.2.4
+musl 1.2.5
 ==========
 
 With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
