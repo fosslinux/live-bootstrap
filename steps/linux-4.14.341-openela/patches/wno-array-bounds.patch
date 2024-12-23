@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Remove -Wno-array-bounds which gcc-4.0.4 doesn't recognize
 
---- drivers/net/ethernet/broadcom/Makefile.bak	2024-02-15 17:05:34.617050047 +0100
-+++ drivers/net/ethernet/broadcom/Makefile	2024-02-15 17:06:06.097047984 +0100
+--- linux-4.14.336/drivers/net/ethernet/broadcom/Makefile.bak	2024-02-15 17:05:34.617050047 +0100
++++ linux-4.14.336/drivers/net/ethernet/broadcom/Makefile	2024-02-15 17:06:06.097047984 +0100
 @@ -16,8 +16,3 @@
  obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
  obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o

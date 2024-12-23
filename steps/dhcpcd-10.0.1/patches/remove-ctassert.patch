@@ -5,8 +5,8 @@
 __CTASSERT macro does not work properly on our older GCC.
 
 diff -ru src/arp.c src/arp.c
---- src/arp.c
-+++ src/arp.c
+--- dhcpcd-10.0.1/src/arp.c
++++ dhcpcd-10.0.1/src/arp.c
 @@ -63,9 +63,6 @@
  /* ARP debugging can be quite noisy. Enable this for more noise! */
  //#define	ARP_DEBUG
@@ -18,8 +18,8 @@ diff -ru src/arp.c src/arp.c
  arp_request(const struct arp_state *astate,
      const struct in_addr *sip)
 diff -ru src/auth.c src/auth.c
---- src/auth.c
-+++ src/auth.c
+--- dhcpcd-10.0.1/src/auth.c
++++ dhcpcd-10.0.1/src/auth.c
 @@ -343,9 +343,6 @@
  
  	/* RFC3318, section 5.2 - zero giaddr and hops */
@@ -31,8 +31,8 @@ diff -ru src/auth.c src/auth.c
  		memset(mm + offsetof(struct bootp, giaddr), 0, 4);
  	}
 diff -ru src/dhcp6.c src/dhcp6.c
---- src/dhcp6.c
-+++ src/dhcp6.c
+--- dhcpcd-10.0.1/src/dhcp6.c
++++ dhcpcd-10.0.1/src/dhcp6.c
 @@ -84,33 +84,28 @@
  	uint8_t xid[3];
  	/* followed by options */
@@ -76,8 +76,8 @@ diff -ru src/dhcp6.c src/dhcp6.c
  struct dhcp6_op {
  	uint16_t type;
 diff -ru src/dhcp.c src/dhcp.c
---- src/dhcp.c
-+++ src/dhcp.c
+--- dhcpcd-10.0.1/src/dhcp.c
++++ dhcpcd-10.0.1/src/dhcp.c
 @@ -98,11 +98,6 @@
  #define IP_RECVPKTINFO IP_PKTINFO
  #endif
@@ -91,8 +91,8 @@ diff -ru src/dhcp.c src/dhcp.c
  	uint8_t value;
  	const char *name;
 diff -ru src/if-bsd.c src/if-bsd.c
---- src/if-bsd.c
-+++ src/if-bsd.c
+--- dhcpcd-10.0.1/src/if-bsd.c
++++ dhcpcd-10.0.1/src/if-bsd.c
 @@ -1600,7 +1600,6 @@
  #endif
  }
@@ -102,8 +102,8 @@ diff -ru src/if-bsd.c src/if-bsd.c
  if_handlelink(struct dhcpcd_ctx *ctx)
  {
 diff -ru src/ipv6nd.c src/ipv6nd.c
---- src/ipv6nd.c
-+++ src/ipv6nd.c
+--- dhcpcd-10.0.1/src/ipv6nd.c
++++ dhcpcd-10.0.1/src/ipv6nd.c
 @@ -80,7 +80,6 @@
  	uint32_t	nd_opt_rdnss_lifetime;
          /* followed by list of IP prefixes */
@@ -121,8 +121,8 @@ diff -ru src/ipv6nd.c src/ipv6nd.c
  
  /* Impossible options, so we can easily add extras */
 diff -ru src/privsep-root.c src/privsep-root.c
---- src/privsep-root.c
-+++ src/privsep-root.c
+--- dhcpcd-10.0.1/src/privsep-root.c
++++ dhcpcd-10.0.1/src/privsep-root.c
 @@ -56,8 +56,6 @@
  #include "sa.h"
  #include "script.h"

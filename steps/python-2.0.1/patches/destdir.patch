@@ -4,8 +4,8 @@ SPDX-License-Identifier: Python-2.0.1
 
 Python 2.0 does not support DESTDIR, so add it in.
 
---- Makefile.in	2022-10-21 17:56:48.034287578 +1100
-+++ Makefile.in	2022-10-21 18:07:54.267542882 +1100
+--- Python-2.0.1/Makefile.in	2022-10-21 17:56:48.034287578 +1100
++++ Python-2.0.1/Makefile.in	2022-10-21 18:07:54.267542882 +1100
 @@ -224,16 +224,16 @@
  
  # Install the interpreter (by creating a hard link to python$(VERSION))
@@ -193,8 +193,8 @@ Python 2.0 does not support DESTDIR, so add it in.
  			prefix="$(prefix)" \
  			exec_prefix="$(exec_prefix)" \
  			sharedinstall
---- Modules/Makefile.pre.in	2022-10-21 17:56:44.635251486 +1100
-+++ Modules/Makefile.pre.in	2022-10-21 17:57:00.124415957 +1100
+--- Python-2.0.1/Modules/Makefile.pre.in	2022-10-21 17:56:44.635251486 +1100
++++ Python-2.0.1/Modules/Makefile.pre.in	2022-10-21 17:57:00.124415957 +1100
 @@ -240,7 +240,7 @@
  sharedinstall:	$(DESTSHARED) $(SHAREDMODS)
  		-for i in X $(SHAREDMODS); do \

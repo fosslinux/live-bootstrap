@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 We don't yet have the size command.
 
---- Makefile.in	2023-03-11 15:41:13.297307977 +1100
-+++ Makefile.in	2023-03-11 15:43:51.677298993 +1100
+--- bash-2.05b/Makefile.in	2023-03-11 15:41:13.297307977 +1100
++++ bash-2.05b/Makefile.in	2023-03-11 15:43:51.677298993 +1100
 @@ -471,7 +471,6 @@
  	$(RM) $@
  	$(PURIFY) $(CC) $(BUILTINS_LDFLAGS) $(LIBRARY_LDFLAGS) $(LDFLAGS) -o $(Program) $(OBJECTS) $(LIBS)

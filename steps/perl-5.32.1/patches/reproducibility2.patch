@@ -7,8 +7,8 @@ generate with correct values for live-bootstrap.
 
 NOTE: this patch CANNOT be applied to a non-live-bootstrap environment.
 
---- ../metaconfig-5.32.1~rc1/dist/U/archname.U	2022-02-26 10:51:45.343097807 +1100
-+++ ../metaconfig-5.32.1~rc1/dist/U/archname.U	2022-02-26 10:51:51.742527859 +1100
+--- perl-5.32.1/../metaconfig-5.32.1~rc1/dist/U/archname.U	2022-02-26 10:51:45.343097807 +1100
++++ perl-5.32.1/../metaconfig-5.32.1~rc1/dist/U/archname.U	2022-02-26 10:51:51.742527859 +1100
 @@ -72,5 +72,5 @@
  rp='What is your architecture name'
  . ./myread
@@ -16,8 +16,8 @@ NOTE: this patch CANNOT be applied to a non-live-bootstrap environment.
 -myarchname="$tarch"
 +myarchname="i386"
  
---- ../metaconfig-5.32.1~rc1/dist/U/Oldconfig.U	2022-02-27 10:55:04.890396204 +1100
-+++ ../metaconfig-5.32.1~rc1/dist/U/Oldconfig.U	2022-02-27 11:00:31.324396204 +1100
+--- perl-5.32.1/../metaconfig-5.32.1~rc1/dist/U/Oldconfig.U	2022-02-27 10:55:04.890396204 +1100
++++ perl-5.32.1/../metaconfig-5.32.1~rc1/dist/U/Oldconfig.U	2022-02-27 11:00:31.324396204 +1100
 @@ -109,16 +109,13 @@
  ?LINT:extern hostarch libswanted libs
  ?LINT:change hostarch libswanted libs

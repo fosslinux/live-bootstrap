@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Use the fallback implementations of getcwd to get the same /usr/bin/find
 checksum when building across FUSE and non-FUSE filesystems.
 
---- gnulib/m4/getcwd-path-max.m4	2022-01-08 13:16:54.412709192 +0200
-+++ gnulib/m4/getcwd-path-max.m4	2022-01-16 11:38:02.658606802 +0200
+--- findutils-4.2.33/gnulib/m4/getcwd-path-max.m4	2022-01-08 13:16:54.412709192 +0200
++++ findutils-4.2.33/gnulib/m4/getcwd-path-max.m4	2022-01-16 11:38:02.658606802 +0200
 @@ -81,7 +81,7 @@
    char *cwd = getcwd (buf, PATH_MAX);
    size_t initial_cwd_len;

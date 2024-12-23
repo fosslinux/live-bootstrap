@@ -6,8 +6,8 @@ On x86_64 system our GCC has multiarch a little broken for Python's
 build system which doesn't really bother me so just pretend that
 there is no multiarch.
 
---- configure.ac.bak	2022-12-21 19:35:44.560977616 +1100
-+++ configure.ac	2022-12-21 19:36:00.735143246 +1100
+--- Python-3.11.1/configure.ac.bak	2022-12-21 19:35:44.560977616 +1100
++++ Python-3.11.1/configure.ac	2022-12-21 19:36:00.735143246 +1100
 @@ -1096,7 +1096,7 @@
  AS_CASE([$ac_sys_system],
    [Darwin*], [MULTIARCH=""],

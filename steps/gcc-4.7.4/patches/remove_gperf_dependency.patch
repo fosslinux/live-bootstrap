@@ -3,8 +3,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 Remove dependency on gperf.
 
---- gcc/cp/except.c	2021-07-07 18:24:36.561530121 +0100
-+++ gcc/cp/except.c	2021-07-07 18:27:18.035681929 +0100
+--- gcc-4.7.4/gcc/cp/except.c	2021-07-07 18:24:36.561530121 +0100
++++ gcc-4.7.4/gcc/cp/except.c	2021-07-07 18:27:18.035681929 +0100
 @@ -987,8 +987,6 @@
     exception, unless it calls a program-supplied function that
     throws an exception.  */
@@ -23,8 +23,8 @@ Remove dependency on gperf.
  }
  
  /* Returns nonzero if an exception of type FROM will be caught by a
---- gcc/cp/Make-lang.in	2021-07-07 18:24:36.571530380 +0100
-+++ gcc/cp/Make-lang.in	2021-07-07 18:26:47.154887799 +0100
+--- gcc-4.7.4/gcc/cp/Make-lang.in	2021-07-07 18:24:36.571530380 +0100
++++ gcc-4.7.4/gcc/cp/Make-lang.in	2021-07-07 18:26:47.154887799 +0100
 @@ -313,7 +313,7 @@
  cp/rtti.o: cp/rtti.c $(CXX_TREE_H) $(TM_H) $(FLAGS_H) convert.h \
    $(TARGET_H) $(C_PRAGMA_H) gt-cp-rtti.h intl.h

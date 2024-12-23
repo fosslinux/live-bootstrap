@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 In new gettext external is required for AM_GNU_GETTEXT.
 
---- intl/configure.ac	2023-02-07 18:43:58.989786230 +1100
-+++ intl/configure.ac	2023-02-07 18:43:02.182632631 +1100
+--- gcc-10.4.0/intl/configure.ac	2023-02-07 18:43:58.989786230 +1100
++++ gcc-10.4.0/intl/configure.ac	2023-02-07 18:43:02.182632631 +1100
 @@ -4,7 +4,7 @@
  AC_CONFIG_HEADER(config.h)
  AC_CONFIG_MACRO_DIR(../config)

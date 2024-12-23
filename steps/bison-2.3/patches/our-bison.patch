@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 This doesn't actually make sense, you can't use the built bison to bootstrap
 itself. Make it use our bison instead.
 
---- src/Makefile.am	2021-04-10 21:37:11.570390316 +1000
-+++ src/Makefile.am	2021-04-10 21:38:01.805804332 +1000
+--- bison-2.3/src/Makefile.am	2021-04-10 21:37:11.570390316 +1000
++++ bison-2.3/src/Makefile.am	2021-04-10 21:38:01.805804332 +1000
 @@ -23,10 +23,6 @@
  
  LDADD = ../lib/libbison.a $(LIBINTL)

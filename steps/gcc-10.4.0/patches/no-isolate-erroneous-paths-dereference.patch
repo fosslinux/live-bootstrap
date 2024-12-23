@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 GCC 4.7 doesn't have fisolate-erroneous-paths-dereference. Hence
 this line does nothing.
 
---- libgcc/generic-morestack.c	2023-01-25 16:52:35.382471998 +1100
-+++ libgcc/generic-morestack.c	2023-01-25 16:52:40.773585043 +1100
+--- gcc-10.4.0/libgcc/generic-morestack.c	2023-01-25 16:52:35.382471998 +1100
++++ gcc-10.4.0/libgcc/generic-morestack.c	2023-01-25 16:52:40.773585043 +1100
 @@ -23,8 +23,6 @@
  see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  <http://www.gnu.org/licenses/>.  */

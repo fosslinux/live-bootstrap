@@ -10,8 +10,8 @@ unicodetype_db.h indiscriminately.
 We are effectively restricted to ASCII characters with this change,
 but it works.
 
---- Objects/unicodectype.c	2000-09-26 08:48:13.000000000 +1100
-+++ Objects/unicodectype.c	2022-10-03 21:09:02.108869321 +1100
+--- Python-2.0.1/Objects/unicodectype.c	2000-09-26 08:48:13.000000000 +1100
++++ Python-2.0.1/Objects/unicodectype.c	2022-10-03 21:09:02.108869321 +1100
 @@ -29,30 +29,12 @@
      const unsigned char digit;
  } _PyUnicode_TypeRecord;

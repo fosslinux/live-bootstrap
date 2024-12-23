@@ -7,8 +7,8 @@ to reflect this.
 
 diff --git lib/sh/oslib.c lib/sh/oslib.c
 index 90d7be9..37fdf2a 100644
---- lib/sh/oslib.c
-+++ lib/sh/oslib.c
+--- bash-2.05b/lib/sh/oslib.c
++++ bash-2.05b/lib/sh/oslib.c
 @@ -192,8 +192,7 @@ bzero (s, n)
  #    include <sys/utsname.h>
  int

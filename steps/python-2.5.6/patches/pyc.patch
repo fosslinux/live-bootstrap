@@ -4,8 +4,8 @@ SPDX-License-Identifier: PSF-2.0
 
 Disable creation of pyc files.
 
---- Lib/py_compile.py	2024-01-22 11:28:44.333395804 +1100
-+++ Lib/py_compile.py	2024-01-22 11:28:53.703636809 +1100
+--- Python-2.5.6/Lib/py_compile.py	2024-01-22 11:28:44.333395804 +1100
++++ Python-2.5.6/Lib/py_compile.py	2024-01-22 11:28:53.703636809 +1100
 @@ -112,6 +112,7 @@
      directories).
  
@@ -14,8 +14,8 @@ Disable creation of pyc files.
      f = open(file, 'U')
      try:
          timestamp = long(os.fstat(f.fileno()).st_mtime)
---- Python/import.c	2024-01-22 12:24:59.390701654 +1100
-+++ Python/import.c	2024-01-22 12:25:18.643222249 +1100
+--- Python-2.5.6/Python/import.c	2024-01-22 12:24:59.390701654 +1100
++++ Python-2.5.6/Python/import.c	2024-01-22 12:25:18.643222249 +1100
 @@ -869,6 +869,7 @@
  static void
  write_compiled_module(PyCodeObject *co, char *cpathname, time_t mtime)

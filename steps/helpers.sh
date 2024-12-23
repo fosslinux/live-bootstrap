@@ -369,13 +369,14 @@ default_src_unpack() {
 
 # Default function to prepare source code.
 # It applies all patches from patch_dir (at the moment only -p0 patches are supported).
+# Patches are applied from the parent directory.
 # Then it copies our custom makefile and any other custom files from files directory.
 default_src_prepare() {
     if test -d "${patch_dir}"; then
         if ls "${patch_dir}"/*.patch >/dev/null 2>&1; then
             for p in "${patch_dir}"/*.patch; do
                 echo "Applying patch: ${p}"
-                patch -Np0 < "${p}"
+                patch -d.. -Np0 < "${p}"
             done
         fi
     fi

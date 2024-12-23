@@ -22,8 +22,8 @@ rm -r ../src
 cd ${pkg}
 
 # Patch
-patch -Np0 -i ../../patches/mes-libc.patch
-patch -Np0 -i ../../patches/coreutils.patch
+patch -Np1 -i ../../patches/mes-libc.patch
+patch -Np1 -i ../../patches/coreutils.patch
 
 # Build
 make CC=tcc AR="tcc -ar" LDFLAGS="-static" bzip2

@@ -19,8 +19,8 @@ Add musl support to GCC
 
 From-SVN: r222905
 
---- gcc/config/glibc-stdint.h
-+++ gcc/config/glibc-stdint.h
+--- gcc-4.7.4/gcc/config/glibc-stdint.h
++++ gcc-4.7.4/gcc/config/glibc-stdint.h
 @@ -22,6 +22,12 @@ a copy of the GCC Runtime Library Exception along with this program;
  see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  <http://www.gnu.org/licenses/>.  */
@@ -51,8 +51,8 @@ From-SVN: r222905
  #define UINT_FAST64_TYPE (LONG_TYPE_SIZE == 64 ? "long unsigned int" : "long long unsigned int")
  
  #define INTPTR_TYPE (LONG_TYPE_SIZE == 64 ? "long int" : "int")
---- gcc/config/linux.h
-+++ gcc/config/linux.h
+--- gcc-4.7.4/gcc/config/linux.h
++++ gcc-4.7.4/gcc/config/linux.h
 @@ -33,11 +33,13 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #define OPTION_GLIBC  (DEFAULT_LIBC == LIBC_GLIBC)
  #define OPTION_UCLIBC (DEFAULT_LIBC == LIBC_UCLIBC)

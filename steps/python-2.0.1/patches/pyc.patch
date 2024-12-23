@@ -4,8 +4,8 @@ SPDX-License-Identifier: Python-2.0.1
 
 Disable creation of pyc files.
 
---- Lib/py_compile.py	2024-01-22 11:28:00.291261389 +1100
-+++ Lib/py_compile.py	2024-01-22 11:28:13.462600939 +1100
+--- Python-2.0.1/Lib/py_compile.py	2024-01-22 11:28:00.291261389 +1100
++++ Python-2.0.1/Lib/py_compile.py	2024-01-22 11:28:13.462600939 +1100
 @@ -41,6 +41,7 @@
      directories).
  
@@ -14,8 +14,8 @@ Disable creation of pyc files.
      import os, marshal, __builtin__
      f = open(file)
      try:
---- Python/import.c	2024-01-22 12:23:34.349395727 +1100
-+++ Python/import.c	2024-01-22 12:23:30.299285640 +1100
+--- Python-2.0.1/Python/import.c	2024-01-22 12:23:34.349395727 +1100
++++ Python-2.0.1/Python/import.c	2024-01-22 12:23:30.299285640 +1100
 @@ -672,6 +672,7 @@
  static void
  write_compiled_module(PyCodeObject *co, char *cpathname, long mtime)

@@ -6,8 +6,8 @@ Disables checking current date in mk-ca-bundle script, so it produces
 reproducible bundles.
 
 diff -ru scripts/mk-ca-bundle.pl scripts/mk-ca-bundle.pl
---- scripts/mk-ca-bundle.pl
-+++ scripts/mk-ca-bundle.pl
+--- curl-8.5.0/scripts/mk-ca-bundle.pl
++++ curl-8.5.0/scripts/mk-ca-bundle.pl
 @@ -499,19 +499,7 @@
      if($main_block) {
        push @precert, $_ if not /^#$/;

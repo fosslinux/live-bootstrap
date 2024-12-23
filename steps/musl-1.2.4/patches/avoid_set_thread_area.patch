@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
 diff -r -u musl-1.2.3.orig/arch/i386/pthread_arch.h musl-1.2.3/arch/i386/pthread_arch.h
---- arch/i386/pthread_arch.h	2022-04-07 17:12:40.000000000 +0000
-+++ arch/i386/pthread_arch.h	2023-04-07 12:07:07.929132587 +0000
+--- musl-1.2.4/arch/i386/pthread_arch.h	2022-04-07 17:12:40.000000000 +0000
++++ musl-1.2.4/arch/i386/pthread_arch.h	2023-04-07 12:07:07.929132587 +0000
 @@ -1,8 +1,7 @@
 +extern uintptr_t g_pthread;
  static inline uintptr_t __get_tp()
@@ -15,16 +15,16 @@ diff -r -u musl-1.2.3.orig/arch/i386/pthread_arch.h musl-1.2.3/arch/i386/pthread
  
  #define MC_PC gregs[REG_EIP]
 diff -r -u musl-1.2.3.orig/arch/i386/syscall_arch.h musl-1.2.3/arch/i386/syscall_arch.h
---- arch/i386/syscall_arch.h	2022-04-07 17:12:40.000000000 +0000
-+++ arch/i386/syscall_arch.h	2022-12-20 17:28:21.734839560 +0000
+--- musl-1.2.4/arch/i386/syscall_arch.h	2022-04-07 17:12:40.000000000 +0000
++++ musl-1.2.4/arch/i386/syscall_arch.h	2022-12-20 17:28:21.734839560 +0000
 @@ -1,3 +1,4 @@
 +#define SYSCALL_NO_TLS 1
  #define __SYSCALL_LL_E(x) \
  ((union { long long ll; long l[2]; }){ .ll = x }).l[0], \
  ((union { long long ll; long l[2]; }){ .ll = x }).l[1]
 diff -r -u musl-1.2.3.orig/src/env/__init_tls.c musl-1.2.3/src/env/__init_tls.c
---- src/env/__init_tls.c	2022-04-07 17:12:40.000000000 +0000
-+++ src/env/__init_tls.c	2023-04-07 12:07:38.677133193 +0000
+--- musl-1.2.4/src/env/__init_tls.c	2022-04-07 17:12:40.000000000 +0000
++++ musl-1.2.4/src/env/__init_tls.c	2023-04-07 12:07:38.677133193 +0000
 @@ -10,20 +10,19 @@
  #include "syscall.h"
  

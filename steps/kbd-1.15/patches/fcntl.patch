@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 Add missing fcntl header.
 
---- src/kbdrate.c	2021-07-22 22:35:53.671970814 +1000
-+++ src/kbdrate.c	2021-07-22 22:36:10.038096797 +1000
+--- kbd-1.15/src/kbdrate.c	2021-07-22 22:35:53.671970814 +1000
++++ kbd-1.15/src/kbdrate.c	2021-07-22 22:36:10.038096797 +1000
 @@ -94,6 +94,7 @@
  };
  

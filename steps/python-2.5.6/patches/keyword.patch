@@ -6,8 +6,8 @@ frozenset() is a feature only added in Python 2.5, but we are
 building Python 2.5, so we must bypass this logic. (It is not
 critical, so we can just remove it).
 
---- Lib/keyword.py	2022-10-11 12:51:13.050744758 +1100
-+++ Lib/keyword.py	2022-10-11 12:52:05.946372559 +1100
+--- Python-2.5.6/Lib/keyword.py	2022-10-11 12:51:13.050744758 +1100
++++ Python-2.5.6/Lib/keyword.py	2022-10-11 12:52:05.946372559 +1100
 @@ -10,7 +10,7 @@
      python Lib/keyword.py
  """

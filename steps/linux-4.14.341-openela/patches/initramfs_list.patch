@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Use gen_initramfs_list.sh from outside kernel source tree.
 
---- scripts/gen_initramfs_list.sh	2021-10-10 20:37:12.220231015 +1100
-+++ scripts/gen_initramfs_list.sh	2021-10-10 20:37:22.694296140 +1100
+--- linux-4.14.336/scripts/gen_initramfs_list.sh	2021-10-10 20:37:12.220231015 +1100
++++ linux-4.14.336/scripts/gen_initramfs_list.sh	2021-10-10 20:37:22.694296140 +1100
 @@ -310,7 +310,7 @@
  			fi
  		fi

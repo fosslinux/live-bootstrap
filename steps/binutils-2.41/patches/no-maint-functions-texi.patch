@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 Ensure functions.texi dependencies are satisfied.
 
---- libiberty/Makefile.in	2023-12-08 15:18:57.985791235 +1100
-+++ libiberty/Makefile.in	2023-12-08 15:19:15.391252344 +1100
+--- binutils-2.41/libiberty/Makefile.in	2023-12-08 15:18:57.985791235 +1100
++++ binutils-2.41/libiberty/Makefile.in	2023-12-08 15:19:15.391252344 +1100
 @@ -368,12 +368,12 @@
  libiberty.html : $(srcdir)/libiberty.texi $(TEXISRC)
  	$(MAKEINFO) --no-split --html -I$(srcdir) -o $@ $<

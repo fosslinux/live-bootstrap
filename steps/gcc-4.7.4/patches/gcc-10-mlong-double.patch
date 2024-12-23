@@ -15,8 +15,8 @@ makes more sense to simply add in support to GCC 4.7.
 
 diff --git gcc/config/i386/i386-c.c gcc/config/i386/i386-c.c
 index d00e0ba54b939..edd64ff7ae388 100644
---- gcc/config/i386/i386-c.c
-+++ gcc/config/i386/i386-c.c
+--- gcc-4.7.4/gcc/config/i386/i386-c.c
++++ gcc-4.7.4/gcc/config/i386/i386-c.c
 @@ -418,6 +418,9 @@
        builtin_define_std ("i386");
      }
@@ -29,8 +29,8 @@ index d00e0ba54b939..edd64ff7ae388 100644
  			       ix86_tune,
 diff --git gcc/config/i386/i386.c gcc/config/i386/i386.c
 index a6fc45b047a94..da931ee153745 100644
---- gcc/config/i386/i386.c
-+++ gcc/config/i386/i386.c
+--- gcc-4.7.4/gcc/config/i386/i386.c
++++ gcc-4.7.4/gcc/config/i386/i386.c
 @@ -2786,6 +2786,7 @@ ix86_target_string (HOST_WIDE_INT isa, int flags, const char *arch,
    static struct ix86_target_opts flag_opts[] =
    {
@@ -53,8 +53,8 @@ index a6fc45b047a94..da931ee153745 100644
    if (main_args_p)
 diff --git gcc/config/i386/i386.h gcc/config/i386/i386.h
 index 11f79e3f670af..3a41a43e308bf 100644
---- gcc/config/i386/i386.h
-+++ gcc/config/i386/i386.h
+--- gcc-4.7.4/gcc/config/i386/i386.h
++++ gcc-4.7.4/gcc/config/i386/i386.h
 @@ -671,9 +671,17 @@ enum target_cpu_default
  #define LONG_LONG_TYPE_SIZE 64
  #define FLOAT_TYPE_SIZE 32
@@ -77,8 +77,8 @@ index 11f79e3f670af..3a41a43e308bf 100644
  #define MAX_BITS_PER_WORD 64
 diff --git gcc/config/i386/i386.opt gcc/config/i386/i386.opt
 index e4f78f3ce50f3..6a389947d904e 100644
---- gcc/config/i386/i386.opt
-+++ gcc/config/i386/i386.opt
+--- gcc-4.7.4/gcc/config/i386/i386.opt
++++ gcc-4.7.4/gcc/config/i386/i386.opt
 @@ -86,6 +86,14 @@ m96bit-long-double
  Target RejectNegative Report InverseMask(128BIT_LONG_DOUBLE) Save
  sizeof(long double) is 12
@@ -98,7 +98,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-64-1.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..cf933796f8aea
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-64-1.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-64-1.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile } */
 +/* { dg-options "-O2 -mlong-double-64" } */
@@ -114,7 +114,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-64-2.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..ddf4fe656d099
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-64-2.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-64-2.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile { target *-*-linux* } } */
 +/* { dg-options "-O2 -mbionic" } */
@@ -130,7 +130,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-64-3.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..e748fab2edd3c
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-64-3.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-64-3.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile { target *-*-linux* } } */
 +/* { dg-options "-O2 -mandroid" } */
@@ -146,7 +146,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-64-4.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..d9c25aaec080c
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-64-4.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-64-4.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile } */
 +/* { dg-options "-O2 -mlong-double-80 -mlong-double-64" } */
@@ -162,7 +162,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-80-1.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..d3b75a0be21de
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-80-1.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-80-1.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile } */
 +/* { dg-options "-O2 -mlong-double-80" } */
@@ -178,7 +178,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-80-2.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..954dfd15d4271
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-80-2.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-80-2.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile { target *-*-linux* } } */
 +/* { dg-options "-O2 -mlong-double-80 -mbionic" } */
@@ -194,7 +194,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-80-3.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..e0e8365e32c4a
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-80-3.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-80-3.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile { target *-*-linux* } } */
 +/* { dg-options "-O2 -mlong-double-80 -mandroid" } */
@@ -210,7 +210,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-80-4.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..cac2d55bc166c
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-80-4.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-80-4.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile } */
 +/* { dg-options "-O2 -mlong-double-64 -mlong-double-80" } */
@@ -226,7 +226,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-80-5.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..4aa606fd1ba05
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-80-5.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-80-5.c
 @@ -0,0 +1,10 @@
 +/* { dg-do compile } */
 +/* { dg-options "-O2 -mlong-double-64" } */
@@ -242,7 +242,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-80-6.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..a395a265942c1
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-80-6.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-80-6.c
 @@ -0,0 +1,11 @@
 +/* { dg-do run } */
 +/* { dg-options "-O0 -mlong-double-64 -mfpmath=387" } */
@@ -259,7 +259,7 @@ diff --git gcc/testsuite/gcc.target/i386/long-double-80-7.c gcc/testsuite/gcc.ta
 new file mode 100644
 index 0000000000000..9b30fe8856786
 --- /dev/null
-+++ gcc/testsuite/gcc.target/i386/long-double-80-7.c
++++ gcc-4.7.4/gcc/testsuite/gcc.target/i386/long-double-80-7.c
 @@ -0,0 +1,13 @@
 +/* { dg-do run } */
 +/* { dg-options "-O0 -mlong-double-64 -mfpmath=sse" } */
@@ -276,8 +276,8 @@ index 0000000000000..9b30fe8856786
 +}
 diff --git libgcc/config/i386/t-linux libgcc/config/i386/t-linux
 index 29b4c22398346..4f47f7bfa59cf 100644
---- libgcc/config/i386/t-linux
-+++ libgcc/config/i386/t-linux
+--- gcc-4.7.4/libgcc/config/i386/t-linux
++++ gcc-4.7.4/libgcc/config/i386/t-linux
 @@ -2,3 +2,5 @@
  # Need to support TImode for x86.  Override the settings from
  # t-slibgcc-elf-ver and t-linux

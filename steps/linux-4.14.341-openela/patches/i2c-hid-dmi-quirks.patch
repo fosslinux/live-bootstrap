@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Name the union in i2c_hid_desc_override, to avoid unknown field error
 
---- drivers/hid/i2c-hid/i2c-hid-dmi-quirks.c.bak	2024-02-15 13:27:20.177877726 +0100
-+++ drivers/hid/i2c-hid/i2c-hid-dmi-quirks.c	2024-02-15 15:11:15.787482938 +0100
+--- linux-4.14.336/drivers/hid/i2c-hid/i2c-hid-dmi-quirks.c.bak	2024-02-15 13:27:20.177877726 +0100
++++ linux-4.14.336/drivers/hid/i2c-hid/i2c-hid-dmi-quirks.c	2024-02-15 15:11:15.787482938 +0100
 @@ -18,7 +18,7 @@
  	union {
  		struct i2c_hid_desc *i2c_hid_desc;

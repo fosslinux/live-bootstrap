@@ -6,8 +6,8 @@ mes libc does not have locale support...
 
 diff --git lib/sh/snprintf.c lib/sh/snprintf.c
 index 7669576..747aeba 100644
---- lib/sh/snprintf.c
-+++ lib/sh/snprintf.c
+--- bash-2.05b/lib/sh/snprintf.c
++++ bash-2.05b/lib/sh/snprintf.c
 @@ -376,7 +376,7 @@ static void xfree __P((void *));
  	    if ((p)->flags & PF_STAR_P) \
  	      (p)->precision = GETARG (int)

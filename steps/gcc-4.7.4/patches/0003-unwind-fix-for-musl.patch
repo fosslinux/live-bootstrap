@@ -18,8 +18,8 @@ Co-Authored-By: Szabolcs Nagy <szabolcs.nagy@arm.com>
 
 From-SVN: r222328
 
---- libgcc/unwind-dw2-fde-dip.c
-+++ libgcc/unwind-dw2-fde-dip.c
+--- gcc-4.7.4/libgcc/unwind-dw2-fde-dip.c
++++ gcc-4.7.4/libgcc/unwind-dw2-fde-dip.c
 @@ -53,6 +53,12 @@
  # define USE_PT_GNU_EH_FRAME
  #endif

@@ -10,8 +10,8 @@ These macros do not exist in GCC 4.7, so we add them in.
 (We could -D them in GCC 10, but this is a simpler unobtrusive
 solution, and is arguably more correct).
 
---- gcc/c-family/c-cppbuiltin.c	2023-01-25 16:56:44.122222376 +1100
-+++ gcc/c-family/c-cppbuiltin.c	2023-01-25 17:01:52.500855016 +1100
+--- gcc-4.7.4/gcc/c-family/c-cppbuiltin.c	2023-01-25 16:56:44.122222376 +1100
++++ gcc-4.7.4/gcc/c-family/c-cppbuiltin.c	2023-01-25 17:01:52.500855016 +1100
 @@ -850,6 +850,30 @@
      builtin_define_with_int_value ("__LIBGCC_TRAMPOLINE_SIZE__",
  				   TRAMPOLINE_SIZE);
