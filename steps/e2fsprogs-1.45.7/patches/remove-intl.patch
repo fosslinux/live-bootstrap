@@ -4,8 +4,8 @@
 
 Disable gettext, which we do not have at this time, along with pkg-config.
 
---- configure.ac	2022-05-18 15:12:53.633061872 +1000
-+++ configure.ac	2022-05-18 19:09:13.351790066 +1000
+--- e2fsprogs-1.45.7/configure.ac	2022-05-18 15:12:53.633061872 +1000
++++ e2fsprogs-1.45.7/configure.ac	2022-05-18 19:09:13.351790066 +1000
 @@ -860,20 +860,7 @@
  dnl
  MAKEFILE_LIBRARY=$srcdir/lib/Makefile.library
@@ -60,8 +60,8 @@ Disable gettext, which we do not have at this time, along with pkg-config.
  	AC_MSG_CHECKING([for systemd system unit dir])
  	systemd_system_unit_dir="${with_systemd_unit_dir}"
  	AS_IF([test -n "${systemd_system_unit_dir}"],
---- Makefile.in	2022-05-18 19:41:37.596959349 +1000
-+++ Makefile.in	2022-05-18 19:41:41.109050161 +1000
+--- e2fsprogs-1.45.7/Makefile.in	2022-05-18 19:41:37.596959349 +1000
++++ e2fsprogs-1.45.7/Makefile.in	2022-05-18 19:41:41.109050161 +1000
 @@ -20,7 +20,7 @@
  @ALL_CMT@EXT2FS_LIB_SUBDIR= lib/ext2fs
  

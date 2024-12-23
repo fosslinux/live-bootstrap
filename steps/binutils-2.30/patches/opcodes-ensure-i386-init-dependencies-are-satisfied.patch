@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 Ensure i386-init.h dependencies are satisfied.
 
---- opcodes/Makefile.am	2022-01-22 14:14:09.000000000 +0200
-+++ opcodes/Makefile.am	2022-09-13 21:09:04.353324699 +0300
+--- binutils-2.30/opcodes/Makefile.am	2022-01-22 14:14:09.000000000 +0200
++++ binutils-2.30/opcodes/Makefile.am	2022-09-13 21:09:04.353324699 +0300
 @@ -575,7 +575,7 @@ i386-gen.o: i386-gen.c i386-opc.h $(srcd
  $(srcdir)/i386-tbl.h: $(srcdir)/i386-init.h
  	@echo $@

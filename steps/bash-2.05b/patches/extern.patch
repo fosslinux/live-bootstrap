@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 tinycc's extern support is bad. i.e. these externs don't propagate through.
 
---- builtins/common.c	2021-01-15 21:32:56.938683418 +1100
-+++ builtins/common.c	2021-01-15 21:34:09.102153806 +1100
+--- bash-2.05b/builtins/common.c	2021-01-15 21:32:56.938683418 +1100
++++ bash-2.05b/builtins/common.c	2021-01-15 21:34:09.102153806 +1100
 @@ -46,6 +46,9 @@
  #include "../flags.h"
  #include "../jobs.h"

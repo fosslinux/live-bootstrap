@@ -7,8 +7,8 @@ We always assume that kernel doesn't have correct implementation and
 instead use function from gnulib with fix. That fixes reproducibility
 problem across different kernels.
 
---- ../gnulib-bb5bb43/m4/nanosleep.m4
-+++ ../gnulib-bb5bb43/m4/nanosleep.m4
+--- gnulib-bb5bb43/m4/nanosleep.m4
++++ gnulib-bb5bb43/m4/nanosleep.m4
 @@ -85,23 +85,9 @@ AC_DEFUN([gl_FUNC_NANOSLEEP],
              ts_sleep.tv_nsec = 1;
              #if HAVE_DECL_ALARM

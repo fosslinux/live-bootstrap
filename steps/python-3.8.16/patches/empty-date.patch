@@ -5,8 +5,8 @@ SPDX-License-Identifier: PSF-2.0
 When defined __DATE__ is in the format MMM DD YYYY. xx/xx/xx does
 not comply with this so the parser in Lib/platform.py fails on it.
 
---- Modules/getbuildinfo.c	2022-12-21 13:41:18.120573458 +1100
-+++ Modules/getbuildinfo.c	2022-12-21 13:41:30.399716652 +1100
+--- Python-3.8.16/Modules/getbuildinfo.c	2022-12-21 13:41:18.120573458 +1100
++++ Python-3.8.16/Modules/getbuildinfo.c	2022-12-21 13:41:30.399716652 +1100
 @@ -8,7 +8,7 @@
  #ifdef __DATE__
  #define DATE __DATE__

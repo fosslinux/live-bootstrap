@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 The tests/ subfolder is broken and useless unless we run `make test' which we
 don't.
 
---- Makefile.am	2021-06-13 09:50:21.775597435 +1000
-+++ Makefile.am	2021-06-13 09:50:10.900501284 +1000
+--- util-linux-2.19.1/Makefile.am	2021-06-13 09:50:21.775597435 +1000
++++ util-linux-2.19.1/Makefile.am	2021-06-13 09:50:10.900501284 +1000
 @@ -29,8 +29,7 @@
  	po \
  	schedutils \

@@ -8,8 +8,8 @@ which is not available when we are building Python 2.5.
 Sorting is absolutely unnessecary when generating defines for a
 header file so we can just remove it.
 
---- Lib/sre_constants.py	2004-08-25 12:22:30.000000000 +1000
-+++ Lib/sre_constants.py	2022-10-09 20:18:40.332233858 +1100
+--- Python-2.5.6/Lib/sre_constants.py	2004-08-25 12:22:30.000000000 +1000
++++ Python-2.5.6/Lib/sre_constants.py	2022-10-09 20:18:40.332233858 +1100
 @@ -219,7 +219,6 @@
  if __name__ == "__main__":
      def dump(f, d, prefix):

@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Remove dependency on gettext, because we don't have it at this stage
 of the build.
 
---- ./configure.ac
-+++ ./configure.ac
+--- coreutils-9.4/configure.ac
++++ coreutils-9.4/configure.ac
 @@ -624,8 +624,8 @@ AM_CONDITIONAL([CROSS_COMPILING], [test "$cross_compiling" = yes])
  
  # As long as "grep 'PRI[diouxX]' po/*.pot" reports matches in
@@ -18,8 +18,8 @@ of the build.
  
  # For a test of uniq: it uses the $LOCALE_FR envvar.
  gt_LOCALE_FR
---- ./Makefile.am
-+++ ./Makefile.am
+--- coreutils-9.4/Makefile.am
++++ coreutils-9.4/Makefile.am
 @@ -17,7 +17,7 @@
  
  ALL_RECURSIVE_TARGETS =

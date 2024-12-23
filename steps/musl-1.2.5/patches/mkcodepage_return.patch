@@ -1,0 +1,17 @@
+SPDX-FileCopyrightText: 2024 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: MIT
+(as per https://github.com/richfelker/musl-chartable-tools/issues/3)
+
+Inexplicable problem, where mkcodepage returns 3 instead of 0 on some inputs.
+Compilation error?
+
+--- musl-chartable-tools-78b213a868553b1154ee9627c96ff1f14a9a3b1b/iconv/mkcodepage.c	2024-12-21 15:32:02.441185726 +1100
++++ musl-chartable-tools-78b213a868553b1154ee9627c96ff1f14a9a3b1b/iconv/mkcodepage.c	2024-12-21 15:31:52.860186494 +1100
+@@ -63,4 +63,6 @@
+ 		}
+ 	}
+ 	fputs("\"\n\n", f);
++
++	return 0;
+ }

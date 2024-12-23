@@ -6,8 +6,8 @@ We don't actually want any of these things, which should really be hidden
 behind the ifdefs given here to disable them when they are not being
 used (as we do).
 
---- execute_cmd.c	2021-01-15 09:38:55.730307635 +1100
-+++ execute_cmd.c	2021-01-15 09:43:41.046896754 +1100
+--- bash-2.05b/execute_cmd.c	2021-01-15 09:38:55.730307635 +1100
++++ bash-2.05b/execute_cmd.c	2021-01-15 09:43:41.046896754 +1100
 @@ -286,12 +286,18 @@
      {
        if (currently_executing_command->type == cm_simple)

@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
 diff -r -u musl-1.1.24.orig/arch/i386/pthread_arch.h musl-1.1.24/arch/i386/pthread_arch.h
---- arch/i386/pthread_arch.h	2019-10-13 21:58:27.000000000 +0000
-+++ arch/i386/pthread_arch.h	2023-04-07 11:56:04.649119523 +0000
+--- musl-1.1.24/arch/i386/pthread_arch.h	2019-10-13 21:58:27.000000000 +0000
++++ musl-1.1.24/arch/i386/pthread_arch.h	2023-04-07 11:56:04.649119523 +0000
 @@ -1,8 +1,8 @@
 +extern pthread_t g_pthread;
 +
@@ -16,8 +16,8 @@ diff -r -u musl-1.1.24.orig/arch/i386/pthread_arch.h musl-1.1.24/arch/i386/pthre
  
  #define TP_ADJ(p) (p)
 diff -r -u musl-1.1.24.orig/src/env/__init_tls.c musl-1.1.24/src/env/__init_tls.c
---- src/env/__init_tls.c	2019-10-13 21:58:27.000000000 +0000
-+++ src/env/__init_tls.c	2023-04-07 11:56:43.565120289 +0000
+--- musl-1.1.24/src/env/__init_tls.c	2019-10-13 21:58:27.000000000 +0000
++++ musl-1.1.24/src/env/__init_tls.c	2023-04-07 11:56:43.565120289 +0000
 @@ -10,20 +10,19 @@
  #include "syscall.h"
  

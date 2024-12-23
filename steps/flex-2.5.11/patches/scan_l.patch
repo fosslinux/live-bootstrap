@@ -8,8 +8,8 @@ Comments are unsupported by our flex.
 
 diff --git scan.l scan.l
 index 18d0de8..c251a5e 100644
---- scan.l
-+++ scan.l
+--- flex-2.5.11/scan.l
++++ flex-2.5.11/scan.l
 @@ -335,8 +335,8 @@ LEXOPT		[aceknopr]
  
  

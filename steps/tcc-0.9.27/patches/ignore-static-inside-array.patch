@@ -26,8 +26,8 @@ add comment about above deficiency]
 
 diff --git tccgen.c tccgen.c
 index 7ed89ac..6ef40e4 100644
---- tccgen.c
-+++ tccgen.c
+--- tcc-0.9.27/tccgen.c
++++ tcc-0.9.27/tccgen.c
 @@ -4335,8 +4335,23 @@ static int post_type(CType *type, AttributeDef *ad, int storage, int td)
  	int saved_nocode_wanted = nocode_wanted;
          /* array definition */

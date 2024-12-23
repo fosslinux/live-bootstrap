@@ -6,8 +6,8 @@ MAXGROUPS constant was introduced in this upgrade. Hardcode it
 from a "normal" system. This seems particularly unproblematic
 if it is wrong, since it does next to nothing.
 
---- Lib/sre_constants.py	2022-12-20 12:05:01.176104156 +1100
-+++ Lib/sre_constants.py	2022-12-20 12:05:21.710376396 +1100
+--- Python-3.8.16/Lib/sre_constants.py	2022-12-20 12:05:01.176104156 +1100
++++ Python-3.8.16/Lib/sre_constants.py	2022-12-20 12:05:21.710376396 +1100
 @@ -15,7 +15,8 @@
  
  MAGIC = 20171005

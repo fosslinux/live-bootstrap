@@ -3,8 +3,8 @@ SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
 SPDX-License-Identifier: GPL-2.0-or-later
 
 uint64_t is not supported in tcc 0.9.27
---- lib/tempname.c     2002-12-01 10:40:32.000000000 +0000
-+++ lib/tempname.c     2022-06-22 20:57:37.449423973 +0100
+--- coreutils-5.0/lib/tempname.c     2002-12-01 10:40:32.000000000 +0000
++++ coreutils-5.0/lib/tempname.c     2022-06-22 20:57:37.449423973 +0100
 @@ -231,8 +231,8 @@
  {
    int len;

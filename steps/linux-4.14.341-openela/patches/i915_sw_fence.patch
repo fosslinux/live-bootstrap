@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Neuter the __i915_sw_fence_call define, which our gcc can't understand
 
---- drivers/gpu/drm/i915/i915_sw_fence.h.bak	2024-02-15 12:21:07.758127759 +0100
-+++ drivers/gpu/drm/i915/i915_sw_fence.h	2024-02-15 12:22:04.498124232 +0100
+--- linux-4.14.336/drivers/gpu/drm/i915/i915_sw_fence.h.bak	2024-02-15 12:21:07.758127759 +0100
++++ linux-4.14.336/drivers/gpu/drm/i915/i915_sw_fence.h	2024-02-15 12:22:04.498124232 +0100
 @@ -37,7 +37,7 @@
  
  typedef int (*i915_sw_fence_notify_t)(struct i915_sw_fence *,

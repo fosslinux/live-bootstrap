@@ -7,8 +7,8 @@ some reason, bash has a fixation on /dev/tty, even though we are not
 interactive. Removing this check entirely fixes this issue.
 
 diff --color -ru shell.c
---- shell.c	2002-07-02 01:27:11.000000000 +1000
-+++ shell.c	2021-01-16 11:23:36.407287955 +1100
+--- bash-2.05b/shell.c	2002-07-02 01:27:11.000000000 +1000
++++ bash-2.05b/shell.c	2021-01-16 11:23:36.407287955 +1100
 @@ -342,8 +342,6 @@
  #  endif
  #endif

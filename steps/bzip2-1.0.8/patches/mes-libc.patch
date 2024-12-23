@@ -9,8 +9,8 @@ It also does not have fch{own,mod}, which we don't care about in the bootstrap
 anyway, so we can null-op those calls.
 
 diff -r -N -U3 bzip2.c bzip2.c
---- bzip2.c	2019-07-13 18:50:05.000000000 +0100
-+++ bzip2.c	2021-01-14 14:11:40.160213521 +0000
+--- bzip2-1.0.8/bzip2.c	2019-07-13 18:50:05.000000000 +0100
++++ bzip2-1.0.8/bzip2.c	2021-01-14 14:11:40.160213521 +0000
 @@ -1051,12 +1051,9 @@
  {
  #  if BZ_UNIX
@@ -26,8 +26,8 @@ diff -r -N -U3 bzip2.c bzip2.c
  #  endif
  }
 diff -r -N -U3 utime.h utime.h
---- utime.h	1970-01-01 01:00:00.000000000 +0100
-+++ utime.h	2021-01-14 18:11:11.253825037 +0000
+--- bzip2-1.0.8/utime.h	1970-01-01 01:00:00.000000000 +0100
++++ bzip2-1.0.8/utime.h	2021-01-14 18:11:11.253825037 +0000
 @@ -0,0 +1,2 @@
 +#define fchown(filedes, owner, group) 0
 +#define fchmod(filedes, mode) 0

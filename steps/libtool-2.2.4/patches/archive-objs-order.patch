@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 Backported from upstream commit 74c8993c178a1386ea5e2363a01d919738402f30
 
---- libltdl/config/ltmain.m4sh	2008-05-04 22:09:52.000000000 +0300
-+++ libltdl/config/ltmain.m4sh	2022-05-14 14:24:15.506913405 +0300
+--- libtool-2.2.4/libltdl/config/ltmain.m4sh	2008-05-04 22:09:52.000000000 +0300
++++ libtool-2.2.4/libltdl/config/ltmain.m4sh	2022-05-14 14:24:15.506913405 +0300
 @@ -2226,7 +2226,7 @@
  	    darwin_file=
  	    darwin_files=
@@ -25,8 +25,8 @@ Backported from upstream commit 74c8993c178a1386ea5e2363a01d919738402f30
      done
  
      func_extract_archives_result="$my_oldobjs"
---- libltdl/config/ltmain.sh	2008-05-04 22:23:13.000000000 +0300
-+++ libltdl/config/ltmain.sh	2022-05-14 14:25:15.314266819 +0300
+--- libtool-2.2.4/libltdl/config/ltmain.sh	2008-05-04 22:23:13.000000000 +0300
++++ libtool-2.2.4/libltdl/config/ltmain.sh	2022-05-14 14:25:15.314266819 +0300
 @@ -2668,7 +2668,7 @@
  	    darwin_file=
  	    darwin_files=
@@ -45,8 +45,8 @@ Backported from upstream commit 74c8993c178a1386ea5e2363a01d919738402f30
      done
  
      func_extract_archives_result="$my_oldobjs"
---- libltdl/m4/libtool.m4	2008-05-04 19:34:02.000000000 +0300
-+++ libltdl/m4/libtool.m4	2022-05-14 14:24:15.507913411 +0300
+--- libtool-2.2.4/libltdl/m4/libtool.m4	2008-05-04 19:34:02.000000000 +0300
++++ libtool-2.2.4/libltdl/m4/libtool.m4	2022-05-14 14:24:15.507913411 +0300
 @@ -5864,20 +5864,20 @@
  	      _LT_TAGVAR(prelink_cmds, $1)='tpldir=Template.dir~
  		rm -rf $tpldir~

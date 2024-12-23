@@ -6,8 +6,8 @@ getdate.c is pre-compiled from getdate.y
 At this point we don't have bison yet and in any case getdate.y does not
 compile when generated with modern bison.
 
---- src/touch.c.orig	2021-03-13 18:16:05.344355958 +0000
-+++ src/touch.c	2021-03-13 18:16:26.204891355 +0000
+--- coreutils-5.0/src/touch.c.orig	2021-03-13 18:16:05.344355958 +0000
++++ coreutils-5.0/src/touch.c	2021-03-13 18:16:26.204891355 +0000
 @@ -306,7 +306,7 @@
  
  	case 'd':

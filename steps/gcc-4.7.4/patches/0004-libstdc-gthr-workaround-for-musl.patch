@@ -15,8 +15,8 @@ libstdc++ gthr workaround for musl
 
 From-SVN: r222329
 
---- libstdc++-v3/config/os/generic/os_defines.h
-+++ libstdc++-v3/config/os/generic/os_defines.h
+--- gcc-4.7.4/libstdc++-v3/config/os/generic/os_defines.h
++++ gcc-4.7.4/libstdc++-v3/config/os/generic/os_defines.h
 @@ -33,4 +33,9 @@
  // System-specific #define, typedefs, corrections, etc, go here.  This
  // file will come before all others.
@@ -27,8 +27,8 @@ From-SVN: r222329
 +#define _GLIBCXX_GTHREAD_USE_WEAK 0
 +
  #endif
---- libstdc++-v3/configure.host
-+++ libstdc++-v3/configure.host
+--- gcc-4.7.4/libstdc++-v3/configure.host
++++ gcc-4.7.4/libstdc++-v3/configure.host
 @@ -242,6 +242,9 @@ case "${host_os}" in
    freebsd*)
      os_include_dir="os/bsd/freebsd"

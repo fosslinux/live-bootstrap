@@ -5,8 +5,8 @@ SPDX-License-Identifier: LGPL-2.0-or-later
 static linking is the only typing of linking mes libc supports, so default to
 it.
 
---- libtcc.c	2021-01-14 08:25:30.774995301 +1100
-+++ libtcc.c	2021-01-14 08:26:37.594417450 +1100
+--- tcc-0.9.27/libtcc.c	2021-01-14 08:25:30.774995301 +1100
++++ tcc-0.9.27/libtcc.c	2021-01-14 08:26:37.594417450 +1100
 @@ -734,6 +734,7 @@
      ++nb_states;
  

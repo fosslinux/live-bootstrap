@@ -18,8 +18,8 @@ __LIBGCC_HAS_XF_MODE__ is not defined.
 
 diff --git libgcc/config/libbid/_dd_to_xf.c libgcc/config/libbid/_dd_to_xf.c
 index 5a2abbbb1f4..e4b12e8ac4f 100644
---- libgcc/config/libbid/_dd_to_xf.c
-+++ libgcc/config/libbid/_dd_to_xf.c
+--- gcc-10.4.0/libgcc/config/libbid/_dd_to_xf.c
++++ gcc-10.4.0/libgcc/config/libbid/_dd_to_xf.c
 @@ -25,6 +25,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #include "bid_functions.h"
  #include "bid_gcc_intrinsics.h"
@@ -35,8 +35,8 @@ index 5a2abbbb1f4..e4b12e8ac4f 100644
 +#endif
 diff --git libgcc/config/libbid/_sd_to_xf.c libgcc/config/libbid/_sd_to_xf.c
 index 9af09913684..288ccb25075 100644
---- libgcc/config/libbid/_sd_to_xf.c
-+++ libgcc/config/libbid/_sd_to_xf.c
+--- gcc-10.4.0/libgcc/config/libbid/_sd_to_xf.c
++++ gcc-10.4.0/libgcc/config/libbid/_sd_to_xf.c
 @@ -25,6 +25,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #include "bid_functions.h"
  #include "bid_gcc_intrinsics.h"
@@ -52,8 +52,8 @@ index 9af09913684..288ccb25075 100644
 +#endif
 diff --git libgcc/config/libbid/_td_to_xf.c libgcc/config/libbid/_td_to_xf.c
 index b0c76a71497..e990282162d 100644
---- libgcc/config/libbid/_td_to_xf.c
-+++ libgcc/config/libbid/_td_to_xf.c
+--- gcc-10.4.0/libgcc/config/libbid/_td_to_xf.c
++++ gcc-10.4.0/libgcc/config/libbid/_td_to_xf.c
 @@ -25,6 +25,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #include "bid_functions.h"
  #include "bid_gcc_intrinsics.h"
@@ -69,8 +69,8 @@ index b0c76a71497..e990282162d 100644
 +#endif
 diff --git libgcc/config/libbid/_xf_to_dd.c libgcc/config/libbid/_xf_to_dd.c
 index 9feb0f2c3d6..e3246a1c2e1 100644
---- libgcc/config/libbid/_xf_to_dd.c
-+++ libgcc/config/libbid/_xf_to_dd.c
+--- gcc-10.4.0/libgcc/config/libbid/_xf_to_dd.c
++++ gcc-10.4.0/libgcc/config/libbid/_xf_to_dd.c
 @@ -25,9 +25,11 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #include "bid_functions.h"
  #include "bid_gcc_intrinsics.h"
@@ -85,8 +85,8 @@ index 9feb0f2c3d6..e3246a1c2e1 100644
 +#endif
 diff --git libgcc/config/libbid/_xf_to_sd.c libgcc/config/libbid/_xf_to_sd.c
 index 7d46548af6c..9147e979182 100644
---- libgcc/config/libbid/_xf_to_sd.c
-+++ libgcc/config/libbid/_xf_to_sd.c
+--- gcc-10.4.0/libgcc/config/libbid/_xf_to_sd.c
++++ gcc-10.4.0/libgcc/config/libbid/_xf_to_sd.c
 @@ -25,9 +25,11 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #include "bid_functions.h"
  #include "bid_gcc_intrinsics.h"
@@ -101,8 +101,8 @@ index 7d46548af6c..9147e979182 100644
 +#endif
 diff --git libgcc/config/libbid/_xf_to_td.c libgcc/config/libbid/_xf_to_td.c
 index 07987fdcc3a..c8d102b0b7f 100644
---- libgcc/config/libbid/_xf_to_td.c
-+++ libgcc/config/libbid/_xf_to_td.c
+--- gcc-10.4.0/libgcc/config/libbid/_xf_to_td.c
++++ gcc-10.4.0/libgcc/config/libbid/_xf_to_td.c
 @@ -25,9 +25,11 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #include "bid_functions.h"
  #include "bid_gcc_intrinsics.h"

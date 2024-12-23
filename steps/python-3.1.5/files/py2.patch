@@ -9,8 +9,8 @@ files.
 
 We only apply this to the first build.
 
---- Tools/unicode/makeunicodedata.py	2012-04-10 09:25:37.000000000 +1000
-+++ Tools/unicode/makeunicodedata.py	2022-07-13 14:13:37.864821008 +1000
+--- Python-3.1.5/Tools/unicode/makeunicodedata.py	2012-04-10 09:25:37.000000000 +1000
++++ Python-3.1.5/Tools/unicode/makeunicodedata.py	2022-07-13 14:13:37.864821008 +1000
 @@ -67,7 +67,7 @@
  
  def maketables(trace=0):
@@ -448,8 +448,8 @@ We only apply this to the first build.
      if __debug__:
          # exhaustively verify that the decomposition is correct
          mask = ~((~0) << shift) # i.e., low-bit mask of shift bits
---- Lib/token.py	2012-04-10 09:25:36.000000000 +1000
-+++ Lib/token.py	2022-07-13 14:13:37.893821468 +1000
+--- Python-3.1.5/Lib/token.py	2012-04-10 09:25:36.000000000 +1000
++++ Python-3.1.5/Lib/token.py	2022-07-13 14:13:37.893821468 +1000
 @@ -93,11 +93,7 @@
      outFileName = "Lib/token.py"
      if len(args) > 1:

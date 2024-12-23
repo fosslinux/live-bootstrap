@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-only
 We do not use the _shipped version of the keymap generated using loadkeys.
 For some reason the makefile needs to be patched for this to work...
 
---- drivers/tty/vt/Makefile	2021-07-27 21:11:24.743104498 +1000
-+++ drivers/tty/vt/Makefile	2021-07-27 21:11:34.261186200 +1000
+--- linux-4.14.336/drivers/tty/vt/Makefile	2021-07-27 21:11:24.743104498 +1000
++++ linux-4.14.336/drivers/tty/vt/Makefile	2021-07-27 21:11:34.261186200 +1000
 @@ -22,7 +22,7 @@
  # Uncomment if you're changing the keymap and have an appropriate
  # loadkeys version for the map. By default, we'll use the shipped

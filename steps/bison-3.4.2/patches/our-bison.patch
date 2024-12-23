@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Why do they insist on using themselves to bootstrap themselves? It doesn't
 exist...
 
---- Makefile.am	2021-04-15 21:29:36.596205032 +1000
-+++ Makefile.am	2021-04-15 21:30:00.367365897 +1000
+--- bison-3.4.2/Makefile.am	2021-04-15 21:29:36.596205032 +1000
++++ bison-3.4.2/Makefile.am	2021-04-15 21:30:00.367365897 +1000
 @@ -39,7 +39,7 @@
  ## Running the bison from this tarball.  To generate our own parser,
  ## but also to run the tests.  Of course, you ought to keep a sane

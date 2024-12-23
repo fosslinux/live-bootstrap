@@ -7,8 +7,8 @@ tcc does not seem to support stmxcsr and ldmxcsr.
 Remove those. This might break float exception handling but we
 are unlikely to need it.
 diff -U3 -r src/fenv/i386/fenv.s src/fenv/i386/fenv.s
---- src/fenv/i386/fenv.s	2019-10-13 22:58:27.000000000 +0100
-+++ src/fenv/i386/fenv.s	2021-02-01 00:27:04.924135707 +0000
+--- musl-1.1.24/src/fenv/i386/fenv.s	2019-10-13 22:58:27.000000000 +0100
++++ musl-1.1.24/src/fenv/i386/fenv.s	2021-02-01 00:27:04.924135707 +0000
 @@ -17,7 +17,6 @@
  	jz 1f
  	fnclex

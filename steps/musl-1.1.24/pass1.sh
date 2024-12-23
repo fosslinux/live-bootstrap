@@ -5,6 +5,13 @@
 src_prepare() {
     default
 
+    # meslibc is insufficient to regenerate src/ctype or src/iconv
+    # disable everything using a generated header
+    patch -Np1 -i ../../files/disable_ctype_headers.patch
+    rm src/ctype/iswalpha.c src/ctype/iswalnum.c src/ctype/iswctype.c \
+        src/ctype/towctrans.c
+    rm include/iconv.h src/locale/iconv.c src/locale/iconv_close.c
+
     # tcc does not support complex types
     rm -rf src/complex
 

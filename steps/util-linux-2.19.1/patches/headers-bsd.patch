@@ -4,8 +4,8 @@ SPDX-License-Identifier: BSD-4-Clause
 
 headers.patch but for files licensed BSD.
 
---- fdisk/fdiskbsdlabel.c	2021-06-12 16:09:49.519140837 +1000
-+++ fdisk/fdiskbsdlabel.c	2021-06-12 16:10:00.875220602 +1000
+--- util-linux-2.19.1/fdisk/fdiskbsdlabel.c	2021-06-12 16:09:49.519140837 +1000
++++ util-linux-2.19.1/fdisk/fdiskbsdlabel.c	2021-06-12 16:10:00.875220602 +1000
 @@ -53,6 +53,7 @@
  #include "nls.h"
  
@@ -14,8 +14,8 @@ headers.patch but for files licensed BSD.
  
  #include "common.h"
  #include "fdisk.h"
---- login-utils/ttymsg.c	2021-06-12 16:11:45.911958381 +1000
-+++ login-utils/ttymsg.c	2021-06-12 19:09:30.108310127 +1000
+--- util-linux-2.19.1/login-utils/ttymsg.c	2021-06-12 16:11:45.911958381 +1000
++++ util-linux-2.19.1/login-utils/ttymsg.c	2021-06-12 19:09:30.108310127 +1000
 @@ -51,6 +51,7 @@
  #include <stdio.h>
  #include <string.h>

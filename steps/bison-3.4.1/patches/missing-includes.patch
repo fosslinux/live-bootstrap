@@ -10,8 +10,8 @@ Date:   Thu Mar 26 18:02:01 2020 +0100
 
 diff --git src/scan-code.l src/scan-code.l
 index 73a3b2d..f348b20 100644
---- src/scan-code.l
-+++ src/scan-code.l
+--- bison-3.4.1/src/scan-code.l
++++ bison-3.4.1/src/scan-code.l
 @@ -21,6 +21,7 @@
  %option prefix="code_" outfile="lex.yy.c"
  
@@ -30,8 +30,8 @@ index 73a3b2d..f348b20 100644
  #include <src/flex-scanner.h>
 diff --git src/scan-gram.l src/scan-gram.l
 index 66a8caa..efa391a 100644
---- src/scan-gram.l
-+++ src/scan-gram.l
+--- bison-3.4.1/src/scan-gram.l
++++ bison-3.4.1/src/scan-gram.l
 @@ -21,6 +21,7 @@
  %option prefix="gram_" outfile="lex.yy.c"
  
@@ -50,8 +50,8 @@ index 66a8caa..efa391a 100644
  #include <src/flex-scanner.h>
 diff --git src/scan-skel.l src/scan-skel.l
 index 487e9f5..19f4832 100644
---- src/scan-skel.l
-+++ src/scan-skel.l
+--- bison-3.4.1/src/scan-skel.l
++++ bison-3.4.1/src/scan-skel.l
 @@ -21,6 +21,7 @@
  %option prefix="skel_" outfile="lex.yy.c"
  

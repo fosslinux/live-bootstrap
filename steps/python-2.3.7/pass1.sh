@@ -18,7 +18,7 @@ src_prepare() {
     grep generated -r . -l | grep encodings | xargs rm
 
     # Disable unicode
-    patch -Np0 -i disable-unicode.patch
+    patch -Np1 -i disable-unicode.patch
 
     # Regenerate sre_constants.h
     rm Modules/sre_constants.h

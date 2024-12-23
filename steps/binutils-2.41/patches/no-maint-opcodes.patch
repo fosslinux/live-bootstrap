@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 Ensure i386-tbl.h dependencies are satisfied.
 
---- opcodes/Makefile.am	2023-12-08 17:13:05.669136957 +1100
-+++ opcodes/Makefile.am	2023-12-08 17:13:18.410480026 +1100
+--- binutils-2.41/opcodes/Makefile.am	2023-12-08 17:13:05.669136957 +1100
++++ binutils-2.41/opcodes/Makefile.am	2023-12-08 17:13:18.410480026 +1100
 @@ -540,7 +540,7 @@
  # i386-gen will generate all headers in one go.  Use a pattern rule to properly
  # express this, with the inner dash ('-') arbitrarily chosen to be the stem.
