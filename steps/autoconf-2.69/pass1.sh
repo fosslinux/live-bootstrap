@@ -23,4 +23,8 @@ src_compile() {
 
 src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
+    ln -s autoconf-2.69 "${DESTDIR}${PREFIX}/bin/autoconf"
+    ln -s autoheader-2.69 "${DESTDIR}${PREFIX}/bin/autoheader"
+    ln -s autom4te-2.69 "${DESTDIR}${PREFIX}/bin/autom4te"
+    ln -s autoreconf-2.69 "${DESTDIR}${PREFIX}/bin/autoreconf"
 }
