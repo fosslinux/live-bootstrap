@@ -121,8 +121,6 @@ do_file() {
             echo "${uri}: ERROR! Must have tarball name if no http source."
             exit 1
         fi
-        # Heuristic: all tarball filenames start with t
-        suffix="t${tarball#*.t}"
         tarball="${dest}/${tarball}"
 
         # Check if tarball already generated + matches checksum
