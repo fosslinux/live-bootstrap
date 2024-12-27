@@ -1,3 +1,2 @@
 https://mirrors.kernel.org/gnu/findutils/findutils-4.2.33.tar.gz 813cd9405aceec5cfecbe96400d01e90ddad7b512d3034487176ce5258ab0f78
-https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-8e128e.tar.gz 0cfbf866bc39c31f25fa0e56af1e56c5e5c92fc1e5d51242ebafef7ea211f3d5
-https://files.bootstrapping.world/gnulib-8e128e.tar.gz 0cfbf866bc39c31f25fa0e56af1e56c5e5c92fc1e5d51242ebafef7ea211f3d5
+git://git.savannah.gnu.org/gnulib.git~8e128e _ 0cfbf866bc39c31f25fa0e56af1e56c5e5c92fc1e5d51242ebafef7ea211f3d5 gnulib-8e128e.tar.gz

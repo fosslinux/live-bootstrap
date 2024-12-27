@@ -10,9 +10,11 @@ This file contains all code required to generate the boot image for live-bootstr
 
 import hashlib
 import os
+import random
 import shutil
 import tarfile
 import traceback
+
 import requests
 
 # pylint: disable=too-many-instance-attributes
@@ -24,11 +26,13 @@ class Generator():
     git_dir = os.path.join(os.path.dirname(os.path.join(__file__)), '..')
     distfiles_dir = os.path.join(git_dir, 'distfiles')
 
-    def __init__(self, arch, external_sources, early_preseed, repo_path):
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
+    def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors):
         self.arch = arch
         self.early_preseed = early_preseed
         self.external_sources = external_sources
         self.repo_path = repo_path
+        self.mirrors = mirrors
         self.source_manifest = self.get_source_manifest(not self.external_sources)
         self.early_source_manifest = self.get_source_manifest(True)
         self.target_dir = None
@@ -278,8 +282,7 @@ actual:   {readable_hash}\n\
 When in doubt, try deleting the file in question -- it will be downloaded again when running \
 this script the next time")
 
-    @staticmethod
-    def download_file(url, directory, file_name, silent=False):
+    def download_file(self, url, directory, file_name, silent=False):
         """
         Download a single source archive.
         """
@@ -297,14 +300,33 @@ this script the next time")
         if not os.path.isfile(abs_file_name):
             if not silent:
                 print(f"Downloading: {file_name}")
-            response = requests.get(url, allow_redirects=True, stream=True,
-                    headers=headers, timeout=20)
-            if response.status_code == 200:
-                with open(abs_file_name, 'wb') as target_file:
-                    target_file.write(response.raw.read())
+
+            def do_download(source):
+                response = requests.get(source, allow_redirects=True, stream=True,
+                        headers=headers, timeout=20)
+                if response.status_code == 200:
+                    with open(abs_file_name, 'wb') as target_file:
+                        target_file.write(response.raw.read())
+                    return True
+                print(f"Download failed from {option}: {response.status_code} {response.reason}")
+                return False
+
+            done = False
+            if self.mirrors:
+                options = [f"{x}/{file_name}" for x in self.mirrors]
             else:
-                raise requests.HTTPError("Download failed: HTTP " +
-                    str(response.status_code) + " " + response.reason)
+                options = []
+            random.shuffle(options)
+            for option in options:
+                if do_download(option):
+                    done = True
+                    break
+
+            if not done:
+                if url == "_" or not do_download(url):
+                    raise requests.RequestException(f"Unable to download {url} from ",
+                                                    "any mirror or original")
+
         return abs_file_name
 
     def get_packages(self):
@@ -343,6 +365,9 @@ this script the next time")
                     with open(sourcef, "r", encoding="utf_8") as sources:
                         for source in sources.readlines():
                             source = source.strip().split(" ")
+
+                            if source[0].startswith("git://"):
+                                source = source[1:]
 
                             if len(source) > 2:
                                 file_name = source[2]

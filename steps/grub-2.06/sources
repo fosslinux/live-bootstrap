@@ -1,6 +1,5 @@
 https://mirrors.kernel.org/gnu/grub/grub-2.06.tar.xz b79ea44af91b93d17cd3fe80bdae6ed43770678a9a5ae192ccea803ebb657ee1
-https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-d271f86.tar.gz 31d69d3d251e39135b5194ddc6f897910d344059f7494d96a739aecbf7ac2b66
-https://files.bootstrapping.world/gnulib-d271f86.tar.gz 31d69d3d251e39135b5194ddc6f897910d344059f7494d96a739aecbf7ac2b66
+git://git.savannah.gnu.org/gnulib.git~d271f86 _ 31d69d3d251e39135b5194ddc6f897910d344059f7494d96a739aecbf7ac2b66 gnulib-d271f86.tar.gz
 http://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt 68dfc414d28257b9b5d6ddbb8b466c768c00ebdf6cbf7784364a9b6cad55ee8f UnicodeData-9.0.0.txt
 http://ftp.unicode.org/Public/9.0.0/ucd/PropList.txt f413ea8dbd3858de72f3148b47dd0586019761357d1481e3b65f3a025bc27f82 PropList-9.0.0.txt
 http://ftp.unicode.org/Public/9.0.0/ucd/DerivedCoreProperties.txt 6662c7e30b572df5d948c092692f52bcc79ab36d49a063a73d6435042db6fb3b DerivedCoreProperties-9.0.0.txt
