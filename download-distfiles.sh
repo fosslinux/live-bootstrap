@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Optional arguments: Mirrors
+
 download_source() {
     local distfiles="${1}"
     local url="${2}"
@@ -15,6 +17,10 @@ download_source() {
     local dest_path="${distfiles}/${fname}"
     if ! [ -e "${dest_path}" ]; then
         echo "Downloading ${fname}"
+        if [ "${mirrors_len}" -ne 0 ]; then
+            local mirror_ix="$((RANDOM % mirrors_len))"
+            url="${mirrors[${mirror_ix}]}/${fname}"
+        fi
         curl --fail --location "${url}" --output "${dest_path}" || true
     fi
 }
@@ -32,6 +38,9 @@ check_source() {
 }
 
 set -e
+
+mirrors=( "$@" )
+mirrors_len="$#"
 
 cd "$(dirname "$(readlink -f "$0")")"
 mkdir -p distfiles
