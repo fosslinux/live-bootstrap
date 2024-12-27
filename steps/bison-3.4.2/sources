@@ -1,3 +1,2 @@
 http://mirrors.kernel.org/gnu/bison/bison-3.4.2.tar.xz 27d05534699735dc69e86add5b808d6cb35900ad3fd63fa82e3eb644336abfa0
-http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-672663a.tar.gz 8cced51f89a950472473856f86e88f5daf97a2347756125ccdc8ee907deec570
-https://files.bootstrapping.world/gnulib-672663a.tar.gz 8cced51f89a950472473856f86e88f5daf97a2347756125ccdc8ee907deec570
+git://git.savannah.gnu.org/gnulib.git~672663a _ 8cced51f89a950472473856f86e88f5daf97a2347756125ccdc8ee907deec570 gnulib-672663a.tar.gz

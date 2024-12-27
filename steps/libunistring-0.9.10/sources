@@ -1,3 +1,2 @@
 https://mirrors.kernel.org/gnu/libunistring/libunistring-0.9.10.tar.xz eb8fb2c3e4b6e2d336608377050892b54c3c983b646c561836550863003c05d7
-https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-52a06cb3.tar.gz 009989b81c0bebc5f6550636ed653fbcb237dafc2af5c706f3522087ca571e4d
-https://files.bootstrapping.world/gnulib-52a06cb3.tar.gz 009989b81c0bebc5f6550636ed653fbcb237dafc2af5c706f3522087ca571e4d
+git://git.savannah.gnu.org/gnulib.git~52a06cb3 _ 009989b81c0bebc5f6550636ed653fbcb237dafc2af5c706f3522087ca571e4d gnulib-52a06cb3.tar.gz

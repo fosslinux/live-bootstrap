@@ -50,6 +50,12 @@ def create_configuration_file(args):
             config.write("KERNEL_BOOTSTRAP=False\n")
         config.write(f"BUILD_KERNELS={args.update_checksums or args.build_kernels}\n")
         config.write(f"CONFIGURATOR={args.configurator}\n")
+        if not args.external_sources:
+            if args.mirrors:
+                config.write(f"MIRRORS=\"{" ".join(args.mirrors)}\"\n")
+                config.write(f"MIRRORS_LEN={len(args.mirrors)}\n")
+            else:
+                config.write("MIRRORS_LEN=0\n")
 
 # pylint: disable=too-many-statements,too-many-branches
 def main():
@@ -94,6 +100,9 @@ def main():
     parser.add_argument("--configurator",
                         help="Run the interactive configurator",
                         action="store_true")
+    parser.add_argument("-m", "--mirrors",
+                        help="Mirrors to download distfiles from",
+                        nargs='+')
     parser.add_argument("-r", "--repo",
                         help="Path to prebuilt binary packages", nargs=None)
     parser.add_argument("--early-preseed",
@@ -187,7 +196,8 @@ def main():
     generator = Generator(arch=args.arch,
                           external_sources=args.external_sources,
                           repo_path=args.repo,
-                          early_preseed=args.early_preseed)
+                          early_preseed=args.early_preseed,
+                          mirrors=args.mirrors)
 
     bootstrap(args, generator, target, args.target_size)
 

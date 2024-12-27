@@ -1,3 +1,2 @@
 https://mirrors.kernel.org/gnu/grep/grep-3.7.tar.xz 5c10da312460aec721984d5d83246d24520ec438dd48d7ab5a05dbc0d6d6823c
-http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-8f4538a5.tar.gz e207c0bb72093c3a72dde302fcfaa1dbda12a62172d47b73565883a92209ebab
-https://files.bootstrapping.world/gnulib-8f4538a5.tar.gz e207c0bb72093c3a72dde302fcfaa1dbda12a62172d47b73565883a92209ebab
+git://git.savannah.gnu.org/gnulib.git~8f4538a5 _ e207c0bb72093c3a72dde302fcfaa1dbda12a62172d47b73565883a92209ebab gnulib-8f4538a5.tar.gz
