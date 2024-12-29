@@ -8,7 +8,6 @@ src_prepare() {
     default
 
     touch config.h
-    rm parse.c parse.h scan.c skel.c
 }
 
 src_compile() {

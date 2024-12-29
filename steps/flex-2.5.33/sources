@@ -1,1 +1,1 @@
-http://ftp-tel.sjtu.edu.cn/sites/ftp.openpkg.org/sources/DST/flex/flex-2.5.33.tar.gz c40385e142989c91989413f3c5a31282b2ffdca16b69cd3ecfde537b8a474921
+git://github.com/westes/flex~e6f147b7a5f2ec2dc862dc9d30b3734b9555a1ea https://github.com/westes/flex/archive/e6f147b7a5f2ec2dc862dc9d30b3734b9555a1ea.tar.gz baec69069ff58b7cdbe0103ffc16f29d4857428c29efcdf685c574d8300fd838
