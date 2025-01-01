@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 reshi <reshil@reshlet.com>
+# SPDX-FileCopyrightText: 2025 reshi <reshi@reshlet.com>
 # SPDX-License-Identifier: CC0-1.0
 
 # We need a handwave to make ubuntu happy in order to run bwrap
