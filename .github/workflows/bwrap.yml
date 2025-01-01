@@ -26,7 +26,7 @@ jobs:
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
       - name: Work around Ubuntu 24.04 bubblewrap bug
-        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
+        run: bash .github/workflows/ubuntu_bwrap_fix.sh
       - name: Query cache for sources
         id: cache
         uses: actions/cache/restore@v4
@@ -75,7 +75,7 @@ jobs:
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
       - name: Work around Ubuntu 24.04 bubblewrap bug
-        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
+        run: bash .github/workflows/ubuntu_bwrap_fix.sh
       - name: Get pass1_image
         uses: actions/download-artifact@v4
         with:
@@ -130,7 +130,7 @@ jobs:
           # against a commit != HEAD with depth=1, it errors out.
           fetch-depth: 0
       - name: Work around Ubuntu 24.04 bubblewrap bug
-        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
+        run: bash .github/workflows/ubuntu_bwrap_fix.sh
       - name: Get pass2_image
         uses: actions/download-artifact@v4
         with:
