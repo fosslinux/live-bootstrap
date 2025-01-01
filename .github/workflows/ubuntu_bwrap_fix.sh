@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # SPDX-FileCopyrightText: 2025 reshi <reshi@reshlet.com>
 # SPDX-License-Identifier: CC0-1.0
 
