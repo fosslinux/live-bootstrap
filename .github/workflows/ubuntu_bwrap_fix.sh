@@ -5,8 +5,8 @@
 # see https://etbe.coker.com.au/2024/04/24/ubuntu-24-04-bubblewrap/
 
 # But, in some cases, it seems that 'ubuntu-latest' does not always 
-#  'resolve' to 20.04, so we do some hand waves to check for
-#  os version >= 20.04 (otherwise the build can die when
+#  'resolve' to 24.04, so we do some hand waves to check for
+#  os version >= 24.04 (otherwise the build can die when
 #  trying to apply bwrap.apparmor)
 
 # Figure out current ubuntu version
