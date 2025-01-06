@@ -30,7 +30,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: shellcheck
-        run: shellcheck steps/helpers.sh download-distfiles.sh .github/workflows/ubuntu_bwrap_fix.sh
+        run: shellcheck steps/helpers.sh download-distfiles.sh
 
   reuse:
     name: Lint reuse information
