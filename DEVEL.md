@@ -66,7 +66,8 @@ libraries that are compiled and installed.
 ## Conventions
 
 - **Patches:**
-  - all patches are `-p0`
+  - all patches are relative to the directory where the tarball is extracted
+    - thus, no patch lines for `a/file.c`, but `coreutils-9.4/file.c`
   - all patches begin with a patch header
 - **parts.rst:**
   - all packages are explained in `parts.rst`

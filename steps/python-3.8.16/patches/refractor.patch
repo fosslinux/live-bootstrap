@@ -5,8 +5,8 @@ SPDX-License-Identifier: PSF-2.0
 I'm not sure what was going on here when this was written, or how
 it ever worked! But this small simple fix works 0.0
 
---- Lib/sre_constants.py	2022-12-20 18:30:21.883561534 +1100
-+++ Lib/sre_constants.py	2022-12-20 18:31:23.209190748 +1100
+--- Python-3.8.16/Lib/sre_constants.py	2022-12-20 18:30:21.883561534 +1100
++++ Python-3.8.16/Lib/sre_constants.py	2022-12-20 18:31:23.209190748 +1100
 @@ -56,6 +56,7 @@
  class _NamedIntConstant(int):
      def __new__(cls, value, name):

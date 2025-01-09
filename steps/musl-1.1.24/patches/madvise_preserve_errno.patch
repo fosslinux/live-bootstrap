@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2023 Richard Masters <grick23@gmail.com>
 # SPDX-License-Identifier: MIT
 diff -r -u musl-1.1.24.orig/src/malloc/malloc.c musl-1.1.24/src/malloc/malloc.c
---- src/malloc/malloc.c	2019-10-13 21:58:27.000000000 +0000
-+++ src/malloc/malloc.c	2023-12-22 23:18:21.088570834 +0000
+--- musl-1.1.24/src/malloc/malloc.c	2019-10-13 21:58:27.000000000 +0000
++++ musl-1.1.24/src/malloc/malloc.c	2023-12-22 23:18:21.088570834 +0000
 @@ -496,7 +496,9 @@
  		uintptr_t a = (uintptr_t)self + SIZE_ALIGN+PAGE_SIZE-1 & -PAGE_SIZE;
  		uintptr_t b = (uintptr_t)next - SIZE_ALIGN & -PAGE_SIZE;

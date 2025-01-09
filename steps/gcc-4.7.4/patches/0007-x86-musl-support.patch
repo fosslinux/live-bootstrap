@@ -15,8 +15,8 @@ x86 musl support
 
 From-SVN: r223218
 
---- gcc/config/i386/linux.h
-+++ gcc/config/i386/linux.h
+--- gcc-4.7.4/gcc/config/i386/linux.h
++++ gcc-4.7.4/gcc/config/i386/linux.h
 @@ -22,3 +22,6 @@ along with GCC; see the file COPYING3.  If not see
  
  #define GNU_USER_LINK_EMULATION "elf_i386"
@@ -24,8 +24,8 @@ From-SVN: r223218
 +
 +#undef MUSL_DYNAMIC_LINKER
 +#define MUSL_DYNAMIC_LINKER "/lib/ld-musl-i386.so.1"
---- gcc/config/i386/linux64.h
-+++ gcc/config/i386/linux64.h
+--- gcc-4.7.4/gcc/config/i386/linux64.h
++++ gcc-4.7.4/gcc/config/i386/linux64.h
 @@ -31,3 +31,10 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
  #define GLIBC_DYNAMIC_LINKER32 "/lib/ld-linux.so.2"
  #define GLIBC_DYNAMIC_LINKER64 "/lib64/ld-linux-x86-64.so.2"

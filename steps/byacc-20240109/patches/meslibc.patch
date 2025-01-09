@@ -9,8 +9,8 @@ License note: Berkeley Yacc is in the public domain, but it's linked with
 meslibc, which is GPL-3.0-or-later, so we apply that license here too.
 
 diff -ru ../byacc-20240109.bak/main.c ./main.c
---- ../byacc-20240109.bak/main.c	2024-04-14 16:06:09.646465507 +0200
-+++ ./main.c	2024-04-14 20:41:56.227083399 +0200
+--- byacc-20240109/main.c	2024-04-14 16:06:09.646465507 +0200
++++ byacc-20240109/main.c	2024-04-14 20:41:56.227083399 +0200
 @@ -788,7 +788,7 @@
  	(void)umask(save_umask);
      }
@@ -21,8 +21,8 @@ diff -ru ../byacc-20240109.bak/main.c ./main.c
  
      if (result == 0)
 diff -ru ../byacc-20240109.bak/output.c ./output.c
---- ../byacc-20240109.bak/output.c	2024-04-14 16:06:09.646465507 +0200
-+++ ./output.c	2024-04-14 16:06:24.636465897 +0200
+--- byacc-20240109/output.c	2024-04-14 16:06:09.646465507 +0200
++++ byacc-20240109/output.c	2024-04-14 16:06:24.636465897 +0200
 @@ -1289,7 +1289,7 @@
  	{
  	    if (union_file != 0)
@@ -51,8 +51,8 @@ diff -ru ../byacc-20240109.bak/output.c ./output.c
  	return;
  
 diff -ru ../byacc-20240109.bak/reader.c ./reader.c
---- ../byacc-20240109.bak/reader.c	2024-04-14 16:06:09.646465507 +0200
-+++ ./reader.c	2024-04-14 20:40:58.387082748 +0200
+--- byacc-20240109/reader.c	2024-04-14 16:06:09.646465507 +0200
++++ byacc-20240109/reader.c	2024-04-14 20:40:58.387082748 +0200
 @@ -70,7 +70,7 @@
      char *line_data;	/* saved input-line */
      size_t line_used;	/* position within saved input-line */

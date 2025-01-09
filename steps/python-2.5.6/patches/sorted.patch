@@ -8,8 +8,8 @@ We cannot use .sort(), as it doesn't support the key= parameter.
 Instead we just use a basic custom selection sort to sort it ourselves
 using a custom key.
 
---- Tools/compiler/astgen.py.bak	2022-07-11 09:24:59.600238862 +1000
-+++ Tools/compiler/astgen.py	2022-07-11 09:32:25.814974174 +1000
+--- Python-2.5.6/Tools/compiler/astgen.py.bak	2022-07-11 09:24:59.600238862 +1000
++++ Python-2.5.6/Tools/compiler/astgen.py	2022-07-11 09:32:25.814974174 +1000
 @@ -215,7 +215,15 @@
              # some extra code for a Node's __init__ method
              name = mo.group(1)

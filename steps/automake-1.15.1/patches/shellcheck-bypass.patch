@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 Fixes configure script to work with older bash
 
 
---- configure.ac.bak	2023-03-08 14:34:57.009268432 +1100
-+++ configure.ac	2023-03-08 14:35:27.947964581 +1100
+--- automake-1.15.1/configure.ac.bak	2023-03-08 14:34:57.009268432 +1100
++++ automake-1.15.1/configure.ac	2023-03-08 14:35:27.947964581 +1100
 @@ -272,14 +272,6 @@
        [], [am_score=1; break])
  

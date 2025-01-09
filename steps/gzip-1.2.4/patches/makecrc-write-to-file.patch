@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 Modify makecrc so that it outputs C code to a file that
 can be appended to util.c
 
---- sample/makecrc.c
-+++ sample/makecrc.c
+--- gzip-1.2.4/sample/makecrc.c
++++ gzip-1.2.4/sample/makecrc.c
 @@ -47,7 +47,9 @@ main()
      e |= 1L << (31 - p[i]);
  

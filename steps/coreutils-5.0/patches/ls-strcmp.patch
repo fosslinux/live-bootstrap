@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 strcoll() does not exist in mes libc, change it to strcmp.
 
---- src/ls.c
-+++ src/ls.c
+--- coreutils-5.0/src/ls.c
++++ coreutils-5.0/src/ls.c
 @@ -2597,7 +2597,7 @@ xstrcoll (char const *a, char const *b)
  {
    int diff;

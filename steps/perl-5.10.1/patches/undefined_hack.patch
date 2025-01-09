@@ -5,8 +5,8 @@ SPDX-License-Identifier: Artistic-1.0-Perl
 There are a bunch of aliases that perl's build system somehow makes but
 I'm not sure how to appropriately do them, so just patch them.
 
---- lib/ExtUtils/Constant.pm	2021-04-20 21:06:43.272663878 +1000
-+++ lib/ExtUtils/Constant.pm	2021-04-20 21:07:11.116805426 +1000
+--- perl-5.10.1/lib/ExtUtils/Constant.pm	2021-04-20 21:06:43.272663878 +1000
++++ perl-5.10.1/lib/ExtUtils/Constant.pm	2021-04-20 21:07:11.116805426 +1000
 @@ -253,11 +253,11 @@
          switch (type) {
          case PERL_constant_NOTFOUND:
@@ -30,8 +30,8 @@ I'm not sure how to appropriately do them, so just patch them.
  	    "Unexpected return type %d while processing $package_sprintf_safe macro %s, used",
                 type, s));
            PUSHs(sv);
---- ext/Data-Dumper/Dumper.xs	2009-06-11 02:42:23.000000000 +1000
-+++ ext/Data-Dumper/Dumper.xs	2021-04-21 18:19:32.548468344 +1000
+--- perl-5.10.1/ext/Data-Dumper/Dumper.xs	2009-06-11 02:42:23.000000000 +1000
++++ perl-5.10.1/ext/Data-Dumper/Dumper.xs	2021-04-21 18:19:32.548468344 +1000
 @@ -312,7 +312,7 @@
  	{
  	    dSP; ENTER; SAVETMPS; PUSHMARK(sp);

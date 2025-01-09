@@ -32,11 +32,11 @@ touch include/pipesize.h
 rm y.tab.c y.tab.h
 
 # Patch
-patch -Np0 -i ../../patches/mes-libc.patch
-patch -Np0 -i ../../patches/tinycc.patch
-patch -Np0 -i ../../patches/missing-defines.patch
-patch -Np0 -i ../../patches/locale.patch
-patch -Np0 -i ../../patches/dev-tty.patch
+patch -Np1 -i ../../patches/mes-libc.patch
+patch -Np1 -i ../../patches/tinycc.patch
+patch -Np1 -i ../../patches/missing-defines.patch
+patch -Np1 -i ../../patches/locale.patch
+patch -Np1 -i ../../patches/dev-tty.patch
 
 # Compile
 make mkbuiltins

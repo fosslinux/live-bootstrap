@@ -6,8 +6,8 @@ We don't have pkg-config, hence:
 a) disable gtk-doc (uses pkg-config exclusively)
 b) disable pkg-config type checks
 
---- configure.ac	2021-06-12 11:23:41.719074631 +1000
-+++ configure.ac	2021-06-12 11:26:17.748153926 +1000
+--- util-linux-2.19.1/configure.ac	2021-06-12 11:23:41.719074631 +1000
++++ util-linux-2.19.1/configure.ac	2021-06-12 11:26:17.748153926 +1000
 @@ -84,9 +84,6 @@
  dnl libtool-2
  LT_INIT
@@ -80,8 +80,8 @@ b) disable pkg-config type checks
  shlibs/mount/samples/Makefile
  shlibs/uuid/uuid.pc
  shlibs/uuid/Makefile
---- shlibs/mount/Makefile.am.bak	2021-06-12 11:32:07.578612839 +1000
-+++ shlibs/mount/Makefile.am	2021-06-12 11:32:20.247701887 +1000
+--- util-linux-2.19.1/shlibs/mount/Makefile.am.bak	2021-06-12 11:32:07.578612839 +1000
++++ util-linux-2.19.1/shlibs/mount/Makefile.am	2021-06-12 11:32:20.247701887 +1000
 @@ -2,11 +2,6 @@
  
  SUBDIRS = src samples
@@ -94,8 +94,8 @@ b) disable pkg-config type checks
  pkgconfigdir = $(usrlib_execdir)/pkgconfig
  pkgconfig_DATA = mount.pc
  
---- shlibs/blkid/Makefile.am.bak	2021-06-12 11:32:03.546584499 +1000
-+++ shlibs/blkid/Makefile.am	2021-06-12 11:32:10.790635416 +1000
+--- util-linux-2.19.1/shlibs/blkid/Makefile.am.bak	2021-06-12 11:32:03.546584499 +1000
++++ util-linux-2.19.1/shlibs/blkid/Makefile.am	2021-06-12 11:32:10.790635416 +1000
 @@ -2,10 +2,6 @@
  
  SUBDIRS = src samples

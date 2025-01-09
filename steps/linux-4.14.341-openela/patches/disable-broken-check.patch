@@ -7,8 +7,8 @@ a result of the dodgy installation of linux-headers. However, there is no
 problem with this, and it is verified that BITS_PER_LONG __BITS_PER_LONG
 have functional and correct values.
 
---- tools/include/asm-generic/bitsperlong.h	2021-07-31 11:50:26.616768608 +1000
-+++ tools/include/asm-generic/bitsperlong.h	2021-07-31 11:50:36.786847443 +1000
+--- linux-4.14.336/tools/include/asm-generic/bitsperlong.h	2021-07-31 11:50:26.616768608 +1000
++++ linux-4.14.336/tools/include/asm-generic/bitsperlong.h	2021-07-31 11:50:36.786847443 +1000
 @@ -9,10 +9,6 @@
  #define BITS_PER_LONG __WORDSIZE
  #endif

@@ -6,8 +6,8 @@ Add missing AC_CONFIG_MACRO_DIR.
 
 Required by autoreconf to create aclocal.m4 correctly.
 
---- /libiberty/configure.ac	2022-01-22 14:14:09.000000000 +0200
-+++ libiberty/configure.ac	2022-09-04 00:01:02.941738129 +0300
+--- binutils-2.30//libiberty/configure.ac	2022-01-22 14:14:09.000000000 +0200
++++ binutils-2.30/libiberty/configure.ac	2022-09-04 00:01:02.941738129 +0300
 @@ -2,6 +2,7 @@
  
  AC_INIT

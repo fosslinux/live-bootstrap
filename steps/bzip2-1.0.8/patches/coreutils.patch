@@ -8,8 +8,8 @@ point of the bootstrap. ranlib can be unconditionally disabled as we do not
 have it either.
 
 diff -r -N -U3 Makefile Makefile
---- Makefile	2019-07-13 18:50:05.000000000 +0100
-+++ Makefile	2021-01-14 15:45:17.558516299 +0000
+--- bzip2-1.0.8/Makefile	2019-07-13 18:50:05.000000000 +0100
++++ bzip2-1.0.8/Makefile	2021-01-14 15:45:17.558516299 +0000
 @@ -21,7 +21,7 @@
  LDFLAGS=
  

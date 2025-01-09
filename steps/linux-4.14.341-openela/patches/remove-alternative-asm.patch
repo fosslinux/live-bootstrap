@@ -7,8 +7,8 @@ couple of edgecase macros. It seems that ALTERNATIVE is one of these. As we
 know what your system will be (not Xen), we can manually evaluate and write
 out the ALTERNATIVEs.
 
---- arch/x86/entry/entry_32.S	2021-07-31 11:40:07.458032771 +1000
-+++ arch/x86/entry/entry_32.S	2021-07-31 11:40:42.835298841 +1000
+--- linux-4.14.336/arch/x86/entry/entry_32.S	2021-07-31 11:40:07.458032771 +1000
++++ linux-4.14.336/arch/x86/entry/entry_32.S	2021-07-31 11:40:42.835298841 +1000
 @@ -412,9 +412,8 @@
  
  	movl	%esp, %eax
@@ -21,8 +21,8 @@ out the ALTERNATIVEs.
  
  /* Opportunistic SYSEXIT */
  	TRACE_IRQS_ON			/* User mode traces as IRQs on. */
---- arch/x86/entry/vdso/vdso32/system_call.S	2021-07-31 11:41:40.379731622 +1000
-+++ arch/x86/entry/vdso/vdso32/system_call.S	2021-07-31 11:43:40.294633506 +1000
+--- linux-4.14.336/arch/x86/entry/vdso/vdso32/system_call.S	2021-07-31 11:41:40.379731622 +1000
++++ linux-4.14.336/arch/x86/entry/vdso/vdso32/system_call.S	2021-07-31 11:43:40.294633506 +1000
 @@ -55,8 +55,6 @@
  	/* If SYSENTER (Intel) or SYSCALL32 (AMD) is available, use it. */
  	ALTERNATIVE_2 "", SYSENTER_SEQUENCE, X86_FEATURE_SYSENTER32, \

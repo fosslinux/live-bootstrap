@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 We don't have network access at this stage to "Fetch PO files".
 
---- ../gnulib-672663a/gnulib-tool	2021-04-15 21:07:04.538055553 +1000
-+++ ../gnulib-672663a/gnulib-tool	2021-04-15 21:07:16.424135984 +1000
+--- gnulib-672663a/gnulib-tool	2021-04-15 21:07:04.538055553 +1000
++++ gnulib-672663a/gnulib-tool	2021-04-15 21:07:16.424135984 +1000
 @@ -5564,16 +5564,6 @@
        fi
        func_append added_files "$pobase/POTFILES.in$nl"

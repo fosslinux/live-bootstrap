@@ -3,8 +3,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 Disable features unsupported by Autoconf 2.52
 
---- configure.ac	Wed Mar 17 19:53:06 2021
-+++ configure.ac.new	Wed Mar 17 19:52:53 2021
+--- autoconf-2.53/configure.ac	Wed Mar 17 19:53:06 2021
++++ autoconf-2.53/configure.ac.new	Wed Mar 17 19:52:53 2021
 @@ -19,8 +19,7 @@
  # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  # 02111-1307, USA.

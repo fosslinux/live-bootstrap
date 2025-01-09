@@ -3,8 +3,8 @@ SPDX-FileCopyrightText: 2024 fosslinux <fosslinux@aussies.space>
 SPDX-License-Identifier: PSF-2.0
 
 Disable creation of pyc files.
---- Lib/py_compile.py	2024-01-22 11:28:44.333395804 +1100
-+++ Lib/py_compile.py	2024-01-22 11:28:53.703636809 +1100
+--- Python-2.3.7/Lib/py_compile.py	2024-01-22 11:28:44.333395804 +1100
++++ Python-2.3.7/Lib/py_compile.py	2024-01-22 11:28:53.703636809 +1100
 @@ -112,6 +112,7 @@
      directories).
  
@@ -13,8 +13,8 @@ Disable creation of pyc files.
      f = open(file, 'U')
      try:
          timestamp = long(os.fstat(f.fileno()).st_mtime)
---- Python/import.c	2024-01-22 12:24:05.300236204 +1100
-+++ Python/import.c	2024-01-22 12:24:36.513082356 +1100
+--- Python-2.3.7/Python/import.c	2024-01-22 12:24:05.300236204 +1100
++++ Python-2.3.7/Python/import.c	2024-01-22 12:24:36.513082356 +1100
 @@ -807,6 +807,7 @@
  static void
  write_compiled_module(PyCodeObject *co, char *cpathname, long mtime)

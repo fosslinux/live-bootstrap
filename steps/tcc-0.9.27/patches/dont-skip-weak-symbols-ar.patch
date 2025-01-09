@@ -33,8 +33,8 @@ f in w.o
 
 diff --git a/tcctools.c b/tcctools.c
 index cf174965..4567b81a 100644
---- tcctools.c
-+++ tcctools.c
+--- tcc-0.9.27/tcctools.c
++++ tcc-0.9.27/tcctools.c
 @@ -200,6 +200,9 @@ ST_FUNC int tcc_tool_ar(TCCState *s1, int argc, char **argv)
                      (sym->st_info == 0x10
                      || sym->st_info == 0x11

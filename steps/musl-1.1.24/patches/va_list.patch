@@ -13,8 +13,8 @@ Subject: [PATCH] stdarg.h: add support for tcc.
 
 diff --git a/arch/i386/bits/alltypes.h.in b/arch/i386/bits/alltypes.h.in
 index 1a8432d3..44cb5987 100644
---- arch/i386/bits/alltypes.h.in
-+++ arch/i386/bits/alltypes.h.in
+--- musl-1.1.24/arch/i386/bits/alltypes.h.in
++++ musl-1.1.24/arch/i386/bits/alltypes.h.in
 @@ -2,7 +2,19 @@
  #define _Int64 long long
  #define _Reg int

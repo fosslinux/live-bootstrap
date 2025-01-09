@@ -5,8 +5,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 This macro does not exist in newer versions of autoconf and is unrequired.
 There is no version of autoconf supporting this project + gnulib + this macro.
 
---- m4/po_gl.m4	2021-04-11 18:39:53.353069610 +1000
-+++ m4/po_gl.m4	2021-04-11 18:40:20.422242498 +1000
+--- bison-2.3/m4/po_gl.m4	2021-04-11 18:39:53.353069610 +1000
++++ bison-2.3/m4/po_gl.m4	2021-04-11 18:40:20.422242498 +1000
 @@ -24,7 +24,6 @@
  [
    AC_REQUIRE([AC_PROG_MAKE_SET])dnl

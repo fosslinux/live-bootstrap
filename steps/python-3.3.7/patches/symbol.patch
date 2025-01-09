@@ -5,8 +5,8 @@ SPDX-License-Identifier: PSF-2.0
 token is in the standard library which takes precedence over files
 in the path. Rename this file so we can actually import it.
 
---- Lib/symbol.py	2022-12-19 21:52:07.101953334 +1100
-+++ Lib/symbol.py	2022-12-19 21:52:14.752082879 +1100
+--- Python-3.3.7/Lib/symbol.py	2022-12-19 21:52:07.101953334 +1100
++++ Python-3.3.7/Lib/symbol.py	2022-12-19 21:52:14.752082879 +1100
 @@ -102,10 +102,10 @@
  
  def main():

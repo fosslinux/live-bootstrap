@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 strcoll() does not exist in mes libc, change it to strcmp.
 
---- src/expr.c
-+++ src/expr.c
+--- coreutils-5.0/src/expr.c
++++ coreutils-5.0/src/expr.c
 @@ -332,7 +332,7 @@ nextarg (char *str)
      return 0;
    else

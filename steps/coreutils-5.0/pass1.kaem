@@ -35,15 +35,15 @@ rm src/false.c
 
 rm src/dircolors.h
 
-patch -Np0 -i ../../patches/modechange.patch
-patch -Np0 -i ../../patches/mbstate.patch
-patch -Np0 -i ../../patches/ls-strcmp.patch
-patch -Np0 -i ../../patches/touch-getdate.patch
-patch -Np0 -i ../../patches/touch-dereference.patch
-patch -Np0 -i ../../patches/tac-uint64.patch
-patch -Np0 -i ../../patches/expr-strcmp.patch
-patch -Np0 -i ../../patches/sort-locale.patch
-patch -Np0 -i ../../patches/uniq-fopen.patch
+patch -Np1 -i ../../patches/modechange.patch
+patch -Np1 -i ../../patches/mbstate.patch
+patch -Np1 -i ../../patches/ls-strcmp.patch
+patch -Np1 -i ../../patches/touch-getdate.patch
+patch -Np1 -i ../../patches/touch-dereference.patch
+patch -Np1 -i ../../patches/tac-uint64.patch
+patch -Np1 -i ../../patches/expr-strcmp.patch
+patch -Np1 -i ../../patches/sort-locale.patch
+patch -Np1 -i ../../patches/uniq-fopen.patch
 
 # Build and install
 make -f Makefile PREFIX=${PREFIX}

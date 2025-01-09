@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 Fixes dependency of bootstrapping script
 
---- gen-testsuite-part  2017-06-16 21:46:16.000000000 +0100
-+++ gen-testsuite-part  2021-04-01 00:02:46.801098617 +0100
+--- automake-1.15.1/gen-testsuite-part  2017-06-16 21:46:16.000000000 +0100
++++ automake-1.15.1/gen-testsuite-part  2021-04-01 00:02:46.801098617 +0100
 @@ -64,8 +64,6 @@
    $func->($fh);
    close $fh

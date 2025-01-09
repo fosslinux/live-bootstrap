@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 Remove hostname from libtool script.
 
---- libltdl/m4/libtool.m4	2022-02-26 10:27:30.649198752 +1100
-+++ libltdl/m4/libtool.m4	2022-02-26 10:28:39.458342624 +1100
+--- libtool-2.2.4/libltdl/m4/libtool.m4	2022-02-26 10:27:30.649198752 +1100
++++ libtool-2.2.4/libltdl/m4/libtool.m4	2022-02-26 10:28:39.458342624 +1100
 @@ -684,7 +684,6 @@
  
  # `$ECHO "$ofile" | sed 's%^.*/%%'` - Provide generalized library-building support services.

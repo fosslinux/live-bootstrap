@@ -4,8 +4,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Remove BUILD_BUG_ON check as it causes a link error
 
---- drivers/gpu/drm/drm_edid.c.bak	2024-02-16 08:36:01.168832650 +0100
-+++ drivers/gpu/drm/drm_edid.c	2024-02-16 08:36:58.148828524 +0100
+--- linux-4.14.336/drivers/gpu/drm/drm_edid.c.bak	2024-02-16 08:36:01.168832650 +0100
++++ linux-4.14.336/drivers/gpu/drm/drm_edid.c	2024-02-16 08:36:58.148828524 +0100
 @@ -2879,15 +2879,6 @@
  	 * get the other variants by simply increasing the
  	 * vertical front porch length.

@@ -6,8 +6,8 @@ Our version of gawk does not seem to like printing, at least in the way that
 this attempts to use it. Instead, make it print to console and use working
 bash redirects.
 
---- lib/et/compile_et.sh.in	2022-05-18 19:26:17.182054784 +1000
-+++ lib/et/compile_et.sh.in	2022-05-18 19:30:16.489294776 +1000
+--- e2fsprogs-1.45.7/lib/et/compile_et.sh.in	2022-05-18 19:26:17.182054784 +1000
++++ e2fsprogs-1.45.7/lib/et/compile_et.sh.in	2022-05-18 19:30:16.489294776 +1000
 @@ -44,14 +44,14 @@
      exit 1;
  fi
@@ -25,8 +25,8 @@ bash redirects.
  if test -f ${BASE}.c && cmp -s ${BASE}.c.$$ ${BASE}.c ; then
      rm -f ${BASE}.c.$$
  else
---- lib/ss/mk_cmds.sh.in	2022-05-18 19:33:16.024962919 +1000
-+++ lib/ss/mk_cmds.sh.in	2022-05-18 19:33:39.650576476 +1000
+--- e2fsprogs-1.45.7/lib/ss/mk_cmds.sh.in	2022-05-18 19:33:16.024962919 +1000
++++ e2fsprogs-1.45.7/lib/ss/mk_cmds.sh.in	2022-05-18 19:33:39.650576476 +1000
 @@ -43,7 +43,7 @@
  fi
  

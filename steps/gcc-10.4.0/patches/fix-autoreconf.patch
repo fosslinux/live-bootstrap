@@ -15,8 +15,8 @@ the applicable combination of 'aclocal', 'autoconf', 'autoheader'.
 
 See also 'AC_CONFIG_MACRO_DIRS'/'AC_CONFIG_MACRO_DIR' usage elsewhere.
 
---- gcc/configure.ac	2023-01-22 16:22:57.833166450 +1100
-+++ gcc/configure.ac	2023-01-22 16:23:08.971274603 +1100
+--- gcc-10.4.0/gcc/configure.ac	2023-01-22 16:22:57.833166450 +1100
++++ gcc-10.4.0/gcc/configure.ac	2023-01-22 16:23:08.971274603 +1100
 @@ -25,6 +25,7 @@
  
  AC_INIT
@@ -25,8 +25,8 @@ See also 'AC_CONFIG_MACRO_DIRS'/'AC_CONFIG_MACRO_DIR' usage elsewhere.
  AC_CONFIG_HEADER(auto-host.h:config.in)
  
  gcc_version=`cat $srcdir/BASE-VER`
---- libobjc/configure.ac	2023-01-22 16:23:42.648601085 +1100
-+++ libobjc/configure.ac	2023-01-22 16:23:28.937468262 +1100
+--- gcc-10.4.0/libobjc/configure.ac	2023-01-22 16:23:42.648601085 +1100
++++ gcc-10.4.0/libobjc/configure.ac	2023-01-22 16:23:28.937468262 +1100
 @@ -20,6 +20,7 @@
  
  AC_INIT(package-unused, version-unused,, libobjc)

@@ -8,8 +8,8 @@ identical reasoning.
 Python 2.3's unicode regeneration code is a bit too incompatible
 with Python 2.0.1.
 
---- Objects/unicodectype.c	2022-10-05 18:11:21.989603599 +1100
-+++ Objects/unicodectype.c	2022-10-05 18:14:57.335843857 +1100
+--- Python-2.3.7/Objects/unicodectype.c	2022-10-05 18:11:21.989603599 +1100
++++ Python-2.3.7/Objects/unicodectype.c	2022-10-05 18:14:57.335843857 +1100
 @@ -29,31 +29,12 @@
      const unsigned char digit;
  } _PyUnicode_TypeRecord;
@@ -96,8 +96,8 @@ with Python 2.0.1.
  }
  
  int _PyUnicode_IsDigit(Py_UNICODE ch)
---- Makefile.pre.in	2005-01-12 00:49:02.000000000 +1100
-+++ Makefile.pre.in	2022-10-05 18:35:05.979846971 +1100
+--- Python-2.3.7/Makefile.pre.in	2005-01-12 00:49:02.000000000 +1100
++++ Python-2.3.7/Makefile.pre.in	2022-10-05 18:35:05.979846971 +1100
 @@ -456,8 +456,7 @@
  Python/importdl.o: $(srcdir)/Python/importdl.c
  		$(CC) -c $(PY_CFLAGS) -I$(DLINCLDIR) -o $@ $(srcdir)/Python/importdl.c

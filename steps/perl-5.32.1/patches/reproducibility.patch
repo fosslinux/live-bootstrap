@@ -7,8 +7,8 @@ generate with correct values for live-bootstrap.
 
 NOTE: this patch CANNOT be applied to a non-live-bootstrap environment.
 
---- ../metaconfig-5.32.1~rc1/U/threads/archname.U	2022-02-27 21:30:03.155396204 +1100
-+++ ../metaconfig-5.32.1~rc1/U/threads/archname.U	2022-02-27 21:30:49.392396204 +1100
+--- metaconfig-5.32.1~rc1/U/threads/archname.U	2022-02-27 21:30:03.155396204 +1100
++++ metaconfig-5.32.1~rc1/U/threads/archname.U	2022-02-27 21:30:49.392396204 +1100
 @@ -79,7 +79,7 @@
  ?X: Very GCCian.
  *)  archname=`echo $targetarch|sed 's,^[^-]*-,,'` ;;
@@ -18,8 +18,8 @@ NOTE: this patch CANNOT be applied to a non-live-bootstrap environment.
  case "$archname" in
  '') dflt="$tarch";;
  *) dflt="$archname";;
---- ../metaconfig-5.32.1~rc1/U/modified/Oldconfig.U	2022-02-27 21:31:26.911396204 +1100
-+++ ../metaconfig-5.32.1~rc1/U/modified/Oldconfig.U	2022-02-27 21:32:31.846396204 +1100
+--- metaconfig-5.32.1~rc1/U/modified/Oldconfig.U	2022-02-27 21:31:26.911396204 +1100
++++ metaconfig-5.32.1~rc1/U/modified/Oldconfig.U	2022-02-27 21:32:31.846396204 +1100
 @@ -117,16 +117,13 @@
  ?X: on some machines to avoid the error message when uname is not found; e.g.
  ?X: old SUN-OS 3.2 would not execute hostname in (uname -a || hostname). Sigh!
