@@ -14,7 +14,7 @@ on:
 jobs:
   pass1:
     name: Run up to Linux build under bubblewrap
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
@@ -63,7 +63,7 @@ jobs:
   pass2:
     name: Run up to Python bootstrap under bubblewrap
     needs: pass1
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
@@ -118,7 +118,7 @@ jobs:
   pass3:
     name: Run remaining builds under bubblewrap
     needs: pass2
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Install bubblewrap
         run: sudo apt install bubblewrap
