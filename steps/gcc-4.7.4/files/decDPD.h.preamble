@@ -1,0 +1,59 @@
+// SPDX-FileCopyrightText: 2007, 2009 Free Software Foundation, Inc.
+// SPDX-License-Identifier: GPL-3.0-or-later
+/* Conversion lookup tables for the decNumber C Library.
+   Copyright (C) 2007, 2009 Free Software Foundation, Inc.
+   Contributed by IBM Corporation.  Author Mike Cowlishaw.
+
+   This file is part of GCC.
+
+   GCC is free software; you can redistribute it and/or modify it under
+   the terms of the GNU General Public License as published by the Free
+   Software Foundation; either version 3, or (at your option) any later
+   version.
+
+   GCC is distributed in the hope that it will be useful, but WITHOUT ANY
+   WARRANTY; without even the implied warranty of MERCHANTABILITY or
+   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+   for more details.
+
+Under Section 7 of GPL version 3, you are granted additional
+permissions described in the GCC Runtime Library Exception, version
+3.1, as published by the Free Software Foundation.
+
+You should have received a copy of the GNU General Public License and
+a copy of the GCC Runtime Library Exception along with this program;
+see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<http://www.gnu.org/licenses/>.  */
+
+/* ------------------------------------------------------------------------ */
+/* Binary Coded Decimal and Densely Packed Decimal conversion lookup tables */
+/* [Automatically generated -- do not edit.  2008.06.21]		    */
+/* ------------------------------------------------------------------------ */
+/* For details, see DPDecimal.html on the General Decimal Arithmetic page.  */
+
+#include "decDPDSymbols.h"
+
+/* This include file defines several DPD and BCD conversion tables:	    */
+/*									    */
+/*   uint16_t BCD2DPD[2458];	 -- BCD -> DPD (0x999 => 2457)		    */
+/*   uint16_t BIN2DPD[1000];	 -- Bin -> DPD (999 => 2457)		    */
+/*   uint8_t  BIN2CHAR[4001];	 -- Bin -> CHAR (999 => '\3' '9' '9' '9')   */
+/*   uint8_t  BIN2BCD8[4000];	 -- Bin -> bytes (999 => 9 9 9 3)	    */
+/*   uint16_t DPD2BCD[1024];	 -- DPD -> BCD (0x3FF => 0x999) 	    */
+/*   uint16_t DPD2BIN[1024];	 -- DPD -> BIN (0x3FF => 999)		    */
+/*   uint32_t DPD2BINK[1024];	 -- DPD -> BIN * 1000 (0x3FF => 999000)     */
+/*   uint32_t DPD2BINM[1024];	 -- DPD -> BIN * 1E+6 (0x3FF => 999000000)  */
+/*   uint8_t  DPD2BCD8[4096];	 -- DPD -> bytes (x3FF => 9 9 9 3)	    */
+/*									    */
+/* In all cases the result (10 bits or 12 bits, or binary) is right-aligned */
+/* in the table entry.	BIN2CHAR entries are a single byte length (0 for    */
+/* value 0) followed by three digit characters; a trailing terminator is    */
+/* included to allow 4-char moves always.  BIN2BCD8 and DPD2BCD8 entries    */
+/* are similar with the three BCD8 digits followed by a one-byte length     */
+/* (again, length=0 for value 0).					    */
+/*									    */
+/* To use a table, its name, prefixed with DEC_, must be defined with a     */
+/* value of 1 before this header file is included.  For example:	    */
+/*    #define DEC_BCD2DPD 1						    */
+/* This mechanism allows software to only include tables that are needed.   */
+/* ------------------------------------------------------------------------ */
