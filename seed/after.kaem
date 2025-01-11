@@ -11,5 +11,18 @@ set -ex
 
 PATH=/${ARCH_DIR}/bin
 
-catm seed-full.kaem /steps/bootstrap.cfg /steps/env seed.kaem
+if catm seed-full.kaem /steps/bootstrap.cfg /steps/env seed.kaem; then
+else
+  replace --file /steps/env --output /steps/env --match-on /external/distfiles --replace-with /distfiles
+  cp /seed/wrap-bootstrap.cfg /steps/bootstrap.cfg
+  catm seed-full.kaem /steps/bootstrap.cfg /steps/env /seed/seed.kaem
+  cp /seed/configurator.c configurator.c
+  cp /seed/configurator.${ARCH}.checksums configurator.${ARCH}.checksums
+
+  cp /seed/script-generator.c script-generator.c
+  cp /seed/script-generator.${ARCH}.checksums script-generator.${ARCH}.checksums
+  # placeholder value
+  FINAL_JOBS=1
+fi
+
 kaem --file seed-full.kaem
