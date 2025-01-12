@@ -16,10 +16,13 @@ you can run bootstap inside chroot.
 
 import argparse
 import os
+import signal
+import threading
 
-from lib.utils import run, run_as_root
-from lib.target import Target
 from lib.generator import Generator, stage0_arch_map
+from lib.simple_mirror import SimpleMirror
+from lib.target import Target
+from lib.utils import run, run_as_root
 
 def create_configuration_file(args):
     """
@@ -177,6 +180,19 @@ def main():
     # Set constant umask
     os.umask(0o022)
 
+    # file:// mirrors
+    mirror_servers = []
+    if args.mirrors:
+        for i, mirror in enumerate(args.mirrors):
+            if mirror.startswith("file://"):
+                path = mirror.removeprefix("file://")
+                if not path.startswith("/"):
+                    raise ValueError("A file:// mirror must be an absolute path.")
+
+                server = SimpleMirror(path)
+                args.mirrors[i] = f"http://127.0.0.1:{server.port}"
+                mirror_servers.append(server)
+
     # bootstrap.cfg
     try:
         os.remove(os.path.join('steps', 'bootstrap.cfg'))
@@ -193,15 +209,25 @@ def main():
     if args.tmpfs:
         target.tmpfs(size=args.tmpfs_size)
 
+    for server in mirror_servers:
+        thread = threading.Thread(target=server.serve_forever)
+        thread.start()
+
+    def cleanup(*_):
+        for server in mirror_servers:
+            server.shutdown()
+    signal.signal(signal.SIGINT, cleanup)
+
     generator = Generator(arch=args.arch,
                           external_sources=args.external_sources,
                           repo_path=args.repo,
                           early_preseed=args.early_preseed,
                           mirrors=args.mirrors)
 
-    bootstrap(args, generator, target, args.target_size)
+    bootstrap(args, generator, target, args.target_size, cleanup)
+    cleanup()
 
-def bootstrap(args, generator, target, size):
+def bootstrap(args, generator, target, size, cleanup):
     """Kick off bootstrap process."""
     print(f"Bootstrapping {args.arch}", flush=True)
     if args.chroot:
@@ -216,7 +242,8 @@ print(shutil.which('chroot'))
 
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init)
+        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init,
+                    cleanup=cleanup)
 
     elif args.bwrap:
         init = '/init'
@@ -245,7 +272,8 @@ print(shutil.which('chroot'))
                                   '--proc', '/proc',
                                   '--bind', '/sys', '/sys',
                                   '--tmpfs', '/tmp',
-                                  init)
+                                  init,
+            cleanup=cleanup)
 
     elif args.bare_metal:
         if args.kernel:
@@ -303,7 +331,7 @@ print(shutil.which('chroot'))
             ]
         if not args.interactive:
             arg_list += ['-no-reboot', '-nographic']
-        run(args.qemu_cmd, *arg_list)
+        run(args.qemu_cmd, *arg_list, cleanup=cleanup)
 
 if __name__ == "__main__":
     main()

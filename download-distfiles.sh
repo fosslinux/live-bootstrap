@@ -37,8 +37,13 @@ download_source() {
 check_source() {
     local distfiles="${1}"
     local url="${2}"
-    local checksum="${3}"
-    local fname="${4}"
+    shift 2
+    if [[ "${url}" == git://* ]]; then
+        url="${1}"
+        shift
+    fi
+    local checksum="${1}"
+    local fname="${2}"
     # Default to basename of url if not given
     fname="${fname:-$(basename "${url}")}"
 
