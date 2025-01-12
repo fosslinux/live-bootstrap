@@ -31,8 +31,8 @@ _get_files() {
     for f in ${fs}; do
         # Archive symlinks to directories as symlinks
         echo "${prefix}/${f}"
-        if [ -d "${f}" ] && ! [ -h "${f}" ]; then
-            cd "${f}"
+        if [ -d "./${f}" ] && ! [ -h "./${f}" ]; then
+            cd "./${f}"
             _get_files "${prefix}/${f}"
             cd ..
         fi
@@ -54,9 +54,9 @@ reset_timestamp() {
             fs="${fs} $(echo .[0-z]*)"
         fi
         for f in ${fs}; do
-            touch -h -t 197001010000.00 "${f}"
-            if [ -d "${f}" ]; then
-                cd "${f}"
+            touch -h -t 197001010000.00 "./${f}"
+            if [ -d "./${f}" ]; then
+                cd "./${f}"
                 reset_timestamp
                 cd ..
             fi
