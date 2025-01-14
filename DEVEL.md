@@ -110,5 +110,17 @@ snapshot, generated with `git archive`. See `mirror.sh` for more detailed rules.
 
 Some specific helpful things:
 - prefer `.tar.gz`
-- For GitHub, all snpashots are generated with long commit IDs, so use long
+- For GitHub, all snapshots are generated with long commit IDs, so use long
   commit IDs.
+
+## Running a mirror
+
+There are 3 things you need to run a mirror;
+
+1. A tool to perform the mirroring (e.g. `mirror.sh` in this repository); we
+   encourage diversity in this area.
+2. A server on which to host the mirror; this should have HTTP support, and
+   optionally HTTPS. It is of greatly diminished utility if it does not support
+   plain HTTP.
+3. Automatic updates. This should involve updating the Git repository and
+   updating the mirror as required.
