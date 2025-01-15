@@ -4,17 +4,32 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Optional arguments: Mirrors
+
 download_source() {
     local distfiles="${1}"
     local url="${2}"
-    local checksum="${3}"
-    local fname="${4}"
+    shift 2
+    if [[ "${url}" == git://* ]]; then
+        url="${1}"
+        shift
+    fi
+    local checksum="${1}"
+    local fname="${2}"
     # Default to basename of url if not given
     fname="${fname:-$(basename "${url}")}"
+    if [ "${fname}" = "_" ]; then
+        echo "ERROR: ${url} must have a filename specified"
+        exit 1
+    fi
 
     local dest_path="${distfiles}/${fname}"
     if ! [ -e "${dest_path}" ]; then
         echo "Downloading ${fname}"
+        if [ "${mirrors_len}" -ne 0 ]; then
+            local mirror_ix="$((RANDOM % mirrors_len))"
+            url="${mirrors[${mirror_ix}]}/${fname}"
+        fi
         curl --fail --location "${url}" --output "${dest_path}" || true
     fi
 }
@@ -32,6 +47,9 @@ check_source() {
 }
 
 set -e
+
+mirrors=( "$@" )
+mirrors_len="$#"
 
 cd "$(dirname "$(readlink -f "$0")")"
 mkdir -p distfiles

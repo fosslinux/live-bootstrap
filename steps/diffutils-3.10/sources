@@ -1,3 +1,2 @@
 https://mirrors.kernel.org/gnu/diffutils/diffutils-3.10.tar.xz 90e5e93cc724e4ebe12ede80df1634063c7a855692685919bfe60b556c9bd09e
-http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-5d2fe24.tar.gz 72e7bb2d1d75e63d1c46d33b8dd22e8eb60afdba4af3e7251151b5c2a6f00bfb
-https://files.bootstrapping.world/gnulib-5d2fe24.tar.gz 72e7bb2d1d75e63d1c46d33b8dd22e8eb60afdba4af3e7251151b5c2a6f00bfb
+git://git.savannah.gnu.org/gnulib.git~5d2fe24 _ 72e7bb2d1d75e63d1c46d33b8dd22e8eb60afdba4af3e7251151b5c2a6f00bfb gnulib-5d2fe24.tar.gz

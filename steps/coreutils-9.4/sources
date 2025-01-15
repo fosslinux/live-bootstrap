@@ -1,7 +1,5 @@
-http://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-9.4.tar.xz 8fb56810310253300b3d6f84e68dc97eb2d74e1f4f78e05776831d9d82e4f2d7
-https://files.bootstrapping.world/coreutils-9.4.tar.xz 8fb56810310253300b3d6f84e68dc97eb2d74e1f4f78e05776831d9d82e4f2d7
-http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-bb5bb43.tar.gz b8aa1ac1b18c67f081486069e6a7a5564f20431c2313a94c20a46dcfb904be2a
-https://files.bootstrapping.world/gnulib-bb5bb43.tar.gz b8aa1ac1b18c67f081486069e6a7a5564f20431c2313a94c20a46dcfb904be2a
+git://git.savannah.gnu.org/coreutils.git~v9.4 http://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-9.4.tar.xz 8fb56810310253300b3d6f84e68dc97eb2d74e1f4f78e05776831d9d82e4f2d7
+git://git.savannah.gnu.org/gnulib.git~bb5bb43 _ b8aa1ac1b18c67f081486069e6a7a5564f20431c2313a94c20a46dcfb904be2a gnulib-bb5bb43.tar.gz
 http://ftp.unicode.org/Public/15.0.0/ucd/UnicodeData.txt 806e9aed65037197f1ec85e12be6e8cd870fc5608b4de0fffd990f689f376a73 UnicodeData-15.0.0.txt
 http://ftp.unicode.org/Public/15.0.0/ucd/PropList.txt e05c0a2811d113dae4abd832884199a3ea8d187ee1b872d8240a788a96540bfd PropList-15.0.0.txt
 http://ftp.unicode.org/Public/15.0.0/ucd/DerivedCoreProperties.txt d367290bc0867e6b484c68370530bdd1a08b6b32404601b8c7accaf83e05628d DerivedCoreProperties-15.0.0.txt

@@ -1,7 +1,5 @@
 https://mirrors.kernel.org/gnu/guile/guile-3.0.7.tar.xz f57d86c70620271bfceb7a9be0c81744a033f08adc7ceba832c9917ab3e691b7
 https://mirrors.kernel.org/gnu/guile/guile-3.0.9.tar.xz 1a2625ac72b2366e95792f3fe758fd2df775b4044a90a4a9787326e66c0d750d 
-https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-901694b9.tar.gz f9aad85de1f41d57c9368d304020ffbf354a5e56db1297f022c3d12181134e56
-https://files.bootstrapping.world/gnulib-901694b9.tar.gz f9aad85de1f41d57c9368d304020ffbf354a5e56db1297f022c3d12181134e56
-https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-356a414e.tar.gz fc9973f1a9243fdc4b98d33d7704f3c71bfdc4c2ef96899b8f28cade7290a714
-https://files.bootstrapping.world/gnulib-356a414e.tar.gz fc9973f1a9243fdc4b98d33d7704f3c71bfdc4c2ef96899b8f28cade7290a714
-https://github.com/schierlm/guile-psyntax-bootstrapping/archive/refs/tags/guile-3.0.7.tar.gz 14cda9c416506dfadf60c14fc623ff01ef99b87564a78d0a29c5d17143c97609
+git://git.savannah.gnu.org/gnulib.git~901694b9 _ f9aad85de1f41d57c9368d304020ffbf354a5e56db1297f022c3d12181134e56 gnulib-901694b9.tar.gz
+git://git.savannah.gnu.org/gnulib.git~356a414e _ fc9973f1a9243fdc4b98d33d7704f3c71bfdc4c2ef96899b8f28cade7290a714 gnulib-356a414e.tar.gz
+git://github.com/schierlm/guile-psyntax-bootstrapping~guile-3.0.7 https://github.com/schierlm/guile-psyntax-bootstrapping/archive/refs/tags/guile-3.0.7.tar.gz 14cda9c416506dfadf60c14fc623ff01ef99b87564a78d0a29c5d17143c97609

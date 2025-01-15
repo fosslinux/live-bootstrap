@@ -7,8 +7,6 @@ for the bootstrapping process.
 # SPDX-License-Identifier: GPL-3.0-or-later
 # SPDX-FileCopyrightText: 2023 Dor Askayo <dor.askayo@gmail.com>
 
-import argparse
-
 from lib.generator import Generator
 
 def main():

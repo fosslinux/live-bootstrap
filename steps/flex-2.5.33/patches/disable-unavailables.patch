@@ -1,0 +1,50 @@
+Disable things we can't regenerate for varied reasons.
+
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: BSD-3-Clause-flex
+
+diff --color -ru configure.in
+--- flex-e6f147b7a5f2ec2dc862dc9d30b3734b9555a1ea/configure.in	2024-12-28 11:29:45.497750429 +1100
++++ flex-e6f147b7a5f2ec2dc862dc9d30b3734b9555a1ea/configure.in	2024-12-28 12:37:00.190457545 +1100
+@@ -31,9 +31,6 @@
+ 
+ dnl checks for programs
+ 
+-AM_GNU_GETTEXT([external])
+-AM_GNU_GETTEXT_VERSION(0.12)
+-
+ AC_PROG_YACC
+ AM_PROG_LEX
+ AC_PROG_CC
+@@ -97,12 +94,10 @@
+ flex.spec
+ Makefile
+ doc/Makefile
+-website/Makefile
+ examples/Makefile
+ examples/fastwc/Makefile
+ examples/manual/Makefile
+ m4/Makefile
+-po/Makefile.in
+ tools/Makefile
+ tests/Makefile
+ tests/TEMPLATE/Makefile
+diff --color -ru Makefile.am
+--- flex-e6f147b7a5f2ec2dc862dc9d30b3734b9555a1ea/Makefile.am	2024-12-28 11:29:45.496750429 +1100
++++ flex-e6f147b7a5f2ec2dc862dc9d30b3734b9555a1ea/Makefile.am	2024-12-28 13:32:54.945214018 +1100
+@@ -135,13 +135,12 @@
+ 	doc \
+ 	m4  \
+ 	examples \
+-	po \
+ 	tools \
+ 	tests
+ 
+ localedir = $(datadir)/locale
+ AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" -I@includedir@ -I$(top_srcdir)/intl
+-LIBS = @LIBINTL@ @LIBS@
++LIBS = @LIBS@
+ 
+ skel.c: flex.skl mkskel.sh flexint.h tables_shared.h
+ 	sed 's/m4_/m4postproc_/g; s/m4preproc_/m4_/g' $(srcdir)/flex.skl | $(m4) -P -DFLEX_MAJOR_VERSION=`echo $(VERSION)|cut -f 1 -d .` -DFLEX_MINOR_VERSION=`echo $(VERSION)|cut -f 2 -d .` -DFLEX_SUBMINOR_VERSION=`echo $(VERSION)|cut -f 3 -d .` | sed 's/m4postproc_/m4_/g' | $(SHELL) $(srcdir)/mkskel.sh  >skel.c
