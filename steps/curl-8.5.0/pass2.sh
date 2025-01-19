@@ -19,7 +19,7 @@ src_prepare() {
 }
 
 src_configure() {
-    LDFLAGS="-static" ./configure \
+    ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --build=i386-unknown-linux-musl \
