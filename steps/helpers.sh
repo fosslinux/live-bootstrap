@@ -141,6 +141,8 @@ uninstall() {
                         if [ -z "$(ls -A "/${file}")" ]; then
                             rmdir "/${file}"
                         fi
+                    elif [ -h "${file}" ]; then
+                        symlinks="${symlinks} ${file}"
                     else
                         # in some cases we might be uninstalling a file that has already been overwritten
                         # in this case we don't want to remove it
@@ -148,9 +150,6 @@ uninstall() {
                         in_pkg="$(sha256sum "/${file}" 2>/dev/null | cut -d' ' -f1)"
                         if [ "${in_fs}" = "${in_pkg}" ]; then
                             rm -f "/${file}"
-                        fi
-                        if [ -h "${file}" ]; then
-                            symlinks="${symlinks} ${file}"
                         fi
                     fi
                 done < ../filelist
