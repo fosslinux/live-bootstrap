@@ -151,7 +151,7 @@ src_prepare() {
     # Remove docs/translation
     find . -name "*.gmo" -delete
     find . -name "*.info" -delete
-    find . -name '*.[1-9]' -delete
+    find . -type f -name '*.[1-9]' -delete
     rm libiberty/functions.texi
     # Sphinx-generated
     rm gcc/jit/docs/conf.py
