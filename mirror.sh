@@ -80,8 +80,8 @@ do_file() {
             fi
         fi
 
-        # Attempt up to 2 times
-        retries=2
+        # Attempt up to 3 times
+        retries=3
         matching=no
         while [ "${retries}" -gt 0 ]; do
             download_file "${uri}" "${dest}/${filename}"
@@ -95,6 +95,7 @@ do_file() {
                 echo "${uri}: checksum did not match, trying again"
                 rm "${dest}/${filename}"
             fi
+            sleep 1
         done
 
         if [ "${matching}" = "no" ]; then
