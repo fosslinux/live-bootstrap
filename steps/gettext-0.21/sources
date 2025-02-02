@@ -1,3 +1,2 @@
 https://mirrors.kernel.org/gnu/gettext/gettext-0.21.tar.xz d20fcbb537e02dcf1383197ba05bd0734ef7bf5db06bdb241eb69b7d16b73192
-https://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-7daa86f.tar.gz 2d911c2f2ed97b347d6d360b742abdc98aa626d4f8f847ee682c7cde12e90871
-https://files.bootstrapping.world/gnulib-7daa86f.tar.gz 2d911c2f2ed97b347d6d360b742abdc98aa626d4f8f847ee682c7cde12e90871
+git://git.savannah.gnu.org/gnulib.git~7daa86f _ 2d911c2f2ed97b347d6d360b742abdc98aa626d4f8f847ee682c7cde12e90871 gnulib-7daa86f.tar.gz

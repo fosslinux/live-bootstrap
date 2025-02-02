@@ -9,8 +9,8 @@ acidentally re-declare it.
 
 diff --git flexdef.h flexdef.h
 index 3eb710a..94ef024 100644
---- flex-2.5.11/flexdef.h
-+++ flex-2.5.11/flexdef.h
+--- flex-d160f0247ba1611aa59d28f027d6292ba24abb50/flexdef.h
++++ flex-d160f0247ba1611aa59d28f027d6292ba24abb50/flexdef.h
 @@ -421,7 +421,7 @@ extern int yymore_really_used, reject_really_used;
   */
  
@@ -31,8 +31,8 @@ index 3eb710a..94ef024 100644
  extern char *action_array;
  extern int action_size;
  extern int defs1_offset, prolog_offset, action_offset, action_index;
---- flex-2.5.11/scan.l
-+++ flex-2.5.11/scan.l
+--- flex-d160f0247ba1611aa59d28f027d6292ba24abb50/scan.l
++++ flex-d160f0247ba1611aa59d28f027d6292ba24abb50/scan.l
 @@ -32,6 +32,7 @@
  /*  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR */
  /*  PURPOSE. */

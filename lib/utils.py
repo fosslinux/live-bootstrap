@@ -12,7 +12,7 @@ import shutil
 import subprocess
 import sys
 
-def run(*args, **kwargs):
+def run(*args, cleanup=None, **kwargs):
     """A small wrapper around subprocess.run"""
     arguments = [str(arg) for arg in args if arg is not None]
 
@@ -23,6 +23,8 @@ def run(*args, **kwargs):
         return subprocess.run(arguments, check=True, **kwargs)
     except subprocess.CalledProcessError:
         print("Bootstrapping failed")
+        if cleanup:
+            cleanup()
         sys.exit(1)
 
 def run_as_root(*args, **kwargs):

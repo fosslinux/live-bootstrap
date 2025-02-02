@@ -15,8 +15,8 @@ mkdir build src
 cd build
 
 # Extract
-cp ${DISTFILES}/${pkg}.tar.xz ../src/
-unxz --file ../src/${pkg}.tar.xz --output ../src/${pkg}.tar
+cp ${DISTFILES}/${pkg}.tar.gz ../src/
+gzip -d -f ../src/${pkg}.tar.gz
 tar xf ../src/${pkg}.tar
 rm -r ../src
 cd ${pkg}

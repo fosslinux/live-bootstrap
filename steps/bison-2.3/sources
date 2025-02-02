@@ -1,3 +1,2 @@
 http://mirrors.kernel.org/gnu/bison/bison-2.3.tar.bz2 b10d7e9e354be72aee4e4911cf19dd27b5c527d4e7200857365b5fcdeea0dffb
-http://git.savannah.gnu.org/cgit/gnulib.git/snapshot/gnulib-b28236b.tar.gz 0190f28cb155fedd22bf8558c3e8705eed9eacfb7ae29e7508d025a68eb90899
-https://files.bootstrapping.world/gnulib-b28236b.tar.gz 0190f28cb155fedd22bf8558c3e8705eed9eacfb7ae29e7508d025a68eb90899
+git://git.savannah.gnu.org/gnulib.git~b28236b _ 0190f28cb155fedd22bf8558c3e8705eed9eacfb7ae29e7508d025a68eb90899 gnulib-b28236b.tar.gz

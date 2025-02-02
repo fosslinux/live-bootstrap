@@ -24,8 +24,8 @@ src_prepare() {
 
     # Regenerate configure + config_h.SH
     rm -f Configure config_h.SH
-    ln -s ../metaconfig-5.32.1\~rc1/.package .
-    ln -s ../metaconfig-5.32.1\~rc1/U .
+    ln -s ../metaconfig-5.32.1/.package .
+    ln -s ../metaconfig-5.32.1/U .
     metaconfig -m
 }
 
