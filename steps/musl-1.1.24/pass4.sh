@@ -7,9 +7,6 @@ src_prepare() {
 
     # tcc does not support complex types
     rm -rf src/complex
-
-    # Configure fails without this
-    mkdir -p /dev
 }
 
 src_configure() {
@@ -18,7 +15,7 @@ src_configure() {
       --disable-shared \
       --prefix="${PREFIX}" \
       --libdir="${LIBDIR}" \
-      --includedir="${PREFIX}/include/"
+      --includedir="${PREFIX}/include"
 
     # configure script creates this file
     if test -f /dev/null; then
@@ -27,5 +24,9 @@ src_configure() {
 }
 
 src_compile() {
-    make "${MAKEJOBS}" CROSS_COMPILE= AR="tcc -ar" RANLIB=true CFLAGS="-DSYSCALL_NO_TLS"
+    make "${MAKEJOBS}" PREFIX="${PREFIX}" CROSS_COMPILE= CFLAGS="-DSYSCALL_NO_TLS" AS_CMD='as -o $@ $<'
+}
+
+src_install() {
+    make PREFIX="${PREFIX}" DESTDIR="${DESTDIR}" install
 }
