@@ -64,6 +64,8 @@ build: musl-1.1.24
 build: tcc-0.9.27
 build: musl-1.1.24
 build: tcc-0.9.27
+build: grep-2.4
+build: musl-1.1.24
 build: sed-4.0.9
 build: bzip2-1.0.8
 build: m4-1.4.7
@@ -74,7 +76,6 @@ uninstall: heirloom-devtools-070527
 build: bison-3.4.1
 build: bison-3.4.1
 build: bison-3.4.1
-build: grep-2.4
 build: diffutils-2.7
 build: coreutils-5.0
 build: coreutils-6.10

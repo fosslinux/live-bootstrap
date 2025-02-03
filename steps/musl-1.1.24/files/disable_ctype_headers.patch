@@ -1,0 +1,53 @@
+SPDX-FileCopyrightText: 2024 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: MIT
+
+diff --color -ru include/wchar.h include/wchar.h
+--- musl-chartable-tools-44d780e03e78efcb3168ceab068170206dc92e85/include/wchar.h	2024-12-21 11:29:46.207537390 +1100
++++ musl-chartable-tools-44d780e03e78efcb3168ceab068170206dc92e85/include/wchar.h	2024-12-21 12:03:00.494377416 +1100
+@@ -175,10 +175,7 @@
+ #if defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
+ int wcwidth (wchar_t);
+ int wcswidth (const wchar_t *, size_t);
+-int       iswalnum(wint_t);
+-int       iswalpha(wint_t);
+ int       iswblank(wint_t);
+-int       iswcntrl(wint_t);
+ int       iswdigit(wint_t);
+ int       iswgraph(wint_t);
+ int       iswlower(wint_t);
+@@ -187,9 +184,6 @@
+ int       iswspace(wint_t);
+ int       iswupper(wint_t);
+ int       iswxdigit(wint_t);
+-int       iswctype(wint_t, wctype_t);
+-wint_t    towlower(wint_t);
+-wint_t    towupper(wint_t);
+ wctype_t  wctype(const char *);
+ 
+ #ifndef __cplusplus
+diff --color -ru include/wctype.h include/wctype.h
+--- musl-chartable-tools-44d780e03e78efcb3168ceab068170206dc92e85/include/wctype.h	2024-12-21 11:29:46.207537390 +1100
++++ musl-chartable-tools-44d780e03e78efcb3168ceab068170206dc92e85/include/wctype.h	2024-12-21 12:07:48.030354351 +1100
+@@ -24,10 +24,7 @@
+ 
+ #undef iswdigit
+ 
+-int       iswalnum(wint_t);
+-int       iswalpha(wint_t);
+ int       iswblank(wint_t);
+-int       iswcntrl(wint_t);
+ int       iswdigit(wint_t);
+ int       iswgraph(wint_t);
+ int       iswlower(wint_t);
+@@ -36,10 +33,6 @@
+ int       iswspace(wint_t);
+ int       iswupper(wint_t);
+ int       iswxdigit(wint_t);
+-int       iswctype(wint_t, wctype_t);
+-wint_t    towctrans(wint_t, wctrans_t);
+-wint_t    towlower(wint_t);
+-wint_t    towupper(wint_t);
+ wctrans_t wctrans(const char *);
+ wctype_t  wctype(const char *);
+ 

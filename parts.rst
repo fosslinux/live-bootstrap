@@ -399,6 +399,9 @@ from building many newer or more complex programs.
 ``tcc`` has slight problems when building and linking ``musl``, so we
 apply a few patches.
 
+We also get rid of a few functions from ``musl``, as they rely on pregenerated
+files we are unable to generate at this stage.
+
 We do not use any of ``/usr/lib/mes`` or ``/usr/include/mes`` any longer, rather
 using ``/usr/lib`` and ``/usr/include`` like normal.
 
@@ -421,6 +424,19 @@ tcc 0.9.27 (musl v2)
 
 Now that we have a ‘fixed’ ``musl``, we now recompile ``tcc`` as ``tcc``
 uses floats extensively.
+
+grep 2.4
+========
+
+GNU ``grep`` is a pattern matching utility. ``grep`` is needed to rebuild some
+generated header files in ``musl``.
+
+musl 1.1.24 (v3)
+================
+
+We are now able to regenerate those header files that we couldn't regenerate
+earlier. We unlock the full range of ``musl`` support, required for a
+number of applications (e.g. ``flex``) before the next ``musl`` rebuild.
 
 sed 4.0.9
 =========
@@ -484,12 +500,6 @@ a 3 stage process:
 3. Build bison using original grammar file.
 
 Finally we have a fully functional ``bison`` executable.
-
-grep 2.4
-========
-
-GNU ``grep`` is a pattern matching utility. Is is not immediately needed
-but will be useful later for autotools.
 
 diffutils 2.7
 =============
@@ -692,10 +702,10 @@ In particular we can now use full featured ``ar`` instead of ``tcc -ar``,
 the GNU linker ``ld``, which allows us building shared libraries,
 and the GNU assembler ``as``.
 
-musl 1.1.24 (v3)
+musl 1.1.24 (v4)
 ================
 
-We rebuild musl for the third time. This time we can use GNU as to build assembly source files,
+We rebuild musl for the fourth time. This time we can use GNU as to build assembly source files,
 so those assembly files that tcc failed to compile no longer have to be patched.
 
 tcc 0.9.27 (musl v3)
