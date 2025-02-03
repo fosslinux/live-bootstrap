@@ -1,1 +1,2 @@
 https://musl.libc.org/releases/musl-1.2.5.tar.gz a9a118bbe84d8764da0ea0d28b3ab3fae8477fc7e4085d90102b8596fc7c75e4
+git://github.com/richfelker/musl-chartable-tools~78b213a868553b1154ee9627c96ff1f14a9a3b1b https://github.com/richfelker/musl-chartable-tools/archive/78b213a868553b1154ee9627c96ff1f14a9a3b1b.tar.gz bb52d7c11b663c2d1c5957fd862758d1da7e65b53c0a8ecfb9110d02c04badb6

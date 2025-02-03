@@ -4,6 +4,21 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+src_prepare() {
+    default
+
+    # regenerate headers in src/ctype and src/iconv
+    cd ../musl-chartable-tools-78b213a868553b1154ee9627c96ff1f14a9a3b1b
+    cd ctype
+    CC="gcc -std=c99" make
+    cp alpha.h punct.h nonspacing.h wide.h ../../musl-1.2.5/src/ctype/
+    cd ../iconv
+    CC="gcc -std=c99" make
+    cp legacychars.h codepages.h jis0208.h gb18030.h hkscs.h ksc.h revjis.h \
+        ../../musl-1.2.5/src/locale/
+    cd ../../musl-1.2.5
+}
+
 src_configure() {
     ./configure \
         --host=i386-unknown-linux-musl \
