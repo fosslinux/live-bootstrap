@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: 2024 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: MIT
+(as per https://github.com/richfelker/musl-chartable-tools/issues/3)
+
+For musl-chartable-tools.
+
+For the earliest build where we use this, cut is bugged (always says out of
+memory). We replace the cut command with equivalent sed commands.
+
+--- musl-chartable-tools-44d780e03e78efcb3168ceab068170206dc92e85/iconv/Makefile	2024-12-21 12:45:54.752170920 +1100
++++ musl-chartable-tools-44d780e03e78efcb3168ceab068170206dc92e85/iconv/Makefile	2024-12-21 12:49:07.040155495 +1100
+@@ -12,7 +12,7 @@
+ legacychars.h: arrayify $(CHARMAPS)
+ 	cat $(CHARMAPS) \
+ 	| grep -v '^0x..	0x00..' | grep ^0x[0123456789ABCDEFabcdef] \
+-	| cut -d'	' -f2  | tr a-z A-Z | sort -u \
++	| sed 's/[^\t]*\t//' | sed 's/\t.*//' | tr a-z A-Z | sort -u \
+ 	| ./arrayify > $@
+ 
+ mkcodepage: mkcodepage.c legacychars.h
