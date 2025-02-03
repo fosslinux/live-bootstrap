@@ -6,6 +6,9 @@
 # Delete sources of packages before linux kernel
 
 get_source_filename() {
+    if [[ "${1}" == git://* ]]; then
+        shift
+    fi
     local url="${1}"
     local fname="${3}"
     # Default to basename of url if not given
