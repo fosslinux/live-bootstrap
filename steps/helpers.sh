@@ -303,6 +303,7 @@ check_source_line() {
     # Default to basename of url if not given
     fname="${fname:-$(basename "${url}")}"
     if ! [ -e "${fname}" ]; then
+        echo "${fname} does not exist!"
         false
     fi
     echo "${checksum}  ${fname}" > "${fname}.sum"
