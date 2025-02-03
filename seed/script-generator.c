@@ -410,7 +410,7 @@ FILE *start_script(int id, int bash_build) {
 		fputs("#!/bin/bash\n", out);
 		if (strcmp(get_var("INTERACTIVE"), "True") == 0) {
 			if (bash_build != 1) {
-				fputs("set -E\ntrap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
+				fputs("set -eEo pipefail\ntrap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
 			} else {
 				/* FIXME early bash has buggy ERR trap handling */
 				fputs("set -e\ntrap 'bash -c '\"'\"'while true; do printf \""
