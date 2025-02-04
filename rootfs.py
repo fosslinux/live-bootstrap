@@ -55,7 +55,7 @@ def create_configuration_file(args):
         config.write(f"CONFIGURATOR={args.configurator}\n")
         if not args.external_sources:
             if args.mirrors:
-                config.write(f"MIRRORS=\"{" ".join(args.mirrors)}\"\n")
+                config.write(f'MIRRORS="{" ".join(args.mirrors)}"\n')
                 config.write(f"MIRRORS_LEN={len(args.mirrors)}\n")
             else:
                 config.write("MIRRORS_LEN=0\n")
