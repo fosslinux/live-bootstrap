@@ -1,1 +1,2 @@
-https://mirrors.kernel.org/gnu/coreutils/coreutils-6.10.tar.lzma 8b05bba1b2726a164e444c314e3f359604b58216be704bed8f2e028449cc6204
+git://git.savannah.gnu.org/coreutils.git~v6.10 http://git.savannah.gnu.org/cgit/coreutils.git/snapshot/coreutils-6.10.tar.xz 722b67c7c4a37e3a5d98f88350e967cdeaf50bb96d5edc1d9664cde942d8c70c
+git://git.savannah.gnu.org/gnulib.git~1533e65 _ 928634c13d4d866fc77f76a71c0b8b66b58defe2eabec10f37cb34f77418b051 gnulib-1533e65.tar.gz
