@@ -29,7 +29,7 @@ cp ../../mk/common.mk common.mk
 touch config.h
 touch include/version.h
 touch include/pipesize.h
-rm y.tab.c y.tab.h
+rm y.tab.c y.tab.h parser-built
 
 # Patch
 patch -Np1 -i ../../patches/mes-libc.patch
