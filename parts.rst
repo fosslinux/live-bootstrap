@@ -322,15 +322,23 @@ we skip them.
 
 The ``cp`` in this stage replaces the ``mescc-tools-extra`` ``cp``.
 
-byacc 20240109
-==============
+oyacc 6.6
+=========
 
-The Berkeley Yacc parser generator, a public-domain implementation of the
-``yacc`` utility. Differently from the analogous ``bison`` utility from the
-GNU project, it can be compiled with a simple ``Makefile``.
+``oyacc`` is a portable derivative of OpenBSD's Yacc parser generator. Unlike
+``bison``, it can be compiled with a simple ``Makefile``. Some simple patches
+are required for mes libc.
 
-Some code is backported from an earlier version of byacc, 20140101, because
-of an incompatibility of newer versions with meslibc.
+We need a Yacc implementation for bash.
+
+Side note; the following other implementations have been tested and not adopted:
+
+- GNU Bison: requires a more complicated build we cannot yet support without
+  lots of work
+- Heirloom Devtools: licensed under a GPL-incompatible license, which makes the
+  resultant binary with mes libc (GPL licensed) non-distributable
+- Berkeley Yacc: has a few C files generated using an Awk script; Awk is not yet
+  available to us
 
 bash 2.05b
 ==========
@@ -341,7 +349,7 @@ kaem, including proper POSIX sh support, globbing, etc.
 
 Bash ships with a bison pre-generated file here which we delete.
 Unfortunately, we have not bootstrapped bison but fortunately for us,
-Berkeley Yacc is able to cope here.
+OpenBSD's Yacc is able to cope here.
 
 setup_repo
 ==========
@@ -465,7 +473,7 @@ Differently from the analogous utilities from the GNU project, they can
 be compiled with a simple ``Makefile``.
 
 Because issues with the Heirloom version of ``yacc`` compiled against musl,
-we continue using Berkeley Yacc together with Heirloom ``lex`` for the next
+we continue using OpenBSD's ``yacc`` together with Heirloom ``lex`` for the next
 few steps.
 
 flex 2.5.11
