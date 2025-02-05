@@ -1,0 +1,75 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: BSD-3-Clause
+
+* paths.h does not exist, hardcode /tmp
+* mkstemp does not exist, replace with mktemp
+* getopt.h needs explicit inclusion
+* sig_atomic_t is undefineed
+
+--- oyacc-6.6/main.c	2025-02-05 14:14:48.552829130 +1100
++++ oyacc-6.6/main.c	2025-02-05 14:20:05.025828293 +1100
+@@ -35,7 +35,7 @@
+ 
+ #include <sys/types.h>
+ #include <fcntl.h>
+-#include <paths.h>
++#include <getopt.h>
+ #include <signal.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+@@ -104,7 +104,7 @@
+ void create_file_names(void);
+ void open_files(void);
+ 
+-volatile sig_atomic_t sigdie;
++volatile int sigdie;
+ 
+ void
+ done(int k)
+@@ -234,7 +234,7 @@
+ 	size_t len;
+ 	char *tmpdir;
+ 
+-	tmpdir = _PATH_TMP;
++	tmpdir = "/tmp";
+ 
+ 	len = strlen(tmpdir);
+ 	if (tmpdir[len - 1] == '/')
+@@ -300,7 +300,7 @@
+ void
+ open_files(void)
+ {
+-	int fd;
++	char *fname;
+ 
+ 	create_file_names();
+ 
+@@ -309,12 +309,12 @@
+ 		if (input_file == 0)
+ 			open_error(input_file_name);
+ 	}
+-	fd = mkstemp(action_file_name);
+-	if (fd == -1 || (action_file = fdopen(fd, "w")) == NULL)
++	fname = mktemp(action_file_name);
++	if (!fname || (action_file = fopen(fname, "w")) == NULL)
+ 		open_error(action_file_name);
+ 
+-	fd = mkstemp(text_file_name);
+-	if (fd == -1 || (text_file = fdopen(fd, "w")) == NULL)
++	fname = mktemp(text_file_name);
++	if (!fname || (text_file = fopen(fname, "w")) == NULL)
+ 		open_error(text_file_name);
+ 
+ 	if (vflag) {
+@@ -326,8 +326,8 @@
+ 		defines_file = fopen(defines_file_name, "w");
+ 		if (defines_file == NULL)
+ 			open_write_error(defines_file_name);
+-		fd = mkstemp(union_file_name);
+-		if (fd == -1 || (union_file = fdopen(fd, "w")) == NULL)
++		fname = mktemp(union_file_name);
++		if (!fname || (union_file = fopen(fname, "w")) == NULL)
+ 			open_error(union_file_name);
+ 	}
+ 	output_file = fopen(output_file_name, "w");

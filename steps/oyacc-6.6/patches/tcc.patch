@@ -1,0 +1,15 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: BSD-3-Clause
+
+In tcc, a variable declared as extern that is assigned to does not work
+correctly.
+
+--- oyacc-6.6/defs.h	2025-02-05 14:23:40.883827721 +1100
++++ oyacc-6.6/defs.h	2025-02-05 14:23:43.879827713 +1100
+@@ -365,4 +365,4 @@
+ 
+ /* system variables */
+ 
+-extern char *__progname;
++char *__progname;
