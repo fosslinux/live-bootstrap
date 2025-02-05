@@ -5,8 +5,9 @@
 src_prepare() {
     default
 
-    rm doc/make.info
+    rm doc/make.info*
     touch doc/make.info
+    rm po/*.gmo
 
     # We don't have autopoint from gettext yet
     AUTOPOINT=true AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
