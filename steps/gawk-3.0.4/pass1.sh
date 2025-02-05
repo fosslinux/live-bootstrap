@@ -5,6 +5,7 @@
 src_prepare() {
     default
     rm awktab.c
+    rm pc/config.h
 }
 
 src_install() {
