@@ -1335,7 +1335,7 @@ mistaken plugin loading support). Other modern features are added, including;
 * 64-bit linking on 32-bit x86
 * the modern, rewritten gold linker used by some distributions
 
-gcc 13.1.0
+gcc 13.3.0
 ==========
 
 This is the most recent version of GCC. With this version of GCC, the
