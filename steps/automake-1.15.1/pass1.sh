@@ -6,15 +6,16 @@
 src_prepare() {
     default
 
-    rm doc/amhello-1.0.tar.gz
+    rm doc/amhello-1.0.tar.gz doc/automake-history.info doc/automake.info*
+    grep "DO NOT EDIT BY HAND" -r t -l | while read f; do
+        rm "$f"
+    done
 
     # Building doc often causes race conditions, skip it
     sed -i '/doc\/Makefile.inc/d' Makefile.am
     sed -i '/t\/Makefile.inc/d' Makefile.am
 
     AUTOCONF="autoconf-2.69 -f" AUTOM4TE=autom4te-2.69 ./bootstrap
-
-    rm doc/automake-history.info doc/automake.info*
 }
 
 src_configure() {

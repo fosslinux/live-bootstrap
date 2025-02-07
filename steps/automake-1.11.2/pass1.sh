@@ -7,6 +7,7 @@ src_prepare() {
     default
 
     rm -f doc/amhello-1.0.tar.gz doc/automake.info* doc/aclocal-1.11.1 doc/automake-1.11.1
+    rm tests/parallel-tests.am
 
     # Building doc often causes race conditions, skip it
     awk '/SUBDIRS/{sub("doc ", "", $0)} {print}' Makefile.am > Makefile.am.tmp
