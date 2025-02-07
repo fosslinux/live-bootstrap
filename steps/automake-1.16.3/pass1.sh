@@ -16,6 +16,9 @@ src_prepare() {
     done
 
     cp "${PREFIX}/bin/help2man" doc/
+
+    perl ./gen-testsuite-part --srcdir . > t/testsuite-part.am
+    touch Makefile.in # timestamps for make rules
 }
 
 src_configure() {
