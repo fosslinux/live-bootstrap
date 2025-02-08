@@ -13,9 +13,9 @@ src_prepare() {
     touch config.h
 
     # Rebuild pregenerated file
-    rm -f src/false.c
-
-    rm -f src/dircolors.h
+    rm src/false.c
+    rm src/dircolors.h
+    rm src/wheel.h
 
     # Bison pre-generated file
     rm lib/getdate.c
