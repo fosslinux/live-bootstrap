@@ -4,6 +4,8 @@
 
 src_prepare() {
     AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
+
+    rm doc/*.info*
 }
 
 src_configure() {
