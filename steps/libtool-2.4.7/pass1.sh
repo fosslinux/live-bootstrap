@@ -9,8 +9,9 @@ src_prepare() {
     default
 
     rm -f build-aux/ltmain.sh
-    rm -f doc/*.info
+    rm -f doc/*.info doc/*.1
     rm -f bootstrap
+    rm -f tests/testsuite
 
     ../../import-gnulib.sh
 
