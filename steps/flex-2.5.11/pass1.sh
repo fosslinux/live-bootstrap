@@ -7,6 +7,8 @@
 src_prepare() {
     default
 
+    rm -r to.do
+
     touch config.h
 }
 
