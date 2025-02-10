@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    rm doc/standards.info man/*.1
+    rm doc/*.info
+    rm man/*.1
+    rm tests/*.at
     sed -i -e '/AC_PROG_GREP/d' -e '/AC_PROG_SED/d' configure.ac
 
     AUTOMAKE=automake-1.8 ACLOCAL=aclocal-1.8 AUTOM4TE=autom4te-2.59 AUTOCONF=autoconf-2.59 autoreconf-2.59 -f

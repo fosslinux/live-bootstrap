@@ -5,10 +5,11 @@
 src_prepare() {
     . ../../import-gnulib.sh
 
-    rm doc/*.1
+    rm doc/*.1 doc/*.info* po/*.gmo
 
     rm lib/iconv_open*.h
 
+    rm bootstrap
     autoreconf-2.71 -fi
 }
 
