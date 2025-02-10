@@ -13,12 +13,13 @@ src_prepare() {
     mv perly.tab.h perly.h
 
     # Regenerate other prebuilt header files
+    rm -f embedvar.h
     for file in embed keywords opcode; do
         rm -f ${file}.h
         perl ${file}.pl
     done
     rm -f regnodes.h
     perl regcomp.pl
-    rm -f fbyterun.h byterun.c
+    rm -f byterun.h byterun.c ext/B/B/Asmdata.pm
     perl bytecode.pl
 }

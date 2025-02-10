@@ -14,16 +14,24 @@ src_prepare() {
     mv perly.tab.h perly.h
 
     # Regenerate other prebuilt header files
-    for file in embed keywords opcode; do
+    rm -f proto.h pp.sym pp_proto.h perlapi.c perlapi.h opnames.h opcode.h \
+        objXSUB.h embedvar.h global.sym
+    for file in opcode embed keywords; do
         rm -f ${file}.h
         perl ${file}.pl
     done
     rm -f regnodes.h
     perl regcomp.pl
-    rm -f ext/ByteLoader/byterun.h ext/ByteLoader/byterun.c
+    rm -f ext/ByteLoader/byterun.h ext/ByteLoader/byterun.c ext/B/B/Asmdata.pm
     perl bytecode.pl
     rm -f warnings.h lib/warnings.pm
     perl warnings.pl
+
+    # Regenerate prebuilt perl files
+    rm -r lib/unicode/Is lib/unicode/In lib/unicode/To lib/unicode/*.pl
+
+    # Manpages
+    rm lib/Pod/Man.pm
 
     # Workaround for some linking problems, remove if possible
     sed -i 's/perl_call_method/Perl_call_method/' ext/Data/Dumper/Dumper.xs
@@ -36,4 +44,10 @@ src_prepare() {
 
 src_compile() {
     make -j1 PREFIX="${PREFIX}"
+
+    cd lib/unicode
+    # We don't use the Makefile because $0 is encoded and it uses ./mktables.PL
+    # whereas the original uses mktables.PL
+    ../../miniperl -I../../lib mktables.PL
+    cd ../..
 }
