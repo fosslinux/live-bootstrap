@@ -170,11 +170,11 @@ src_prepare() {
 
     # Regenerate crc table in libiberty/crc32.c
     pushd libiberty
-    sed -n -e '38,65p' crc32.c > crcgen.c
+    sed -n '/^   #include <stdio.h>/,/^   \}$/p' crc32.c > crcgen.c
     gcc -o crcgen crcgen.c
-    head -n 69 crc32.c > crc32.c.new
+    sed '/crc_v3\.txt/{n; q}' crc32.c > crc32.c.new
     ./crcgen >> crc32.c.new
-    tail -n +138 crc32.c >> crc32.c.new
+    sed '1,/^};$/d' crc32.c >> crc32.c.new
     mv crc32.c.new crc32.c
     popd
 
