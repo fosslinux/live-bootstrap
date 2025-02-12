@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
+mkdir build src
+cd build
+
+# Extract
+cp ${DISTFILES}/${pkg}.tar.gz ../src/${pkg}.tar.gz
+gunzip -f ../src/${pkg}.tar.gz
+tar xf ../src/${pkg}.tar
+rm -r ../src/
+cd ${pkg}
+
+# Prepare
+cp ../../mk/main.mk Makefile
+touch config.h
+patch -Np1 -i ../../patches/meslibc.patch
+patch -Np1 -i ../../patches/tcc.patch
+
+# Build
+make
+
+# Install
+make install
+
+cd ../..
+
+# Checksums
+if match x${UPDATE_CHECKSUMS} xTrue; then
+    sha256sum -o ${pkg}.checksums \
+        /usr/bin/yacc \
+        /usr/bin/yyfix
+
+    install ${pkg}.checksums ${SRCDIR}
+else
+    sha256sum -c ${pkg}.checksums
+fi
