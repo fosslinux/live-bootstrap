@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    # Remove bison generated files
-    rm bc/bc.c bc/bc.h
-    rm bc/scan.c
+    # Remove bison/flex generated files
+    rm bc/bc.c bc/bc.h bc/scan.c
 
     # Skip documentation
     sed -i 's/ doc//' Makefile.am
+    rm doc/*.info
     
     # Rebuild configure script
     AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
