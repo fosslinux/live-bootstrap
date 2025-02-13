@@ -798,7 +798,7 @@ ed 1.4
 ``ed`` is a very basic line editor. This is the last version that is not distributed
 in ``.tar.lz`` format. ``ed`` is used by ``bc`` build scripts.
 
-bc 1.07.1
+bc 1.08.1
 =========
 
 ``bc`` is a console based calculator that is sometime used in scripts. We need ``bc``
