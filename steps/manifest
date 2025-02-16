@@ -141,7 +141,7 @@ build: curl-8.12.1
 improve: get_network ( CHROOT == False )
 build: bash-5.2.15
 improve: open_console ( CONSOLES == True )
-build: xz-5.4.1
+build: xz-5.6.4
 build: file-5.44
 build: libtool-2.4.7
 build: tar-1.34
