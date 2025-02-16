@@ -10,8 +10,11 @@ src_prepare() {
     perl sinus.pl | sed "s/, $//" >> src/tool_cb_prg.c.new
     sed '1,/^[0-9, ]*[0-9]$/d' src/tool_cb_prg.c >> src/tool_cb_prg.c.new
     mv src/tool_cb_prg.c.new src/tool_cb_prg.c
-    
-    rm src/tool_listhelp.c src/tool_hugehelp.c
+
+    # pregenerated files
+    rm src/tool_listhelp.c src/tool_hugehelp.c lib/easyoptions.c
+    rm docs/libcurl/libcurl-symbols.md
+    rm tests/certs/*.der
 
     # Make scripts work with our perl
     sed -i "s/:crlf//" scripts/managen scripts/cd2nroff
@@ -19,7 +22,7 @@ src_prepare() {
     chmod 755 scripts/managen scripts/cd2nroff
 
     # This one doesn't compile properly
-    touch docs/libcurl/libcurl-symbols.md docs/libcurl/libcurl-symbols.md
+    touch docs/libcurl/libcurl-symbols.md docs/libcurl/libcurl-symbols.3
 
     AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 }
@@ -42,8 +45,9 @@ src_compile() {
     sed '1,/CURLHELP_VERBOSE/d' src/tool_help.h >> src/tool_help.h.new
     mv src/tool_help.h.new src/tool_help.h
 
-    # tool_listhelp.c
+    # tool_listhelp.c & easyoptions.c
     make -C src listhelp
+    make -C lib optiontable
 
     default
 }
