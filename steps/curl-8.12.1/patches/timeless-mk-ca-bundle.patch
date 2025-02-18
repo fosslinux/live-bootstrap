@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: 2023 Eduardo Sánchez Muñoz <eduardosm-dev@e64.io>
+#
+# SPDX-License-Identifier: curl
+
+Disables checking current date in mk-ca-bundle script, so it produces
+reproducible bundles.
+
+diff -ru scripts/mk-ca-bundle.pl scripts/mk-ca-bundle.pl
+--- curl-8.12.1/scripts/mk-ca-bundle.pl
++++ curl-8.12.1/scripts/mk-ca-bundle.pl
+@@ -499,19 +499,7 @@
+     if($main_block) {
+       push @precert, $_ if not /^#$/;
+       if(/^# Not Valid After : (.*)/) {
+-        my $stamp = $1;
+-        use Time::Piece;
+-        # Not Valid After : Thu Sep 30 14:01:15 2021
+-        my $t = Time::Piece->strptime($stamp, "%a %b %d %H:%M:%S %Y");
+-        my $delta = ($t->epoch - time()); # negative means no longer valid
+-        if($delta < 0) {
+-          $skipnum++;
+-          report "Skipping: $main_block_name is not valid anymore" if ($opt_v);
+-          $valid = 0;
+-        }
+-        else {
+-          $valid = 1;
+-        }
++        $valid = 1;
+       }
+     }
+     next;
