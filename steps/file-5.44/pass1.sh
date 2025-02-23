@@ -5,6 +5,9 @@
 src_prepare() {
     default
 
+    # testfiles are difficult to audit here
+    rm tests/*.testfile
+
     AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 }
 
