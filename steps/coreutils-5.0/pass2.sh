@@ -13,7 +13,7 @@ src_prepare() {
     touch config.h
 
     # Rebuild pregenerated file
-    rm src/false.c
+    rm -f src/false.c
     rm src/dircolors.h
     rm src/wheel.h
 
