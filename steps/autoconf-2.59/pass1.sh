@@ -6,7 +6,7 @@ src_prepare() {
     rm bin/autoconf.in
     rm doc/*.info
     rm man/*.1
-    rm tests/*.at
+    rm -f tests/*.at
 
     # Do not use pregenerated manpages
     sed -i '/SUBDIRS/s/ man//' Makefile.am

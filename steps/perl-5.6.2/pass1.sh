@@ -28,10 +28,10 @@ src_prepare() {
     perl warnings.pl
 
     # Regenerate prebuilt perl files
-    rm -r lib/unicode/Is lib/unicode/In lib/unicode/To lib/unicode/*.pl
+    rm -rf lib/unicode/Is lib/unicode/In lib/unicode/To lib/unicode/*.pl
 
     # Manpages
-    rm lib/Pod/Man.pm
+    rm -f lib/Pod/Man.pm
 
     # Workaround for some linking problems, remove if possible
     sed -i 's/perl_call_method/Perl_call_method/' ext/Data/Dumper/Dumper.xs

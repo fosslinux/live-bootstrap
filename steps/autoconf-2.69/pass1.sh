@@ -6,7 +6,7 @@
 src_prepare() {
     rm doc/*.info
     rm man/*.1
-    rm tests/*.at
+    rm -f tests/*.at
     AUTOMAKE=automake-1.11 ACLOCAL=aclocal-1.11 autoreconf-2.64 -f
 
     # Install autoconf data files into versioned directory
