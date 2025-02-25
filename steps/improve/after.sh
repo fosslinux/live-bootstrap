@@ -1,6 +1,7 @@
 #!/bin/sh
 #
 # SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
+# SPDX-FileCopyrightText: 2025 Dor Askayo <dor.askayo@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -10,7 +11,10 @@
 . /steps/env
 
 if [ -d /steps/after ]; then
-    find /steps/after -maxdepth 1 -name '*.sh' -exec bash {} \;
+    after_scripts=$(find /steps/after -maxdepth 1 -type f -name '*.sh' -printf '%f\t%p\n' | sort -k1 -n | cut -f2)
+    for script in $after_scripts; do
+        bash "$script"
+    done
 fi
 
 if [ "${INTERACTIVE}" = True ]; then
