@@ -209,8 +209,7 @@ to this part:
 
 1. Compiling an initial mes using ``M2-Planet``. Note that this is
    *only* the Mes interpreter, not the libc or anything else.
-2. We then use this to recompile the Mes interpreter as well as building
-   the libc. This second interpreter is faster and less buggy.
+2. We then use this to build the libc.
 
 The ``mescc`` component depends on the ``nyacc`` parsing library, version 1.00.2.
 We use a modified version, 1.00.2-lb1, which incorporates Timothy Sample's

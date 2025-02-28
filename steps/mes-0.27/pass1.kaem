@@ -213,33 +213,7 @@ mescc lib/linux/getdents.c
 catm ${LIBDIR}/${MES_ARCH}-mes/libc.a __init_io.o eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o isnumber.o abtol.o cast.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o assert_msg.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o closedir.o opendir.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o calloc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o raise.o access.o brk.o chdir.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl3.o _open3.o _read.o readdir.o rename.o time.o umask.o uname.o unlink.o utimensat.o wait4.o waitpid.o syscall.o getpid.o kill.o pipe.o stat.o lstat.o mkdir.o rmdir.o link.o symlink.o close.o nanosleep.o fcntl.o fstat.o getdents.o
 catm ${LIBDIR}/${MES_ARCH}-mes/libc.s __init_io.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s isnumber.s abtol.s cast.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s assert_msg.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s closedir.s opendir.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s calloc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s raise.s access.s brk.s chdir.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl3.s _open3.s _read.s readdir.s rename.s time.s umask.s uname.s unlink.s utimensat.s wait4.s waitpid.s syscall.s getpid.s kill.s pipe.s stat.s lstat.s mkdir.s rmdir.s link.s symlink.s close.s nanosleep.s fcntl.s fstat.s getdents.s
 
-# Build mes itself
-mescc src/builtins.c
-mescc src/cc.c
-mescc src/core.c
-mescc src/display.c
-mescc src/eval-apply.c
-mescc src/gc.c
-mescc src/globals.c
-mescc src/hash.c
-mescc src/lib.c
-mescc src/math.c
-mescc src/mes.c
-mescc src/module.c
-mescc src/posix.c
-mescc src/reader.c
-mescc src/stack.c
-mescc src/string.c
-mescc src/struct.c
-mescc src/symbol.c
-mescc src/variable.c
-mescc src/vector.c
-
-# Link everything into new mes executable
-${MES} -e main ${mescc_scm} -- --base-address 0x08048000 -L ${LIBDIR} -o ${BINDIR}/mes builtins.o cc.o core.o display.o eval-apply.o gc.o globals.o hash.o lib.o math.o mes.o module.o posix.o reader.o stack.o string.o struct.o symbol.o variable.o vector.o -lc -lmescc
-
 # libc+tcc.a
-alias mescc="${BINDIR}/mes -e main ${BINDIR}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -c"
 mescc lib/ctype/islower.c
 mescc lib/ctype/isupper.c
 mescc lib/ctype/tolower.c
@@ -391,7 +365,6 @@ cd ../..
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.${ARCH}.checksums \
-        /usr/bin/mes \
         /usr/bin/mes-m2 \
         /usr/bin/mescc.scm \
         /usr/lib/${MES_ARCH}-mes/crt1.s \
