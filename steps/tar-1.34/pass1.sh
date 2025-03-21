@@ -8,11 +8,18 @@ src_prepare() {
 
     . ../../import-gnulib.sh
 
+    # Remove bison pregenerated file
+    rm gnu/parse-datetime.c gnu/parse-datetime-gen.h
+
+    # Gettext translations
+    rm po/*.gmo
+
+    # Docs
+    rm doc/tar.info*
+
+    rm tests/testsuite
     # We don't have autopoint from gettext yet
     AUTOPOINT=true AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
-
-    # Remove bison pregenerated file
-    rm gnu/parse-datetime.c
 }
 
 src_configure() {
