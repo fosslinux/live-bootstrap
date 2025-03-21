@@ -11,6 +11,9 @@ regenerate_files() {
     touch ChangeLog
     cp ../gnulib-bb5bb43/build-aux/po/Makefile.in.in po/Makefile.in.in
 
+    rm man/help2man
+    ln -s /usr/bin/help2man man/
+
     # Remove pregenerated gnulib files
     pushd ../gnulib-bb5bb43
     rm lib/uniwidth/width*.h
@@ -22,6 +25,8 @@ regenerate_files() {
 
     VERSION=$(basename "${BASH_SOURCE[0]}" .sh | sed 's/coreutils-//')
     echo "$VERSION" > .tarball-version
+
+    rm gl/tests/test-rand-isaac.c
 
     # We don't have autopoint from gettext yet.
     AUTOPOINT=true AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
