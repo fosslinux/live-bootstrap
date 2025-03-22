@@ -1,17 +1,20 @@
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2022 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022,2025 fosslinux <fosslinux@aussies.space>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    # technically lib/gnulib-version.c is also generated, but it's entirely
+    # unproblematic
     . ../../import-gnulib.sh
 
     default
 
-    AUTOMAKE=automake-1.9 ACLOCAL=aclocal-1.9 AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 autoreconf-2.61 -f
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.61 AUTOCONF=autoconf-2.61 autoreconf-2.61 -f
 
-    # Pre-built texinfo files
+    # Pre-built files
     rm doc/find.info
+    rm po/*.gmo
 }
 
 src_configure() {
