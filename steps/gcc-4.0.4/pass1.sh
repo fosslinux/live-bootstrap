@@ -99,6 +99,7 @@ src_compile() {
     ln -s . build/build-i386-unknown-linux-musl
     mkdir build/gcc/include
     ln -s ../../../gcc/gsyslimits.h build/gcc/include/syslimits.h
+    make -j1 -C build/gcc gengtype-yacc.c
     for dir in libiberty libcpp gcc; do
         make "${MAKEJOBS}" -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" STMP_FIXINC=
     done

@@ -84,7 +84,7 @@ src_prepare() {
     CC=tcc LD=true ./configure
     make headers
     mv configure.ac.bak configure.ac
-    make distclean
+    make clean
     cd ..
 
     # Regenerate files
@@ -100,7 +100,7 @@ src_prepare() {
     cd libiberty
     CC=tcc ./configure --enable-maintainer-mode
     make maint-deps
-    make distclean
+    make clean
     cd ..
 
     # Regenerate MeP sections
