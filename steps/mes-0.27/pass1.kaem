@@ -96,180 +96,189 @@ alias mescc="${MES} -e main ${BINDIR}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I
 mescc lib/linux/${MES_ARCH}-mes-mescc/crt1.c -o lib/${MES_ARCH}-mes/crt1.o
 
 # Now for libc-mini.a
-mescc lib/mes/__init_io.c
-mescc lib/mes/eputs.c
-mescc lib/mes/oputs.c
-mescc lib/mes/globals.c
-mescc lib/stdlib/exit.c
-mescc lib/linux/${MES_ARCH}-mes-mescc/_exit.c
-mescc lib/linux/${MES_ARCH}-mes-mescc/_write.c
-mescc lib/stdlib/puts.c
-mescc lib/string/strlen.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libc-mini.a __init_io.o eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libc-mini.s __init_io.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s
+catm libc-mini.c \
+ lib/mes/__init_io.c \
+ lib/mes/eputs.c \
+ lib/mes/oputs.c \
+ lib/mes/globals.c \
+ lib/stdlib/exit.c \
+ lib/linux/${MES_ARCH}-mes-mescc/_exit.c \
+ lib/linux/${MES_ARCH}-mes-mescc/_write.c \
+ lib/stdlib/puts.c \
+ lib/string/strlen.c
+mescc libc-mini.c
+cp libc-mini.o ${LIBDIR}/${MES_ARCH}-mes/libc-mini.a
+cp libc-mini.s ${LIBDIR}/${MES_ARCH}-mes/libc-mini.s
 
 # libmescc.a
-mescc lib/linux/${MES_ARCH}-mes-mescc/syscall-internal.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libmescc.a globals.o syscall-internal.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libmescc.s globals.s syscall-internal.s
+catm libmescc.c \
+ lib/mes/globals.c \
+ lib/linux/${MES_ARCH}-mes-mescc/syscall-internal.c
+mescc libmescc.c
+cp libmescc.o ${LIBDIR}/${MES_ARCH}-mes/libmescc.a
+cp libmescc.s ${LIBDIR}/${MES_ARCH}-mes/libmescc.s
 
 # libc.a
-mescc lib/ctype/isnumber.c
-mescc lib/mes/abtol.c
-mescc lib/mes/cast.c
-mescc lib/mes/eputc.c
-mescc lib/mes/fdgetc.c
-mescc lib/mes/fdputc.c
-mescc lib/mes/fdputs.c
-mescc lib/mes/fdungetc.c
-mescc lib/mes/itoa.c
-mescc lib/mes/ltoa.c
-mescc lib/mes/ltoab.c
-mescc lib/mes/mes_open.c
-mescc lib/mes/ntoab.c
-mescc lib/mes/oputc.c
-mescc lib/mes/ultoa.c
-mescc lib/mes/utoa.c
-mescc lib/ctype/isdigit.c
-mescc lib/ctype/isspace.c
-mescc lib/ctype/isxdigit.c
-mescc lib/mes/assert_msg.c
-mescc lib/posix/write.c
-mescc lib/stdlib/atoi.c
-mescc lib/linux/lseek.c
-mescc lib/mes/__assert_fail.c
-mescc lib/mes/__buffered_read.c
-mescc lib/mes/__mes_debug.c
-mescc lib/posix/execv.c
-mescc lib/posix/getcwd.c
-mescc lib/posix/getenv.c
-mescc lib/posix/isatty.c
-mescc lib/posix/open.c
-mescc lib/posix/buffered-read.c
-mescc lib/posix/setenv.c
-mescc lib/posix/wait.c
-mescc lib/dirent/closedir.c
-mescc lib/dirent/opendir.c
-mescc lib/stdio/fgetc.c
-mescc lib/stdio/fputc.c
-mescc lib/stdio/fputs.c
-mescc lib/stdio/getc.c
-mescc lib/stdio/getchar.c
-mescc lib/stdio/putc.c
-mescc lib/stdio/putchar.c
-mescc lib/stdio/ungetc.c
-mescc lib/stdlib/calloc.c
-mescc lib/stdlib/free.c
-mescc lib/stdlib/realloc.c
-mescc lib/string/memchr.c
-mescc lib/string/memcmp.c
-mescc lib/string/memcpy.c
-mescc lib/string/memmove.c
-mescc lib/string/memset.c
-mescc lib/string/strcmp.c
-mescc lib/string/strcpy.c
-mescc lib/string/strncmp.c
-mescc lib/posix/raise.c
-mescc lib/linux/access.c
-mescc lib/linux/brk.c
-mescc lib/linux/chdir.c
-mescc lib/linux/chmod.c
-mescc lib/linux/clock_gettime.c
-mescc lib/linux/dup.c
-mescc lib/linux/dup2.c
-mescc lib/linux/execve.c
-mescc lib/linux/fork.c
-mescc lib/linux/fsync.c
-mescc lib/linux/_getcwd.c
-mescc lib/linux/gettimeofday.c
-mescc lib/linux/ioctl3.c
-mescc lib/linux/malloc.c
-mescc lib/linux/_open3.c
-mescc lib/linux/_read.c
-mescc lib/linux/readdir.c
-mescc lib/linux/rename.c
-mescc lib/linux/time.c
-mescc lib/linux/umask.c
-mescc lib/linux/uname.c
-mescc lib/linux/unlink.c
-mescc lib/linux/utimensat.c
-mescc lib/linux/wait4.c
-mescc lib/linux/waitpid.c
-mescc lib/linux/${MES_ARCH}-mes-mescc/syscall.c
-mescc lib/linux/getpid.c
-mescc lib/linux/kill.c
-mescc lib/linux/pipe.c
-mescc lib/linux/stat.c
-mescc lib/linux/lstat.c
-mescc lib/linux/mkdir.c
-mescc lib/linux/rmdir.c
-mescc lib/linux/link.c
-mescc lib/linux/symlink.c
-mescc lib/linux/close.c
-mescc lib/linux/nanosleep.c
-mescc lib/linux/fcntl.c
-mescc lib/linux/fstat.c
-mescc lib/linux/getdents.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libc.a __init_io.o eputs.o oputs.o globals.o exit.o _exit.o _write.o puts.o strlen.o isnumber.o abtol.o cast.o eputc.o fdgetc.o fdputc.o fdputs.o fdungetc.o itoa.o ltoa.o ltoab.o mes_open.o ntoab.o oputc.o ultoa.o utoa.o isdigit.o isspace.o isxdigit.o assert_msg.o write.o atoi.o lseek.o __assert_fail.o __buffered_read.o __mes_debug.o execv.o getcwd.o getenv.o isatty.o open.o buffered-read.o setenv.o wait.o closedir.o opendir.o fgetc.o fputc.o fputs.o getc.o getchar.o putc.o putchar.o ungetc.o calloc.o free.o malloc.o realloc.o memchr.o memcmp.o memcpy.o memmove.o memset.o strcmp.o strcpy.o strncmp.o raise.o access.o brk.o chdir.o chmod.o clock_gettime.o dup.o dup2.o execve.o fork.o fsync.o _getcwd.o gettimeofday.o ioctl3.o _open3.o _read.o readdir.o rename.o time.o umask.o uname.o unlink.o utimensat.o wait4.o waitpid.o syscall.o getpid.o kill.o pipe.o stat.o lstat.o mkdir.o rmdir.o link.o symlink.o close.o nanosleep.o fcntl.o fstat.o getdents.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libc.s __init_io.s eputs.s oputs.s globals.s exit.s _exit.s _write.s puts.s strlen.s isnumber.s abtol.s cast.s eputc.s fdgetc.s fdputc.s fdputs.s fdungetc.s itoa.s ltoa.s ltoab.s mes_open.s ntoab.s oputc.s ultoa.s utoa.s isdigit.s isspace.s isxdigit.s assert_msg.s write.s atoi.s lseek.s __assert_fail.s __buffered_read.s __mes_debug.s execv.s getcwd.s getenv.s isatty.s open.s buffered-read.s setenv.s wait.s closedir.s opendir.s fgetc.s fputc.s fputs.s getc.s getchar.s putc.s putchar.s ungetc.s calloc.s free.s malloc.s realloc.s memchr.s memcmp.s memcpy.s memmove.s memset.s strcmp.s strcpy.s strncmp.s raise.s access.s brk.s chdir.s chmod.s clock_gettime.s dup.s dup2.s execve.s fork.s fsync.s _getcwd.s gettimeofday.s ioctl3.s _open3.s _read.s readdir.s rename.s time.s umask.s uname.s unlink.s utimensat.s wait4.s waitpid.s syscall.s getpid.s kill.s pipe.s stat.s lstat.s mkdir.s rmdir.s link.s symlink.s close.s nanosleep.s fcntl.s fstat.s getdents.s
+catm libc.c \
+ lib/ctype/isnumber.c \
+ lib/mes/abtol.c \
+ lib/mes/cast.c \
+ lib/mes/eputc.c \
+ lib/mes/fdgetc.c \
+ lib/mes/fdputc.c \
+ lib/mes/fdputs.c \
+ lib/mes/fdungetc.c \
+ lib/mes/itoa.c \
+ lib/mes/ltoa.c \
+ lib/mes/ltoab.c \
+ lib/mes/mes_open.c \
+ lib/mes/ntoab.c \
+ lib/mes/oputc.c \
+ lib/mes/ultoa.c \
+ lib/mes/utoa.c \
+ lib/ctype/isdigit.c \
+ lib/ctype/isspace.c \
+ lib/ctype/isxdigit.c \
+ lib/mes/assert_msg.c \
+ lib/posix/write.c \
+ lib/stdlib/atoi.c \
+ lib/linux/lseek.c \
+ lib/mes/__assert_fail.c \
+ lib/mes/__buffered_read.c \
+ lib/mes/__mes_debug.c \
+ lib/posix/execv.c \
+ lib/posix/getcwd.c \
+ lib/posix/getenv.c \
+ lib/posix/isatty.c \
+ lib/posix/open.c \
+ lib/posix/buffered-read.c \
+ lib/posix/setenv.c \
+ lib/posix/wait.c \
+ lib/dirent/closedir.c \
+ lib/dirent/opendir.c \
+ lib/stdio/fgetc.c \
+ lib/stdio/fputc.c \
+ lib/stdio/fputs.c \
+ lib/stdio/getc.c \
+ lib/stdio/getchar.c \
+ lib/stdio/putc.c \
+ lib/stdio/putchar.c \
+ lib/stdio/ungetc.c \
+ lib/stdlib/calloc.c \
+ lib/stdlib/free.c \
+ lib/stdlib/realloc.c \
+ lib/string/memchr.c \
+ lib/string/memcmp.c \
+ lib/string/memcpy.c \
+ lib/string/memmove.c \
+ lib/string/memset.c \
+ lib/string/strcmp.c \
+ lib/string/strcpy.c \
+ lib/string/strncmp.c \
+ lib/posix/raise.c \
+ lib/linux/access.c \
+ lib/linux/brk.c \
+ lib/linux/chdir.c \
+ lib/linux/chmod.c \
+ lib/linux/clock_gettime.c \
+ lib/linux/dup.c \
+ lib/linux/dup2.c \
+ lib/linux/execve.c \
+ lib/linux/fork.c \
+ lib/linux/fsync.c \
+ lib/linux/_getcwd.c \
+ lib/linux/gettimeofday.c \
+ lib/linux/ioctl3.c \
+ lib/linux/malloc.c \
+ lib/linux/_open3.c \
+ lib/linux/_read.c \
+ lib/linux/readdir.c \
+ lib/linux/rename.c \
+ lib/linux/time.c \
+ lib/linux/umask.c \
+ lib/linux/uname.c \
+ lib/linux/unlink.c \
+ lib/linux/utimensat.c \
+ lib/linux/wait4.c \
+ lib/linux/waitpid.c \
+ lib/linux/${MES_ARCH}-mes-mescc/syscall.c \
+ lib/linux/getpid.c \
+ lib/linux/kill.c \
+ lib/linux/pipe.c \
+ lib/linux/stat.c \
+ lib/linux/lstat.c \
+ lib/linux/mkdir.c \
+ lib/linux/rmdir.c \
+ lib/linux/link.c \
+ lib/linux/symlink.c \
+ lib/linux/close.c \
+ lib/linux/nanosleep.c \
+ lib/linux/fcntl.c \
+ lib/linux/fstat.c \
+ lib/linux/getdents.c
+mescc libc.c
+catm ${LIBDIR}/${MES_ARCH}-mes/libc.a ${LIBDIR}/${MES_ARCH}-mes/libc-mini.a libc.o
+catm ${LIBDIR}/${MES_ARCH}-mes/libc.s ${LIBDIR}/${MES_ARCH}-mes/libc-mini.s libc.s
 
 # libc+tcc.a
-mescc lib/ctype/islower.c
-mescc lib/ctype/isupper.c
-mescc lib/ctype/tolower.c
-mescc lib/ctype/toupper.c
-mescc lib/mes/abtod.c
-mescc lib/mes/dtoab.c
-mescc lib/mes/search-path.c
-mescc lib/posix/execvp.c
-mescc lib/stdio/fclose.c
-mescc lib/stdio/fdopen.c
-mescc lib/stdio/ferror.c
-mescc lib/stdio/fflush.c
-mescc lib/stdio/fopen.c
-mescc lib/stdio/fprintf.c
-mescc lib/stdio/fread.c
-mescc lib/stdio/fseek.c
-mescc lib/stdio/ftell.c
-mescc lib/stdio/fwrite.c
-mescc lib/stdio/printf.c
-mescc lib/stdio/remove.c
-mescc lib/stdio/snprintf.c
-mescc lib/stdio/sprintf.c
-mescc lib/stdio/sscanf.c
-mescc lib/stdio/vfprintf.c
-mescc lib/stdio/vprintf.c
-mescc lib/stdio/vsnprintf.c
-mescc lib/stdio/vsprintf.c
-mescc lib/stdio/vsscanf.c
-mescc lib/stdlib/abort.c
-mescc lib/stdlib/qsort.c
-mescc lib/stdlib/strtod.c
-mescc lib/stdlib/strtof.c
-mescc lib/stdlib/strtol.c
-mescc lib/stdlib/strtold.c
-mescc lib/stdlib/strtoll.c
-mescc lib/stdlib/strtoul.c
-mescc lib/stdlib/strtoull.c
-mescc lib/string/memmem.c
-mescc lib/string/strcat.c
-mescc lib/string/strchr.c
-mescc lib/string/strlwr.c
-mescc lib/string/strncpy.c
-mescc lib/string/strrchr.c
-mescc lib/string/strstr.c
-mescc lib/string/strupr.c
-mescc lib/stub/sigaction.c
-mescc lib/stub/ldexp.c
-mescc lib/stub/mprotect.c
-mescc lib/stub/localtime.c
-mescc lib/stub/sigemptyset.c
-mescc lib/${MES_ARCH}-mes-mescc/setjmp.c
-mescc lib/linux/close.c
-mescc lib/linux/rmdir.c
-mescc lib/linux/stat.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${LIBDIR}/${MES_ARCH}-mes/libc.a islower.o isupper.o tolower.o toupper.o abtod.o dtoab.o search-path.o execvp.o fclose.o fdopen.o ferror.o fflush.o fopen.o fprintf.o fread.o fseek.o ftell.o fwrite.o printf.o remove.o snprintf.o sprintf.o sscanf.o vfprintf.o vprintf.o vsnprintf.o vsprintf.o vsscanf.o abort.o qsort.o strtod.o strtof.o strtol.o strtold.o strtoll.o strtoul.o strtoull.o memmem.o strcat.o strchr.o strlwr.o strncpy.o strrchr.o strstr.o strupr.o sigaction.o ldexp.o mprotect.o localtime.o sigemptyset.o setjmp.o close.o rmdir.o stat.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${LIBDIR}/${MES_ARCH}-mes/libc.s islower.s isupper.s tolower.s toupper.s abtod.s dtoab.s search-path.s execvp.s fclose.s fdopen.s ferror.s fflush.s fopen.s fprintf.s fread.s fseek.s ftell.s fwrite.s printf.s remove.s snprintf.s sprintf.s sscanf.s vfprintf.s vprintf.s vsnprintf.s vsprintf.s vsscanf.s abort.s qsort.s strtod.s strtof.s strtol.s strtold.s strtoll.s strtoul.s strtoull.s memmem.s strcat.s strchr.s strlwr.s strncpy.s strrchr.s strstr.s strupr.s sigaction.s ldexp.s mprotect.s localtime.s sigemptyset.s setjmp.s close.s rmdir.s stat.s
+catm libc+tcc.c \
+ lib/ctype/islower.c \
+ lib/ctype/isupper.c \
+ lib/ctype/tolower.c \
+ lib/ctype/toupper.c \
+ lib/mes/abtod.c \
+ lib/mes/dtoab.c \
+ lib/mes/search-path.c \
+ lib/posix/execvp.c \
+ lib/stdio/fclose.c \
+ lib/stdio/fdopen.c \
+ lib/stdio/ferror.c \
+ lib/stdio/fflush.c \
+ lib/stdio/fopen.c \
+ lib/stdio/fprintf.c \
+ lib/stdio/fread.c \
+ lib/stdio/fseek.c \
+ lib/stdio/ftell.c \
+ lib/stdio/fwrite.c \
+ lib/stdio/printf.c \
+ lib/stdio/remove.c \
+ lib/stdio/snprintf.c \
+ lib/stdio/sprintf.c \
+ lib/stdio/sscanf.c \
+ lib/stdio/vfprintf.c \
+ lib/stdio/vprintf.c \
+ lib/stdio/vsnprintf.c \
+ lib/stdio/vsprintf.c \
+ lib/stdio/vsscanf.c \
+ lib/stdlib/abort.c \
+ lib/stdlib/qsort.c \
+ lib/stdlib/strtod.c \
+ lib/stdlib/strtof.c \
+ lib/stdlib/strtol.c \
+ lib/stdlib/strtold.c \
+ lib/stdlib/strtoll.c \
+ lib/stdlib/strtoul.c \
+ lib/stdlib/strtoull.c \
+ lib/string/memmem.c \
+ lib/string/strcat.c \
+ lib/string/strchr.c \
+ lib/string/strlwr.c \
+ lib/string/strncpy.c \
+ lib/string/strrchr.c \
+ lib/string/strstr.c \
+ lib/string/strupr.c \
+ lib/stub/sigaction.c \
+ lib/stub/ldexp.c \
+ lib/stub/mprotect.c \
+ lib/stub/localtime.c \
+ lib/stub/sigemptyset.c \
+ lib/${MES_ARCH}-mes-mescc/setjmp.c \
+ lib/linux/close.c \
+ lib/linux/rmdir.c \
+ lib/linux/stat.c
+mescc libc+tcc.c
+catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${LIBDIR}/${MES_ARCH}-mes/libc.a libc+tcc.o
+catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${LIBDIR}/${MES_ARCH}-mes/libc.s libc+tcc.s
 
 # Make directories
 mkdir ${PREFIX}/lib/linux ${INCDIR}/mes ${INCDIR}/sys ${INCDIR}/linux ${INCDIR}/arch
