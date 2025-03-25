@@ -6,12 +6,17 @@ src_prepare() {
     default
 
     # Remove bison and flex generated files
-    rm demos/calc/calc.{c,h} demos/calc/calclex.c
+    rm demos/calc/calc.{c,h} demos/calc/calclex.c \
+        demos/primes.h
+
+    rm mpn/cray/cfp/mulwwc90.s \
+        mpn/cray/cfp/mulwwj90.s \
+        tests/rand/t-rand.c
 
     AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 
     # Pre-built texinfo files
-    find . -name '*.info*' -delete
+    rm doc/*.info*
 }
 
 src_configure() {

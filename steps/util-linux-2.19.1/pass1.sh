@@ -5,6 +5,16 @@
 src_prepare() {
     default
 
+    # gettext translation files
+    rm po/*.gmo
+
+    # NOTE: misc-utils/scriptreplay.1 was originally a Pod::Man generated
+    # manpage. However, it *has* been manually edited since then. In this
+    # case, it is fine not to delete it; there is little-no risk.
+
+    # generated/unauditable testdata
+    rm -r tests/ts/blkid/images-fs tests/ts/cramfs/*.img
+
     # We don't have gettext (autopoint) yet.
     AUTOPOINT=true AUTOMAKE=automake-1.10 AUTOCONF=autoconf-2.64 ACLOCAL=aclocal-1.10 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }

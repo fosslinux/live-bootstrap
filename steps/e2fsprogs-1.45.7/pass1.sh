@@ -12,10 +12,8 @@ src_prepare() {
     rm config/config.guess config/config.sub config/ltmain.sh
     libtoolize -i
 
-    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
-
     # Remove bison parser generated
-    rm intl/plural.y
+    rm intl/plural.c
 
     # Setup for regeneratation of lib/ext2fs/utf8data.h
     rm lib/ext2fs/utf8data.h
@@ -25,6 +23,16 @@ src_prepare() {
 
     # Disable int
     sed -i "s/@LIBINTL@//" MCONFIG.in
+
+    # Testfiles
+    rm tests/*/image.* lib/blkid/tests/*.img.bz2
+    rm -r tests/i_qcow
+    rm lib/et/test_cases/*.c lib/et/test_cases/*.h
+
+    # Generated gettext files
+    rm po/*.gmo
+
+    AUTOMAKE=automake-1.10 ACLOCAL=aclocal-1.10 AUTOCONF=autoconf-2.64 AUTOM4TE=autom4te-2.64 autoreconf-2.64 -fi
 }
 
 src_configure() {
