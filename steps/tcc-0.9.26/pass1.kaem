@@ -332,8 +332,7 @@ cd ../..
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.${ARCH}.checksums \
-        /usr/bin/tcc-pnut \
-        /usr/bin/tcc-boot0 \
+        /usr/bin/pnut-exe \
         /usr/bin/tcc-boot1 \
         /usr/bin/tcc \
         /usr/lib/mes/libc.a \
