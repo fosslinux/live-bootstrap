@@ -1,0 +1,5 @@
+#ifdef PNUT_CC
+        a = 0; b = 9; c = 26;
+#else
+        sscanf(TCC_VERSION, "%d.%d.%d", &a, &b, &c);
+#endif

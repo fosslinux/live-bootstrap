@@ -1,0 +1,1 @@
+        sscanf(TCC_VERSION, "%d.%d.%d", &a, &b, &c);
