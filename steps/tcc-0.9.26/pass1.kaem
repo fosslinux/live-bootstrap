@@ -17,8 +17,8 @@ MES=${BINDIR}/mes-m2
 TCC_TAR=tcc-0.9.26
 TCC_PKG=tcc-0.9.26-1147-gee75a10c
 
-PNUT_TAR=79832069f0d44c20a620a923a15e38a545c5e911
-PNUT_PKG=pnut-79832069f0d44c20a620a923a15e38a545c5e911
+PNUT_TAR=124cfae4bfafec24dfea65117d0a407078beb459
+PNUT_PKG=pnut-124cfae4bfafec24dfea65117d0a407078beb459
 
 # Check tarball checksums
 # checksum-transcriber sources
@@ -347,3 +347,5 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
 else
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
+
+exit 1 # Stop the execution so we can check the output
