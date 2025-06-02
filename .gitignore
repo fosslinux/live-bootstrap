@@ -6,5 +6,6 @@
 target/
 kernel
 distfiles/
+mirrorstate/
 __pycache__
 steps/bootstrap.cfg
