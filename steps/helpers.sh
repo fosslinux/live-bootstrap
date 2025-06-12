@@ -283,6 +283,10 @@ download_source_line() {
     fname="${fname:-$(basename "${upstream_url}")}"
     if ! [ -e "${fname}" ]; then
         for mirror in $(randomize "${MIRRORS}"); do
+            # In qemu SimpleMirror is not running on the guest os, use qemu IP
+            case "${QEMU}-${mirror}" in 'True-http://127.0.0.1'*)
+                mirror="http://10.0.2.2${mirror#'http://127.0.0.1'}"
+            esac
             mirror_url="${mirror}/${fname}"
             echo "${mirror_url}"
             curl --fail --retry 3 --location "${mirror_url}" --output "${fname}" || true && break
