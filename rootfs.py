@@ -41,6 +41,7 @@ def create_configuration_file(args):
         config.write(f"FINAL_JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
+        config.write(f"QEMU={args.qemu}\n")
         config.write(f"BARE_METAL={args.bare_metal or (args.qemu and args.interactive)}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
