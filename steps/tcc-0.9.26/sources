@@ -1,1 +1,3 @@
 https://lilypond.org/janneke/tcc/tcc-0.9.26-1147-gee75a10c.tar.gz 6b8cbd0a5fed0636d4f0f763a603247bc1935e206e1cc5bda6a2818bab6e819f tcc-0.9.26.tar.gz
+git://github.com/udem-dlteam/pnut.git~124cfae4bfafec24dfea65117d0a407078beb459 https://github.com/udem-dlteam/pnut/archive/124cfae4bfafec24dfea65117d0a407078beb459.tar.gz b7ef75c6b9d647cf91309f52b8b2edf4fb68c2e7cf6c6e7b8a387c9fa447cef0
+git://github.com/udem-dlteam/pnut.git~124cfae4bfafec24dfea65117d0a407078beb459 _ 8e82e3b0806abfe4db8224b2ca18cfee0353f1745b2554a24ba10236034f3f28 124cfae4bfafec24dfea65117d0a407078beb459.tar

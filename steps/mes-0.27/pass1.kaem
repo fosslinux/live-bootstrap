@@ -8,10 +8,10 @@
 set -ex
 
 # Variables
-MES_ARENA=20000000
-MES_MAX_ARENA=20000000
-MES_STACK=6000000
-MES=${BINDIR}/mes-m2
+# MES_ARENA=20000000
+# MES_MAX_ARENA=20000000
+# MES_STACK=6000000
+# MES=${BINDIR}/mes-m2
 LIBDIR=${MES_PREFIX}/lib
 
 if match ${ARCH} x86; then
@@ -59,243 +59,243 @@ cp mes/module/srfi/srfi-9-struct.mes mes/module/srfi/srfi-9.mes
 cp mes/module/srfi/srfi-9/gnu-struct.mes mes/module/srfi/srfi-9/gnu.mes
 
 # Build mes-m2
-kaem --verbose --strict --file kaem.${MES_ARCH}
-cp bin/mes-m2 ${BINDIR}/mes-m2
-chmod 755 ${BINDIR}/mes-m2
+# kaem --verbose --strict --file kaem.${MES_ARCH}
+# cp bin/mes-m2 ${BINDIR}/mes-m2
+# chmod 755 ${BINDIR}/mes-m2
 
 # Rebuild pregenerated files in nyacc
-cd ../${NYACC_PKG}
-rm module/nyacc/lang/c99/mach.d/c99-act.scm module/nyacc/lang/c99/mach.d/c99-tab.scm \
-    module/nyacc/lang/c99/mach.d/c99cx-act.scm module/nyacc/lang/c99/mach.d/c99cx-tab.scm \
-    module/nyacc/lang/c99/mach.d/c99x-act.scm module/nyacc/lang/c99/mach.d/c99x-tab.scm \
-    module/nyacc/lang/c99/mach.d/cpp-act.scm module/nyacc/lang/c99/mach.d/cpp-tab.scm
-${MES} -L module gen-cpp-files.scm
+# cd ../${NYACC_PKG}
+# rm module/nyacc/lang/c99/mach.d/c99-act.scm module/nyacc/lang/c99/mach.d/c99-tab.scm \
+#     module/nyacc/lang/c99/mach.d/c99cx-act.scm module/nyacc/lang/c99/mach.d/c99cx-tab.scm \
+#     module/nyacc/lang/c99/mach.d/c99x-act.scm module/nyacc/lang/c99/mach.d/c99x-tab.scm \
+#     module/nyacc/lang/c99/mach.d/cpp-act.scm module/nyacc/lang/c99/mach.d/cpp-tab.scm
+# ${MES} -L module gen-cpp-files.scm
 # More RAM for this one!
-MES_ARENA=32000000
-${MES} -L module gen-c99-files.scm
-MES_ARENA=20000000
-${MES} -L module gen-c99cx-files.scm
+# MES_ARENA=32000000
+# ${MES} -L module gen-c99-files.scm
+# MES_ARENA=20000000
+# ${MES} -L module gen-c99cx-files.scm
 cd ../${MES_PKG}
 
 # Create mescc.scm
-mescc_in=scripts/mescc.scm.in
-replace --file ${mescc_in} --output ${mescc_in} --match-on @prefix@ --replace-with ${PREFIX}
-replace --file ${mescc_in} --output ${mescc_in} --match-on @VERSION@ --replace-with ${MES_VERSION}
-replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_cpu@ --replace-with ${MES_ARCH}
-replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_kernel@ --replace-with linux
+# mescc_in=scripts/mescc.scm.in
+# replace --file ${mescc_in} --output ${mescc_in} --match-on @prefix@ --replace-with ${PREFIX}
+# replace --file ${mescc_in} --output ${mescc_in} --match-on @VERSION@ --replace-with ${MES_VERSION}
+# replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_cpu@ --replace-with ${MES_ARCH}
+# replace --file ${mescc_in} --output ${mescc_in} --match-on @mes_kernel@ --replace-with linux
 
-mescc_scm=${BINDIR}/mescc.scm
-cp ${mescc_in} ${mescc_scm}
-chmod 755 ${mescc_scm}
+# mescc_scm=${BINDIR}/mescc.scm
+# cp ${mescc_in} ${mescc_scm}
+# chmod 755 ${mescc_scm}
 
 # Recompile Mes and Mes C library using mes-m2 bootstrapped Mes
 
-alias mescc="${MES} -e main ${BINDIR}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -c"
+# alias mescc="${MES} -e main ${BINDIR}/mescc.scm -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -c"
 
 # Start with crt1.o
-mescc lib/linux/${MES_ARCH}-mes-mescc/crt1.c -o lib/${MES_ARCH}-mes/crt1.o
+# mescc lib/linux/${MES_ARCH}-mes-mescc/crt1.c -o lib/${MES_ARCH}-mes/crt1.o
 
 # Now for libc-mini.a
-catm libc-mini.c \
- lib/mes/__init_io.c \
- lib/mes/eputs.c \
- lib/mes/oputs.c \
- lib/mes/globals.c \
- lib/stdlib/exit.c \
- lib/linux/${MES_ARCH}-mes-mescc/_exit.c \
- lib/linux/${MES_ARCH}-mes-mescc/_write.c \
- lib/stdlib/puts.c \
- lib/string/strlen.c
-mescc libc-mini.c
-cp libc-mini.o ${LIBDIR}/${MES_ARCH}-mes/libc-mini.a
-cp libc-mini.s ${LIBDIR}/${MES_ARCH}-mes/libc-mini.s
+# catm libc-mini.c \
+#  lib/mes/__init_io.c \
+#  lib/mes/eputs.c \
+#  lib/mes/oputs.c \
+#  lib/mes/globals.c \
+#  lib/stdlib/exit.c \
+#  lib/linux/${MES_ARCH}-mes-mescc/_exit.c \
+#  lib/linux/${MES_ARCH}-mes-mescc/_write.c \
+#  lib/stdlib/puts.c \
+#  lib/string/strlen.c
+# mescc libc-mini.c
+# cp libc-mini.o ${LIBDIR}/${MES_ARCH}-mes/libc-mini.a
+# cp libc-mini.s ${LIBDIR}/${MES_ARCH}-mes/libc-mini.s
 
 # libmescc.a
-catm libmescc.c \
- lib/mes/globals.c \
- lib/linux/${MES_ARCH}-mes-mescc/syscall-internal.c
-mescc libmescc.c
-cp libmescc.o ${LIBDIR}/${MES_ARCH}-mes/libmescc.a
-cp libmescc.s ${LIBDIR}/${MES_ARCH}-mes/libmescc.s
+# catm libmescc.c \
+#  lib/mes/globals.c \
+#  lib/linux/${MES_ARCH}-mes-mescc/syscall-internal.c
+# mescc libmescc.c
+# cp libmescc.o ${LIBDIR}/${MES_ARCH}-mes/libmescc.a
+# cp libmescc.s ${LIBDIR}/${MES_ARCH}-mes/libmescc.s
 
 # libc.a
-catm libc.c \
- lib/ctype/isnumber.c \
- lib/mes/abtol.c \
- lib/mes/cast.c \
- lib/mes/eputc.c \
- lib/mes/fdgetc.c \
- lib/mes/fdputc.c \
- lib/mes/fdputs.c \
- lib/mes/fdungetc.c \
- lib/mes/itoa.c \
- lib/mes/ltoa.c \
- lib/mes/ltoab.c \
- lib/mes/mes_open.c \
- lib/mes/ntoab.c \
- lib/mes/oputc.c \
- lib/mes/ultoa.c \
- lib/mes/utoa.c \
- lib/ctype/isdigit.c \
- lib/ctype/isspace.c \
- lib/ctype/isxdigit.c \
- lib/mes/assert_msg.c \
- lib/posix/write.c \
- lib/stdlib/atoi.c \
- lib/linux/lseek.c \
- lib/mes/__assert_fail.c \
- lib/mes/__buffered_read.c \
- lib/mes/__mes_debug.c \
- lib/posix/execv.c \
- lib/posix/getcwd.c \
- lib/posix/getenv.c \
- lib/posix/isatty.c \
- lib/posix/open.c \
- lib/posix/buffered-read.c \
- lib/posix/setenv.c \
- lib/posix/wait.c \
- lib/dirent/closedir.c \
- lib/dirent/opendir.c \
- lib/stdio/fgetc.c \
- lib/stdio/fputc.c \
- lib/stdio/fputs.c \
- lib/stdio/getc.c \
- lib/stdio/getchar.c \
- lib/stdio/putc.c \
- lib/stdio/putchar.c \
- lib/stdio/ungetc.c \
- lib/stdlib/calloc.c \
- lib/stdlib/free.c \
- lib/stdlib/realloc.c \
- lib/string/memchr.c \
- lib/string/memcmp.c \
- lib/string/memcpy.c \
- lib/string/memmove.c \
- lib/string/memset.c \
- lib/string/strcmp.c \
- lib/string/strcpy.c \
- lib/string/strncmp.c \
- lib/posix/raise.c \
- lib/linux/access.c \
- lib/linux/brk.c \
- lib/linux/chdir.c \
- lib/linux/chmod.c \
- lib/linux/clock_gettime.c \
- lib/linux/dup.c \
- lib/linux/dup2.c \
- lib/linux/execve.c \
- lib/linux/fork.c \
- lib/linux/fsync.c \
- lib/linux/_getcwd.c \
- lib/linux/gettimeofday.c \
- lib/linux/ioctl3.c \
- lib/linux/malloc.c \
- lib/linux/_open3.c \
- lib/linux/_read.c \
- lib/linux/readdir.c \
- lib/linux/rename.c \
- lib/linux/time.c \
- lib/linux/umask.c \
- lib/linux/uname.c \
- lib/linux/unlink.c \
- lib/linux/utimensat.c \
- lib/linux/wait4.c \
- lib/linux/waitpid.c \
- lib/linux/${MES_ARCH}-mes-mescc/syscall.c \
- lib/linux/getpid.c \
- lib/linux/kill.c \
- lib/linux/pipe.c \
- lib/linux/stat.c \
- lib/linux/lstat.c \
- lib/linux/mkdir.c \
- lib/linux/rmdir.c \
- lib/linux/link.c \
- lib/linux/symlink.c \
- lib/linux/close.c \
- lib/linux/nanosleep.c \
- lib/linux/fcntl.c \
- lib/linux/fstat.c \
- lib/linux/getdents.c
-mescc libc.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libc.a ${LIBDIR}/${MES_ARCH}-mes/libc-mini.a libc.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libc.s ${LIBDIR}/${MES_ARCH}-mes/libc-mini.s libc.s
+# catm libc.c \
+#  lib/ctype/isnumber.c \
+#  lib/mes/abtol.c \
+#  lib/mes/cast.c \
+#  lib/mes/eputc.c \
+#  lib/mes/fdgetc.c \
+#  lib/mes/fdputc.c \
+#  lib/mes/fdputs.c \
+#  lib/mes/fdungetc.c \
+#  lib/mes/itoa.c \
+#  lib/mes/ltoa.c \
+#  lib/mes/ltoab.c \
+#  lib/mes/mes_open.c \
+#  lib/mes/ntoab.c \
+#  lib/mes/oputc.c \
+#  lib/mes/ultoa.c \
+#  lib/mes/utoa.c \
+#  lib/ctype/isdigit.c \
+#  lib/ctype/isspace.c \
+#  lib/ctype/isxdigit.c \
+#  lib/mes/assert_msg.c \
+#  lib/posix/write.c \
+#  lib/stdlib/atoi.c \
+#  lib/linux/lseek.c \
+#  lib/mes/__assert_fail.c \
+#  lib/mes/__buffered_read.c \
+#  lib/mes/__mes_debug.c \
+#  lib/posix/execv.c \
+#  lib/posix/getcwd.c \
+#  lib/posix/getenv.c \
+#  lib/posix/isatty.c \
+#  lib/posix/open.c \
+#  lib/posix/buffered-read.c \
+#  lib/posix/setenv.c \
+#  lib/posix/wait.c \
+#  lib/dirent/closedir.c \
+#  lib/dirent/opendir.c \
+#  lib/stdio/fgetc.c \
+#  lib/stdio/fputc.c \
+#  lib/stdio/fputs.c \
+#  lib/stdio/getc.c \
+#  lib/stdio/getchar.c \
+#  lib/stdio/putc.c \
+#  lib/stdio/putchar.c \
+#  lib/stdio/ungetc.c \
+#  lib/stdlib/calloc.c \
+#  lib/stdlib/free.c \
+#  lib/stdlib/realloc.c \
+#  lib/string/memchr.c \
+#  lib/string/memcmp.c \
+#  lib/string/memcpy.c \
+#  lib/string/memmove.c \
+#  lib/string/memset.c \
+#  lib/string/strcmp.c \
+#  lib/string/strcpy.c \
+#  lib/string/strncmp.c \
+#  lib/posix/raise.c \
+#  lib/linux/access.c \
+#  lib/linux/brk.c \
+#  lib/linux/chdir.c \
+#  lib/linux/chmod.c \
+#  lib/linux/clock_gettime.c \
+#  lib/linux/dup.c \
+#  lib/linux/dup2.c \
+#  lib/linux/execve.c \
+#  lib/linux/fork.c \
+#  lib/linux/fsync.c \
+#  lib/linux/_getcwd.c \
+#  lib/linux/gettimeofday.c \
+#  lib/linux/ioctl3.c \
+#  lib/linux/malloc.c \
+#  lib/linux/_open3.c \
+#  lib/linux/_read.c \
+#  lib/linux/readdir.c \
+#  lib/linux/rename.c \
+#  lib/linux/time.c \
+#  lib/linux/umask.c \
+#  lib/linux/uname.c \
+#  lib/linux/unlink.c \
+#  lib/linux/utimensat.c \
+#  lib/linux/wait4.c \
+#  lib/linux/waitpid.c \
+#  lib/linux/${MES_ARCH}-mes-mescc/syscall.c \
+#  lib/linux/getpid.c \
+#  lib/linux/kill.c \
+#  lib/linux/pipe.c \
+#  lib/linux/stat.c \
+#  lib/linux/lstat.c \
+#  lib/linux/mkdir.c \
+#  lib/linux/rmdir.c \
+#  lib/linux/link.c \
+#  lib/linux/symlink.c \
+#  lib/linux/close.c \
+#  lib/linux/nanosleep.c \
+#  lib/linux/fcntl.c \
+#  lib/linux/fstat.c \
+#  lib/linux/getdents.c
+# mescc libc.c
+# catm ${LIBDIR}/${MES_ARCH}-mes/libc.a ${LIBDIR}/${MES_ARCH}-mes/libc-mini.a libc.o
+# catm ${LIBDIR}/${MES_ARCH}-mes/libc.s ${LIBDIR}/${MES_ARCH}-mes/libc-mini.s libc.s
 
 # libc+tcc.a
-catm libc+tcc.c \
- lib/ctype/islower.c \
- lib/ctype/isupper.c \
- lib/ctype/tolower.c \
- lib/ctype/toupper.c \
- lib/mes/abtod.c \
- lib/mes/dtoab.c \
- lib/mes/search-path.c \
- lib/posix/execvp.c \
- lib/stdio/fclose.c \
- lib/stdio/fdopen.c \
- lib/stdio/ferror.c \
- lib/stdio/fflush.c \
- lib/stdio/fopen.c \
- lib/stdio/fprintf.c \
- lib/stdio/fread.c \
- lib/stdio/fseek.c \
- lib/stdio/ftell.c \
- lib/stdio/fwrite.c \
- lib/stdio/printf.c \
- lib/stdio/remove.c \
- lib/stdio/snprintf.c \
- lib/stdio/sprintf.c \
- lib/stdio/sscanf.c \
- lib/stdio/vfprintf.c \
- lib/stdio/vprintf.c \
- lib/stdio/vsnprintf.c \
- lib/stdio/vsprintf.c \
- lib/stdio/vsscanf.c \
- lib/stdlib/abort.c \
- lib/stdlib/qsort.c \
- lib/stdlib/strtod.c \
- lib/stdlib/strtof.c \
- lib/stdlib/strtol.c \
- lib/stdlib/strtold.c \
- lib/stdlib/strtoll.c \
- lib/stdlib/strtoul.c \
- lib/stdlib/strtoull.c \
- lib/string/memmem.c \
- lib/string/strcat.c \
- lib/string/strchr.c \
- lib/string/strlwr.c \
- lib/string/strncpy.c \
- lib/string/strrchr.c \
- lib/string/strstr.c \
- lib/string/strupr.c \
- lib/stub/sigaction.c \
- lib/stub/ldexp.c \
- lib/stub/mprotect.c \
- lib/stub/localtime.c \
- lib/stub/sigemptyset.c \
- lib/${MES_ARCH}-mes-mescc/setjmp.c \
- lib/linux/close.c \
- lib/linux/rmdir.c \
- lib/linux/stat.c
-mescc libc+tcc.c
-catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${LIBDIR}/${MES_ARCH}-mes/libc.a libc+tcc.o
-catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${LIBDIR}/${MES_ARCH}-mes/libc.s libc+tcc.s
+# catm libc+tcc.c \
+#  lib/ctype/islower.c \
+#  lib/ctype/isupper.c \
+#  lib/ctype/tolower.c \
+#  lib/ctype/toupper.c \
+#  lib/mes/abtod.c \
+#  lib/mes/dtoab.c \
+#  lib/mes/search-path.c \
+#  lib/posix/execvp.c \
+#  lib/stdio/fclose.c \
+#  lib/stdio/fdopen.c \
+#  lib/stdio/ferror.c \
+#  lib/stdio/fflush.c \
+#  lib/stdio/fopen.c \
+#  lib/stdio/fprintf.c \
+#  lib/stdio/fread.c \
+#  lib/stdio/fseek.c \
+#  lib/stdio/ftell.c \
+#  lib/stdio/fwrite.c \
+#  lib/stdio/printf.c \
+#  lib/stdio/remove.c \
+#  lib/stdio/snprintf.c \
+#  lib/stdio/sprintf.c \
+#  lib/stdio/sscanf.c \
+#  lib/stdio/vfprintf.c \
+#  lib/stdio/vprintf.c \
+#  lib/stdio/vsnprintf.c \
+#  lib/stdio/vsprintf.c \
+#  lib/stdio/vsscanf.c \
+#  lib/stdlib/abort.c \
+#  lib/stdlib/qsort.c \
+#  lib/stdlib/strtod.c \
+#  lib/stdlib/strtof.c \
+#  lib/stdlib/strtol.c \
+#  lib/stdlib/strtold.c \
+#  lib/stdlib/strtoll.c \
+#  lib/stdlib/strtoul.c \
+#  lib/stdlib/strtoull.c \
+#  lib/string/memmem.c \
+#  lib/string/strcat.c \
+#  lib/string/strchr.c \
+#  lib/string/strlwr.c \
+#  lib/string/strncpy.c \
+#  lib/string/strrchr.c \
+#  lib/string/strstr.c \
+#  lib/string/strupr.c \
+#  lib/stub/sigaction.c \
+#  lib/stub/ldexp.c \
+#  lib/stub/mprotect.c \
+#  lib/stub/localtime.c \
+#  lib/stub/sigemptyset.c \
+#  lib/${MES_ARCH}-mes-mescc/setjmp.c \
+#  lib/linux/close.c \
+#  lib/linux/rmdir.c \
+#  lib/linux/stat.c
+# mescc libc+tcc.c
+# catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${LIBDIR}/${MES_ARCH}-mes/libc.a libc+tcc.o
+# catm ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${LIBDIR}/${MES_ARCH}-mes/libc.s libc+tcc.s
 
 # Make directories
 mkdir ${PREFIX}/lib/linux ${INCDIR}/mes ${INCDIR}/sys ${INCDIR}/linux ${INCDIR}/arch
 mkdir ${PREFIX}/lib/${MES_ARCH}-mes ${PREFIX}/lib/linux/${MES_ARCH}-mes ${INCDIR}/linux/${MES_ARCH}
 
 # Install libraries
-cp ${LIBDIR}/${MES_ARCH}-mes/libc.a ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/libmescc.a ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/libc.s ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/libmescc.s ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/${MES_ARCH}.M1 ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/crt1.o ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/${MES_ARCH}-mes/crt1.s ${PREFIX}/lib/${MES_ARCH}-mes/
-cp ${LIBDIR}/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-footer-single-main.hex2 ${PREFIX}/lib/linux/${MES_ARCH}-mes/
-cp ${LIBDIR}/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-header.hex2 ${PREFIX}/lib/linux/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/libc.a ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.a ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/libmescc.a ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/libc.s ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/libc+tcc.s ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/libmescc.s ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/${MES_ARCH}.M1 ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/crt1.o ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/${MES_ARCH}-mes/crt1.s ${PREFIX}/lib/${MES_ARCH}-mes/
+# cp ${LIBDIR}/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-footer-single-main.hex2 ${PREFIX}/lib/linux/${MES_ARCH}-mes/
+# cp ${LIBDIR}/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-header.hex2 ${PREFIX}/lib/linux/${MES_ARCH}-mes/
 
 # Install header files
 cp include/alloca.h ${INCDIR}/alloca.h
@@ -372,23 +372,23 @@ cp include/sys/wait.h ${INCDIR}/sys/wait.h
 cd ../..
 
 # Checksums
-if match x${UPDATE_CHECKSUMS} xTrue; then
-    sha256sum -o ${pkg}.${ARCH}.checksums \
-        /usr/bin/mes-m2 \
-        /usr/bin/mescc.scm \
-        /usr/lib/${MES_ARCH}-mes/crt1.s \
-        /usr/lib/${MES_ARCH}-mes/crt1.o \
-        /usr/lib/${MES_ARCH}-mes/${MES_ARCH}.M1 \
-        /usr/lib/${MES_ARCH}-mes/libmescc.s \
-        /usr/lib/${MES_ARCH}-mes/libc+tcc.s \
-        /usr/lib/${MES_ARCH}-mes/libc.s \
-        /usr/lib/${MES_ARCH}-mes/libmescc.a \
-        /usr/lib/${MES_ARCH}-mes/libc+tcc.a \
-        /usr/lib/${MES_ARCH}-mes/libc.a \
-        /usr/lib/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-header.hex2 \
-        /usr/lib/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-footer-single-main.hex2
+# if match x${UPDATE_CHECKSUMS} xTrue; then
+#     sha256sum -o ${pkg}.${ARCH}.checksums \
+#         /usr/bin/mes-m2 \
+#         /usr/bin/mescc.scm \
+#         /usr/lib/${MES_ARCH}-mes/crt1.s \
+#         /usr/lib/${MES_ARCH}-mes/crt1.o \
+#         /usr/lib/${MES_ARCH}-mes/${MES_ARCH}.M1 \
+#         /usr/lib/${MES_ARCH}-mes/libmescc.s \
+#         /usr/lib/${MES_ARCH}-mes/libc+tcc.s \
+#         /usr/lib/${MES_ARCH}-mes/libc.s \
+#         /usr/lib/${MES_ARCH}-mes/libmescc.a \
+#         /usr/lib/${MES_ARCH}-mes/libc+tcc.a \
+#         /usr/lib/${MES_ARCH}-mes/libc.a \
+#         /usr/lib/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-header.hex2 \
+#         /usr/lib/linux/${MES_ARCH}-mes/elf${ARCH_BITS}-footer-single-main.hex2
 
-    cp ${pkg}.${ARCH}.checksums ${SRCDIR}
-else
-    sha256sum -c ${pkg}.${ARCH}.checksums
-fi
+#     cp ${pkg}.${ARCH}.checksums ${SRCDIR}
+# else
+#     sha256sum -c ${pkg}.${ARCH}.checksums
+# fi
