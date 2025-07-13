@@ -155,8 +155,8 @@ build: mpc-1.2.1
 build: flex-2.5.33
 build: bison-2.3
 build: bison-3.4.2
+build: dist-3.5
 build: perl-5.10.1
-build: dist-3.5-236
 build: perl-5.32.1
 uninstall: perl-5.6.2 perl-5.10.1
 build: libarchive-3.5.2
