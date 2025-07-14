@@ -17,6 +17,7 @@ src_compile() {
     cd mcon
     ./mconfig.SH
     perl ../bin/perload -o mconfig > metaconfig
+    ./makegloss.SH
     cd ..
 
     cd kit
@@ -27,6 +28,7 @@ src_compile() {
 src_install() {
     mkdir -p "${DESTDIR}${PREFIX}/bin/" "${DESTDIR}${PREFIX}/lib/perl5/5.6.2"
     install mcon/metaconfig "${DESTDIR}${PREFIX}/bin/"
+    install mcon/makegloss "${DESTDIR}${PREFIX}/bin/"
     install kit/manifake "${DESTDIR}${PREFIX}/bin/"
     cp -r mcon/U/ "${DESTDIR}${PREFIX}/lib/perl5/5.6.2/"
 }
