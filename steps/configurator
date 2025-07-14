@@ -40,6 +40,19 @@ this correctly, otherwise you risk overwriting an existing disk on your
 system. LIVE-BOOTSTRAP TAKES NO LIABILITY FOR ANY DATA LOSS RESULTING FROM
 ITS USE.
 
+o /general/mirrors MIRRORS "" _ Mirrors
+live-bootstrap needs a mirror to download repackaged distfiles from,
+as long as you do not already have all the distfiles on an attached disk.
+Please see the README for your options of selecting one.
+This should be a URI of the form http(s)://[...], or if it is locally accessible
+on a filesystem (perhaps because you are running this in a sandboxing tool,
+instead of a VM or hardware), file://[...].
+Multiple mirrors can be provided, space separated.
+ENSURE YOU UPDATE MIRRORS_COUNT.
+
+o /general/mirrors_count MIRRORS_LEN int _ Number of mirrors configured
+The number of mirrors you put into Mirrors. Should be an integer >= 0.
+
 m /sysinfo _ _ _ System information
 Details about your specific system and the environment live-bootstrap is
 running in.
