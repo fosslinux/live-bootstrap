@@ -53,6 +53,6 @@ src_configure() {
         --prefix="${PREFIX}" \
         --disable-shared \
         --disable-nls \
-        --build=i386-unknown-linux-musl \
+        --build="${TARGET}" \
         --libdir="${LIBDIR}"
 }

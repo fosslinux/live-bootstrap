@@ -55,8 +55,8 @@ src_configure() {
     CPPFLAGS="-U__DATE__ -U__TIME__" \
     PKG_CONFIG_PATH="${LIBDIR}/pkgconfig/" \
         ./configure \
-        --build=i386-unknown-linux-musl \
-        --host=i386-unknown-linux-musl \
+        --build="${TARGET}" \
+        --host="${TARGET}" \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --with-system-ffi

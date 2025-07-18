@@ -5,5 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 sed -i "/^LIBDIR/d" /steps/env
-LIBDIR=${PREFIX}/lib/i386-unknown-linux-musl
+TARGET=i386-unknown-linux-musl
+LIBDIR=${PREFIX}/lib/${TARGET}
 echo "LIBDIR=${LIBDIR}" >> /steps/env
+echo "TARGET=${TARGET}" >> /steps/env

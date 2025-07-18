@@ -47,7 +47,7 @@ src_configure() {
     # Also, tell coreutils we don't have perl, which disables help2man
     FORCE_UNSAFE_CONFIGURE=1 ./configure CFLAGS="-static" \
         --prefix="${PREFIX}" \
-        --build=i386-unknown-linux-musl \
+        --build="${TARGET}" \
         gl_cv_func_getcwd_path_max="no, but it is partly working" \
         gl_cv_prog_perl="no"
 }

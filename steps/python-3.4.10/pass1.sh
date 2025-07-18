@@ -49,8 +49,8 @@ src_configure() {
     CFLAGS="-U__DATE__ -U__TIME__" \
     LDFLAGS="-L${LIBDIR}" \
         ./configure \
-        --build=i386-unknown-linux-musl \
-        --host=i386-unknown-linux-musl \
+        --build="${TARGET}" \
+        --host="${TARGET}" \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --with-system-ffi

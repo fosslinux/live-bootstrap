@@ -177,9 +177,9 @@ src_configure() {
     ../configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --build=i386-unknown-linux-musl \
-        --target=i386-unknown-linux-musl \
-        --host=i386-unknown-linux-musl \
+        --build="${TARGET}" \
+        --target="${TARGET}" \
+        --host="${TARGET}" \
         --disable-bootstrap \
         --enable-static \
         --program-transform-name= \

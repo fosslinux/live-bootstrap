@@ -181,9 +181,9 @@ src_configure() {
         ../../$dir/configure \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
-            --build=i386-unknown-linux-musl \
-            --target=i386-unknown-linux-musl \
-            --host=i386-unknown-linux-musl \
+            --build="${TARGET}" \
+            --target="${TARGET}" \
+            --host="${TARGET}" \
             --disable-shared \
             --program-transform-name= \
             --enable-languages=c,c++ \
@@ -195,7 +195,7 @@ src_configure() {
 }
 
 src_compile() {
-    ln -s . build/build-i386-unknown-linux-musl
+    ln -s . "build/build-${TARGET}"
     for dir in libiberty libcpp libdecnumber gcc; do
         # We have makeinfo now but it is not happy with gcc .info files, so skip it
         make "${MAKEJOBS}" -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" \
@@ -215,11 +215,11 @@ src_install() {
     make -C build/libgcc install DESTDIR="${DESTDIR}" host_subdir=build
     make -C build/libstdc++-v3 install DESTDIR="${DESTDIR}"
     ln -s gcc "${DESTDIR}${PREFIX}/bin/cc"
-    cp gcc/gsyslimits.h "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/include/syslimits.h"
+    cp gcc/gsyslimits.h "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.7.4/include/syslimits.h"
 
     # Very strange mis-versoning error
-    mkdir -p "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/include/"
-    mv "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include/"* "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/include/"
-    rmdir "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include"
-    mv "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/"* "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.7.4/"
+    mkdir -p "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.7.4/include/"
+    mv "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/include/"* "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.7.4/include/"
+    rmdir "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/include"
+    mv "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/"* "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.7.4/"
 }

@@ -21,7 +21,7 @@ src_configure() {
     # Musl is not recognized, pretend to be uClibc
     # Must use --host for config.charset reproducibility
     CC=tcc ./configure --prefix="${PREFIX}" \
-        --host=i386-unknown-linux-gnu \
+        --host="${TARGET/-musl/-gnu}" \
         CPPFLAGS="-D__UCLIBC__"
 }
 

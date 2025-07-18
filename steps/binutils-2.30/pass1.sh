@@ -121,9 +121,9 @@ src_configure() {
             --disable-nls \
             --enable-deterministic-archives \
             --enable-64-bit-bfd \
-            --build=i386-unknown-linux-gnu \
-            --host=i386-unknown-linux-gnu \
-            --target=i386-unknown-linux-gnu \
+            --build="${TARGET/-musl/-gnu}" \
+            --host="${TARGET/-musl/-gnu}" \
+            --target="${TARGET/-musl/-gnu}" \
             --program-prefix="" \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
@@ -150,6 +150,6 @@ src_install() {
     # Create triplet symlinks
     cd "${DESTDIR}${PREFIX}/bin"
     for f in *; do
-        ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
+        ln -s "${PREFIX}/bin/${f}" "${TARGET}-${f}"
     done
 }

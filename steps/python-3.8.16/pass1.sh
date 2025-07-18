@@ -44,8 +44,8 @@ src_configure() {
     LDFLAGS="-L${LIBDIR}" \
     PYTHON_FOR_BUILD="python -B" \
         ./configure \
-        --build=i386-unknown-linux-musl \
-        --host=i386-unknown-linux-musl \
+        --build="${TARGET}" \
+        --host="${TARGET}" \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --with-system-ffi

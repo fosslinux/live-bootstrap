@@ -24,7 +24,7 @@ src_configure() {
         --bindir="${PREFIX}/bin" \
         --sbindir="${PREFIX}/bin" \
         --libdir="${LIBDIR}" \
-        --build=i386-unknown-linux-gnu \
+        --build="${TARGET/-musl/-gnu}" \
         --disable-cramfs \
         --without-ncurses \
         --enable-static \
@@ -38,6 +38,6 @@ src_install() {
     default
 
     # A weird behaviour I can't find the source of
-    mv "${DESTDIR}${PREFIX}/i386-unknown-linux-musl/"* "${DESTDIR}${LIBDIR}/"
-    rmdir "${DESTDIR}${PREFIX}/i386-unknown-linux-musl/"
+    mv "${DESTDIR}${PREFIX}/${TARGET}/"* "${DESTDIR}${LIBDIR}/"
+    rmdir "${DESTDIR}${PREFIX}/${TARGET}/"
 }

@@ -21,6 +21,6 @@ src_configure() {
     # pkg-config and other software (python/meson) that we do not have.
     ./configure \
         --prefix="${PREFIX}" \
-        --build=i386-unknown-linux-musl \
+        --build="${TARGET}" \
         --with-internal-glib
 }
