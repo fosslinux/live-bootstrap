@@ -82,9 +82,9 @@ src_configure() {
         CC=tcc CFLAGS="-D HAVE_ALLOCA_H" ../../$dir/configure \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
-            --build=i386-unknown-linux-musl \
-            --target=i386-unknown-linux-musl \
-            --host=i386-unknown-linux-musl \
+            --build="${TARGET}" \
+            --target="${TARGET}" \
+            --host="${TARGET}" \
             --disable-shared \
             --program-transform-name=
         cd ..
@@ -96,7 +96,7 @@ src_configure() {
 }
 
 src_compile() {
-    ln -s . build/build-i386-unknown-linux-musl
+    ln -s . "build/build-${TARGET}"
     mkdir build/gcc/include
     ln -s ../../../gcc/gsyslimits.h build/gcc/include/syslimits.h
     make -j1 -C build/gcc gengtype-yacc.c
@@ -106,9 +106,9 @@ src_compile() {
 }
 
 src_install() {
-    mkdir -p "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/install-tools/include"
+    mkdir -p "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/install-tools/include"
     make -C build/gcc install STMP_FIXINC= DESTDIR="${DESTDIR}"
-    mkdir -p "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include"
-    rm "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include/syslimits.h"
-    cp  gcc/gsyslimits.h "${DESTDIR}${LIBDIR}/gcc/i386-unknown-linux-musl/4.0.4/include/syslimits.h"
+    mkdir -p "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/include"
+    rm "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/include/syslimits.h"
+    cp  gcc/gsyslimits.h "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/include/syslimits.h"
 }

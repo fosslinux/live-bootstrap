@@ -15,7 +15,7 @@ src_get() {
 
 src_configure() {
     CC=gcc ./configure \
-        --host=i386-unknown-linux-musl \
+        --host="${TARGET}" \
         --disable-shared \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \

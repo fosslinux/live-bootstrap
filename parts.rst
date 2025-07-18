@@ -394,7 +394,7 @@ tcc 0.9.27 (patched)
 
 We recompile ``tcc`` with some patches needed to build musl.
 
-musl 1.1.24 and musl_libdir
+musl 1.1.24 and musl_target
 ===========================
 
 ``musl`` is a C standard library that is lightweight, fast, simple,

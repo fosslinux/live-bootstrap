@@ -31,7 +31,7 @@ src_configure() {
     LDFLAGS="-static" ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --build=i386-unknown-linux-gnu \
+        --build="${TARGET}" \
         --enable-ipv6 \
         --without-ssl \
         --without-libpsl \

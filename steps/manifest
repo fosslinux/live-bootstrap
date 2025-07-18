@@ -59,7 +59,7 @@ improve: populate_device_nodes
 define: CONSOLES = ( INTERACTIVE == True && CHROOT == False )
 improve: open_console ( CONSOLES == True )
 build: tcc-0.9.27
-improve: musl_libdir
+improve: musl_target
 build: musl-1.1.24
 build: tcc-0.9.27
 build: musl-1.1.24

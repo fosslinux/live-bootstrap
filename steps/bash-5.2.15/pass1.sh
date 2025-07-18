@@ -41,7 +41,7 @@ src_configure() {
     ./configure --prefix="${PREFIX}" \
         --without-bash-malloc \
         --disable-nls \
-        --build=i386-unknown-linux-musl \
+        --build="${TARGET}" \
         --enable-static-link \
         bash_cv_dev_stdin=absent \
         bash_cv_dev_fd=whacky

@@ -131,9 +131,9 @@ src_configure() {
     ../configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --build=i386-unknown-linux-musl \
-        --host=i386-unknown-linux-musl \
-        --target=i386-unknown-linux-musl \
+        --build="${TARGET}" \
+        --host="${TARGET}" \
+        --target="${TARGET}" \
         --enable-static \
         --disable-nls \
         --disable-multilib \
@@ -157,7 +157,7 @@ src_install() {
     # Create triplet symlinks
     pushd "${DESTDIR}${PREFIX}/bin"
     for f in *; do
-        ln -s "${PREFIX}/bin/${f}" "i386-unknown-linux-musl-${f}"
+        ln -s "${PREFIX}/bin/${f}" "${TARGET}-${f}"
     done
     popd
 

@@ -55,7 +55,7 @@ src_configure() {
         PKG_CONFIG_PATH="${LIBDIR}/pkgconfig" ./configure \
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
-            --build=i386-unknown-linux-musl \
+            --build="${TARGET}" \
             --disable-shared \
             --disable-jit
         popd

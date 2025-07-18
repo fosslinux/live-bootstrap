@@ -46,8 +46,8 @@ src_configure() {
         ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --build=i386-unknown-linux-musl \
-        --host=i386-unknown-linux-musl \
+        --build="${TARGET}" \
+        --host="${TARGET}" \
         --with-pydebug \
         --with-system-ffi \
         --enable-ipv6

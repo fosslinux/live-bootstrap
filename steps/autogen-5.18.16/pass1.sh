@@ -43,7 +43,7 @@ src_compile() {
     # Specify timeout to avoid non-reproducibility
     CPPFLAGS=-D_LARGEFILE64_SOURCE=1 ./configure \
 	--prefix="${FINALPREFIX}" \
-	--libdir="${FINALPREFIX}/lib/i386-unknown-linux-musl" \
+	--libdir="${FINALPREFIX}/lib/${TARGET}" \
 	--disable-shared \
 	--enable-timeout=15
     touch doc/agdoc.texi # build later

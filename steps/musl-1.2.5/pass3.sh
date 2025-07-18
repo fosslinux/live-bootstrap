@@ -6,7 +6,7 @@
 
 src_configure() {
     ./configure \
-        --host=i386-unknown-linux-musl \
+        --host="${TARGET}" \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --includedir="${PREFIX}/include/"
