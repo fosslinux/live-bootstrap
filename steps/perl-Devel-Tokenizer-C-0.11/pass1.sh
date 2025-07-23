@@ -7,5 +7,5 @@ src_compile() {
 }
 
 src_install() {
-    install -D lib/Devel/Tokenizer/C.pm /usr/lib/perl5/5.6.2/Devel/Tokenizer/C.pm
+    install -D lib/Devel/Tokenizer/C.pm "${DESTDIR}/usr/lib/perl5/$(get_perl_version)/Devel/Tokenizer/C.pm"
 }

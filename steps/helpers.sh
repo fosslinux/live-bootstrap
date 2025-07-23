@@ -78,6 +78,11 @@ _grep() {
     fi
 }
 
+# Useful for perl extensions
+get_perl_version() {
+    perl -v | sed -n -re 's/.*[ (]v([0-9\.]*)[ )].*/\1/p'
+}
+
 get_revision() {
     local pkg=$1
     local oldpwd="${PWD}"
