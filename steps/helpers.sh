@@ -447,6 +447,20 @@ default_src_install() {
     make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}"
 }
 
+# Helper function for permissions
+_do_strip() {
+    # shellcheck disable=SC2124
+    local f="${@: -1}"
+    if ! [ -w "${f}" ]; then
+        local perms="$(stat -c %a "${f}")"
+        chmod u+w "${f}"
+    fi
+    strip "$@"
+    if [ -n "${perms}" ]; then
+        chmod "${perms}" "${f}"
+    fi
+}
+
 # Default function for postprocessing binaries.
 default_src_postprocess() {
     if (command -v find && command -v file && command -v strip) >/dev/null 2>&1; then
@@ -454,15 +468,15 @@ default_src_postprocess() {
         # shellcheck disable=SC2162
         find "${DESTDIR}" -type f | while read f; do
             case "$(file -bi "${f}")" in
-                application/x-executable*) strip "${f}" ;;
+                application/x-executable*) _do_strip "${f}" ;;
                 application/x-sharedlib*|application/x-pie-executable*)
                     machine_set="$(file -b "${f}")"
                     case "${machine_set}" in
                         *no\ machine*) ;; # don't strip ELF container-only
-                        *) strip --strip-unneeded "${f}" ;;
+                        *) _do_strip --strip-unneeded "${f}" ;;
                     esac
                     ;;
-                application/x-archive*) strip --strip-debug "${f}" ;;
+                application/x-archive*) _do_strip --strip-debug "${f}" ;;
             esac
         done
     fi
