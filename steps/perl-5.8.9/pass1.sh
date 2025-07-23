@@ -80,7 +80,4 @@ src_install() {
 
     # Remove messed up manpages
     rm "${DESTDIR}/"*.0
-
-    # There are strange permissions on installed files.
-    find "${DESTDIR}${PREFIX}/lib" -type f  -exec chmod 644 {} \;
 }
