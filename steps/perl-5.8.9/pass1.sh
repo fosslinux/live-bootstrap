@@ -5,8 +5,7 @@
 src_prepare() {
     default
 
-    # no idea why this is needed
-    sed -i "s/Sigjmp_buf/sigjmp_buf/" cop.h
+    mv ../Digest-SHA-6.04 ext/Digest/SHA/
 
     # Remove miscellaneous pregenerated files
     rm Porting/Glossary lib/unicore/mktables.lst \
@@ -37,11 +36,11 @@ src_prepare() {
 
     # Regenerate other prebuilt header files
     # Taken from headers of regen scripts
-    rm -f lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c reentr.inc \
+    rm lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c reentr.inc \
           overload.h overload.c opcode.h opnames.h pp_proto.h \
           pp.sym keywords.h embed.h embedvar.h global.sym perlapi.c perlapi.h \
-          proto.h lib/overload/numbers.pm pod/perlintern.pod pod/perlapi.pod \
-          pod/perlmodlib.pod perl/perltoc.pod ext/ByteLoader/byterun.{h,c} \
+          proto.h pod/perlintern.pod pod/perlapi.pod \
+          pod/perlmodlib.pod ext/ByteLoader/byterun.{h,c} \
           ext/B/B/Asmdata.pm
     perl regen.pl
 
@@ -66,13 +65,20 @@ src_configure() {
     ./Configure -des \
         -Dprefix="${PREFIX}" \
         -Dcc=gcc \
-        -Dyacc='bison -y' \
         -Dusedl=false \
         -Ddate=':' \
         -Dccflags="-U__DATE__ -U__TIME__" \
         -Darchname="i386-linux" \
         -Dmyhostname="(none)" \
         -Dmaildomain="(none)"
+}
+
+src_compile() {
+    pushd x2p
+    make BYACC=yacc run_byacc
+    popd
+
+    make -j1 PREFIX="${PREFIX}"
 }
 
 src_install() {
