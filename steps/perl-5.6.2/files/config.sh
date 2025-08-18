@@ -6,7 +6,7 @@
 ar='tcc -ar'
 cc='tcc'
 ldlibpthname='LD_LIBRARY_PATH'
-libpth='/usr/lib/i386-unknown-linux-musl'
+libpth='/usr/lib/i686-unknown-linux-musl'
 path_sep=':'
 archname=''
 osvers=''
