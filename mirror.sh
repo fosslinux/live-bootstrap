@@ -162,7 +162,11 @@ do_file() {
 
         (
             cd "${outdir}" || exit
-            git config tar.tar.gz.command gzip
+            # Some versions of git by default use the internal gzip
+            # implementation, others use external gzip; standardize this
+            # -n is used for older versions of git that record gzip creation
+            # date/time
+            git config tar.tar.gz.command "gzip -n"
             # -T1 avoids non-determinism due to threading
             # This may not be correct for forges other than Savannah
             git config tar.tar.xz.command "xz -T1"
