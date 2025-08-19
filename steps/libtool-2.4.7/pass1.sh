@@ -26,9 +26,9 @@ src_configure() {
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --disable-shared \
-        --host=i386-unknown-linux \
-        --target=i386-unknown-linux \
-        --build=i386-unknown-linux \
+        --host="${TARGET}" \
+        --target="${TARGET}" \
+        --build="${TARGET}" \
         ac_path_EGREP="egrep" \
         ac_path_FGREP="fgrep" \
         ac_path_GREP="grep" \
