@@ -45,6 +45,10 @@ rm ${NYACC_PKG}.tar ${MES_PKG}.tar
 
 cp ../files/config.h ${MES_PREFIX}/include/mes
 
+# This patch was upstreamed after mes 0.27.1
+simple-patch ${MES_PREFIX}/lib/linux/wait4.c \
+    ../simple-patches/wait4.before ../simple-patches/wait4.after
+
 cd ${MES_PREFIX}
 mkdir include/arch
 cp include/linux/${MES_ARCH}/kernel-stat.h include/arch/kernel-stat.h

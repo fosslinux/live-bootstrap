@@ -1,0 +1,3 @@
+  long long_status_ptr = cast_voidp_to_long (status_ptr);
+  long long_options = options;
+  long long_rusage = cast_voidp_to_long (rusage);
