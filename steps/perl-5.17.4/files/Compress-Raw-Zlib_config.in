@@ -1,0 +1,5 @@
+BUILD_ZLIB      = False
+INCLUDE         = /usr/include
+LIB             = /usr/lib/i386-unknown-linux-musl
+OLD_ZLIB        = False
+GZIP_OS_CODE    = AUTO_DETECT

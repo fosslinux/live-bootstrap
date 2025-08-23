@@ -1,0 +1,344 @@
+From abdda3c270bcbe62f91b979b0b15b34fa3d164fe Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Sat, 23 Aug 2025 00:00:00 +1000
+Subject: [PATCH 4/4] Revert "Upgrade Socket to 2.002"
+
+This reverts commit 3be135d8cfe01725ff3bdfcc1b4a30206a1e0ed2.
+---
+ MANIFEST                |  1 -
+ Porting/Maintainers.pl  |  2 +-
+ cpan/Socket/Makefile.PL | 26 +++----------
+ cpan/Socket/Socket.pm   | 38 +++----------------
+ cpan/Socket/Socket.xs   | 81 +++++------------------------------------
+ cpan/Socket/t/ip_mreq.t | 29 ---------------
+ pod/perldelta.pod       |  6 +++
+ 7 files changed, 29 insertions(+), 154 deletions(-)
+ delete mode 100644 cpan/Socket/t/ip_mreq.t
+
+diff --git perl-5.17.4/MANIFEST perl-5.17.4/MANIFEST
+index 6883a5f76f..3397344adf 100644
+--- perl-5.17.4/MANIFEST
++++ perl-5.17.4/MANIFEST
+@@ -2229,7 +2229,6 @@ cpan/Socket/Socket.pm			Socket extension Perl module
+ cpan/Socket/Socket.xs			Socket extension external subroutines
+ cpan/Socket/t/getaddrinfo.t		See if Socket::getaddrinfo works
+ cpan/Socket/t/getnameinfo.t		See if Socket::getnameinfo works
+-cpan/Socket/t/ip_mreq.t			See if (un)pack_ip_mreq work
+ cpan/Socket/t/ipv6_mreq.t		See if (un)pack_ipv6_mreq work
+ cpan/Socket/t/sockaddr.t
+ cpan/Socket/t/socketpair.t		See if socketpair works
+diff --git perl-5.17.4/Porting/Maintainers.pl perl-5.17.4/Porting/Maintainers.pl
+index e38daab394..131493c9c9 100755
+--- perl-5.17.4/Porting/Maintainers.pl
++++ perl-5.17.4/Porting/Maintainers.pl
+@@ -1636,7 +1636,7 @@ use File::Glob qw(:case);
+ 
+     'Socket' => {
+         'MAINTAINER'   => 'pevans',
+-        'DISTRIBUTION' => 'PEVANS/Socket-2.002.tar.gz',
++        'DISTRIBUTION' => 'PEVANS/Socket-2.001.tar.gz',
+         'FILES'        => q[cpan/Socket],
+         'UPSTREAM'     => 'cpan',
+     },
+diff --git perl-5.17.4/cpan/Socket/Makefile.PL perl-5.17.4/cpan/Socket/Makefile.PL
+index 3be198e024..9a8f65d274 100644
+--- perl-5.17.4/cpan/Socket/Makefile.PL
++++ perl-5.17.4/cpan/Socket/Makefile.PL
+@@ -30,15 +30,10 @@ sub check_for
+ 	open( my $file_source_fh, ">", $file_source ) or die "Cannot write $file_source - $!";
+ 	print $file_source_fh <<"EOF";
+ #include <sys/types.h>
+-#ifdef WIN32
+-# include <ws2tcpip.h>
+-# include <winsock.h>
+-#else
+-# include <sys/socket.h>
+-# include <netdb.h>
+-# include <netinet/in.h>
+-# include <arpa/inet.h>
+-#endif
++#include <sys/socket.h>
++#include <netdb.h>
++#include <netinet/in.h>
++#include <arpa/inet.h>
+ int main(int argc, char *argv[])
+   {
+     (void)argc;
+@@ -108,13 +103,6 @@ check_for(
+     main    => "struct sockaddr_in6 sin6; sin6.sin6_scope_id = 0;"
+ );
+ 
+-# TODO: Needs adding to perl5 core before importing dual-life again
+-check_for(
+-    confkey => "d_ip_mreq",
+-    define  => "HAS_IP_MREQ",
+-    main    => "struct ip_mreq mreq; mreq.imr_multiaddr.s_addr = INADDR_ANY;"
+-);
+-
+ check_for(
+     confkey => "d_ipv6_mreq",
+     define  => "HAS_IPV6_MREQ",
+@@ -161,9 +149,8 @@ my @names = (
+ 
+ 	IOV_MAX
+ 
+-	IP_ADD_MEMBERSHIP IP_DROP_MEMBERSHIP IP_HDRINCL IP_MULTICAST_IF
+-	IP_MULTICAST_LOOP IP_MULTICAST_TTL IP_OPTIONS IP_RECVOPTS
+-	IP_RECVRETOPTS IP_RETOPTS IP_TOS IP_TTL 
++	IP_OPTIONS IP_HDRINCL IP_TOS IP_TTL IP_RECVOPTS IP_RECVRETOPTS
++	IP_RETOPTS
+ 
+ 	IPV6_ADD_MEMBERSHIP IPV6_DROP_MEMBERSHIP IPV6_MTU IPV6_MTU_DISCOVER
+ 	IPV6_MULTICAST_HOPS IPV6_MULTICAST_IF IPV6_MULTICAST_LOOP
+@@ -185,7 +172,6 @@ my @names = (
+ 	SCM_CONNECT SCM_CREDENTIALS SCM_CREDS SCM_TIMESTAMP
+ 
+ 	SOCK_DGRAM SOCK_RAW SOCK_RDM SOCK_SEQPACKET SOCK_STREAM
+-	SOCK_NONBLOCK SOCK_CLOEXEC
+ 
+ 	SOL_SOCKET 
+ 
+diff --git perl-5.17.4/cpan/Socket/Socket.pm perl-5.17.4/cpan/Socket/Socket.pm
+index 41f214d8fe..e12d8517de 100644
+--- perl-5.17.4/cpan/Socket/Socket.pm
++++ perl-5.17.4/cpan/Socket/Socket.pm
+@@ -3,7 +3,7 @@ package Socket;
+ use strict;
+ { use 5.006001; }
+ 
+-our $VERSION = '2.002';
++our $VERSION = '2.001';
+ 
+ =head1 NAME
+ 
+@@ -87,13 +87,6 @@ functions as sockaddr_family().
+ Socket type constants to use as the second argument to socket(), or the value
+ of the C<SO_TYPE> socket option.
+ 
+-=head2 SOCK_NONBLOCK. SOCK_CLOEXEC
+-
+-Linux-specific shortcuts to specify the C<O_NONBLOCK> and C<FD_CLOEXEC> flags
+-during a C<socket(2)> call.
+-
+- socket( my $sockh, PF_INET, SOCK_DGRAM|SOCK_NONBLOCK, 0 )
+-
+ =head2 SOL_SOCKET
+ 
+ Socket option level constant for setsockopt() and getsockopt().
+@@ -248,25 +241,13 @@ pack_sockaddr_un() or unpack_sockaddr_un() explicitly.
+ 
+ These are only supported if your system has E<lt>F<sys/un.h>E<gt>.
+ 
+-=head2 $ip_mreq = pack_ip_mreq $multiaddr, $interface
+-
+-Takes an IPv4 multicast address and optionally an interface address (or
+-C<INADDR_ANY>). Returns the C<ip_mreq> structure with those arguments packed
+-in. Suitable for use with the C<IP_ADD_MEMBERSHIP> and C<IP_DROP_MEMBERSHIP>
+-sockopts.
+-
+-=head2 ($multiaddr, $interface) = unpack_ip_mreq $ip_mreq
++=head2 $ipv6_mreq = pack_ipv6_mreq $ip6_address, $ifindex
+ 
+-Takes an C<ip_mreq> structure. Returns a list of two elements; the IPv4
+-multicast address and interface address.
++Takes an IPv6 address and an interface number. Returns the C<ipv6_mreq>
++structure with those arguments packed in. Suitable for use with the
++C<IPV6_ADD_MEMBERSHIP> and C<IPV6_DROP_MEMBERSHIP> sockopts.
+ 
+-=head2 $ipv6_mreq = pack_ipv6_mreq $multiaddr6, $ifindex
+-
+-Takes an IPv6 multicast address and an interface number. Returns the
+-C<ipv6_mreq> structure with those arguments packed in. Suitable for use with
+-the C<IPV6_ADD_MEMBERSHIP> and C<IPV6_DROP_MEMBERSHIP> sockopts.
+-
+-=head2 ($multiaddr6, $ifindex) = unpack_ipv6_mreq $ipv6_mreq
++=head2 ($ip6_address, $ifindex) = unpack_ipv6_mreq $ipv6_mreq
+ 
+ Takes an C<ipv6_mreq> structure. Returns a list of two elements; the IPv6
+ address and an interface number.
+@@ -734,11 +715,6 @@ our @EXPORT = qw(
+ our @EXPORT_OK = qw(
+ 	CR LF CRLF $CR $LF $CRLF
+ 
+-	SOCK_NONBLOCK SOCK_CLOEXEC
+-
+-	IP_ADD_MEMBERSHIP IP_DROP_MEMBERSHIP IP_MULTICAST_IF
+-	IP_MULTICAST_LOOP IP_MULTICAST_TTL
+-
+ 	IPPROTO_IP IPPROTO_IPV6 IPPROTO_RAW IPPROTO_ICMP IPPROTO_TCP
+ 	IPPROTO_UDP
+ 
+@@ -753,8 +729,6 @@ our @EXPORT_OK = qw(
+ 	IPV6_MULTICAST_HOPS IPV6_MULTICAST_IF IPV6_MULTICAST_LOOP
+ 	IPV6_UNICAST_HOPS IPV6_V6ONLY
+ 
+-	pack_ip_mreq unpack_ip_mreq
+-
+ 	pack_ipv6_mreq unpack_ipv6_mreq
+ 
+ 	inet_pton inet_ntop
+diff --git perl-5.17.4/cpan/Socket/Socket.xs perl-5.17.4/cpan/Socket/Socket.xs
+index f22c1f3001..5ddd0e9d8e 100644
+--- perl-5.17.4/cpan/Socket/Socket.xs
++++ perl-5.17.4/cpan/Socket/Socket.xs
+@@ -44,10 +44,6 @@
+ #  include <netinet/tcp.h>
+ #endif
+ 
+-#ifdef WIN32
+-# include <ws2tcpip.h>
+-#endif
+-
+ #ifdef NETWARE
+ NETDB_DEFINE_CONTEXT
+ NETINET_DEFINE_CONTEXT
+@@ -963,84 +959,27 @@ inet_pton(af, host)
+ #endif
+ 
+ void
+-pack_ip_mreq(multiaddr, interface=&PL_sv_undef)
+-	SV *	multiaddr
+-	SV *	interface
+-	CODE:
+-	{
+-#ifdef HAS_IP_MREQ
+-	struct ip_mreq mreq;
+-	char * multiaddrbytes;
+-	char * interfacebytes;
+-	STRLEN len;
+-	if (DO_UTF8(multiaddr) && !sv_utf8_downgrade(multiaddr, 1))
+-		croak("Wide character in %s", "Socket::pack_ip_mreq");
+-	multiaddrbytes = SvPVbyte(multiaddr, len);
+-	if (len != sizeof(mreq.imr_multiaddr))
+-		croak("Bad arg length %s, length is %"UVuf", should be %"UVuf,
+-		      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_multiaddr));
+-	Zero(&mreq, sizeof(mreq), char);
+-	Copy(multiaddrbytes, &mreq.imr_multiaddr, sizeof(mreq.imr_multiaddr), char);
+-	if(SvOK(interface)) {
+-		if (DO_UTF8(interface) && !sv_utf8_downgrade(interface, 1))
+-			croak("Wide character in %s", "Socket::pack_ip_mreq");
+-		interfacebytes = SvPVbyte(interface, len);
+-		if (len != sizeof(mreq.imr_interface))
+-			croak("Bad arg length %s, length is %"UVuf", should be %"UVuf,
+-			      "Socket::pack_ip_mreq", (UV)len, (UV)sizeof(mreq.imr_interface));
+-		Copy(interfacebytes, &mreq.imr_interface, sizeof(mreq.imr_interface), char);
+-	}
+-	else
+-		mreq.imr_interface.s_addr = INADDR_ANY;
+-	ST(0) = sv_2mortal(newSVpvn((char *)&mreq, sizeof(mreq)));
+-#else
+-	not_here("pack_ip_mreq");
+-#endif
+-	}
+-
+-void
+-unpack_ip_mreq(mreq_sv)
+-	SV * mreq_sv
+-	PPCODE:
+-	{
+-#ifdef HAS_IP_MREQ
+-	struct ip_mreq mreq;
+-	STRLEN mreqlen;
+-	char * mreqbytes = SvPVbyte(mreq_sv, mreqlen);
+-	if (mreqlen != sizeof(mreq))
+-		croak("Bad arg length for %s, length is %"UVuf", should be %"UVuf,
+-		      "Socket::unpack_ip_mreq", (UV)mreqlen, (UV)sizeof(mreq));
+-	Copy(mreqbytes, &mreq, sizeof(mreq), char);
+-	EXTEND(SP, 2);
+-	mPUSHp((char *)&mreq.imr_multiaddr, sizeof(mreq.imr_multiaddr));
+-	mPUSHp((char *)&mreq.imr_interface, sizeof(mreq.imr_interface));
+-#else
+-	not_here("unpack_ip_mreq");
+-#endif
+-	}
+-
+-void
+-pack_ipv6_mreq(multiaddr, interface)
+-	SV *	multiaddr
++pack_ipv6_mreq(addr, interface)
++	SV *	addr
+ 	unsigned int	interface
+ 	CODE:
+ 	{
+ #ifdef HAS_IPV6_MREQ
+ 	struct ipv6_mreq mreq;
+-	char * multiaddrbytes;
+-	STRLEN len;
+-	if (DO_UTF8(multiaddr) && !sv_utf8_downgrade(multiaddr, 1))
++	char * addrbytes;
++	STRLEN addrlen;
++	if (DO_UTF8(addr) && !sv_utf8_downgrade(addr, 1))
+ 		croak("Wide character in %s", "Socket::pack_ipv6_mreq");
+-	multiaddrbytes = SvPVbyte(multiaddr, len);
+-	if (len != sizeof(mreq.ipv6mr_multiaddr))
++	addrbytes = SvPVbyte(addr, addrlen);
++	if (addrlen != sizeof(mreq.ipv6mr_multiaddr))
+ 		croak("Bad arg length %s, length is %"UVuf", should be %"UVuf,
+-		      "Socket::pack_ipv6_mreq", (UV)len, (UV)sizeof(mreq.ipv6mr_multiaddr));
++		      "Socket::pack_ipv6_mreq", (UV)addrlen, (UV)sizeof(mreq.ipv6mr_multiaddr));
+ 	Zero(&mreq, sizeof(mreq), char);
+-	Copy(multiaddrbytes, &mreq.ipv6mr_multiaddr, sizeof(mreq.ipv6mr_multiaddr), char);
++	Copy(addrbytes, &mreq.ipv6mr_multiaddr, sizeof(mreq.ipv6mr_multiaddr), char);
+ 	mreq.ipv6mr_interface = interface;
+ 	ST(0) = sv_2mortal(newSVpvn((char *)&mreq, sizeof(mreq)));
+ #else
+-	not_here("pack_ipv6_mreq");
++	ST(0) = (SV*)not_here("pack_ipv6_mreq");
+ #endif
+ 	}
+ 
+diff --git perl-5.17.4/cpan/Socket/t/ip_mreq.t perl-5.17.4/cpan/Socket/t/ip_mreq.t
+deleted file mode 100644
+index f08920c437..0000000000
+--- perl-5.17.4/cpan/Socket/t/ip_mreq.t
++++ /dev/null
+@@ -1,29 +0,0 @@
+-use strict;
+-use warnings;
+-use Test::More;
+-
+-use Socket qw(
+-    INADDR_ANY
+-    pack_ip_mreq unpack_ip_mreq
+-);
+-
+-# Check that pack/unpack_ip_mreq either croak with "Not implemented", or
+-# roundtrip as identity
+-
+-my $packed;
+-eval {
+-    $packed = pack_ip_mreq "\xe0\0\0\1", INADDR_ANY;
+-};
+-if( !defined $packed ) {
+-    plan skip_all => "No pack_ip_mreq" if $@ =~ m/ not implemented /;
+-    die $@;
+-}
+-
+-plan tests => 3;
+-
+-my @unpacked = unpack_ip_mreq $packed;
+-
+-is( $unpacked[0], "\xe0\0\0\1", 'unpack_ip_mreq multiaddr' );
+-is( $unpacked[1], INADDR_ANY,   'unpack_ip_mreq interface' );
+-
+-is( (unpack_ip_mreq pack_ip_mreq "\xe0\0\0\1")[1], INADDR_ANY, 'pack_ip_mreq interface defaults to INADDR_ANY' );
+diff --git perl-5.17.4/pod/perldelta.pod perl-5.17.4/pod/perldelta.pod
+index 65a9378242..957169ec2f 100644
+--- perl-5.17.4/pod/perldelta.pod
++++ perl-5.17.4/pod/perldelta.pod
+@@ -250,6 +250,12 @@ trailing semicolons in formats.
+ L<CPANPLUS> has been upgraded from version 0.9130 to 0.9131.  This resolves
+ issues with the SQLite source engine.
+ 
++=back
++
++=head2 Removed Modules and Pragmata
++
++=over 4
++
+ =item *
+ 
+ L<DB_File> has been upgraded from version 1.826 to 1.827.  The main Perl module
+-- 
+2.49.1
+

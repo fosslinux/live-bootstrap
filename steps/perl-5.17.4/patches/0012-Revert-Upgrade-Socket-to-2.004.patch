@@ -1,0 +1,69 @@
+From de7b91dbf552295709c29dec46ab735b141b3881 Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Fri, 22 Aug 2025 23:59:12 +1000
+Subject: [PATCH 2/4] Revert "Upgrade Socket to 2.004"
+
+This reverts commit b43fc6a1c1224963b2a2430029a638a4294147d0.
+---
+ Porting/Maintainers.pl  | 2 +-
+ cpan/Socket/Socket.pm   | 2 +-
+ cpan/Socket/t/ip_mreq.t | 2 +-
+ pod/perldelta.pod       | 3 +++
+ 4 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git perl-5.17.4/Porting/Maintainers.pl perl-5.17.4/Porting/Maintainers.pl
+index 54ab2c1352..3b3004f6c3 100755
+--- perl-5.17.4/Porting/Maintainers.pl
++++ perl-5.17.4/Porting/Maintainers.pl
+@@ -1636,7 +1636,7 @@ use File::Glob qw(:case);
+ 
+     'Socket' => {
+         'MAINTAINER'   => 'pevans',
+-        'DISTRIBUTION' => 'PEVANS/Socket-2.004.tar.gz',
++        'DISTRIBUTION' => 'PEVANS/Socket-2.003.tar.gz',
+         'FILES'        => q[cpan/Socket],
+         'UPSTREAM'     => 'cpan',
+     },
+diff --git perl-5.17.4/cpan/Socket/Socket.pm perl-5.17.4/cpan/Socket/Socket.pm
+index 83729b290d..d9bbfae258 100644
+--- perl-5.17.4/cpan/Socket/Socket.pm
++++ perl-5.17.4/cpan/Socket/Socket.pm
+@@ -3,7 +3,7 @@ package Socket;
+ use strict;
+ { use 5.006001; }
+ 
+-our $VERSION = '2.004';
++our $VERSION = '2.003';
+ 
+ =head1 NAME
+ 
+diff --git perl-5.17.4/cpan/Socket/t/ip_mreq.t perl-5.17.4/cpan/Socket/t/ip_mreq.t
+index 2ed76062c1..2a99509904 100644
+--- perl-5.17.4/cpan/Socket/t/ip_mreq.t
++++ perl-5.17.4/cpan/Socket/t/ip_mreq.t
+@@ -31,7 +31,7 @@ is( (unpack_ip_mreq pack_ip_mreq "\xe0\0\0\1")[1], INADDR_ANY, 'pack_ip_mreq int
+ 
+ SKIP: {
+     my $mreq;
+-    skip "No pack_ip_mreq_source", 3 unless defined eval { $mreq = pack_ip_mreq_source "\xe0\0\0\2", "\x0a\0\0\1", INADDR_ANY };
++    skip 3, "No pack_ip_mreq_source" unless defined eval { $mreq = pack_ip_mreq_source "\xe0\0\0\2", "\x0a\0\0\1", INADDR_ANY };
+ 
+     @unpacked = unpack_ip_mreq_source $mreq;
+ 
+diff --git perl-5.17.4/pod/perldelta.pod perl-5.17.4/pod/perldelta.pod
+index 78f169f953..a64c1a9143 100644
+--- perl-5.17.4/pod/perldelta.pod
++++ perl-5.17.4/pod/perldelta.pod
+@@ -316,6 +316,9 @@ L<Storable> has been upgraded from version 2.38 to 2.39.  This contains various
+ bugfixes, including compatibility fixes for older versions of Perl and vstring
+ handling.
+ 
++L<Socket> has been upgraded from version 2.002 to 2.003.  Constants and
++functions required for IP multicast source group membership have been added.
++
+ =item *
+ 
+ L<Sys::Syslog> has been upgraded from version 0.31 to 0.32.  This includes
+-- 
+2.49.1
+
