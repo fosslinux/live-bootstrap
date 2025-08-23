@@ -1,0 +1,10 @@
+--- perl-5.17.4/ext/re/Makefile.PL	2025-08-22 23:08:38.443022450 +1000
++++ perl-5.17.4/ext/re/Makefile.PL	2025-08-23 11:26:37.737298348 +1000
+@@ -31,6 +31,7 @@
+ re_comp.c : $regcomp_c
+ 	- \$(RM_F) re_comp.c
+ 	\$(CP) $regcomp_c re_comp.c
++	sed -i '/charclass_invlists.h/ s/.*/UV NonL1_Perl_Non_Final_Folds_invlist[];/' re_comp.c
+ 
+ re_comp\$(OBJ_EXT) : re_comp.c dquote_static.c inline_invlist.c
+ 
