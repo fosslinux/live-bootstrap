@@ -185,6 +185,7 @@ src_configure() {
             --target="${TARGET}" \
             --host="${TARGET}" \
             --disable-shared \
+            --disable-plugin \
             --program-transform-name= \
             --enable-languages=c,c++ \
             --disable-sjlj-exceptions \

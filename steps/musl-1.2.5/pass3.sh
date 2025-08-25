@@ -9,7 +9,9 @@ src_configure() {
         --host="${TARGET}" \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --includedir="${PREFIX}/include/"
+        --includedir="${PREFIX}/include/" \
+        --enable-static \
+        --enable-shared
 }
 
 src_compile() {
@@ -23,12 +25,13 @@ src_install() {
     rm "${DESTDIR}/lib/ld-musl-i386.so.1"
     rmdir "${DESTDIR}/lib"
     mkdir -p "${DESTDIR}${PREFIX}/lib"
-    ln -sr "${DESTDIR}${LIBDIR}/libc.so" "${DESTDIR}${PREFIX}/lib/ld-musl-i386.so.1"
+    ln -s "${TARGET}/libc.so" "${DESTDIR}${PREFIX}/lib/ld-musl-i386.so.1"
+    ln -s "${TARGET}/libc.so" "${DESTDIR}${PREFIX}/lib/ld-linux.so.2"
 
     # Make startup objects available in /usr/lib
     # Expected by GCC 10+
     for i in crt1.o crti.o crtn.o Scrt1.o rcrt1.o; do
-        ln -sr "${DESTDIR}${LIBDIR}/${i}" "${DESTDIR}${PREFIX}/lib/${i}"
+        ln -s "${TARGET}/${i}" "${DESTDIR}${PREFIX}/lib/${i}"
     done
 
     # Add symlink for ldd

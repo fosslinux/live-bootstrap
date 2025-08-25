@@ -16,7 +16,7 @@ src_prepare() {
 src_configure() {
     ./config --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        no-shared linux-generic32
+        linux-generic32
 }
 
 src_compile() {

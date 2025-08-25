@@ -143,6 +143,8 @@ build: bash-5.2.15
 improve: open_console ( CONSOLES == True )
 build: xz-5.6.4
 build: file-5.44
+# TODO this shouldn't be needed, but we somehow have a regular file as /dev/null without this, which breaks libtool configure
+improve: populate_device_nodes
 build: libtool-2.4.7
 build: tar-1.34
 build: coreutils-9.4

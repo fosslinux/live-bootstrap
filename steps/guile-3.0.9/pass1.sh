@@ -56,7 +56,7 @@ src_configure() {
             --prefix="${PREFIX}" \
             --libdir="${LIBDIR}" \
             --build="${TARGET}" \
-            --disable-shared \
+            --enable-shared \
             --disable-jit
         popd
     done
