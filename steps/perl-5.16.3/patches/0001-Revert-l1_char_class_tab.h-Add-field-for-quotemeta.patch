@@ -1,11 +1,18 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
 From c7c816ac94667bf4ed1e6185ed79a70aeabaee97 Mon Sep 17 00:00:00 2001
 From: Samuel Tyler <fosslinux@aussies.space>
 Date: Thu, 21 Aug 2025 21:53:47 +1000
 Subject: [PATCH] Revert "l1_char_class_tab.h: Add field for quotemeta"
 
+The symbol _Perl_Quotemeta was added in the commit before this. We cannot
+use that support in this build. But support is not needed in this build,
+so we can remove it and just add the QUOTEMETA macros in the next build.
+
 This reverts commit 9a022f3a9e4bafe265086ebafcf8f6990108aa57.
 ---
- l1_char_class_tab.h      | 234 +++++++++++++++++++--------------------
  regen/mk_PL_charclass.pl |   3 -
  2 files changed, 117 insertions(+), 120 deletions(-)
 

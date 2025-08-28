@@ -92,11 +92,6 @@ src_compile() {
 src_install() {
     default
 
-    # install regcharclass.h to the filesystem
-    # This is for the following version of perl, because the bootstrapping story
-    # is incredibly bad there!
-    #cp regcharclass.h "${DESTDIR}/${PREFIX}/lib/perl5/5.16.3/regcharclass.h"
-
     # Remove messed up manpages
     rm "${DESTDIR}/"*.0
 }
