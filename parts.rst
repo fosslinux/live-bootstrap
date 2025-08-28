@@ -1011,7 +1011,7 @@ building bison 2.3.
 bison 2.3
 =========
 
-This is an older version of bison required for the bison files in perl 5.10.1.
+This is an older version of bison required for the bison files in older perls.
 We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
 in 2.3. This parser works sufficiently well for perl 5.10.1.
 
@@ -1022,20 +1022,70 @@ Bison 3.4.1 is buggy and segfaults when perl 5.32.1 is built. This is probably
 because it was built with a hand-written makefile. We do not build the latest
 bison because perl 5.32.1 requires bison <= 3.4.2.
 
-perl 5.10.1
-===========
-
-Perl 5.10.1 is an intermediate version used before Perl 5.32. We require this
-version as it adds a couple of modules into lib/ required to regenerate files in
-Perl 5.32. We still use the Makefile instead of the metaconfig strategy, as
-metaconfig history becomes poor more than a few years back.
-
-dist 3.5-236
-============
+dist 3.5
+========
 
 dist is perl's package used for generating Perl's Configure (which is written in
-Perl itself). We 'compile' (aka generate) metaconfig and manifake only from dist.
-We do not use dist's build system because it itself uses dist.
+Perl itself). We 'compile' (aka generate) metaconfig, manifake and makegloss
+from dist. We do not use dist's build system because it itself uses dist.
+
+perl-Devel-Tokenizer-C 0.11
+===========================
+
+Devel::Tokenizer::C is a Perl module used by the ``regen/keywords.pl`` script in
+all newer perls. After each perl build, this module is rebuilt against the new
+perl version. This will not be repeated in this document.
+
+perl 5.8.9
+==========
+
+This is the final version that can be built by perl 5.6. At this point we move
+to using metaconfig rather than hand-written makefiles, as it is more
+sustainable and produces more functional builds. This version brings a number
+of new files to be regenerated. The metaconfig version was chosen by trial and
+error, as there is no obvious history indicating which version to use.
+
+perl 5.12.5
+===========
+
+This is the final version that can be built by perl 5.8. Again, there are new
+files to be regenerated.
+
+perl 5.15.7
+===========
+
+This development version of perl is the latest version that can be built by perl
+5.12. Usually, we would avoid using development releases of perl. However, in
+the 5.15 development cycle, the Unicode system at the core of perl was changed
+somewhat to use a new script ``regen/mk_invlists.pl``, which can only be built
+by a 5.15 version. So, we need to build a 5.15 version to progress. 5.15.7 is
+the last version with the old Unicode system.
+
+perl 5.16.3
+===========
+
+This is the stable version of perl corresponding to 5.15 series. The
+development version is insufficient to build the following perl releases, and
+is quite buggy, but is enough to at least build 5.16.3.
+
+perl 5.17.2, 5.17.4
+===================
+
+Throughout the 5.17/18 development cycle, the new Unicode system went through a
+lot of significant internal changes and restructuring. In particular, the
+system was transformed to use a lot more pregenerated code, particularly
+macros. There are multiple instances where a new internal symbol or macro
+was introduced, and then immediately used somewhere else. These instances each
+depend on one another in one way or another. All these changes mean we end
+up building *two* development versions of perl to break these cycles in the
+development cycle.
+
+perl 5.18.4
+===========
+
+This is another stable version of perl. We need this version because one final
+aforementioned cycle has to be broken with this version. Also, the development
+versions seem to be reasonably buggy again.
 
 perl 5.32.1
 ===========
