@@ -1,3 +1,11 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Both of these commits remove use of symbols that were added and then
+immediately used in the regeneration script.
+
 From 6f1d133ec238228c656fcd05d6b42f562aaa92b3 Mon Sep 17 00:00:00 2001
 From: Samuel Tyler <fosslinux@aussies.space>
 Date: Thu, 21 Aug 2025 19:28:54 +1000

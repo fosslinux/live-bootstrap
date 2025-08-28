@@ -8,7 +8,7 @@ src_prepare() {
     mv Compress-Raw-Zlib_config.in cpan/Compress-Raw-Zlib/config.in
 
     # Remove miscellaneous pregenerated files
-    rm -f Porting/Glossary \
+    rm Porting/Glossary \
         cpan/Devel-PPPort/parts/apidoc.fnc Configure config_h.SH \
         x2p/a2p.c cpan/Win32API-File/cFile.pc cpan/Sys-Syslog/win32/Win32.pm \
         utils/Makefile
@@ -18,12 +18,9 @@ src_prepare() {
     # Generated tests
     rm cpan/Devel-PPPort/t/*.t cpan/Unicode-Collate/Collate/keys.txt
 
-    # Partially generated file
-    #sed -i '/GENERATED CODE/q' utf8.h
-
     # Regenerate other prebuilt header files
     # Taken from headers of regen scripts
-    rm -f lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c \
+    rm lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c \
           overload.h overload.c opcode.h opnames.h pp_proto.h \
           keywords.h embed.h embedvar.h perlapi.c perlapi.h \
           proto.h lib/overload/numbers.pm regcharclass.h perly.{tab,h,act} \
@@ -90,7 +87,10 @@ src_compile() {
     popd
 
     # The Revert-regen-mk_PL_charclass-pl.patch breaks building some
-    # modules for reasons that are not exactly clear.
+    # modules. The error messages are fairly cryptic. It seems probable that
+    # the symbols have been used elsewhere in the codebase or there is a
+    # reliance on different behaviour.
+    # 
     # We will build miniperl, revert the patch, regenerate l1_char_class_tab.h,
     # (using miniperl), and then go again
  
