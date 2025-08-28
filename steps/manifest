@@ -163,6 +163,15 @@ build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.12.5
 build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.15.7
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.16.3
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.17.2
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.17.4
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.18.4
+build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.32.1
 uninstall: perl-5.6.2 perl-5.10.1
 build: libarchive-3.5.2
