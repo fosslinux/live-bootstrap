@@ -1,3 +1,10 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+The /r specifier is not supported in perl 5.14. Thankfully, it is
+not necessary here.
+
 diff --git perl-5.15.7/regen/mk_PL_charclass.pl perl-5.15.7/regen/mk_PL_charclass.pl
 index a2f837fefc..f777ffe74d 100644
 --- perl-5.15.7/regen/mk_PL_charclass.pl

@@ -64,6 +64,7 @@ src_configure() {
         -Dusedl=false \
         -Ddate=':' \
         -Dusedevel \
+        -Uversiononly \
         -Dccflags="-U__DATE__ -U__TIME__" \
         -Darchname="i386-linux" \
         -Dmyhostname="(none)" \
@@ -91,9 +92,6 @@ src_compile() {
 
 src_install() {
     default
-
-    # As this is a development version it does not install a perl symlink
-    ln -s perl5.15.7 "${DESTDIR}/${PREFIX}/bin/perl"
 
     # Remove messed up manpages
     rm "${DESTDIR}/"*.0
