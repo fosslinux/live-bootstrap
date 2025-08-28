@@ -1,8 +1,19 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
 From deca90bb9a589cdd796fae47d1dbe9d680f8884b Mon Sep 17 00:00:00 2001
 From: Samuel Tyler <fosslinux@aussies.space>
 Date: Fri, 22 Aug 2025 22:36:34 +1000
 Subject: [PATCH] Revert "regen/mk_invlists.pl: Fail if inversion list not
  found"
+
+The symbol _Perl_Non_Final_Folds has not yet been added. Remove it for now,
+it is not necessary for this build.
+
+(It is unclear whether the inversion list changes affect the build, low
+priority TODO check if removing it is necessary. Doesn't hurt to leave it in.)
 
 This reverts commit ad89228c5b795cc268ecf73cf29290f8bc70e979.
 ---

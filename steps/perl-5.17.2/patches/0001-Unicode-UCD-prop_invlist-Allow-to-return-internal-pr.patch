@@ -1,3 +1,11 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Backport this patch, because the following version expects this patch to
+exist, and patching it out is much more annoying than patching it in.
+
 From b5bc060d03776870f3ead93e8c565069a66c2af9 Mon Sep 17 00:00:00 2001
 From: Karl Williamson <public@khwilliamson.com>
 Date: Mon, 18 Jun 2012 12:38:41 -0600
