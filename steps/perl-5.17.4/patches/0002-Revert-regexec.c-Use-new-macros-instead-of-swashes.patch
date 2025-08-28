@@ -1,12 +1,22 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
 From 1bfcdd572f51f5db59c6c3b91f28c5b3141215bb Mon Sep 17 00:00:00 2001
 From: Samuel Tyler <fosslinux@aussies.space>
 Date: Fri, 22 Aug 2025 17:24:24 +1000
 Subject: [PATCH] Revert "regexec.c: Use new macros instead of swashes"
 
+The original commit introduced the use of the \X macros that were generated
+in the commit before it by regcharclass.h. We can't use those macros in this
+build, so remove the use of them.
+
+Only non-generated parts are reverted.
+
 This reverts commit 45fdf108c5f4d5c719b8d2f7389c81e54795bad7.
 ---
  embed.fnc                  |   9 ++
- embedvar.h                 |   7 ++
  intrpvar.h                 |   7 ++
  regen/unicode_constants.pl |   3 +
  regexec.c                  |  78 ++++++++++------
@@ -35,27 +45,6 @@ index 0db9300b3b..e45e6889c9 100644
  : Used in perly.y
  p	|OP*	|jmaybe		|NN OP *o
  : Used in pp.c 
-diff --git perl-5.17.4/embedvar.h perl-5.17.4/embedvar.h
-index b9fabab437..f306f2f2f7 100644
---- perl-5.17.4/embedvar.h
-+++ perl-5.17.4/embedvar.h
-@@ -353,9 +353,16 @@
- #define PL_unitcheckav_save	(vTHX->Iunitcheckav_save)
- #define PL_unlockhook		(vTHX->Iunlockhook)
- #define PL_unsafe		(vTHX->Iunsafe)
-+#define PL_utf8_X_L		(vTHX->Iutf8_X_L)
- #define PL_utf8_X_LVT		(vTHX->Iutf8_X_LVT)
-+#define PL_utf8_X_LV_LVT_V	(vTHX->Iutf8_X_LV_LVT_V)
-+#define PL_utf8_X_RI		(vTHX->Iutf8_X_RI)
-+#define PL_utf8_X_T		(vTHX->Iutf8_X_T)
-+#define PL_utf8_X_V		(vTHX->Iutf8_X_V)
- #define PL_utf8_X_extend	(vTHX->Iutf8_X_extend)
-+#define PL_utf8_X_prepend	(vTHX->Iutf8_X_prepend)
- #define PL_utf8_X_regular_begin	(vTHX->Iutf8_X_regular_begin)
-+#define PL_utf8_X_special_begin	(vTHX->Iutf8_X_special_begin)
- #define PL_utf8_alnum		(vTHX->Iutf8_alnum)
- #define PL_utf8_alpha		(vTHX->Iutf8_alpha)
- #define PL_utf8_blank		(vTHX->Iutf8_blank)
 diff --git perl-5.17.4/intrpvar.h perl-5.17.4/intrpvar.h
 index 40a6aa1e9d..e306ebbb31 100644
 --- perl-5.17.4/intrpvar.h

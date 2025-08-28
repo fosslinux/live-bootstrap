@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+# 
+# SPDX-License-Identifier: MIT
+
 BUILD_ZLIB      = False
 INCLUDE         = /usr/include
 LIB             = /usr/lib/i386-unknown-linux-musl
