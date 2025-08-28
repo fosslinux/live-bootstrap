@@ -7,8 +7,13 @@ src_prepare() {
 
     mv Compress-Raw-Zlib_config.in cpan/Compress-Raw-Zlib/config.in
 
+    # Socket versions greater than 2.000 have many difficult problems building
+    # in 5.17.x versions; replace them with 2.000
+    rm -r cpan/Socket
+    mv ../Socket-2.000 cpan/Socket
+
     # Remove miscellaneous pregenerated files
-    rm -f Porting/Glossary \
+    rm Porting/Glossary \
         cpan/Devel-PPPort/parts/apidoc.fnc Configure config_h.SH \
         x2p/a2p.c cpan/Win32API-File/cFile.pc cpan/Sys-Syslog/win32/Win32.pm \
         utils/Makefile
@@ -23,7 +28,7 @@ src_prepare() {
 
     # Regenerate other prebuilt header files
     # Taken from headers of regen scripts
-    rm -f lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c \
+    rm lib/warnings.pm warnings.h regnodes.h reentr.h reentr.c \
           overload.h overload.c opcode.h opnames.h pp_proto.h \
           keywords.h embed.h embedvar.h perlapi.c perlapi.h \
           proto.h lib/overload/numbers.pm regcharclass.h perly.{tab,h,act} \

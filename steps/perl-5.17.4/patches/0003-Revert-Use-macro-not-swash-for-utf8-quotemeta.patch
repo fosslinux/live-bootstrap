@@ -1,12 +1,22 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
 From 070b9010ff7a44dbdce15dfea579089bfbdff821 Mon Sep 17 00:00:00 2001
 From: Samuel Tyler <fosslinux@aussies.space>
 Date: Fri, 22 Aug 2025 23:48:33 +1000
 Subject: [PATCH] Revert "Use macro not swash for utf8 quotemeta"
 
+The original commit introduced the use of the \X macros that were generated
+in the commit before it by regcharclass.h. We can't use those macros in this
+build, so remove the use of them.
+
+Only non-generated parts are reverted.
+
 This reverts commit 685289b5657b776e8a3871de68a57785e6ccd797.
 ---
  embed.fnc             |  1 +
- embed.h               |  3 +++
  intrpvar.h            |  1 +
  pp.c                  |  3 +--
  regen/regcharclass.pl |  4 ----
@@ -26,20 +36,6 @@ index 0db9300b3b..466025950e 100644
  #endif
  Ap	|UV	|to_uni_lower	|UV c|NN U8 *p|NN STRLEN *lenp
  Amp	|UV	|to_uni_fold	|UV c|NN U8 *p|NN STRLEN *lenp
-diff --git perl-5.17.4/embed.h perl-5.17.4/embed.h
-index e0afb124b0..3ffe84f220 100644
---- perl-5.17.4/embed.h
-+++ perl-5.17.4/embed.h
-@@ -789,6 +789,9 @@
- #define warn_nocontext		Perl_warn_nocontext
- #define warner_nocontext	Perl_warner_nocontext
- #endif
-+#if defined(PERL_IN_UTF8_C) || defined(PERL_IN_PP_C)
-+#define _is_utf8_quotemeta(a)	Perl__is_utf8_quotemeta(aTHX_ a)
-+#endif
- #if defined(PERL_MAD)
- #define newFORM(a,b,c)		Perl_newFORM(aTHX_ a,b,c)
- #endif
 diff --git perl-5.17.4/intrpvar.h perl-5.17.4/intrpvar.h
 index 40a6aa1e9d..641cac6268 100644
 --- perl-5.17.4/intrpvar.h
