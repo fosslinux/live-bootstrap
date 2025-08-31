@@ -1,0 +1,39 @@
+SPDX-FileCopyrightText: 2013 Karl Williamson <public@khwilliamson.com>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+This renaming is required for 5.22.
+
+It is a manual port of 1fdd5e539a9.
+
+diff --git perl-5.18.4/lib/Unicode/UCD.pm perl-5.18.4/lib/Unicode/UCD.pm
+index 9c3dd7c710..2349300626 100644
+--- perl-5.18.4/lib/Unicode/UCD.pm
++++ perl-5.18.4/lib/Unicode/UCD.pm
+@@ -25,6 +25,7 @@ our @EXPORT_OK = qw(charinfo
+                     prop_invlist
+                     prop_invmap
+                     MAX_CP
++                    search_invlist
+                 );
+ 
+ use Carp;
+@@ -2261,7 +2261,7 @@ sub prop_invlist ($;$) {
+     return @invlist;
+ }
+ 
+-sub _search_invlist {
++sub search_invlist {
+     # Find the range in the inversion list which contains a code point; that
+     # is, find i such that l[i] <= code_point < l[i+1].  Returns undef if no
+     # such i.
+@@ -3411,7 +3411,7 @@ RETRY:
+                 }
+ 
+                 # Find the range that the override applies to.
+-                my $i = _search_invlist(\@invlist, $cp);
++                my $i = search_invlist(\@invlist, $cp);
+                 if ($cp < $invlist[$i] || $cp >= $invlist[$i + 1]) {
+                     croak __PACKAGE__, "::prop_invmap: wrong_range, cp=$cp; i=$i, current=$invlist[$i]; next=$invlist[$i + 1]"
+                 }
