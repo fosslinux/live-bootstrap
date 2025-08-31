@@ -161,19 +161,8 @@ build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.8.9
 build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.12.5
-build: perl-Devel-Tokenizer-C-0.11
-build: perl-5.15.7
-build: perl-Devel-Tokenizer-C-0.11
-build: perl-5.16.3
-build: perl-Devel-Tokenizer-C-0.11
-build: perl-5.17.2
-build: perl-Devel-Tokenizer-C-0.11
-build: perl-5.17.4
-build: perl-Devel-Tokenizer-C-0.11
-build: perl-5.18.4
-build: perl-Devel-Tokenizer-C-0.11
-build: perl-5.32.1
-uninstall: perl-5.6.2 perl-5.10.1
+#build: perl-5.32.1
+uninstall: perl-5.6.2 perl-5.8.9
 build: libarchive-3.5.2
 build: openssl-3.0.13
 build: ca-certificates-3.99
@@ -185,6 +174,18 @@ build: gettext-0.21
 build: texinfo-6.7
 build: gcc-4.7.4
 build: binutils-2.41
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.15.7
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.16.3
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.17.2
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.17.4
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.18.4
+build: perl-Devel-Tokenizer-C-0.11
+build: perl-5.22.4
 build: gperf-3.1
 build: libunistring-0.9.10
 build: libffi-3.3

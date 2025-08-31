@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+experimental::autoderef does not exist in perl 5.18.
+
+diff --git perl-5.22.4/regen/regcharclass.pl perl-5.22.4/regen/regcharclass.pl
+index 0e12d8e2ee..24cec0d83a 100755
+--- perl-5.22.4/regen/regcharclass.pl
++++ perl-5.22.4/regen/regcharclass.pl
+@@ -4,7 +4,6 @@ use strict;
+ use 5.008;
+ use warnings;
+ use warnings FATAL => 'all';
+-no warnings 'experimental::autoderef';
+ use Data::Dumper;
+ $Data::Dumper::Useqq= 1;
+ our $hex_fmt= "0x%02X";
