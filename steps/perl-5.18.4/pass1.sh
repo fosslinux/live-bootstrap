@@ -34,6 +34,10 @@ src_prepare() {
     perl regen/unicode_constants.pl
     perl regen/regcharclass.pl
 
+    # Change the name, patching the generator script is not easy
+    # Because of 0005-Move-an-inversion-list-generation-to-mktables.patch
+    sed -i "s/_Perl_Multi_Char_Folds_invlist/_Perl_Folds_To_Multi_Char_invlist/" charclass_invlists.h
+
     # regenerate configure
     ln -s ../metaconfig*/.package .
     ln -s ../metaconfig*/U .
