@@ -1,0 +1,199 @@
+SPDX-FileCopyrightText: 2014 Karl Williamson <public@khwilliamson.com>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+The _Perl_Any_Folds and _Perl_Problematic_Locale_Folds tables are expected
+by 5.22.
+
+Their addition is part of a giga commit (~1500 lines changed), we take
+just that small part of the commit.
+
+From 10d28d6a24e2a3c41270c43203be5502a586b2f9 Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Thu, 28 Aug 2025 21:54:12 +1000
+Subject: [PATCH 2/2] Partial backport: Work properly under UTF-8 LC_CTYPE
+ locales
+
+[... original commit message follows, mostly irrelevant]
+
+This large (sorry, I couldn't figure out how to meaningfully split it
+up) commit causes Perl to fully support LC_CTYPE operations (case
+changing, character classification) in UTF-8 locales.
+
+As a side effect it resolves [perl #56820].
+
+The basics are easy, but there were a lot of details, and one
+troublesome edge case discussed below.
+
+What essentially happens is that when the locale is changed to a UTF-8
+one, a global variable is set TRUE (FALSE when changed to a non-UTF-8
+locale).  Within the scope of 'use locale', this variable is checked,
+and if TRUE, the code that Perl uses for non-locale behavior is used
+instead of the code for locale behavior.  Since Perl's internal
+representation is UTF-8, we get UTF-8 behavior for a UTF-8 locale.
+
+More work had to be done for regular expressions.  There are three
+cases.
+
+1) The character classes \w, [[:punct:]] needed no extra work, as
+the changes fall out from the base work.
+
+2) Strings that are to be matched case-insensitively.  These form
+EXACTFL regops (nodes).  Notice that if such a string contains only
+characters above-Latin1 that match only themselves, that the node can be
+downgraded to an EXACT-only node, which presents better optimization
+possibilities, as we now have a fixed string known at compile time to be
+required to be in the target string to match.  Similarly if all
+characters in the string match only other above-Latin1 characters
+case-insensitively, the node can be downgraded to a regular EXACTFU node
+(match, folding, using Unicode, not locale, rules).  The code changes
+for this could be done without accepting UTF-8 locales fully, but there
+were edge cases which needed to be handled differently if I stopped
+there, so I continued on.
+
+In an EXACTFL node, all such characters are now folded at compile time
+(just as before this commit), while the other characters whose folds are
+locale-dependent are left unfolded.  This means that they have to be
+folded at execution time based on the locale in effect at the moment.
+Again, this isn't a change from before.  The difference is that now some
+of the folds that need to be done at execution time (in regexec) are
+potentially multi-char.  Some of the code in regexec was trivial to
+extend to account for this because of existing infrastructure, but the
+part dealing with regex quantifiers, had to have more work.
+
+Also the code that joins EXACTish nodes together had to be expanded to
+account for the possibility of multi-character folds within locale
+handling.  This was fairly easy, because it already has infrastructure
+to handle these under somewhat different circumstances.
+
+3) In bracketed character classes, represented by ANYOF nodes, a new
+inversion list was created giving the characters that should be matched
+by this node when the runtime locale is UTF-8.  The list is ignored
+except under that circumstance.  To do this, I created a new ANYOF type
+which has an extra SV for the inversion list.
+
+The edge case that caused the most difficulty is folding involving the
+MICRO SIGN, U+00B5.  It folds to the GREEK SMALL LETTER MU, as does the
+GREEK CAPITAL LETTER MU.  The MICRO SIGN is the only 0-255 range
+character that folds to outside that range.  The issue is that it
+doesn't naturally fall out that it will match the CAP MU.  If we let the
+CAP MU fold to the samll mu at compile time (which it can because both
+are above-Latin1 and so the fold is the same no matter what locale is in
+effect), it could appear that the regnode can be downgraded away from
+EXACTFL to EXACTFU, but doing so would cause the MICRO SIGN to not case
+insensitvely match the CAP MU.  This could be special cased in regcomp
+and regexec, but I wanted to avoid that.  Instead the mktables tables
+are set up to include the CAP MU as a character whose presence forbids
+the downgrading, so the special casing is in mktables, and not in the C
+code.
+---
+ lib/unicore/mktables | 79 ++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 73 insertions(+), 6 deletions(-)
+
+diff --git perl-5.18.4/lib/unicore/mktables perl-5.18.4/lib/unicore/mktables
+index a5c0d8930e..4b34b3c338 100644
+--- perl-5.18.4/lib/unicore/mktables
++++ perl-5.18.4/lib/unicore/mktables
+@@ -13321,25 +13321,92 @@ sub compile_perl() {
+     }
+     $PosixXDigit->add_description('[0-9A-Fa-f]');
+ 
++    my $any_folds = $perl->add_match_table("_Perl_Any_Folds",
++                    Description => "Code points that particpate in some fold",
++                    );
++    my $loc_problem_folds = $perl->add_match_table(
++               "_Perl_Problematic_Locale_Folds",
++               Description =>
++                   "Code points that are in some way problematic under locale",
++    );
++
++    # This allows regexec.c to skip some work when appropriate.  Some of the
++    # entries in _Perl_Problematic_Locale_Folds are multi-character folds,
++    my $loc_problem_folds_start = $perl->add_match_table(
++               "_Perl_Problematic_Locale_Foldeds_Start",
++               Description =>
++                   "The first character of every sequence in _Perl_Problematic_Locale_Folds",
++    );
++
++    my $cf = property_ref('Case_Folding');
++
++    # Every character 0-255 is problematic because what each folds to depends
++    # on the current locale
++    $loc_problem_folds->add_range(0, 255);
++    $loc_problem_folds_start += $loc_problem_folds;
++
++    # Also problematic are anything these fold to outside the range.  Likely
++    # forever the only thing folded to by these outside the 0-255 range is the
++    # GREEK SMALL MU (from the MICRO SIGN), but it's easy to make the code
++    # completely general, which should catch any unexpected changes or errors.
++    # We look at each code point 0-255, and add its fold (including each part
++    # of a multi-char fold) to the list.  See the commit message for these
++    # changes for a more complete description of the MU issue.
++    foreach my $range ($loc_problem_folds->ranges) {
++        foreach my $code_point($range->start .. $range->end) {
++            my $fold_range = $cf->containing_range($code_point);
++            next unless defined $fold_range;
++
++            my @hex_folds = split " ", $fold_range->value;
++            my $start_cp = hex $hex_folds[0];
++            foreach my $i (0 .. @hex_folds - 1) {
++                my $cp = hex $hex_folds[$i];
++                next unless $cp > 255;    # Already have the < 256 ones
++
++                $loc_problem_folds->add_range($cp, $cp);
++                $loc_problem_folds_start->add_range($start_cp, $start_cp);
++            }
++        }
++    }
++
+     my $folds_to_multi_char = $perl->add_match_table(
+          "_Perl_Folds_To_Multi_Char",
+          Description =>
+               "Code points whose fold is a string of more than one character",
+     );
+ 
+-    foreach my $range (property_ref('Case_Folding')->ranges) {
++    # Look through all the known folds to populate these tables.
++    foreach my $range ($cf->ranges) {
+         my $start = $range->start;
+         my $end = $range->end;
+         $any_folds->add_range($start, $end);
+ 
+-        my @hex_code_points = split " ", $range->value;
+-        if (@hex_code_points > 1) {
++        my @hex_folds = split " ", $range->value;
++        if (@hex_folds > 1) {   # Is multi-char fold
+             $folds_to_multi_char->add_range($start, $end);
+         }
+ 
+-        foreach my $i (0 .. @hex_code_points - 1) {
+-            my $code_point = hex $hex_code_points[$i];
+-            $any_folds->add_range($code_point, $code_point);
++        my $found_locale_problematic = 0;
++
++        # Look at each of the folded-to characters...
++        foreach my $i (0 .. @hex_folds - 1) {
++            my $cp = hex $hex_folds[$i];
++            $any_folds->add_range($cp, $cp);
++
++            # The fold is problematic if any of the folded-to characters is
++            # already considered problematic.
++            if ($loc_problem_folds->contains($cp)) {
++                $loc_problem_folds->add_range($start, $end);
++                $found_locale_problematic = 1;
++            }
++        }
++
++        # If this is a problematic fold, add to the start chars the
++        # folding-from characters and first folded-to character.
++        if ($found_locale_problematic) {
++            $loc_problem_folds_start->add_range($start, $end);
++            my $cp = hex $hex_folds[0];
++            $loc_problem_folds_start->add_range($cp, $cp);
+         }
+     }
+ 
+-- 
+2.49.1
+
