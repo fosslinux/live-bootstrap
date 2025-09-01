@@ -1,0 +1,35 @@
+SPDX-FileCopyrightText: 2015 Karl Williamson <public@khwilliamson.com>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+This commit does not affect correctness of the script, and negative indexes are
+not supported in Perl 5.22.
+
+From c5ea74f1efd612cda79d6ba3cb1430afdc2ab970 Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Sun, 31 Aug 2025 12:21:46 +1000
+Subject: [PATCH] Revert "regen/mk_PL_charclass.pl: Suppress extra null array
+ element"
+
+This reverts commit e8368231412c57222c53c0dc1fac7f711fa051e2.
+---
+ regen/mk_PL_charclass.pl | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git perl-5.24.4/regen/mk_PL_charclass.pl perl-5.24.4/regen/mk_PL_charclass.pl
+index 5b609e530b..0bee1ac2a0 100644
+--- perl-5.24.4/regen/mk_PL_charclass.pl
++++ perl-5.24.4/regen/mk_PL_charclass.pl
+@@ -384,8 +384,6 @@ foreach my $charset (get_supported_code_pages()) {
+ 
+         $out[$index] .= ",\n";
+     }
+-    $out[-1] =~ s/,$//;     # No trailing comma in the final entry
+-
+     print $out_fh join "", @out;
+     print $out_fh "\n" . get_conditional_compile_line_end();
+ }
+-- 
+2.49.1
+

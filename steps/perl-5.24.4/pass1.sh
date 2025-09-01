@@ -3,12 +3,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    # change unicode files to 5.24 version, in particular mktables
-    # This is required to have the necessary tables for the 5.24 build
-    mv ../perl-5.24.4/lib/unicore/{version,mktables,*.txt} lib/unicore/
-    mv ../perl-5.24.4/lib/unicore/auxiliary/*.txt lib/unicore/auxiliary/
-    mv ../perl-5.24.4/lib/unicore/extracted/*.txt lib/unicore/extracted/
-
     default
 
     mv Compress-Raw-Zlib_config.in cpan/Compress-Raw-Zlib/config.in
@@ -32,8 +26,8 @@ src_prepare() {
         perlapi.{c,h} proto.h lib/overload/numbers.pm regcharclass.h \
         perly.{tab,h,act} mg_{raw.h,vtable.h} keywords.c l1_char_class_tab.h \
         lib/feature.pm lib/B/Op_private.pm miniperlmain.c unicode_constants.h \
-        charclass_invlists.h ebcdic_tables.h packsizetables.c overload.c \
-        mg_names.c
+        charclass_invlists.h ebcdic_tables.h mg_names.inc overload.inc \
+        packsizetables.inc
     perl regen.pl
     perl regen_perly.pl -b bison-2.3
     perl regen/keywords.pl
