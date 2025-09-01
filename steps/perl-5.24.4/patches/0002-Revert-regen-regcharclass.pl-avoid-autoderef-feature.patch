@@ -1,0 +1,51 @@
+SPDX-FileCopyrightText: 2015 Aaron Crane <arc@cpan.org>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+The patch avoided autoderef experimental feature by using a new,
+non-experimental feature not supported in Perl 5.22.
+
+From dbec508168fd65dae2aff413fe5184f5f457779d Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Sun, 31 Aug 2025 14:45:48 +1000
+Subject: [PATCH] Revert "regen/regcharclass.pl: avoid autoderef feature"
+
+This reverts commit de6cb0abd243e5772b9783a2cbeef5755a8267d6.
+---
+ regen/regcharclass.pl | 5 +++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git perl-5.24.4/regen/regcharclass.pl perl-5.24.4/regen/regcharclass.pl
+index 9115eafeb6..279ca013d0 100755
+--- perl-5.24.4/regen/regcharclass.pl
++++ perl-5.24.4/regen/regcharclass.pl
+@@ -4,6 +4,7 @@ use strict;
+ use 5.008;
+ use warnings;
+ use warnings FATAL => 'all';
++no warnings 'experimental::autoderef';
+ use Data::Dumper;
+ $Data::Dumper::Useqq= 1;
+ our $hex_fmt= "0x%02X";
+@@ -874,7 +875,7 @@ sub calculate_mask(@) {
+     my @final_results;
+     foreach my $count (reverse sort { $a <=> $b } keys %hash) {
+         my $need = 2 ** $count;     # Need 8 values for 3 differing bits, etc
+-        foreach my $bits (sort keys $hash{$count}->%*) {
++        foreach my $bits (sort keys $hash{$count}) {
+ 
+             print STDERR __LINE__, ": For $count bit(s) difference ($bits), need $need; have ", scalar @{$hash{$count}{$bits}}, "\n" if DEBUG;
+ 
+@@ -962,7 +963,7 @@ sub calculate_mask(@) {
+     # individually.
+     my @individuals;
+     foreach my $count (reverse sort { $a <=> $b } keys %hash) {
+-        foreach my $bits (sort keys $hash{$count}->%*) {
++        foreach my $bits (sort keys $hash{$count}) {
+             foreach my $remaining (@{$hash{$count}{$bits}}) {
+ 
+                 # If we already know about this value, just ignore it.
+-- 
+2.49.1
+
