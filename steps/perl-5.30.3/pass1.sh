@@ -47,10 +47,6 @@ src_prepare() {
     metaconfig -m
 
     # Glossary
-    sed -i -e "s:/pro/3gl/CPAN/lib/dist:${PREFIX}/lib/perl5/5.6.2:" \
-        -e "s:/pro/3gl/CPAN/perl:$PWD:" \
-        ../metaconfig*/U/mkglossary
-    chmod +x ../metaconfig*/U/mkglossary
     ../metaconfig*/U/mkglossary > Porting/Glossary
 
     bash dist/Devel-PPPort/devel/mkapidoc.sh . \
