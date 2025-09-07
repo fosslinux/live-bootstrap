@@ -6,10 +6,12 @@
 src_prepare() {
     default
 
+    rm libtoolize.in
+
     rm -f libltdl/config/ltmain.sh libtool libltdl/m4/ltversion.m4
 
     rm -f doc/*.info
-    rm -f tests/testsuite
+    rm -f tests/testsuite tests/defs.in tests/package.m4
 
     find tests -name configure | while read d; do
         rm -r "$(dirname "$d")"
