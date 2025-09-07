@@ -1320,7 +1320,7 @@ Differences to 3.8.16:
   make output of precompiled Python libraries (``.pyc``) deterministic.
   Finally, we can re-enable compiling of Python modules.
 
-gcc 10.4.0
+gcc 10.5.0
 ==========
 
 GCC 10.x series is the last version of GCC that is able to be built with the
@@ -1328,21 +1328,21 @@ C/C++ standards available in GCC 4.7. Instead of manually configuring & compilin
 every subdirectory, since we now have ``autogen`` available we are able to use
 the top-level configure to build the project. We do not use GCC's bootstrap mode,
 where GCC is recompiled with itself after being built, since we're just going
-to use this GCC to compile GCC 13, it adds build time for little benefit.
+to use this GCC to compile GCC 15, it adds build time for little benefit.
 
 binutils 2.41 (pass 2)
 ======================
 
 We recompile Binutils with the full intended autogen top-level build system,
 instead of the subdirectory build system used before. This creates a binutils
-that functions completely correctly for the build of GCC 13 (eg, fixes the
+that functions completely correctly for the build of GCC 15 (eg, fixes the
 mistaken plugin loading support). Other modern features are added, including;
 
 * threaded linking
 * 64-bit linking on 32-bit x86
 * the modern, rewritten gold linker used by some distributions
 
-gcc 13.3.0
+gcc 15.2.0
 ==========
 
 This is the most recent version of GCC. With this version of GCC, the

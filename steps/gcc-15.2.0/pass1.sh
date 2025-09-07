@@ -22,16 +22,19 @@ src_prepare() {
         gcc/testsuite/gcc.target/x86_64/abi/avx512fp16/test_3_element_struct_and_unions.c \
         gcc/testsuite/gcc.target/x86_64/abi/bf16/test_passing_floats.c \
         gcc/testsuite/gcc.target/x86_64/abi/bf16/test_3_element_struct_and_unions.c
+    rm gcc/testsuite/c-c++-common/analyzer/flex-with-call-summaries.c \
+        gcc/testsuite/c-c++-common/analyzer/flex-without-call-summaries.c
+    rm gcc/testsuite/gdc.test/compilable/dtoh_windows.d
+    rm gcc/testsuite/sarif-replay.dg/2.1.0-valid/malloc-vs-local-4.c.sarif \
+        gcc/testsuite/sarif-replay.dg/2.1.0-valid/signal-1.c.sarif
 
     rm gcc/testsuite/gm2/projects/pim/run/pass/tower/advflex.c \
         gcc/testsuite/gm2/projects/pim/run/pass/tower/AdvParse.mod
-    rm gcc/testsuite/gcc.dg/analyzer/flex*.c
     rm -r gcc/testsuite/gdc.test/compilable
     rm gcc/config/rs6000/rs6000-tables.opt \
         gcc/config/rs6000/fusion.md \
         gcc/config/h8300/mova.md \
         gcc/config/aarch64/aarch64-tune.md \
-        gcc/config/nios2/ldstwm.md \
         gcc/config/riscv/t-elf-multilib \
         gcc/config/riscv/t-linux-multilib \
         gcc/config/arm/arm-tune.md \
@@ -45,9 +48,7 @@ src_prepare() {
         gcc/config/csky/csky_tables.opt \
         gcc/config/mips/mips-tables.opt \
         gcc/config/nvptx/nvptx-gen.opt \
-        gcc/config/nvptx/nvptx-gen.h \
-        gcc/config/loongarch/loongarch.opt \
-        gcc/config/loongarch/loongarch-str.h
+        gcc/config/nvptx/nvptx-gen.h
     rm libphobos/src/std/internal/unicode_tables.d \
         libphobos/src/std/internal/unicode_decomp.d \
         libphobos/src/std/internal/unicode_grapheme.d \
@@ -99,12 +100,16 @@ src_prepare() {
         libgo/go/go/internal/gccgoimporter/testdata/escapeinfo.gox \
         libgo/go/go/internal/gccgoimporter/testdata/libimportsar.a \
         libgo/go/go/internal/gcimporter/testdata/versions/*.a
-    rm -r libgo/go/compress/flate/testdata \
+    rm -r libgo/go/compress/*/testdata \
         libgo/go/runtime/pprof/testdata \
         libgo/go/debug/*/testdata \
         libgo/go/internal/trace/testdata \
         libgo/go/time/testdata \
-        libgo/go/internal/xcoff/testdata
+        libgo/go/internal/xcoff/testdata \
+        libgo/go/archive/*/testdata
+    rm gcc/d/dmd/common/identifiertables.d
+    rm -r gcc/rust/checks/errors/borrowck/ffi-polonius/vendor \
+        libgrust/libformat_parser/vendor
     find fixincludes/tests -name "*.h" -delete
     rm gcc/m2/mc/mcp*.bnf
     rm -r gcc/m2/pge-boot \
@@ -142,8 +147,6 @@ src_prepare() {
     pushd gcc/m2/gm2-libs
     autoconf-2.69 -f config-host.in > config-host
     popd
-    # Because GCC is stupid, copy depcomp back in
-    cp "${PREFIX}/share/automake-1.15/depcomp" .
     # Makefile.in only
     local BACK="${PWD}"
     find . -type d \
@@ -160,13 +163,12 @@ src_prepare() {
     done
 
     # Remove bison generated files
-    rm intl/plural.c
+    rm gcc/cobol/parse.{cc,h}
+    rm gcc/cobol/cdf.{cc,h}
 
     # Remove flex generated files
     rm gcc/gengtype-lex.cc
-
-    # intl/ Makefile is a bit broken because of new gettext
-    sed -i 's/@USE_INCLUDED_LIBINTL@/no/' intl/Makefile.in
+    rm gcc/cobol/scan.cc
 
     # Regenerate crc table in libiberty/crc32.c
     pushd libiberty
@@ -183,6 +185,48 @@ src_prepare() {
     gcc -std=c99 -o decDPD_generate decDPD_generate.c
     cp decDPD.h.preamble libdecnumber/decDPD.h
     ./decDPD_generate >> libdecnumber/decDPD.h
+
+    # Regenerate sarif-spec-urls.def
+    rm gcc/sarif-spec-urls.def
+    cp -t contrib ../sarif-v2.1.0-errata01-os-complete.html
+    pushd contrib
+    # windows-1252 is not supported by our Python build
+    sed -i "s/'windows-1252'/'latin-1'/g" regenerate-sarif-spec-index.py
+    python3 regenerate-sarif-spec-index.py
+    popd
+
+    # Regenerate box-drawing-chars.inc
+    rm gcc/text-art/box-drawing-chars.inc
+    python3 contrib/unicode/gen-box-drawing-chars.py > gcc/text-art/box-drawing-chars.inc
+
+    # Regenerate combining-chars.inc
+    rm libcpp/combining-chars.inc
+    python3 contrib/unicode/gen-combining-chars.py > libcpp/combining-chars.inc
+
+    # Regenerate printable-chars.inc
+    rm libcpp/printable-chars.inc
+    python3 contrib/unicode/gen-printable-chars.py > libcpp/printable-chars.inc
+
+    # Regenerate unicode-data.h
+    rm libstdc++-v3/include/bits/unicode-data.h
+    pushd contrib/unicode
+    python3 gen_libstdcxx_unicode_data.py > ../../libstdc++-v3/include/bits/unicode-data.h
+    popd
+
+    # Regenerate loongarch files
+    pushd gcc/config/loongarch
+    rm loongarch-evolution.{cc,h} loongarch-str.h loongarch.opt
+    ./genopts/genstr.sh evolution_c > loongarch-evolution.cc
+    ./genopts/genstr.sh evolution_h > loongarch-evolution.h
+    ./genopts/genstr.sh header > loongarch-str.h
+    ./genopts/genstr.sh opt > loongarch.opt
+    popd
+
+    # Regenerate gcn files
+    pushd gcc/config/gcn
+    rm gcn-tables.opt
+    awk -f gen-opt-tables.awk gcn-devices.def > gcn-tables.opt
+    popd
 
     # Remove docs/translation
     find . -name "*.gmo" -delete

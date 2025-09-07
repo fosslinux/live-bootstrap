@@ -197,7 +197,7 @@ uninstall: python-2.0.1 python-2.3.7 python-3.1.5 python-3.3.7 python-3.4.10 pyt
 jump: break ( INTERNAL_CI == pass1 ) # scripts are generated in pass1
 build: gcc-10.5.0
 build: binutils-2.41
-build: gcc-13.3.0
+build: gcc-15.2.0
 build: grub-2.06 ( BUILD_LINUX == True )
 improve: make_bootable ( CHROOT == False )
 build: libmd-1.1.0

@@ -32,7 +32,8 @@ src_prepare() {
 }
 
 src_configure() {
-    CFLAGS="-Wno-error" ./configure --prefix="${PREFIX}" --sbindir="${PREFIX}/bin" --build=i686-pc-linux-musl
+    CFLAGS="-std=gnu11 -Wno-error" \
+    ./configure --prefix="${PREFIX}" --sbindir="${PREFIX}/bin" --build=i686-pc-linux-musl
 }
 
 src_install() {
