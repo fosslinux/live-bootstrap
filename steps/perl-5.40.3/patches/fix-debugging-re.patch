@@ -1,0 +1,13 @@
+diff --git perl-5.40.3/ext/re/Makefile.PL perl-5.40.3/ext/re/Makefile.PL
+index 01786e1ec2..cc4619bfc3 100644
+--- perl-5.40.3/ext/re/Makefile.PL
++++ perl-5.40.3/ext/re/Makefile.PL
+@@ -27,7 +27,7 @@ foreach my $tuple (@files) {
+     }
+ }
+ 
+-my $defines = '-DPERL_EXT_RE_BUILD -DPERL_EXT_RE_DEBUG -DPERL_EXT';
++my $defines = '-DPERL_EXT_RE_BUILD -DPERL_EXT_RE_DEBUG -DPERL_EXT -DDEBUGGING';
+ my %args;
+ for my $arg (@ARGV) {
+     $args{$1} = $2 if $arg =~ /^(\w+)=(.*)$/;
