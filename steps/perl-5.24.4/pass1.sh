@@ -3,6 +3,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    # change unicode files to 5.30 version, in particular mktables
+    # This is required to have the necessary tables for 5.30 build
+    mv ../perl-5.30.3/lib/unicore/{version,mktables,*.txt} lib/unicore/
+    mv ../perl-5.30.3/lib/unicore/auxiliary/*.txt lib/unicore/auxiliary/
+    mv ../perl-5.30.3/lib/unicore/extracted/*.txt lib/unicore/extracted/
+
     default
 
     mv Compress-Raw-Zlib_config.in cpan/Compress-Raw-Zlib/config.in
