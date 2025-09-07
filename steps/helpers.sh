@@ -101,7 +101,7 @@ bin_preseed() {
         test -e "${pkg}_${revision}.tar.bz2" || return 1
         if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
-            mv "${pkg}_${revision}"* /external/repo || return 1
+            mv "${pkg}_${revision}.tar.bz2" /external/repo || return 1
             cd "/external/repo"
             rm -f /tmp/filelist.txt
             src_apply "${pkg}" $((revision))
