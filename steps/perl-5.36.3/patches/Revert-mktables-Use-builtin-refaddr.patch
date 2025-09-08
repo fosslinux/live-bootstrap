@@ -1,3 +1,10 @@
+SPDX-FileCopyrightText: 2021 Karl Williamson <khw@cpan.org>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+builtin is not available in Perl 5.30. Remove the use of it for now.
+
 From 2cbb69f4dff9a096b47771b8d7c64008458df57a Mon Sep 17 00:00:00 2001
 From: Samuel Tyler <fosslinux@aussies.space>
 Date: Sun, 7 Sep 2025 14:32:20 +1000

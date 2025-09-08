@@ -46,6 +46,9 @@ src_prepare() {
     mconf_dir=$(echo ../metaconfig*)
     ln -s "$mconf_dir"/.package .
     ln -s "$mconf_dir"/U .
+    # TODO This shouldn't be necessary, but I don't know how to fix it properly
+    # The problem is that these files produce duplicates in config.h which
+    # makes autodoc.pl very unhappy
     touch U/modified/{d_openat.U,d_vsnprintf.U,d_sched_yield.U} # null it
     metaconfig -m
 
