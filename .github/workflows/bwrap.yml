@@ -98,7 +98,7 @@ jobs:
       - name: Copy distfiles
         run: ./download-distfiles.sh file:///${PWD}/mirror
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2 --mirror file://${PWD}/mirror
       - name: Archive created packages
         if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v4

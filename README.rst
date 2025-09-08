@@ -17,6 +17,10 @@ How do I use this?
 
 Quick start:
 
+Choose a mirror from https://github.com/fosslinux/live-bootstrap/wiki/Mirrors,
+or create a private/public mirror yourself (see further below). You should
+provide the mirror as ``--mirror`` to ``rootfs.py``.
+
 See ``./rootfs.py --help`` and follow the instructions given there.
 This uses a variety of userland tools to prepare the bootstrap.
 
@@ -25,6 +29,8 @@ preparations! This is a currently unsolved problem.*)
 
 Without using Python:
 
+0. Choose a mirror as detailed above. (You will input this later, instead of
+   passing it to ``rootfs.py```).
 1. ``git clone https://github.com/fosslinux/live-bootstrap``
 2. ``git submodule update --init --recursive``
 3. Consider whether you are going to run this in a chroot, in QEMU, or on bare
@@ -67,6 +73,31 @@ Without using Python:
         (``-nic user,model=e1000``), and ``-machine kernel-irqchip=split``.
    c. **Bare metal:** Follow the same steps as QEMU, but the disks need to be
       two different *physical* disks, and boot from the first disk.
+
+Mirrors
+-------
+
+It has been decided that repackaging distfiles for live-bootstrap is generally
+permissible, particularly from git repositories. We do this primarily because
+
+a. currently live-bootstrap only supports tarballs/raw files as input, not git
+   repositories
+b. to reduce load on servers
+
+You may choose to use an existing mirror from 
+https://github.com/fosslinux/live-bootstrap/wiki/Mirrors, however you may be
+(to some varied extent) trusting the operator of the mirror.
+
+Alternatively, you can create your own local mirror - one such implementation
+is in ``./mirror.sh``. You can invoke it with
+``./mirror.sh path/to/mirror/dir path/to/mirror/state``.
+You would then pass ``--mirror path/to/mirror/dir`` to rootfs.py.
+(If not using rootfs.py, you need to copy files around manually into distfiles.)
+
+Most helpfully to the project, you could create your own public mirror, by
+running ``./mirror.sh`` or writing your own script that does something similar
+on a timer (systemd timer or cron job, for example), where the mirror directory
+is publicly accessible on the Internet (ideally, via HTTP and HTTPS).
 
 Background
 ----------

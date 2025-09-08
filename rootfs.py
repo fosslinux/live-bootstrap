@@ -178,6 +178,10 @@ def main():
     else:
         args.swap = 0
 
+    # Validate mirrors
+    if not args.mirrors:
+        raise ValueError("At least one mirror must be provided.")
+
     # Set constant umask
     os.umask(0o022)
 
