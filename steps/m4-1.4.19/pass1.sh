@@ -14,6 +14,7 @@ src_prepare() {
 }
 
 src_configure() {
+    CFLAGS="-std=gnu11" \
     LDFLAGS="-latomic" \
         ./configure \
         --prefix="${PREFIX}" \

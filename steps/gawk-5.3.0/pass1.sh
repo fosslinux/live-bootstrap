@@ -13,5 +13,5 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}"
+    CFLAGS="-std=gnu11" ./configure --prefix="${PREFIX}"
 }
