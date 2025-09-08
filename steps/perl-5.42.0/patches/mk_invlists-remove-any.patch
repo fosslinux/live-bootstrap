@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
 Make mk_invlists work in 5.40.
 
 diff --git perl-5.42.0/regen/mk_invlists.pl perl-5.42.0/regen/mk_invlists.pl
