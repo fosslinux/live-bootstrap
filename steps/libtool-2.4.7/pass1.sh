@@ -11,7 +11,7 @@ src_prepare() {
     rm -f build-aux/ltmain.sh
     rm -f doc/*.info doc/*.1
     rm -f bootstrap
-    rm -f tests/testsuite
+    rm -f tests/testsuite tests/package.m4
 
     ../../import-gnulib.sh
 
