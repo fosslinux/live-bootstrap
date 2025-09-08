@@ -1,3 +1,11 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+my_sprintf appears to be broken.
+This should not be necessary, but is; is most likely linked to metaconfig
+problems.
+
 diff --git perl-5.42.0/dist/Devel-PPPort/PPPort_pm.PL perl-5.42.0/dist/Devel-PPPort/PPPort_pm.PL
 index cfbfaeb8fa..f93e56df15 100644
 --- perl-5.42.0/dist/Devel-PPPort/PPPort_pm.PL
