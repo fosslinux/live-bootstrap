@@ -43,7 +43,9 @@ src_prepare() {
     perl regen/miniperlmain.pl
     perl regen/unicode_constants.pl
     perl lib/unicore/mktables -C lib/unicore -P pod -maketest -makelist -p
-    perl -Ilib regen/mk_invlists.pl
+    mkdir lib_unicore
+    ln -s ../lib/unicore lib_unicore/
+    perl -Ilib_unicore regen/mk_invlists.pl
 
     # regenerate configure
     mconf_dir=$(echo ../metaconfig*)
