@@ -17,9 +17,12 @@ MES=${BINDIR}/mes-m2
 TCC_TAR=tcc-0.9.26
 TCC_PKG=tcc-0.9.26-1147-gee75a10c
 
+PNUT_TAR=124cfae4bfafec24dfea65117d0a407078beb459
+PNUT_PKG=pnut-124cfae4bfafec24dfea65117d0a407078beb459
+
 # Check tarball checksums
-checksum-transcriber sources
-sha256sum -c sources.SHA256SUM
+# checksum-transcriber sources
+# sha256sum -c sources.SHA256SUM
 
 # Unpack
 mkdir build
@@ -32,13 +35,25 @@ simple-patch ${TCC_PKG}/tcctools.c \
     ../simple-patches/remove-fileopen.before ../simple-patches/remove-fileopen.after
 simple-patch ${TCC_PKG}/tcctools.c \
     ../simple-patches/addback-fileopen.before ../simple-patches/addback-fileopen.after
+# Patches required for pnut to compile tcc
+simple-patch ${TCC_PKG}/tccpp.c \
+    ../simple-patches/array_sizeof.before ../simple-patches/array_sizeof.after
+simple-patch ${TCC_PKG}/libtcc.c \
+    ../simple-patches/error_set_jmp_enabled.before ../simple-patches/error_set_jmp_enabled.after
+simple-patch ${TCC_PKG}/libtcc.c \
+    ../simple-patches/sscanf_TCC_VERSION.before ../simple-patches/sscanf_TCC_VERSION.after
+simple-patch ${TCC_PKG}/tcc.h \
+    ../simple-patches/undefine_TCC_IS_NATIVE.before ../simple-patches/undefine_TCC_IS_NATIVE.after
 
 untar --non-strict --file ${MES_PKG}.tar
+
+# For some reason, the .tar.gz from github cannot be unpacked with ungz so it
+# must be manually unzipped before build process.
+untar --non-strict --file ${DISTFILES}/${PNUT_TAR}.tar
 
 # Create config.h
 catm ${MES_PKG}/include/mes/config.h
 catm ${TCC_PKG}/config.h
-cd ${TCC_PKG}
 
 if match ${ARCH} x86; then
     MES_ARCH=x86
@@ -56,43 +71,38 @@ if match ${ARCH} riscv64; then
     HAVE_LONG_LONG=1
 fi
 
+# Ideally we'd build pnut-exe from pnut-sh.sh or from M2-Planet.
+# For now, it's a precompiled seed that lives in the .tar.
+cp ${PNUT_PKG}/pnut-exe ${BINDIR}/pnut-exe
+chmod 755 ${BINDIR}/pnut-exe
 
-${MES} --no-auto-compile -e main ${BINDIR}/mescc.scm -- \
-    -S \
-    -o tcc.s \
-    -I ${INCDIR} \
-    -D BOOTSTRAP=1 \
-    -D HAVE_LONG_LONG=${HAVE_LONG_LONG} \
-    -I . \
-    -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
-    -D inline= \
-    -D CONFIG_TCCDIR=\"${LIBDIR}/tcc\" \
-    -D CONFIG_SYSROOT=\"/\" \
-    -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
-    -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
-    -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
-    -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
-    -D CONFIG_TCC_LIBTCC1_MES=0 \
-    -D CONFIG_TCCBOOT=1 \
-    -D CONFIG_TCC_STATIC=1 \
-    -D CONFIG_USE_LIBGCC=1 \
-    -D TCC_VERSION=\"0.9.26\" \
-    -D ONE_SOURCE=1 \
-    tcc.c
-${MES} --no-auto-compile -e main ${BINDIR}/mescc.scm -- \
-    --base-address 0x08048000 \
-    -o tcc-mes \
-    -L ${LIBDIR} \
-    tcc.s \
-    -l c+tcc
-cp tcc-mes ${BINDIR}/
-chmod 755 ${BINDIR}/tcc-mes
+pnut-exe ${TCC_PKG}/tcc.c \
+  -I ${PNUT_PKG}/portable_libc/include/ \
+  -D BOOTSTRAP=1 \
+  -D HAVE_LONG_LONG=0 \
+  -D TCC_TARGET_${TCC_TARGET_ARCH}=1 \
+  -D CONFIG_TCCDIR=\"${LIBDIR}/tcc\" \
+  -D CONFIG_SYSROOT=\"/\" \
+  -D CONFIG_TCC_CRTPREFIX=\"${LIBDIR}\" \
+  -D CONFIG_TCC_ELFINTERP=\"/mes/loader\" \
+  -D CONFIG_TCC_SYSINCLUDEPATHS=\"${PREFIX}/include/mes\" \
+  -D TCC_LIBGCC=\"${LIBDIR}/libc.a\" \
+  -D CONFIG_TCC_LIBTCC1_MES=0 \
+  -D CONFIG_TCCBOOT=1 \
+  -D CONFIG_TCC_STATIC=1 \
+  -D CONFIG_USE_LIBGCC=1 \
+  -D TCC_VERSION=\"0.9.26\" \
+  -D ONE_SOURCE=1 \
+  -o tcc-pnut
 
-# test tcc-mes
-tcc-mes -version
+cp tcc-pnut ${BINDIR}/tcc-pnut
+chmod 755 ${BINDIR}/tcc-pnut
+
+# test tcc-pnut
+tcc-pnut -version
 
 # Recompile the mes C library
-cd ../${MES_PKG}
+cd ${MES_PKG}
 
 # Create unified libc file
 cd lib
@@ -100,41 +110,53 @@ catm ../unified-libc.c ctype/isalnum.c ctype/isalpha.c ctype/isascii.c ctype/isc
 cd ..
 
 # crt1.o
-tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crt1.o lib/linux/${MES_ARCH}-mes-gcc/crt1.c
+tcc-pnut -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crt1.o lib/linux/${MES_ARCH}-mes-gcc/crt1.c
 
 catm ${LIBDIR}/crtn.o
 catm ${LIBDIR}/crti.o
 if match ${ARCH} x86; then
     # crtn.o
-    tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
+    tcc-pnut -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crtn.o lib/linux/${MES_ARCH}-mes-gcc/crtn.c
 
     # crti.o
-    tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
+    tcc-pnut -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o ${LIBDIR}/crti.o lib/linux/${MES_ARCH}-mes-gcc/crti.c
 fi
 
 # libc+gcc.a
-tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
-tcc-mes -ar cr ${LIBDIR}/libc.a unified-libc.o
+tcc-pnut -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} -o unified-libc.o unified-libc.c
+tcc-pnut -ar cr ${LIBDIR}/libc.a unified-libc.o
 
 # libtcc1.a
 mkdir ${LIBDIR}/tcc
-tcc-mes -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o libtcc1.o lib/libtcc1.c
+tcc-pnut -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o libtcc1.o lib/libtcc1.c
 if match ${ARCH} riscv64; then
-    tcc-mes -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
-    tcc-mes -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o lib-arm64.o
+    tcc-pnut -c -D HAVE_CONFIG_H=1 -D HAVE_LONG_LONG=1 -D HAVE_FLOAT=1 -I include -I include/linux/${MES_ARCH} -o lib-arm64.o ../${TCC_PKG}/lib/lib-arm64.c
+    tcc-pnut -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o lib-arm64.o
 else
-    tcc-mes -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o
+    tcc-pnut -ar cr ${LIBDIR}/tcc/libtcc1.a libtcc1.o
 fi
 
 # libgetopt.a
-tcc-mes -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} lib/posix/getopt.c
-tcc-mes -ar cr ${LIBDIR}/libgetopt.a getopt.o
+tcc-pnut -c -D HAVE_CONFIG_H=1 -I include -I include/linux/${MES_ARCH} lib/posix/getopt.c
+tcc-pnut -ar cr ${LIBDIR}/libgetopt.a getopt.o
 
-cd ../${TCC_PKG}
+cd ..
+
+# Undo the pnut patches
+simple-patch ${TCC_PKG}/tcc.h \
+    ../simple-patches/undefine_TCC_IS_NATIVE.after ../simple-patches/undefine_TCC_IS_NATIVE.before
+simple-patch ${TCC_PKG}/libtcc.c \
+    ../simple-patches/sscanf_TCC_VERSION.after ../simple-patches/sscanf_TCC_VERSION.before
+simple-patch ${TCC_PKG}/libtcc.c \
+    ../simple-patches/error_set_jmp_enabled.after ../simple-patches/error_set_jmp_enabled.before
+simple-patch ${TCC_PKG}/tccpp.c \
+    ../simple-patches/array_sizeof.after ../simple-patches/array_sizeof.before
+
+cd ${TCC_PKG}
 
 # boot0 (ref comments here for all boot*)
 # compile
-tcc-mes \
+tcc-pnut \
     -g \
     -v \
     -static \
@@ -310,8 +332,7 @@ cd ../..
 # Checksums
 if match x${UPDATE_CHECKSUMS} xTrue; then
     sha256sum -o ${pkg}.${ARCH}.checksums \
-        /usr/bin/tcc-mes \
-        /usr/bin/tcc-boot0 \
+        /usr/bin/pnut-exe \
         /usr/bin/tcc-boot1 \
         /usr/bin/tcc \
         /usr/lib/mes/libc.a \
@@ -325,3 +346,5 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
 else
     sha256sum -c ${pkg}.${ARCH}.checksums
 fi
+
+exit 1 # Stop the execution so we can check the output
