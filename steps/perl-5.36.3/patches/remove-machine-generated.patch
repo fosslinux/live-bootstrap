@@ -1,3 +1,7 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
 There is no way to regenerate this easily. It is merely a fallback for when the
 previous fails and it will not fail with our perl.
 
