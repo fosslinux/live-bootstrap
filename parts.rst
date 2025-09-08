@@ -1051,49 +1051,6 @@ perl 5.12.5
 This is the final version that can be built by perl 5.8. Again, there are new
 files to be regenerated.
 
-perl 5.15.7
-===========
-
-This development version of perl is the latest version that can be built by perl
-5.12. Usually, we would avoid using development releases of perl. However, in
-the 5.15 development cycle, the Unicode system at the core of perl was changed
-somewhat to use a new script ``regen/mk_invlists.pl``, which can only be built
-by a 5.15 version. So, we need to build a 5.15 version to progress. 5.15.7 is
-the last version with the old Unicode system.
-
-perl 5.16.3
-===========
-
-This is the stable version of perl corresponding to 5.15 series. The
-development version is insufficient to build the following perl releases, and
-is quite buggy, but is enough to at least build 5.16.3.
-
-perl 5.17.2, 5.17.4
-===================
-
-Throughout the 5.17/18 development cycle, the new Unicode system went through a
-lot of significant internal changes and restructuring. In particular, the
-system was transformed to use a lot more pregenerated code, particularly
-macros. There are multiple instances where a new internal symbol or macro
-was introduced, and then immediately used somewhere else. These instances each
-depend on one another in one way or another. All these changes mean we end
-up building *two* development versions of perl to break these cycles in the
-development cycle.
-
-perl 5.18.4
-===========
-
-This is another stable version of perl. We need this version because one final
-aforementioned cycle has to be broken with this version. Also, the development
-versions seem to be reasonably buggy again.
-
-perl 5.32.1
-===========
-
-We finally compile a full version of Perl using Configure. This includes all base
-extensions required and is the latest version of Perl. We are now basically able
-to run any Perl application we want.
-
 libarchive 3.5.2
 ================
 
@@ -1169,6 +1126,80 @@ binutils 2.41
 This version of binutils provides a more comprehensive set of programming tools for
 creating and managing binary programs. It also includes modern versions of the ``ld``
 linker, the ``as`` assembler and the ``ar`` program.
+
+perl 5.15.7
+===========
+
+This development version of perl is the latest version that can be built by perl
+5.12. Usually, we would avoid using development releases of perl. However, in
+the 5.15 development cycle, the Unicode system at the core of perl was changed
+somewhat to use a new script ``regen/mk_invlists.pl``, which can only be built
+by a 5.15 version. So, we need to build a 5.15 version to progress. 5.15.7 is
+the last version with the old Unicode system.
+
+perl 5.16.3
+===========
+
+This is the stable version of perl corresponding to 5.15 series. The
+development version is insufficient to build the following perl releases, and
+is quite buggy, but is enough to at least build 5.16.3.
+
+perl 5.17.2, 5.17.4
+===================
+
+Throughout the 5.17/18 development cycle, the new Unicode system went through a
+lot of significant internal changes and restructuring. In particular, the
+system was transformed to use a lot more pregenerated code, particularly
+macros. There are multiple instances where a new internal symbol or macro
+was introduced, and then immediately used somewhere else. These instances each
+depend on one another in one way or another. All these changes mean we end
+up building *two* development versions of perl to break these cycles in the
+development cycle.
+
+perl 5.18.4
+===========
+
+This is another stable version of perl. We need this version because one final
+aforementioned cycle has to be broken with this version. Also, the development
+versions seem to be reasonably buggy again. Many patches need to be added to
+this version to allow any future perl to be built.
+
+perl 5.22.4
+===========
+
+This is the last version that can be fairly easily built with patching perl
+5.18. The next version introduces a few new complexities, so this seems a good
+target. We also backport the Unicode updates from 5.24 to 5.22 to allow 5.24
+to be built with this version (see 5.24 for more information).
+
+perl 5.24.4
+===========
+
+Up until Perl 5.30, there are a number of updates and changes to the Unicode
+tables, in fact too many to reasonably backport. The better solution is to
+use the raw Unicode data and table generating script from 5.30 to an earlier
+version. However, it uses too many new features to be used with 5.22, so we
+need an intermediate version. 5.24 seems to work.
+
+perl 5.30.3
+===========
+
+5.30 is the last version that builds cleanly with 5.24. 5.32+ have a weird
+hanging bug in one of the regen scripts when using Perl 5.24, presumably
+because of a new language construct that is not yet available.
+
+perl 5.36.3
+===========
+
+5.36 is the last version that builds cleanly with 5.30. 5.38+ introduce a
+number of new language features into the mk_invlists.pl script that are not
+easily removed (there have been too many changes). 5.36 has enough support
+of the new features.
+
+perl 5.42.0
+===========
+
+5.42 is the latest version of Perl! The Perl bootstrap is complete.
 
 gperf 3.1
 =========
