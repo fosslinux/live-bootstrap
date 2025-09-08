@@ -11,7 +11,7 @@ index 5d30ee2234..f02c07a9af 100644
 @@ -1,12 +1,10 @@
  #!perl
 -use v5.41.9;
-+use v5.40.3;
++use v5.36.3;
  use utf8;
  use re "/aa";
  use feature 'signatures';
