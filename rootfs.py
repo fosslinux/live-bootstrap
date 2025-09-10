@@ -179,7 +179,7 @@ def main():
         args.swap = 0
 
     # Validate mirrors
-    if not args.mirrors:
+    if not args.mirrors and not args.external_sources:
         raise ValueError("At least one mirror must be provided.")
 
     # Set constant umask
