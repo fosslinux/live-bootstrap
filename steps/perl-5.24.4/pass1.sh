@@ -78,10 +78,13 @@ src_configure() {
         -Dcc=gcc \
         -Dusedl=false \
         -Ddate=':' \
-        -Dccflags="-U__DATE__ -U__TIME__" \
         -Darchname="i386-linux" \
         -Dmyhostname="(none)" \
         -Dmaildomain="(none)"
+}
+
+src_compile() {
+    PERL_BUILD_DATE="Jan 01 1970" default
 }
 
 src_install() {
