@@ -82,13 +82,13 @@ src_configure() {
 }
 
 src_compile() {
-    make "${MAKEJOBS}" pod/perlapi.pod
+    PERL_BUILD_DATE="Jan 01 1970" make "${MAKEJOBS}" pod/perlapi.pod
 
     pushd dist/Devel-PPPort
     perl devel/mkapidoc.pl
     popd
 
-    default
+    PERL_BUILD_DATE="Jan 01 1970" default
 }
 
 src_install() {

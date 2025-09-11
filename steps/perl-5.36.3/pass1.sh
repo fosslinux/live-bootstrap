@@ -73,20 +73,19 @@ src_configure() {
         -Dcc=gcc \
         -Dusedl=false \
         -Ddate=':' \
-        -Dccflags="-U__DATE__ -U__TIME__" \
         -Darchname="i386-linux" \
         -Dmyhostname="(none)" \
         -Dmaildomain="(none)"
 }
 
 src_compile() {
-    make "${MAKEJOBS}" pod/perlapi.pod
+    PERL_BUILD_DATE="Jan 01 1970" make "${MAKEJOBS}" pod/perlapi.pod
 
     pushd dist/Devel-PPPort
     perl devel/mkapidoc.pl
     popd
 
-    default
+    PERL_BUILD_DATE="Jan 01 1970" default
 }
 
 src_install() {
