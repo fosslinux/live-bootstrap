@@ -11,7 +11,8 @@ src_prepare() {
 
     default
 
-    mv Compress-Raw-Zlib_config.in cpan/Compress-Raw-Zlib/config.in
+    chmod 644 cpan/Compress-Raw-Zlib/config.in
+    sed "s:%LIBDIR%:${LIBDIR}:" Compress-Raw-Zlib_config.in > cpan/Compress-Raw-Zlib/config.in
 
     # Remove miscellaneous pregenerated files
     rm Porting/Glossary \

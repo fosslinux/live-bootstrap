@@ -5,7 +5,8 @@
 src_prepare() {
     default
 
-    mv Compress-Raw-Zlib_config.in cpan/Compress-Raw-Zlib/config.in
+    chmod 644 cpan/Compress-Raw-Zlib/config.in
+    sed "s:%LIBDIR%:${LIBDIR}:" Compress-Raw-Zlib_config.in > cpan/Compress-Raw-Zlib/config.in
 
     # Socket versions greater than 2.000 have many difficult problems building
     # in 5.17.x versions; replace them with 2.000
