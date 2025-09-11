@@ -1,2 +1,2 @@
 http://www.cpan.org/src/5.0/perl-5.30.3.tar.xz 6967595f2e3f3a94544c35152f9a25e0cb8ea24ae45f4bf1882f2e33f4a400f4
-git://github.com/Perl/metaconfig~5.26.1 https://github.com/Perl/metaconfig/archive/5.26.1.tar.gz 4641f5127a55cf2e1e8f9253ec27fba10b5b77076b4163e7f4bdc7f670d1aaf0
+git://github.com/Perl/metaconfig~5.30.3 https://github.com/Perl/metaconfig/archive/5.30.3.tar.gz 5cf99c51bbec95192e1b9b1e0d8f62d9413cabf64d0f4be0845c1fab3c4c1c9c
