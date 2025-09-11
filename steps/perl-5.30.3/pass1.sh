@@ -42,13 +42,15 @@ src_prepare() {
     perl lib/unicore/mktables -C lib/unicore -P pod -maketest -makelist -p
     perl regen/mk_invlists.pl
 
-    # regenerate configure
-    ln -s ../metaconfig*/.package .
-    ln -s ../metaconfig*/U .
+    mconf_dir=$(echo ../metaconfig*)
+    ln -s "$mconf_dir"/.package .
+    ln -s "$mconf_dir"/U .
     metaconfig -m
 
     # Glossary
-    ../metaconfig*/U/mkglossary > Porting/Glossary
+    ln -s ../perl-* "$mconf_dir"/perl
+    "$mconf_dir"/U/mkglossary > Porting/Glossary
+
 
     bash dist/Devel-PPPort/devel/mkapidoc.sh . \
         dist/Devel-PPPort/parts/apidoc.fnc \
