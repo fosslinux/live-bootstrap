@@ -529,7 +529,7 @@ src_checksum() {
     if ! [ "$UPDATE_CHECKSUMS" = True ] ; then
         # We avoid using pipes as that is not supported by initial sha256sum from mescc-tools-extra
         local checksum_file=/tmp/checksum
-        _grep "${pkg}_${revision}" "${SRCDIR}/SHA256SUMS.pkgs" > "${checksum_file}" || true
+        _grep "${pkg}_${revision}.tar.bz2" "${SRCDIR}/SHA256SUMS.pkgs" > "${checksum_file}" || true
         # Check there is something in checksum_file
         if ! [ -s "${checksum_file}" ]; then
             echo "${pkg}: no checksum stored!"
