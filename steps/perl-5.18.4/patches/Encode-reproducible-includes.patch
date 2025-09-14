@@ -1,0 +1,231 @@
+SPDX-FileCopyrightText: 2013 Dan Kogai <dankogai+github@gmail.com>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Apply this patch to Encode package to Perl 5.18's import of Encode.
+
+Is necessary for reproducible Encode.a.
+
+From e800b1d3cc678e29ae6e95c3f3916b65439fd99c Mon Sep 17 00:00:00 2001
+From: Dan Kogai <dankogai+github@gmail.com>
+Date: Wed, 17 Jul 2013 03:11:42 +0900
+Subject: [PATCH] RT #86974: Patch to output #includes in deterministic order
+
+---
+ Byte/Makefile.PL       |  4 ++--
+ CN/Makefile.PL         |  4 ++--
+ Changes                |  7 +++++++
+ EBCDIC/Makefile.PL     |  4 ++--
+ Encode/Makefile_PL.e2x | 10 +++++-----
+ JP/Makefile.PL         |  4 ++--
+ KR/Makefile.PL         |  4 ++--
+ Symbol/Makefile.PL     |  4 ++--
+ TW/Makefile.PL         |  4 ++--
+ 9 files changed, 26 insertions(+), 19 deletions(-)
+
+diff --git perl-5.18.4/cpan/Encode/Byte/Makefile.PL perl-5.18.4/cpan/Encode/Byte/Makefile.PL
+index 60caf38..e368ac8 100644
+--- perl-5.18.4/cpan/Encode/Byte/Makefile.PL
++++ perl-5.18.4/cpan/Encode/Byte/Makefile.PL
+@@ -108,7 +108,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -137,7 +137,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+diff --git perl-5.18.4/cpan/Encode/CN/Makefile.PL perl-5.18.4/cpan/Encode/CN/Makefile.PL
+index 6d54404..323b47e 100644
+--- perl-5.18.4/cpan/Encode/CN/Makefile.PL
++++ perl-5.18.4/cpan/Encode/CN/Makefile.PL
+@@ -84,7 +84,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -113,7 +113,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+diff --git perl-5.18.4/cpan/Encode/EBCDIC/Makefile.PL perl-5.18.4/cpan/Encode/EBCDIC/Makefile.PL
+index 0e2a13c..1c78c6a 100644
+--- perl-5.18.4/cpan/Encode/EBCDIC/Makefile.PL
++++ perl-5.18.4/cpan/Encode/EBCDIC/Makefile.PL
+@@ -65,7 +65,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -94,7 +94,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+diff --git perl-5.18.4/cpan/Encode/Encode/Makefile_PL.e2x perl-5.18.4/cpan/Encode/Encode/Makefile_PL.e2x
+index ece5883..9fe60ef 100644
+--- perl-5.18.4/cpan/Encode/Encode/Makefile_PL.e2x
++++ perl-5.18.4/cpan/Encode/Encode/Makefile_PL.e2x
+@@ -83,7 +83,7 @@ sub post_initialize
+         if $^O eq 'MacOS' && $self->{SOURCE} !~ /\b$name\.c\b/;
+     # $self->{'H'} = [$self->catfile($self->updir,'encode.h')];
+     my %xs;
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     push (@{$self->{'C'}},"$table.c");
+     # Do NOT add $table.h etc. to H_FILES unless we own up as to how they
+     # get built.
+@@ -101,7 +101,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -130,7 +130,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+@@ -144,14 +144,14 @@ sub postamble
+     my $dir  = "."; # $self->catdir('Encode');
+     my $str  = "# $name\$(OBJ_EXT) depends on .h and .exh files not .c files - but all written by enc2xs\n";
+     $str    .= "$name.c : $name.xs ";
+-    foreach my $table (keys %tables)
++    foreach my $table (sort keys %tables)
+     {
+     $str .= " $table.c";
+     }
+     $str .= "\n\n";
+     $str .= "$name\$(OBJ_EXT) : $name.c\n\n";
+ 
+-    foreach my $table (keys %tables)
++    foreach my $table (sort keys %tables)
+     {
+     my $numlines = 1;
+     my $lengthsofar = length($str);
+diff --git perl-5.18.4/cpan/Encode/JP/Makefile.PL perl-5.18.4/cpan/Encode/JP/Makefile.PL
+index a75685e..c6a725f 100644
+--- perl-5.18.4/cpan/Encode/JP/Makefile.PL
++++ perl-5.18.4/cpan/Encode/JP/Makefile.PL
+@@ -84,7 +84,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -113,7 +113,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+diff --git perl-5.18.4/cpan/Encode/KR/Makefile.PL perl-5.18.4/cpan/Encode/KR/Makefile.PL
+index e95d039..49c0319 100644
+--- perl-5.18.4/cpan/Encode/KR/Makefile.PL
++++ perl-5.18.4/cpan/Encode/KR/Makefile.PL
+@@ -82,7 +82,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -111,7 +111,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+diff --git perl-5.18.4/cpan/Encode/Symbol/Makefile.PL perl-5.18.4/cpan/Encode/Symbol/Makefile.PL
+index 23ca1f4..2c94aab 100644
+--- perl-5.18.4/cpan/Encode/Symbol/Makefile.PL
++++ perl-5.18.4/cpan/Encode/Symbol/Makefile.PL
+@@ -70,7 +70,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -99,7 +99,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+diff --git perl-5.18.4/cpan/Encode/TW/Makefile.PL perl-5.18.4/cpan/Encode/TW/Makefile.PL
+index 99c94bf..f90861f 100644
+--- perl-5.18.4/cpan/Encode/TW/Makefile.PL
++++ perl-5.18.4/cpan/Encode/TW/Makefile.PL
+@@ -80,7 +80,7 @@ sub post_initialize
+ #define U8 U8
+ #include "encode.h"
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.h"\n];
+     }
+     print XS <<"END";
+@@ -109,7 +109,7 @@ PROTOTYPES: DISABLE
+ BOOT:
+ {
+ END
+-    foreach my $table (keys %tables) {
++    foreach my $table (sort keys %tables) {
+     print XS qq[#include "${table}.exh"\n];
+     }
+     print XS "}\n";
+-- 
+2.49.1
+

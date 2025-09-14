@@ -1,0 +1,47 @@
+SPDX-FileCopyrightText: 2013 Karl Williamson <public@khwilliamson.com>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Backport of this commit to Perl 5.18 to ensure reproducibility of anything
+that uses ParseXS.
+
+From 06535856556a6bc0b3b1e4fac8671acb2a9aa8fd Mon Sep 17 00:00:00 2001
+From: Karl Williamson <public@khwilliamson.com>
+Date: Mon, 15 Jul 2013 09:55:40 -0600
+Subject: [PATCH] ParseXS: generate deterministically ordered output
+
+The generated XS file output was varying between builds because of hash
+randomisation.  This sorts the output to make it the same for the same
+inputs.  This facilitates eyeballing diffs of two workspaces.
+---
+ dist/ExtUtils-ParseXS/lib/ExtUtils/ParseXS.pm | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git perl-5.18.4/dist/ExtUtils-ParseXS/lib/ExtUtils/ParseXS.pm perl-5.18.4/dist/ExtUtils-ParseXS/lib/ExtUtils/ParseXS.pm
+index d50b5010cd..8e691f4ab6 100644
+--- perl-5.18.4/dist/ExtUtils-ParseXS/lib/ExtUtils/ParseXS.pm
++++ perl-5.18.4/dist/ExtUtils-ParseXS/lib/ExtUtils/ParseXS.pm
+@@ -845,7 +845,8 @@ EOF
+     if (%{ $self->{XsubAliases} }) {
+       $self->{XsubAliases}->{$pname} = 0
+         unless defined $self->{XsubAliases}->{$pname};
+-      while ( my ($xname, $value) = each %{ $self->{XsubAliases} }) {
++      foreach my $xname (sort keys %{ $self->{XsubAliases} }) {
++        my $value = $self->{XsubAliases}->{$xname};
+         push(@{ $self->{InitFileCode} }, Q(<<"EOF"));
+ #        cv = $self->{newXS}(\"$xname\", XS_$Full_func_name, file$self->{proto});
+ #        XSANY.any_i32 = $value;
+@@ -859,7 +860,8 @@ EOF
+ EOF
+     }
+     elsif ($self->{interface}) {
+-      while ( my ($yname, $value) = each %{ $self->{Interfaces} }) {
++      foreach my $yname (sort keys %{ $self->{Interfaces} }) {
++        my $value = $self->{Interfaces}->{$yname};
+         $yname = "$Package\::$yname" unless $yname =~ /::/;
+         push(@{ $self->{InitFileCode} }, Q(<<"EOF"));
+ #        cv = $self->{newXS}(\"$yname\", XS_$Full_func_name, file$self->{proto});
+-- 
+2.49.1
+
