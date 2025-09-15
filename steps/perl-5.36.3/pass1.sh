@@ -80,17 +80,18 @@ src_configure() {
         -Ddate=':' \
         -Darchname="i386-linux" \
         -Dmyhostname="(none)" \
-        -Dmaildomain="(none)"
+        -Dmaildomain="(none)" \
+        -Dccflags='-DPERL_BUILD_DATE="null"'
 }
 
 src_compile() {
-    PERL_BUILD_DATE="Jan 01 1970" make "${MAKEJOBS}" pod/perlapi.pod
+    make "${MAKEJOBS}" pod/perlapi.pod
 
     pushd dist/Devel-PPPort
     perl devel/mkapidoc.pl
     popd
 
-    PERL_BUILD_DATE="Jan 01 1970" default
+    default
 }
 
 src_install() {
