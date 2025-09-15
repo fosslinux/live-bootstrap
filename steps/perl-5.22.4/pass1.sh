@@ -35,6 +35,11 @@ src_prepare() {
         lib/feature.pm lib/B/Op_private.pm miniperlmain.c unicode_constants.h \
         charclass_invlists.h ebcdic_tables.h packsizetables.c overload.c \
         mg_names.c
+    # If an input file does not exist, the "digest" of the input file (used as
+    # a manifest of inputs) in the generated file is a random number, which is
+    # not reproducible
+    touch lib/unicore/mktables.lst
+
     perl regen.pl
     perl regen_perly.pl -b bison-2.3
     perl regen/keywords.pl
