@@ -85,11 +85,8 @@ src_configure() {
         -Ddate=':' \
         -Darchname="i386-linux" \
         -Dmyhostname="(none)" \
-        -Dmaildomain="(none)"
-}
-
-src_compile() {
-    PERL_BUILD_DATE="Jan 01 1970" default
+        -Dmaildomain="(none)" \
+        -Dccflags='-DPERL_BUILD_DATE="null"'
 }
 
 src_install() {
