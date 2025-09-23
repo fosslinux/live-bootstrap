@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+# 
+# SPDX-License-Identifier: MIT
+
+BUILD_ZLIB      = False
+ZLIB_INCLUDE    = /usr/include
+ZLIB_LIB        = %LIBDIR%
+OLD_ZLIB        = False
+GZIP_OS_CODE    = AUTO_DETECT
+USE_ZLIB_NG     = False

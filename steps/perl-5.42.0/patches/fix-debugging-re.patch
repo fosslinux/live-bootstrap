@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+This should not be necessary, there is something weird going on here.
+A number of #defines are hidden behind -DDEBUGGING that are required to build
+the re extension but they are not used. Not sure why, this is a bit of a hack.
+
+diff --git perl-5.42.0/ext/re/Makefile.PL perl-5.42.0/ext/re/Makefile.PL
+index 01786e1ec2..cc4619bfc3 100644
+--- perl-5.42.0/ext/re/Makefile.PL
++++ perl-5.42.0/ext/re/Makefile.PL
+@@ -27,7 +27,7 @@ foreach my $tuple (@files) {
+     }
+ }
+ 
+-my $defines = '-DPERL_EXT_RE_BUILD -DPERL_EXT_RE_DEBUG -DPERL_EXT';
++my $defines = '-DPERL_EXT_RE_BUILD -DPERL_EXT_RE_DEBUG -DPERL_EXT -DDEBUGGING';
+ my %args;
+ for my $arg (@ARGV) {
+     $args{$1} = $2 if $arg =~ /^(\w+)=(.*)$/;

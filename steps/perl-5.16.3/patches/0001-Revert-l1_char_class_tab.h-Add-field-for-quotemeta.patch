@@ -1,0 +1,42 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+From c7c816ac94667bf4ed1e6185ed79a70aeabaee97 Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Thu, 21 Aug 2025 21:53:47 +1000
+Subject: [PATCH] Revert "l1_char_class_tab.h: Add field for quotemeta"
+
+The symbol _Perl_Quotemeta was added in the commit before this. We cannot
+use that support in this build. But support is not needed in this build,
+so we can remove it and just add the QUOTEMETA macros in the next build.
+
+This reverts commit 9a022f3a9e4bafe265086ebafcf8f6990108aa57.
+---
+ regen/mk_PL_charclass.pl |   3 -
+ 2 files changed, 117 insertions(+), 120 deletions(-)
+
+diff --git perl-5.16.3/regen/mk_PL_charclass.pl perl-5.16.3/regen/mk_PL_charclass.pl
+index b903fbe1f0..a2f837fefc 100644
+--- perl-5.16.3/regen/mk_PL_charclass.pl
++++ perl-5.16.3/regen/mk_PL_charclass.pl
+@@ -52,7 +52,6 @@ my @properties = qw(
+     WORDCHAR_A
+     WORDCHAR_L1
+     XDIGIT_A
+-    QUOTEMETA
+ );
+ 
+ # Read in the case fold mappings.
+@@ -140,8 +139,6 @@ for my $ord (0..255) {
+             $re = qr/\p{Alnum}/;
+         } elsif ($name eq 'OCTAL') {
+             $re = qr/[0-7]/;
+-        } elsif ($name eq 'QUOTEMETA') {
+-            $re = qr/\p{_Perl_Quotemeta}/;
+         } else {    # The remainder have the same name and values as Unicode
+             $re = eval "qr/\\p{$name}/";
+             use Carp;
+-- 
+2.49.1
+

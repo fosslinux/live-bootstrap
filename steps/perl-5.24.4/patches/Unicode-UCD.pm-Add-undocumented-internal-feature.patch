@@ -1,0 +1,42 @@
+SPDX-FileCopyrightText: 2017 Karl Williamson <khw@cpan.org>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Backport this to 5.24 to be used in 5.30.
+
+From 00616fe6cbb2f183bdc8fa035d4730261733e732 Mon Sep 17 00:00:00 2001
+From: Karl Williamson <khw@cpan.org>
+Date: Sat, 23 Dec 2017 14:45:02 -0700
+Subject: [PATCH] Unicode::UCD.pm Add undocumented internal feature
+
+This allows charprop() to be called on a Perl-internal-only property
+---
+ lib/Unicode/UCD.pm | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git perl-5.24.4/lib/Unicode/UCD.pm perl-5.24.4/lib/Unicode/UCD.pm
+index 13c2c78598..b5125bd506 100644
+--- perl-5.24.4/lib/Unicode/UCD.pm
++++ perl-5.24.4/lib/Unicode/UCD.pm
+@@ -694,14 +694,14 @@ that are internal-only.
+ 
+ =cut
+ 
+-sub charprop ($$) {
+-    my ($input_cp, $prop) = @_;
++sub charprop ($$;$) {
++    my ($input_cp, $prop, $internal_ok) = @_;
+ 
+     my $cp = _getcode($input_cp);
+     croak __PACKAGE__, "::charprop: unknown code point '$input_cp'" unless defined $cp;
+ 
+     my ($list_ref, $map_ref, $format, $default)
+-                                      = prop_invmap($prop);
++                                      = prop_invmap($prop, $internal_ok);
+     return undef unless defined $list_ref;
+ 
+     my $i = search_invlist($list_ref, $cp);
+-- 
+2.49.1
+

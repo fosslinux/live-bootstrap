@@ -1,0 +1,52 @@
+SPDX-FileCopyrightText: 2014 Karl Williamson <public@khwilliamson.com>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+In a similar way to the patch in 5.17.2, future versions rely on the
+existance of the invmap internal properties, so backport it to this
+version.
+
+From 443e0d0dd92c8ed574a7845b0927346bb8f521e4 Mon Sep 17 00:00:00 2001
+From: Karl Williamson <khw@cpan.org>
+Date: Sat, 19 Jul 2014 11:35:34 -0600
+Subject: [PATCH] Unicode::UCD: Allow internal properties in invmap()
+
+This adds an undocumented way to get invmap() to return internal
+properties, like invlist().  This is intended only for Perl-core
+use.
+---
+ lib/Unicode/UCD.pm | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git perl-5.18.4/lib/Unicode/UCD.pm perl-5.18.4/lib/Unicode/UCD.pm
+index 9c3dd7c710..93ae110a5d 100644
+--- perl-5.18.4/lib/Unicode/UCD.pm
++++ perl-5.18.4/lib/Unicode/UCD.pm
+@@ -2802,15 +2802,21 @@ our @algorithmic_named_code_points;
+ our $HANGUL_BEGIN;
+ our $HANGUL_COUNT;
+ 
+-sub prop_invmap ($) {
++sub prop_invmap ($;$) {
+ 
+     croak __PACKAGE__, "::prop_invmap: must be called in list context" unless wantarray;
+ 
+     my $prop = $_[0];
+     return unless defined $prop;
+ 
++    # Undocumented way to get at Perl internal properties; it may be changed
++    # or removed without notice at any time.  It currently also changes the
++    # output to use the format specified in the file rather than the one we
++    # normally compute and return
++    my $internal_ok = defined $_[1] && $_[1] eq '_perl_core_internal_ok';
++
+     # Fail internal properties
+-    return if $prop =~ /^_/;
++    return if $prop =~ /^_/ && ! $internal_ok;
+ 
+     # The values returned by this function.
+     my (@invlist, @invmap, $format, $missing);
+-- 
+2.49.1
+
