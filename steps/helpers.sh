@@ -457,7 +457,8 @@ _do_strip() {
     # shellcheck disable=SC2124
     local f="${@: -1}"
     if ! [ -w "${f}" ]; then
-        local perms="$(stat -c %a "${f}")"
+        local perms
+        perms="$(stat -c %a "${f}")"
         chmod u+w "${f}"
     fi
     strip "$@"
