@@ -76,7 +76,7 @@ src_configure() {
         -Dcc=gcc \
         -Dusedl=false \
         -Ddate=':' \
-        -Darchname="i386-linux" \
+        -Darchname="i686-linux" \
         -Dmyhostname="(none)" \
         -Dmaildomain="(none)" \
         -Dccflags='-DPERL_BUILD_DATE="null"'

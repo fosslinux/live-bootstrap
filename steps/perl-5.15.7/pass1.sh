@@ -67,7 +67,7 @@ src_configure() {
         -Dusedevel \
         -Uversiononly \
         -Dccflags="-U__DATE__ -U__TIME__" \
-        -Darchname="i386-linux" \
+        -Darchname="i686-linux" \
         -Dmyhostname="(none)" \
         -Dmaildomain="(none)"
 
