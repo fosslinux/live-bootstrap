@@ -1,0 +1,5 @@
+#!/bin/sh
+
+osvers=4.14.0
+myarchname=i686-linux
+myuname="linux live-bootstrap 4.14.0 #1 i686 gnulinux "

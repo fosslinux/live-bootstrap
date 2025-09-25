@@ -66,7 +66,7 @@ src_configure() {
         -Dusedl=false \
         -Ddate=':' \
         -Dccflags="-U__DATE__ -U__TIME__" \
-        -Darchname="i386-linux" \
+        -Darchname="i686-linux" \
         -Dmyhostname="(none)" \
         -Dmaildomain="(none)"
 
