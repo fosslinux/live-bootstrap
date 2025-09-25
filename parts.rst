@@ -1018,9 +1018,10 @@ in 2.3. This parser works sufficiently well for perl 5.10.1.
 bison 3.4.2
 ===========
 
-Bison 3.4.1 is buggy and segfaults when perl 5.32.1 is built. This is probably
+Bison 3.4.1 is buggy and segfaults when perl is built. This is probably
 because it was built with a hand-written makefile. We do not build the latest
-bison because perl 5.32.1 requires bison <= 3.4.2.
+bison because perl maybe requires bison <= 3.4.2.
+This step could be improved, possibly.
 
 dist 3.5
 ========
