@@ -138,6 +138,7 @@ src_prepare() {
 
     # Regenerate autotools
     # configure
+    touch depcomp
     find . -name configure | sed 's:/configure::' | while read d; do
         pushd "${d}"
         AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fiv
