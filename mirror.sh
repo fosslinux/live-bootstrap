@@ -142,6 +142,7 @@ do_file() {
             (
                 cd "${outdir}" || exit
                 git pull
+                git submodule update --init --recursive
             )
         fi
 
