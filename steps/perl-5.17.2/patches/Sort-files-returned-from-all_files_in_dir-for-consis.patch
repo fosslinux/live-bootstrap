@@ -1,0 +1,32 @@
+SPDX-FileCopyrightText: 2016 Matthew Horsfall (alh) <wolfsage@gmail.com>
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+From f39737ebd77b0a342e62524de30972bcb532ad87 Mon Sep 17 00:00:00 2001
+From: "Matthew Horsfall (alh)" <wolfsage@gmail.com>
+Date: Fri, 18 Mar 2016 09:34:36 -0400
+Subject: [PATCH] Sort files returned from all_files_in_dir for consistent
+ builds.
+
+This addresses #28 / https://bugs.debian.org/801523
+---
+ parts/ppptools.pl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git perl-5.17.2/cpan/Devel-PPPort/parts/ppptools.pl perl-5.17.2/cpan/Devel-PPPort/parts/ppptools.pl
+index 6ea7516..62e5339 100644
+--- perl-5.17.2/cpan/Devel-PPPort/parts/ppptools.pl
++++ perl-5.17.2/cpan/Devel-PPPort/parts/ppptools.pl
+@@ -28,7 +28,7 @@ sub all_files_in_dir
+   my @files = grep { !-d && !/^\./ } readdir DIR;  # no dirs or hidden files
+   closedir DIR;
+ 
+-  return map { cat_file($dir, $_) } @files;
++  return map { cat_file($dir, $_) } sort @files;
+ }
+ 
+ sub parse_todo
+-- 
+2.49.1
+

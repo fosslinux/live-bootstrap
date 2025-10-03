@@ -1,0 +1,18 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Older versions of Bison produced 4 spaces before `goto yyerrlab`,
+but ours produces more.
+
+--- perl-5.17.2/x2p/Makefile.SH	2025-07-17 18:07:55.350717970 +1000
++++ perl-5.17.2/x2p/Makefile.SH	2025-07-17 18:09:02.340711269 +1000
+@@ -123,7 +123,7 @@
+ 	sed -e 's/(yyn = yydefred\[yystate\])/((yyn = yydefred[yystate]))/' \
+ 	    -e 's/(yys = getenv("YYDEBUG"))/((yys = getenv("YYDEBUG")))/' \
+ 	    -e 's/^yyerrlab://' \
+-	    -e 's/^    goto yyerrlab;//' \
++	    -e 's/^ *goto yyerrlab;//' \
+ 	    -e 's/^yynewerror://' \
+ 	    -e 's/^    goto yynewerror;//' \
+ 	    -e 's|^static char yysccsid\(.*\)|/* static char yysccsid\1 */|' \

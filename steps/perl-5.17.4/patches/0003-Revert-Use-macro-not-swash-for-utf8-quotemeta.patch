@@ -1,0 +1,98 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
+From 070b9010ff7a44dbdce15dfea579089bfbdff821 Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Fri, 22 Aug 2025 23:48:33 +1000
+Subject: [PATCH] Revert "Use macro not swash for utf8 quotemeta"
+
+The original commit introduced the use of the \X macros that were generated
+in the commit before it by regcharclass.h. We can't use those macros in this
+build, so remove the use of them.
+
+Only non-generated parts are reverted.
+
+This reverts commit 685289b5657b776e8a3871de68a57785e6ccd797.
+---
+ embed.fnc             |  1 +
+ intrpvar.h            |  1 +
+ pp.c                  |  3 +--
+ regen/regcharclass.pl |  4 ----
+ sv.c                  |  1 +
+ utf8.c                | 11 +++++++++++
+ 7 files changed, 18 insertions(+), 6 deletions(-)
+
+diff --git perl-5.17.4/embed.fnc perl-5.17.4/embed.fnc
+index 0db9300b3b..466025950e 100644
+--- perl-5.17.4/embed.fnc
++++ perl-5.17.4/embed.fnc
+@@ -614,6 +614,7 @@ EXp        |UV        |_to_fold_latin1|const U8 c|NN U8 *p|NN STRLEN *lenp|const
+ #endif
+ #if defined(PERL_IN_UTF8_C) || defined(PERL_IN_PP_C)
+ p	|UV	|_to_upper_title_latin1|const U8 c|NN U8 *p|NN STRLEN *lenp|const char S_or_s
++ApRM	|bool	|_is_utf8_quotemeta|NN const U8 *p
+ #endif
+ Ap	|UV	|to_uni_lower	|UV c|NN U8 *p|NN STRLEN *lenp
+ Amp	|UV	|to_uni_fold	|UV c|NN U8 *p|NN STRLEN *lenp
+diff --git perl-5.17.4/intrpvar.h perl-5.17.4/intrpvar.h
+index 40a6aa1e9d..641cac6268 100644
+--- perl-5.17.4/intrpvar.h
++++ perl-5.17.4/intrpvar.h
+@@ -633,6 +633,7 @@ PERLVAR(I, utf8_toupper, SV *)
+ PERLVAR(I, utf8_totitle, SV *)
+ PERLVAR(I, utf8_tolower, SV *)
+ PERLVAR(I, utf8_tofold,	SV *)
++PERLVAR(I, utf8_quotemeta, SV *)
+ PERLVAR(I, last_swash_hv, HV *)
+ PERLVAR(I, last_swash_tmps, U8 *)
+ PERLVAR(I, last_swash_slen, STRLEN)
+diff --git perl-5.17.4/pp.c perl-5.17.4/pp.c
+index f99c460a8d..fa741b8b29 100644
+--- perl-5.17.4/pp.c
++++ perl-5.17.4/pp.c
+@@ -29,7 +29,6 @@
+ #include "keywords.h"
+ 
+ #include "reentr.h"
+-#include "regcharclass.h"
+ 
+ /* XXX I can't imagine anyone who doesn't have this actually _needs_
+    it, since pid_t is an integral type.
+@@ -4090,7 +4089,7 @@ PP(pp_quotemeta)
+ 			to_quote = TRUE;
+ 		    }
+ 		}
+-		else if (is_QUOTEMETA_high(s)) {
++		else if (_is_utf8_quotemeta((U8 *) s)) {
+ 		    to_quote = TRUE;
+ 		}
+ 
+diff --git perl-5.17.4/regen/regcharclass.pl perl-5.17.4/regen/regcharclass.pl
+index 7d126428ef..d1df1f5086 100755
+--- perl-5.17.4/regen/regcharclass.pl
++++ perl-5.17.4/regen/regcharclass.pl
+@@ -1176,7 +1176,3 @@ GCB_V: Grapheme_Cluster_Break=V
+ UTF8_CHAR: Matches utf8 from 1 to 5 bytes
+ => UTF8 :safe only_ebcdic_platform
+ 0x0 - 0x3FFFFF:
+-
+-QUOTEMETA: Meta-characters that \Q should quote
+-=> high :fast
+-\p{_Perl_Quotemeta}
+diff --git perl-5.17.4/sv.c perl-5.17.4/sv.c
+index 89699be4b2..8b46b4d9f7 100644
+--- perl-5.17.4/sv.c
++++ perl-5.17.4/sv.c
+@@ -13390,6 +13390,7 @@ perl_clone_using(PerlInterpreter *proto_perl, UV flags,
+     PL_utf8_idcont	= sv_dup_inc(proto_perl->Iutf8_idcont, param);
+     PL_utf8_xidcont	= sv_dup_inc(proto_perl->Iutf8_xidcont, param);
+     PL_utf8_foldable	= sv_dup_inc(proto_perl->Iutf8_foldable, param);
++    PL_utf8_quotemeta	= sv_dup_inc(proto_perl->Iutf8_quotemeta, param);
+     PL_ASCII		= sv_dup_inc(proto_perl->IASCII, param);
+     PL_AboveLatin1	= sv_dup_inc(proto_perl->IAboveLatin1, param);
+     PL_Latin1		= sv_dup_inc(proto_perl->ILatin1, param);
+-- 
+2.49.1
+

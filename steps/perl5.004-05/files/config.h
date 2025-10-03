@@ -92,6 +92,6 @@
 #define Free_t void
 
 #define SH_PATH "/bin/sh"
-#define ARCHNAME "i386-linux"
+#define ARCHNAME "i686-linux"
 #define BIN_EXP "/usr/bin"
 
