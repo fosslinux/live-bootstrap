@@ -1,24 +1,24 @@
-https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tar.xz 85879192f2cffd56cb16c092905949ebf3e5e394b7f764723529637901dfb58f
-http://ftp.unicode.org/Public/3.2-Update/UnicodeData-3.2.0.txt 5e444028b6e76d96f9dc509609c5e3222bf609056f35e5fcde7e6fb8a58cd446
-http://ftp.unicode.org/Public/3.2-Update/CompositionExclusions-3.2.0.txt 1d3a450d0f39902710df4972ac4a60ec31fbcb54ffd4d53cd812fc1200c732cb
-http://ftp.unicode.org/Public/3.2-Update/EastAsianWidth-3.2.0.txt ce19f35ffca911bf492aab6c0d3f6af3d1932f35d2064cf2fe14e10be29534cb
-http://ftp.unicode.org/Public/3.2-Update/DerivedCoreProperties-3.2.0.txt 787419dde91701018d7ad4f47432eaa55af14e3fe3fe140a11e4bbf3db18bb4c
-http://ftp.unicode.org/Public/3.2-Update/DerivedNormalizationProps-3.2.0.txt bab49295e5f9064213762447224ccd83cea0cced0db5dcfc96f9c8a935ef67ee
-http://ftp.unicode.org/Public/3.2-Update/LineBreak-3.2.0.txt d693ef2a603d07e20b769ef8ba29afca39765588a03e3196294e5be8638ca735
-http://ftp.unicode.org/Public/3.2-Update/SpecialCasing-3.2.0.txt 1f7913b74dddff55ee566f6220aa9e465bae6f27709fc21d353b04adb8572b37
-http://ftp.unicode.org/Public/3.2-Update/CaseFolding-3.2.0.txt 370f3d1e79a52791c42065946711f4eddb6d9820726afd0e436a3c50360475a9
-http://ftp.unicode.org/Public/3.2-Update/Unihan-3.2.0.zip 0582b888c4ebab6e3ce8d340c74788f1a68ca662713a1065b9a007f24bb4fe46
-http://ftp.unicode.org/Public/14.0.0/ucd/UnicodeData.txt 36018e68657fdcb3485f636630ffe8c8532e01c977703d2803f5b89d6c5feafb UnicodeData-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/CompositionExclusions.txt 3360762fc3295cea54ab251c31df621d05ba4b94d46c60eaac29aa16d70ad1e0 CompositionExclusions-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/EastAsianWidth.txt f901ac011aa32a09224d6555da71e2532c59c1d3381322829de0e3b880507250 EastAsianWidth-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/DerivedCoreProperties.txt e3eddd7d469cd1b0feed7528defad1a1cc7c6a9ceb0ae4446a6d10921ed2e7bc DerivedCoreProperties-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/DerivedNormalizationProps.txt b2c444c20730b097787fdf50bd7d6dd3fc5256ab8084f5b35b11c8776eca674c DerivedNormalizationProps-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/LineBreak.txt 9e06e9f35c6959fb91dcc7993f90d58523c3079bc62c6b25f828b4cdebc5d70c LineBreak-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/NameAliases.txt 14b3b677d33f95c51423dce6eef4a6a28b4b160451ecedee4b91edb6745cf4a3 NameAliases-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/NamedSequences.txt db5745688affcdc0c3927a1ee0667018a96a7b24513f866d5235e98fef6c2436 NamedSequences-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/SpecialCasing.txt c667b45908fd269af25fd55d2fc5bbc157fb1b77675936e25c513ce32e080334 SpecialCasing-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/CaseFolding.txt a566cd48687b2cd897e02501118b2413c14ae86d318f9abbbba97feb84189f0f CaseFolding-14.0.0.txt
-http://ftp.unicode.org/Public/14.0.0/ucd/Unihan.zip 2ae4519b2b82cd4d15379c17e57bfb12c33c0f54da4977de03b2b04bcf11852d Unihan-14.0.0.zip
-http://ftp.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/PC/CP437.TXT 6bad4dabcdf5940227c7d81fab130dcb18a77850b5d79de28b5dc4e047b0aaac
-https://www.ietf.org/rfc/rfc3454.txt eb722fa698fb7e8823b835d9fd263e4cdb8f1c7b0d234edf7f0e3bd2ccbb2c79
-https://github.com/openssl/openssl/releases/download/openssl-3.0.13/openssl-3.0.13.tar.gz 88525753f79d3bec27d2fa7c66aa0b92b3aa9498dafd93d7cfa4b3780cdae313
+f https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tar.xz 85879192f2cffd56cb16c092905949ebf3e5e394b7f764723529637901dfb58f
+f http://ftp.unicode.org/Public/3.2-Update/UnicodeData-3.2.0.txt 5e444028b6e76d96f9dc509609c5e3222bf609056f35e5fcde7e6fb8a58cd446
+f http://ftp.unicode.org/Public/3.2-Update/CompositionExclusions-3.2.0.txt 1d3a450d0f39902710df4972ac4a60ec31fbcb54ffd4d53cd812fc1200c732cb
+f http://ftp.unicode.org/Public/3.2-Update/EastAsianWidth-3.2.0.txt ce19f35ffca911bf492aab6c0d3f6af3d1932f35d2064cf2fe14e10be29534cb
+f http://ftp.unicode.org/Public/3.2-Update/DerivedCoreProperties-3.2.0.txt 787419dde91701018d7ad4f47432eaa55af14e3fe3fe140a11e4bbf3db18bb4c
+f http://ftp.unicode.org/Public/3.2-Update/DerivedNormalizationProps-3.2.0.txt bab49295e5f9064213762447224ccd83cea0cced0db5dcfc96f9c8a935ef67ee
+f http://ftp.unicode.org/Public/3.2-Update/LineBreak-3.2.0.txt d693ef2a603d07e20b769ef8ba29afca39765588a03e3196294e5be8638ca735
+f http://ftp.unicode.org/Public/3.2-Update/SpecialCasing-3.2.0.txt 1f7913b74dddff55ee566f6220aa9e465bae6f27709fc21d353b04adb8572b37
+f http://ftp.unicode.org/Public/3.2-Update/CaseFolding-3.2.0.txt 370f3d1e79a52791c42065946711f4eddb6d9820726afd0e436a3c50360475a9
+f http://ftp.unicode.org/Public/3.2-Update/Unihan-3.2.0.zip 0582b888c4ebab6e3ce8d340c74788f1a68ca662713a1065b9a007f24bb4fe46
+f http://ftp.unicode.org/Public/14.0.0/ucd/UnicodeData.txt 36018e68657fdcb3485f636630ffe8c8532e01c977703d2803f5b89d6c5feafb UnicodeData-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/CompositionExclusions.txt 3360762fc3295cea54ab251c31df621d05ba4b94d46c60eaac29aa16d70ad1e0 CompositionExclusions-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/EastAsianWidth.txt f901ac011aa32a09224d6555da71e2532c59c1d3381322829de0e3b880507250 EastAsianWidth-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/DerivedCoreProperties.txt e3eddd7d469cd1b0feed7528defad1a1cc7c6a9ceb0ae4446a6d10921ed2e7bc DerivedCoreProperties-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/DerivedNormalizationProps.txt b2c444c20730b097787fdf50bd7d6dd3fc5256ab8084f5b35b11c8776eca674c DerivedNormalizationProps-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/LineBreak.txt 9e06e9f35c6959fb91dcc7993f90d58523c3079bc62c6b25f828b4cdebc5d70c LineBreak-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/NameAliases.txt 14b3b677d33f95c51423dce6eef4a6a28b4b160451ecedee4b91edb6745cf4a3 NameAliases-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/NamedSequences.txt db5745688affcdc0c3927a1ee0667018a96a7b24513f866d5235e98fef6c2436 NamedSequences-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/SpecialCasing.txt c667b45908fd269af25fd55d2fc5bbc157fb1b77675936e25c513ce32e080334 SpecialCasing-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/CaseFolding.txt a566cd48687b2cd897e02501118b2413c14ae86d318f9abbbba97feb84189f0f CaseFolding-14.0.0.txt
+f http://ftp.unicode.org/Public/14.0.0/ucd/Unihan.zip 2ae4519b2b82cd4d15379c17e57bfb12c33c0f54da4977de03b2b04bcf11852d Unihan-14.0.0.zip
+f http://ftp.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/PC/CP437.TXT 6bad4dabcdf5940227c7d81fab130dcb18a77850b5d79de28b5dc4e047b0aaac
+f https://www.ietf.org/rfc/rfc3454.txt eb722fa698fb7e8823b835d9fd263e4cdb8f1c7b0d234edf7f0e3bd2ccbb2c79
+f https://github.com/openssl/openssl/releases/download/openssl-3.0.13/openssl-3.0.13.tar.gz 88525753f79d3bec27d2fa7c66aa0b92b3aa9498dafd93d7cfa4b3780cdae313

@@ -366,16 +366,16 @@ this script the next time")
                         for source in sources.readlines():
                             source = source.strip().split(" ")
 
-                            if source[0].startswith("git://"):
-                                source = source[1:]
+                            if source[0] == "g" or source[0] == "git":
+                                source[1:] = source[2:]
 
-                            if len(source) > 2:
-                                file_name = source[2]
+                            if len(source) > 3:
+                                file_name = source[3]
                             else:
                                 # Automatically determine file name based on URL.
-                                file_name = os.path.basename(source[0])
+                                file_name = os.path.basename(source[1])
 
-                            entry = (source[1], directory, source[0], file_name)
+                            entry = (source[2], directory, source[1], file_name)
                             if entry not in entries:
                                 entries.append(entry)
 

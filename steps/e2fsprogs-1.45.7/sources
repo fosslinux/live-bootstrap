@@ -1,8 +1,8 @@
-https://mirrors.edge.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.45.7/e2fsprogs-1.45.7.tar.xz 62d49c86d9d4becf305093edd65464484dc9ea41c6ff9ae4f536e4a341b171a2
-https://www.unicode.org/Public/11.0.0/ucd/CaseFolding.txt 64f117a4749dd4a1b6c54277f63f6cf1e0eb45d290cbedaf777fbe71b8880885
-https://www.unicode.org/Public/11.0.0/ucd/DerivedAge.txt eb115a5de9a32c9ad447d6ea1cddcadb53d47f6cbc2521f3fe0bebb040c39866
-https://www.unicode.org/Public/11.0.0/ucd/extracted/DerivedCombiningClass.txt 11c8bd81ecbede4d67c7b5b693a471647d5401956707c639ae053b836cc7f5da
-https://www.unicode.org/Public/11.0.0/ucd/DerivedCoreProperties.txt 3406825d64564bf2a37031c36a3e0f99d708aa17595b81f8b539d0f3d1a3923f
-https://www.unicode.org/Public/11.0.0/ucd/NormalizationCorrections.txt c9ffe32e616fa085246644c2351c525788fac363872491185dab7d5ce69fefa9
-https://www.unicode.org/Public/11.0.0/ucd/NormalizationTest.txt 0fdfc17093dd5482f8089cb11dcd936abdba34c4c9c324e5b8a4e5d8f943f6d3
-https://www.unicode.org/Public/11.0.0/ucd/UnicodeData.txt 4997a3196eb79b4d0d6b8384560f6aeb46a062693f0abd5ba736abbff7976099
+f https://mirrors.edge.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.45.7/e2fsprogs-1.45.7.tar.xz 62d49c86d9d4becf305093edd65464484dc9ea41c6ff9ae4f536e4a341b171a2
+f https://www.unicode.org/Public/11.0.0/ucd/CaseFolding.txt 64f117a4749dd4a1b6c54277f63f6cf1e0eb45d290cbedaf777fbe71b8880885
+f https://www.unicode.org/Public/11.0.0/ucd/DerivedAge.txt eb115a5de9a32c9ad447d6ea1cddcadb53d47f6cbc2521f3fe0bebb040c39866
+f https://www.unicode.org/Public/11.0.0/ucd/extracted/DerivedCombiningClass.txt 11c8bd81ecbede4d67c7b5b693a471647d5401956707c639ae053b836cc7f5da
+f https://www.unicode.org/Public/11.0.0/ucd/DerivedCoreProperties.txt 3406825d64564bf2a37031c36a3e0f99d708aa17595b81f8b539d0f3d1a3923f
+f https://www.unicode.org/Public/11.0.0/ucd/NormalizationCorrections.txt c9ffe32e616fa085246644c2351c525788fac363872491185dab7d5ce69fefa9
+f https://www.unicode.org/Public/11.0.0/ucd/NormalizationTest.txt 0fdfc17093dd5482f8089cb11dcd936abdba34c4c9c324e5b8a4e5d8f943f6d3
+f https://www.unicode.org/Public/11.0.0/ucd/UnicodeData.txt 4997a3196eb79b4d0d6b8384560f6aeb46a062693f0abd5ba736abbff7976099
