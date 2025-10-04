@@ -7,19 +7,7 @@
 # Optional arguments: Mirrors
 
 download_source() {
-    local distfiles=${1}
-    local url=${2}
-    shift 2
-    case $url in
-        'git://'*)
-            url=${1}
-            shift
-        ;;
-    esac
-    local checksum=${1}
-    local fname=${2}
-    # Default to basename of url if not given
-    fname=${fname:-$(basename "${url}")}
+    local distfiles=${1} url=${2} fname=${4}
     if [ "${fname}" = "_" ]; then
         echo "ERROR: ${url} must have a filename specified"
         exit 1
@@ -36,25 +24,37 @@ download_source() {
 }
 
 check_source() {
+    local distfiles=${1} checksum=${3} fname=${4}
+    local dest_path=${distfiles}/${fname}
+    echo "${checksum}  ${dest_path}" | sha256sum -c
+}
+
+do_action() {
+    local action=${1}
+    shift
     local distfiles=${1}
-    local url=${2}
-    shift 2
-    case $url in
-        'git://'*)
+    shift
+    local type=${1}
+    shift
+    local url=${1}
+    shift
+    case $type in
+        "g" | "git")
             url=${1}
             shift
         ;;
     esac
     local checksum=${1}
-    local fname=${2}
+    shift
+    local fname=${1}
+
     # Default to basename of url if not given
     fname=${fname:-$(basename "${url}")}
 
-    local dest_path=${distfiles}/${fname}
-    echo "${checksum}  ${dest_path}" | sha256sum -c
+    $action "${distfiles}" "${url}" "${checksum}" "${fname}"
 }
 
-walk_manifest_sources () {
+walk_manifest_sources() {
     local action=$1
     local manifest_entry=
     local entry=
@@ -68,7 +68,7 @@ walk_manifest_sources () {
                 while read -r line; do
                     # This is intentional - we want to split out ${line} into separate arguments.
                     # shellcheck disable=SC2086
-                    $action distfiles ${line}
+                    do_action $action distfiles ${line}
                 done < "./steps/${entry}/sources"
                 ;;
         esac

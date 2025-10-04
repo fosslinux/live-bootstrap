@@ -6,9 +6,6 @@
 # Delete sources of packages before linux kernel
 
 get_source_filename() {
-    if [[ "${1}" == git://* ]]; then
-        shift
-    fi
     local url="${1}"
     local fname="${3}"
     # Default to basename of url if not given
@@ -24,7 +21,7 @@ pkgs="$(awk '/^build:/ { print $2 }' "${SRCDIR}/manifest" | awk '/^linux-[0-9]/,
 keep_sources=""
 for pkg in ${pkgs}; do
     while read line; do
-        keep_sources="${keep_sources} $(get_source_filename ${line})"
+        keep_sources="${keep_sources} $(source_line_action get_source_filename ${line})"
     done < "${SRCDIR}/${pkg}/sources"
 done
 

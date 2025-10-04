@@ -1,16 +1,16 @@
-https://mirrors.kernel.org/gnu/grub/grub-2.06.tar.xz b79ea44af91b93d17cd3fe80bdae6ed43770678a9a5ae192ccea803ebb657ee1
-git://git.savannah.gnu.org/gnulib.git~d271f86 _ 31d69d3d251e39135b5194ddc6f897910d344059f7494d96a739aecbf7ac2b66 gnulib-d271f86.tar.gz
-http://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt 68dfc414d28257b9b5d6ddbb8b466c768c00ebdf6cbf7784364a9b6cad55ee8f UnicodeData-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/PropList.txt f413ea8dbd3858de72f3148b47dd0586019761357d1481e3b65f3a025bc27f82 PropList-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/DerivedCoreProperties.txt 6662c7e30b572df5d948c092692f52bcc79ab36d49a063a73d6435042db6fb3b DerivedCoreProperties-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/ArabicShaping.txt 47cb62a53beea6d0263e2147331c7e751853c9327225d95bbe2d9e1dc3e1aa44 ArabicShaping-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/Scripts.txt fba415952f5654145acad220dc2b878f815c673474d2bb4928934e3ba6ccca1d Scripts-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/Blocks.txt 612127d4889032e55d82522e4a0c19793bda8aa8da14ecb3c696d17c83e6be13 Blocks-9.0.0.txt
-http://ftp.unicode.org/Public/3.0-Update1/PropList-3.0.1.txt 909eef4adbeddbdddcd9487c856fe8cdbb8912aa8eb315ed7885b6ef65f4dc4c
-http://ftp.unicode.org/Public/9.0.0/ucd/EastAsianWidth.txt 3382cb4980e0021e9d4312f2d099315cfab6100ce0ff63a22d6937bfa720bcb7 EastAsianWidth-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/LineBreak.txt e2698584982ccd96e0c688bbcd4d2c48a23805baa0a0084388ef2e50ebd30aad LineBreak-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/auxiliary/WordBreakProperty.txt cb2db065c77287e0f1d35b8c9b473d848b7566a1670439f67c357ca393084043 WordBreakProperty-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/auxiliary/GraphemeBreakProperty.txt 4bb8931857e0a698fd2ec4a51a84c6de33e48a50d8b4bf0b57d960c41d77a191 GraphemeBreakProperty-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/CompositionExclusions.txt 5623df16856ad4007c60bdfff6f054e087521becd24cb4006be69c3a1d851aee CompositionExclusions-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/SpecialCasing.txt dfc4f159c5c68328114ff17cd520451714a72ff48657287e5fe2f64344980695 SpecialCasing-9.0.0.txt
-http://ftp.unicode.org/Public/9.0.0/ucd/CaseFolding.txt 37d40cf8c2c35637f4a04e746814e1fc4eb764c272bed9238a87ee96a4866857 CaseFolding-9.0.0.txt
+f https://mirrors.kernel.org/gnu/grub/grub-2.06.tar.xz b79ea44af91b93d17cd3fe80bdae6ed43770678a9a5ae192ccea803ebb657ee1
+g https://https.git.savannah.gnu.org/git/gnulib.git~d271f86 _ 31d69d3d251e39135b5194ddc6f897910d344059f7494d96a739aecbf7ac2b66 gnulib-d271f86.tar.gz
+f http://ftp.unicode.org/Public/9.0.0/ucd/UnicodeData.txt 68dfc414d28257b9b5d6ddbb8b466c768c00ebdf6cbf7784364a9b6cad55ee8f UnicodeData-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/PropList.txt f413ea8dbd3858de72f3148b47dd0586019761357d1481e3b65f3a025bc27f82 PropList-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/DerivedCoreProperties.txt 6662c7e30b572df5d948c092692f52bcc79ab36d49a063a73d6435042db6fb3b DerivedCoreProperties-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/ArabicShaping.txt 47cb62a53beea6d0263e2147331c7e751853c9327225d95bbe2d9e1dc3e1aa44 ArabicShaping-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/Scripts.txt fba415952f5654145acad220dc2b878f815c673474d2bb4928934e3ba6ccca1d Scripts-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/Blocks.txt 612127d4889032e55d82522e4a0c19793bda8aa8da14ecb3c696d17c83e6be13 Blocks-9.0.0.txt
+f http://ftp.unicode.org/Public/3.0-Update1/PropList-3.0.1.txt 909eef4adbeddbdddcd9487c856fe8cdbb8912aa8eb315ed7885b6ef65f4dc4c
+f http://ftp.unicode.org/Public/9.0.0/ucd/EastAsianWidth.txt 3382cb4980e0021e9d4312f2d099315cfab6100ce0ff63a22d6937bfa720bcb7 EastAsianWidth-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/LineBreak.txt e2698584982ccd96e0c688bbcd4d2c48a23805baa0a0084388ef2e50ebd30aad LineBreak-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/auxiliary/WordBreakProperty.txt cb2db065c77287e0f1d35b8c9b473d848b7566a1670439f67c357ca393084043 WordBreakProperty-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/auxiliary/GraphemeBreakProperty.txt 4bb8931857e0a698fd2ec4a51a84c6de33e48a50d8b4bf0b57d960c41d77a191 GraphemeBreakProperty-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/CompositionExclusions.txt 5623df16856ad4007c60bdfff6f054e087521becd24cb4006be69c3a1d851aee CompositionExclusions-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/SpecialCasing.txt dfc4f159c5c68328114ff17cd520451714a72ff48657287e5fe2f64344980695 SpecialCasing-9.0.0.txt
+f http://ftp.unicode.org/Public/9.0.0/ucd/CaseFolding.txt 37d40cf8c2c35637f4a04e746814e1fc4eb764c272bed9238a87ee96a4866857 CaseFolding-9.0.0.txt

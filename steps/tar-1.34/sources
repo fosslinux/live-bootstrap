@@ -1,2 +1,2 @@
-http://mirrors.kernel.org/gnu/tar/tar-1.34.tar.xz 63bebd26879c5e1eea4352f0d03c991f966aeb3ddeb3c7445c902568d5411d28
-git://git.savannah.gnu.org/gnulib.git~30820c _ df807e694deea2dcba0c43af318394f3e3fcd52658c3b71b61dad0ce0c0cfb77 gnulib-30820c.tar.gz
+f http://mirrors.kernel.org/gnu/tar/tar-1.34.tar.xz 63bebd26879c5e1eea4352f0d03c991f966aeb3ddeb3c7445c902568d5411d28
+g https://https.git.savannah.gnu.org/git/gnulib.git~30820c _ df807e694deea2dcba0c43af318394f3e3fcd52658c3b71b61dad0ce0c0cfb77 gnulib-30820c.tar.gz

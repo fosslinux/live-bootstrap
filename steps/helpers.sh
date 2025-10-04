@@ -273,14 +273,9 @@ randomize() {
 }
 
 download_source_line() {
-    if [[ "${1}" == git://* ]]; then
-        shift
-    fi
     upstream_url="${1}"
     checksum="${2}"
     fname="${3}"
-    # Default to basename of url if not given
-    fname="${fname:-$(basename "${upstream_url}")}"
     if ! [ -e "${fname}" ]; then
         for mirror in $(randomize "${MIRRORS}"); do
             # In qemu SimpleMirror is not running on the guest os, use qemu IP
@@ -298,14 +293,9 @@ download_source_line() {
 }
 
 check_source_line() {
-    if [[ "${1}" == git://* ]]; then
-        shift
-    fi
     url="${1}"
     checksum="${2}"
     fname="${3}"
-    # Default to basename of url if not given
-    fname="${fname:-$(basename "${url}")}"
     if ! [ -e "${fname}" ]; then
         echo "${fname} does not exist!"
         false
@@ -313,6 +303,24 @@ check_source_line() {
     echo "${checksum}  ${fname}" > "${fname}.sum"
     sha256sum -c "${fname}.sum"
     rm "${fname}.sum"
+}
+
+source_line_action() {
+    action="$1"
+    shift
+    type="$1"
+    shift
+    case $type in
+        "g" | "git")
+            shift
+            ;;
+    esac
+    url="${1}"
+    checksum="${2}"
+    fname="${3}"
+    # Default to basename of url if not given
+    fname="${fname:-$(basename "${url}")}"
+    $action "$url" "$checksum" "$fname"
 }
 
 # Default get function that downloads source tarballs.
@@ -323,22 +331,19 @@ default_src_get() {
     while read line; do
         # This is intentional - we want to split out ${line} into separate arguments.
         # shellcheck disable=SC2086
-        download_source_line ${line}
+        source_line_action download_source_line ${line}
     done < "${base_dir}/sources"
     # shellcheck disable=SC2162
     while read line; do
         # This is intentional - we want to split out ${line} into separate arguments.
         # shellcheck disable=SC2086
-        check_source_line ${line}
+        source_line_action check_source_line ${line}
     done < "${base_dir}/sources"
     cd -
 }
 
 # Intelligently extracts a file based upon its filetype.
 extract_file() {
-    if [[ "${1}" == git://* ]]; then
-        shift
-    fi
     f="${3:-$(basename "${1}")}"
     # shellcheck disable=SC2154
     case "${noextract}" in
@@ -384,7 +389,7 @@ default_src_unpack() {
     first_line=$(head -n 1 ../sources)
     # Again, we want to split out into words.
     # shellcheck disable=SC2086
-    extract_file ${first_line}
+    source_line_action extract_file ${first_line}
     # This assumes there is only one directory in the tarball
     # Get the dirname "smartly"
     if ! [ -e "${dirname}" ]; then
@@ -398,7 +403,7 @@ default_src_unpack() {
     # shellcheck disable=SC2162
     tail -n +2 ../sources | while read line; do
         # shellcheck disable=SC2086
-        extract_file ${line}
+        source_line_action extract_file ${line}
     done
 }
 

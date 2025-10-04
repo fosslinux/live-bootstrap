@@ -1,2 +1,2 @@
-http://mirrors.kernel.org/gnu/libtool/libtool-2.4.7.tar.xz 4f7f217f057ce655ff22559ad221a0fd8ef84ad1fc5fcb6990cecc333aa1635d
-git://git.savannah.gnu.org/gnulib.git~a521820 _ 719b399fe09a8f6ca14ba8c4a9a60ce9f93f4892effb50961ef3d8cd1a33ff65 gnulib-a521820.tar.gz
+f http://mirrors.kernel.org/gnu/libtool/libtool-2.4.7.tar.xz 4f7f217f057ce655ff22559ad221a0fd8ef84ad1fc5fcb6990cecc333aa1635d
+g https://https.git.savannah.gnu.org/git/gnulib.git~a521820 _ 719b399fe09a8f6ca14ba8c4a9a60ce9f93f4892effb50961ef3d8cd1a33ff65 gnulib-a521820.tar.gz

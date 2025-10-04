@@ -1,4 +1,4 @@
-git://github.com/schierlm/gnu-autogen-bootstrapping~autogen-5.18.16-v1.0.1 https://github.com/schierlm/gnu-autogen-bootstrapping/archive/refs/tags/autogen-5.18.16-v1.0.1.tar.gz 953ba180b18acff188a0a8700770c7cf2fc97e1683c7b9699a5a748b542ccdd5
-https://mirrors.kernel.org/gnu/autogen/rel5.18.16/autogen-5.18.16.tar.xz f8a13466b48faa3ba99fe17a069e71c9ab006d9b1cfabe699f8c60a47d5bb49a
-git://git.savannah.gnu.org/autogen.git~v5.18.16 https://git.savannah.gnu.org/cgit/autogen.git/snapshot/autogen-5.18.16.tar.gz 0c04ab2f7ce13c4a1c06c4abc7dfe75312aad89b8b0a1068e5e563787eb56632
-git://git.savannah.gnu.org/gnulib.git~8f4538a5 _ e207c0bb72093c3a72dde302fcfaa1dbda12a62172d47b73565883a92209ebab gnulib-8f4538a5.tar.gz
+g https://github.com/schierlm/gnu-autogen-bootstrapping~autogen-5.18.16-v1.0.1 https://github.com/schierlm/gnu-autogen-bootstrapping/archive/refs/tags/autogen-5.18.16-v1.0.1.tar.gz 953ba180b18acff188a0a8700770c7cf2fc97e1683c7b9699a5a748b542ccdd5
+f https://mirrors.kernel.org/gnu/autogen/rel5.18.16/autogen-5.18.16.tar.xz f8a13466b48faa3ba99fe17a069e71c9ab006d9b1cfabe699f8c60a47d5bb49a
+g https://https.git.savannah.gnu.org/git/autogen.git~v5.18.16 https://git.savannah.gnu.org/cgit/autogen.git/snapshot/autogen-5.18.16.tar.gz 0c04ab2f7ce13c4a1c06c4abc7dfe75312aad89b8b0a1068e5e563787eb56632
+g https://https.git.savannah.gnu.org/git/gnulib.git~8f4538a5 _ e207c0bb72093c3a72dde302fcfaa1dbda12a62172d47b73565883a92209ebab gnulib-8f4538a5.tar.gz

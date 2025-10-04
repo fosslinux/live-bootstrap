@@ -59,127 +59,128 @@ checksum_file() {
 }
 
 do_file() {
+    type=${1}
+    shift
     uri=${1}
+    shift
     echo "${uri}"
 
-    if echo "${uri}" | grep -qE "^https?://"; then
-        # HTTP file
-        checksum=${2}
-        filename=${3}
-        if [ "${filename}" = "" ]; then
-            filename=$(basename "${uri}")
-        fi
-
-        # Check if the file is already downloaded & the checksum is the same
-        dest_file=${dest}/${filename}
-        if [ -e "${dest_file}" ]; then
-            existing_checksum=$(checksum_file "${dest_file}")
-            if [ "${checksum}" = "${existing_checksum}" ]; then
-                # There is nothing we need to do here
-                return
+    case $type in
+        f | file)
+            # HTTP file
+            checksum=${1}
+            shift
+            filename=${1}
+            if [ "${filename}" = "" ]; then
+                filename=$(basename "${uri}")
             fi
-        fi
 
-        # Attempt up to 3 times
-        retries=3
-        matching=no
-        while [ "${retries}" -gt 0 ]; do
-            download_file "${uri}" "${dest}/${filename}"
-            my_checksum=$(checksum_file "${dest_file}")
-            if [ "${checksum}" = "${my_checksum}" ]; then
-                matching="yes"
-                break
+            # Check if the file is already downloaded & the checksum is the same
+            dest_file=${dest}/${filename}
+            if [ -e "${dest_file}" ]; then
+                existing_checksum=$(checksum_file "${dest_file}")
+                if [ "${checksum}" = "${existing_checksum}" ]; then
+                    # There is nothing we need to do here
+                    return
+                fi
             fi
-            retries=$((retries - 1))
-            if [ "${retries}" -gt 0 ]; then
-                echo "${uri}: checksum did not match, trying again"
-                rm "${dest}/${filename}"
+
+            # Attempt up to 3 times
+            retries=3
+            matching=no
+            while [ "${retries}" -gt 0 ]; do
+                download_file "${uri}" "${dest}/${filename}"
+                my_checksum=$(checksum_file "${dest_file}")
+                if [ "${checksum}" = "${my_checksum}" ]; then
+                    matching="yes"
+                    break
+                fi
+                retries=$((retries - 1))
+                if [ "${retries}" -gt 0 ]; then
+                    echo "${uri}: checksum did not match, trying again"
+                    rm "${dest}/${filename}"
+                fi
+                sleep 1
+            done
+
+            if [ "${matching}" = "no" ]; then
+                echo "${uri}: checksums do not match"
+                exit 1
             fi
-            sleep 1
-        done
+            ;;
+        g | git)
+            # Creating a tarball from a git repository
+            repo=${uri%~*}
+            outdir=${state}/git/${repo#*://}
+            reference=${uri##*~}
 
-        if [ "${matching}" = "no" ]; then
-            echo "${uri}: checksums do not match"
-            exit 1
-        fi
-    elif echo "${uri}" | grep -qE "^git://"; then
-        # Creating a tarball from a git repository
-
-        # Very unfortunately, different sites have different rules.
-        uri_path=${uri#git://}
-        # GitHub does not have git:// protocol support
-        if echo "${uri}" | grep -Eq "^git://github.com"; then
-            uri=https://${uri_path}
-        fi
-        repo=${uri%~*}
-        outdir=${state}/git/${repo#*://}
-        reference=${uri##*~}
-
-        http_src=${2}
-        checksum=${3}
-        tarball=${4:-$(basename "${http_src}")}
-        if [ "${tarball}" = "_" ]; then
-            echo "${uri}: ERROR! Must have tarball name if no http source."
-            exit 1
-        fi
-        tarball=${dest}/${tarball}
-
-        # Check if tarball already generated + matches checksum
-        checksum=${3}
-        if [ -e "${tarball}" ]; then
-            existing_checksum=$(checksum_file "${tarball}")
-            if [ "${existing_checksum}" = "${checksum}" ]; then
-                return
+            http_src=${1}
+            shift
+            checksum=${1}
+            shift
+            tarball=${1:-$(basename "${http_src}")}
+            if [ "${tarball}" = "_" ]; then
+                echo "${uri}: ERROR! Must have tarball name if no http source."
+                exit 1
             fi
-            rm "${tarball}"
-        fi
+            tarball=${dest}/${tarball}
 
-        # Clone the repository, or update it if needed
-        if [ ! -e "${outdir}" ]; then
-            mkdir -p "$(dirname "${outdir}")"
-            git clone "${repo}" "${outdir}"
-        elif ! git_ref_exists "${outdir}" "${reference}" ; then
+            # Check if tarball already generated + matches checksum
+            if [ -e "${tarball}" ]; then
+                existing_checksum=$(checksum_file "${tarball}")
+                if [ "${existing_checksum}" = "${checksum}" ]; then
+                    return
+                fi
+                rm "${tarball}"
+            fi
+
+            # Clone the repository, or update it if needed
+            if [ ! -e "${outdir}" ]; then
+                mkdir -p "$(dirname "${outdir}")"
+                git clone "${repo}" "${outdir}"
+            elif ! git_ref_exists "${outdir}" "${reference}" ; then
+                (
+                    cd "${outdir}" || exit
+                    git pull
+                    git submodule update --init --recursive
+                )
+            fi
+
+            # Sanity check: the reference we want exists
+            if ! git_ref_exists "${outdir}" "${reference}"; then
+                echo "${reference} not found in ${repo} (${outdir})"
+                exit 1
+            fi
+
+            # Generate the prefix for the tarball
+            prefix_ref=${reference}
+            # All git repositories we already use remove "v"s from the beginning
+            # of branch/tag names in the tarball prefix
+            if echo "${reference}" | grep -Eq "^v[0-9]"; then
+                prefix_ref=$(echo "${reference}" | sed "s/^v//")
+            fi
+            prefix=$(basename "${repo}" | sed "s/.git$//")-${prefix_ref}
+
             (
                 cd "${outdir}" || exit
-                git pull
-                git submodule update --init --recursive
+                # Some versions of git by default use the internal gzip
+                # implementation, others use external gzip; standardize this
+                # -n is used for older versions of git that record gzip creation
+                # date/time
+                git config tar.tar.gz.command "gzip -n"
+                # -T1 avoids non-determinism due to threading
+                # This may not be correct for forges other than Savannah
+                git config tar.tar.xz.command "xz -T1"
+                git archive "${reference}" -o "${tarball}" --prefix "${prefix}/"
             )
-        fi
 
-        # Sanity check: the reference we want exists
-        if ! git_ref_exists "${outdir}" "${reference}"; then
-            echo "${reference} not found in ${repo} (${outdir})"
-            exit 1
-        fi
-
-        # Generate the prefix for the tarball
-        prefix_ref=${reference}
-        # All git repositories we already use remove "v"s from the beginning
-        # of branch/tag names in the tarball prefix
-        if echo "${reference}" | grep -Eq "^v[0-9]"; then
-            prefix_ref=$(echo "${reference}" | sed "s/^v//")
-        fi
-        prefix=$(basename "${repo}" | sed "s/.git$//")-${prefix_ref}
-
-        (
-            cd "${outdir}" || exit
-            # Some versions of git by default use the internal gzip
-            # implementation, others use external gzip; standardize this
-            # -n is used for older versions of git that record gzip creation
-            # date/time
-            git config tar.tar.gz.command "gzip -n"
-            # -T1 avoids non-determinism due to threading
-            # This may not be correct for forges other than Savannah
-            git config tar.tar.xz.command "xz -T1"
-            git archive "${reference}" -o "${tarball}" --prefix "${prefix}/"
-        )
-
-        my_checksum=$(sha256sum "${tarball}" | cut -d' ' -f1)
-        if [ "${my_checksum}" != "${checksum}" ]; then
-            echo "${uri}: generated tarball does not match checksum"
-            exit 1
-        fi
-    fi
+            my_checksum=$(sha256sum "${tarball}" | cut -d' ' -f1)
+            if [ "${my_checksum}" != "${checksum}" ]; then
+                echo "${uri}: generated tarball does not match checksum"
+                exit 1
+            fi
+            ;;
+    esac            
 }
 
 for src in steps/*/sources; do

@@ -11,7 +11,7 @@
 #include <unistd.h>
 
 #define MAX_STRING 4096
-#define MAX_TOKENS 3
+#define MAX_TOKENS 8
 
 char *get_distfiles(char **envp) {
 	char *envvar = "DISTFILES=";
@@ -60,12 +60,15 @@ int main(int argc, char **argv, char **envp) {
 		}
 		line = strchr(line, '\n');
 		line[0] = '\0';
+		// Only "file" type of distfile supported at this point
+		require(strcmp(tokens[0], "f") == 0 || strcmp(tokens[0], "file") == 0,
+		        "Only support file distfile type at this point");
 		// Get checksum and filename
-		checksum = tokens[1];
-		if (tokens[2] != NULL) {
-			filename = tokens[2];
+		checksum = tokens[2];
+		if (tokens[3] != NULL) {
+			filename = tokens[3];
 		} else {
-			filename = strrchr(tokens[0], '/');
+			filename = strrchr(tokens[1], '/');
 			filename += 1;
 		}
 		// Put it all together
