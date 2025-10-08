@@ -1,0 +1,19 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Sort the list of types in @provided to make PPPort.pm reproducible.
+
+diff --git perl-5.36.3/dist/Devel-PPPort/PPPort_pm.PL perl-5.36.3/dist/Devel-PPPort/PPPort_pm.PL
+index cfbfaeb8fa..88c4bcc13c 100644
+--- perl-5.36.3/dist/Devel-PPPort/PPPort_pm.PL
++++ perl-5.36.3/dist/Devel-PPPort/PPPort_pm.PL
+@@ -53,7 +53,7 @@ my @provided = sort dictionary_order keys %provides;
+ 
+ # which further expands $data.
+ $data =~ s{^(.*)__PROVIDED_API__(\s*?)^}
+-          {join '', map "$1$_\n", @provided}gem;
++          {join '', map "$1$_\n", sort @provided}gem;
+ 
+ {
+   my $len = 0;

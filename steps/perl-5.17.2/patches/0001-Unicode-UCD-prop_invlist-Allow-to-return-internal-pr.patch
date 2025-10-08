@@ -1,0 +1,53 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Backport this patch, because the following version expects this patch to
+exist, and patching it out is much more annoying than patching it in.
+
+From b5bc060d03776870f3ead93e8c565069a66c2af9 Mon Sep 17 00:00:00 2001
+From: Karl Williamson <public@khwilliamson.com>
+Date: Mon, 18 Jun 2012 12:38:41 -0600
+Subject: [PATCH] Unicode::UCD::prop_invlist() Allow to return internal
+ property
+
+This creates an optional undocumented parameter to this function to
+allow it to return the inversion list of an internal-only Perl property.
+This will be used by other functions in Perl, but should not be
+documented, as we don't want to encourage the use of internal-only
+properties, which are subject to change or removal without notice.
+---
+ lib/Unicode/UCD.pm | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git perl-5.17.2/lib/Unicode/UCD.pm perl-5.17.2/lib/Unicode/UCD.pm
+index 17b4fead23..a809c21adc 100644
+--- perl-5.17.2/lib/Unicode/UCD.pm
++++ perl-5.17.2/lib/Unicode/UCD.pm
+@@ -1944,8 +1944,12 @@ properties, and will return C<undef> if called with one of those.
+ our %loose_defaults;
+ our $MAX_UNICODE_CODEPOINT;
+ 
+-sub prop_invlist ($) {
++sub prop_invlist ($;$) {
+     my $prop = $_[0];
++
++    # Undocumented way to get at Perl internal properties
++    my $internal_ok = defined $_[1] && $_[1] eq '_perl_core_internal_ok';
++
+     return if ! defined $prop;
+ 
+     require "utf8_heavy.pl";
+@@ -1962,7 +1966,7 @@ sub prop_invlist ($) {
+               || ref $swash eq ""
+               || $swash->{'BITS'} != 1
+               || $swash->{'USER_DEFINED'}
+-              || $prop =~ /^\s*_/;
++              || (! $internal_ok && $prop =~ /^\s*_/);
+ 
+     if ($swash->{'EXTRAS'}) {
+         carp __PACKAGE__, "::prop_invlist: swash returned for $prop unexpectedly has EXTRAS magic";
+-- 
+2.49.1
+

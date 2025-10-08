@@ -1,0 +1,3 @@
+f https://www.cpan.org/src/5.0/perl-5.8.9.tar.bz2 1097fbcd48ceccb2bc735d119c9db399a02a8ab9f7dc53e29e47e6a8d0d72e79
+g https://github.com/Perl/metaconfig~40501436c87602cc17baae64ee6b3ca26d74e354 https://github.com/Perl/metaconfig/archive/40501436c87602cc17baae64ee6b3ca26d74e354.tar.gz 6b0c937e1aaef684a7b2f0c089bea293c7a9d255d6513e5108567f4c10e3f4dd
+f https://cpan.metacpan.org/authors/id/M/MS/MSHELOR/Digest-SHA-6.04.tar.gz ee91f8f7db894ee7c6ee003daac10a99056c4948a674ef46acdbb63c81a4abeb

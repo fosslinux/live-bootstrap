@@ -1,0 +1,31 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+This diff is really on the 5.24 version of mktables, which we use in this
+version to get the required tables to build 5.24. These changes are required
+for the 5.24 mktables to run under 5.22.
+
+diff --git perl-5.22.4/lib/unicore/mktables perl-5.22.4/lib/unicore/mktables
+index 0566d8713d..00def69d7f 100644
+--- perl-5.22.4/lib/unicore/mktables
++++ perl-5.22.4/lib/unicore/mktables
+@@ -33,6 +33,7 @@ use File::Spec;
+ use Text::Tabs;
+ use re "/aa";
+ use feature 'state';
++use feature 'postderef';
+ 
+ sub DEBUG () { 0 }  # Set to 0 for production; 1 for development
+ my $debugging_build = $Config{"ccflags"} =~ /-DDEBUGGING/;
+@@ -549,6 +550,7 @@ my $MAX_LINE_WIDTH = 78;
+ # before normal completion.
+ my $debug_skip = 0;
+ 
++my $Assigned;
+ 
+ # Normally these are suppressed.
+ my $write_Unicode_deprecated_tables = 0;
+-- 
+2.49.1
+

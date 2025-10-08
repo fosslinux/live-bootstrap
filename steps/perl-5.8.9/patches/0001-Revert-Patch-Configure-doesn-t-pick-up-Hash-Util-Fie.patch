@@ -1,0 +1,43 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-2.0-or-later
+
+From 0db0a3cd0dd78965cea62c7cfc3724e31fba4e8d Mon Sep 17 00:00:00 2001
+From: fosslinux <fosslinux@aussies.space>
+Date: Sun, 13 Jul 2025 13:39:45 +1000
+Subject: [PATCH] Revert "[Patch] Configure doesn't pick up
+ Hash/Util/FieldHash"
+
+It is most unclear what version of metaconfig was used for this perl.
+The commit directly preceding this is broken for this perl, and this
+commit introduces problems.
+
+This reverts commit cb6ac97976e03a65df4df6f86396e8241167307c.
+---
+ U/perl/Extensions.U | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/U/perl/Extensions.U b/U/perl/Extensions.U
+index b8617ff..0ba7c74 100644
+--- metaconfig-40501436c87602cc17baae64ee6b3ca26d74e354/U/perl/Extensions.U
++++ metaconfig-40501436c87602cc17baae64ee6b3ca26d74e354/U/perl/Extensions.U
+@@ -99,12 +99,10 @@ cd "$rsrc/ext"
+ set X
+ shift
+ eval $find_extensions
+-# Special case:  Add in modules that nest beyond the first level.
+-# Currently threads/shared and Hash/Util/FieldHash, since they are
+-# not picked up by the recursive find above (and adding in general
+-# recursive finding breaks SDBM_File/sdbm).
+-# A.D. 20011025 (SDBM), ajgough 20071008 (FieldHash)
+-known_extensions="$known_extensions threads/shared Hash/Util/FieldHash"
++# Special case:  Add in threads/shared since it is not picked up by the
++# recursive find above (and adding in general recursive finding breaks
++# SDBM_File/sdbm).  A.D.  10/25/2001.
++known_extensions="$known_extensions threads/shared"
+ set X $known_extensions
+ shift
+ known_extensions="$*"
+-- 
+2.49.1
+

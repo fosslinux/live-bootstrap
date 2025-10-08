@@ -1,0 +1,19 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Sort the list of types in @api to make PPPort.pm reproducible.
+
+diff --git perl-5.18.4/cpan/Devel-PPPort/PPPort_pm.PL perl-5.18.4/cpan/Devel-PPPort/PPPort_pm.PL
+index e1118caf66..009beeb594 100644
+--- perl-5.18.4/cpan/Devel-PPPort/PPPort_pm.PL
++++ perl-5.18.4/cpan/Devel-PPPort/PPPort_pm.PL
+@@ -40,7 +40,7 @@ $data = expand($data);
+ my @api = sort { lc $a cmp lc $b } keys %provides;
+ 
+ $data =~ s{^(.*)__PROVIDED_API__(\s*?)^}
+-          {join '', map "$1$_\n", @api}gem;
++          {join '', map "$1$_\n", sort @api}gem;
+ 
+ {
+   my $len = 0;

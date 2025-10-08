@@ -1,0 +1,42 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Make mk_invlists work in 5.40.
+
+diff --git perl-5.42.0/regen/mk_invlists.pl perl-5.42.0/regen/mk_invlists.pl
+index 5d30ee2234..f02c07a9af 100644
+--- perl-5.42.0/regen/mk_invlists.pl
++++ perl-5.42.0/regen/mk_invlists.pl
+@@ -1,12 +1,10 @@
+ #!perl
+-use v5.41.9;
++use v5.36.3;
+ use utf8;
+ use re "/aa";
+ use feature 'signatures';
+ use feature 'state';
+-use feature 'keyword_any';
+ use warnings;
+-no warnings 'experimental::keyword_any';
+ use Data::Dumper;
+ $Data::Dumper::Sortkeys = 1;
+ use Unicode::UCD qw(prop_aliases
+@@ -1483,7 +1481,7 @@ sub get_cell_list($table_size, $splits, $enums, $x, $y, $me_too = undef) {
+                     foreach my $pair ($me_too->{$me_too_key}->@*) {
+                         my $copy_x = $pair->[0];
+                         my $copy_y = $pair->[1];
+-                        next if any {   $copy_x == $_->[0]
++                        next if grep {   $copy_x == $_->[0]
+                                      && $copy_y == $_->[1]
+                                     } @list;
+                         push @list, [ $copy_x, $copy_y ];
+@@ -2185,7 +2183,7 @@ sub setup_splits($to_enum, $table_size, $has_unused, $splits) {
+             # If any of the items this expands to are themselves split, this
+             # one isn't ready to be processed.  But an item can refer to
+             # itself.  That shouldn't count XXX
+-            next if any { defined $splits->{$_} }
++            next if grep { defined $splits->{$_} }
+                     grep { $_ ne $name } $splits->{$name}->@*;
+ 
+             push @ordered, $name;

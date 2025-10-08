@@ -78,6 +78,11 @@ _grep() {
     fi
 }
 
+# Useful for perl extensions
+get_perl_version() {
+    perl -v | sed -n -re 's/.*[ (]v([0-9\.]*)[ )].*/\1/p'
+}
+
 get_revision() {
     local pkg=$1
     local oldpwd="${PWD}"
@@ -96,7 +101,7 @@ bin_preseed() {
         test -e "${pkg}_${revision}.tar.bz2" || return 1
         if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
             echo "${pkg}: installing prebuilt package."
-            mv "${pkg}_${revision}"* /external/repo || return 1
+            mv "${pkg}_${revision}.tar.bz2" /external/repo || return 1
             cd "/external/repo"
             rm -f /tmp/filelist.txt
             src_apply "${pkg}" $((revision))
@@ -447,6 +452,21 @@ default_src_install() {
     make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}"
 }
 
+# Helper function for permissions
+_do_strip() {
+    # shellcheck disable=SC2124
+    local f="${@: -1}"
+    if ! [ -w "${f}" ]; then
+        local perms
+        perms="$(stat -c %a "${f}")"
+        chmod u+w "${f}"
+    fi
+    strip "$@"
+    if [ -n "${perms}" ]; then
+        chmod "${perms}" "${f}"
+    fi
+}
+
 # Default function for postprocessing binaries.
 default_src_postprocess() {
     if (command -v find && command -v file && command -v strip) >/dev/null 2>&1; then
@@ -454,15 +474,15 @@ default_src_postprocess() {
         # shellcheck disable=SC2162
         find "${DESTDIR}" -type f | while read f; do
             case "$(file -bi "${f}")" in
-                application/x-executable*) strip "${f}" ;;
+                application/x-executable*) _do_strip "${f}" ;;
                 application/x-sharedlib*|application/x-pie-executable*)
                     machine_set="$(file -b "${f}")"
                     case "${machine_set}" in
                         *no\ machine*) ;; # don't strip ELF container-only
-                        *) strip --strip-unneeded "${f}" ;;
+                        *) _do_strip --strip-unneeded "${f}" ;;
                     esac
                     ;;
-                application/x-archive*) strip --strip-debug "${f}" ;;
+                application/x-archive*) _do_strip --strip-debug "${f}" ;;
             esac
         done
     fi
@@ -510,7 +530,7 @@ src_checksum() {
     if ! [ "$UPDATE_CHECKSUMS" = True ] ; then
         # We avoid using pipes as that is not supported by initial sha256sum from mescc-tools-extra
         local checksum_file=/tmp/checksum
-        _grep "${pkg}_${revision}" "${SRCDIR}/SHA256SUMS.pkgs" > "${checksum_file}" || true
+        _grep "${pkg}_${revision}.tar.bz2" "${SRCDIR}/SHA256SUMS.pkgs" > "${checksum_file}" || true
         # Check there is something in checksum_file
         if ! [ -s "${checksum_file}" ]; then
             echo "${pkg}: no checksum stored!"

@@ -1,0 +1,69 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2012 Karl Williamson <public@khwilliamson.com>
+
+SPDX-License-Identifier: Artistic-1.0
+
+Both of these commits remove use of symbols that were added and then
+immediately used in the regeneration script.
+
+From 6f1d133ec238228c656fcd05d6b42f562aaa92b3 Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Thu, 21 Aug 2025 19:28:54 +1000
+Subject: [PATCH 1/4] Revert "regen/mk_PL_charclass.pl: Use mktables table for
+ charname"
+
+This reverts commit 699ffc5e6f6d1426d23e60b98f7935ec76291935.
+---
+ regen/mk_PL_charclass.pl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git perl-5.18.4/regen/mk_PL_charclass.pl perl-5.18.4/regen/mk_PL_charclass.pl
+index 63c06bc9f6..bfa4f7e3e6 100644
+--- perl-5.18.4/regen/mk_PL_charclass.pl
++++ perl-5.18.4/regen/mk_PL_charclass.pl
+@@ -185,7 +185,7 @@ for my $ord (0..255) {
+             # just \pP outside it.
+             $re = qr/\p{Punct}|[^\P{Symbol}\P{ASCII}]/;
+         } elsif ($name eq 'CHARNAME_CONT') {;
+-            $re = qr/\p{_Perl_Charname_Continue}/,
++            $re = qr/[-\p{XPosixWord} ():\xa0]/;
+         } elsif ($name eq 'SPACE') {;
+             $re = qr/\p{XPerlSpace}/;
+         } elsif ($name eq 'IDFIRST') {
+-- 
+2.49.1
+
+From 66aada8c22c0005e8d76a71589a3218b8cb16d19 Mon Sep 17 00:00:00 2001
+From: Samuel Tyler <fosslinux@aussies.space>
+Date: Thu, 21 Aug 2025 19:37:33 +1000
+Subject: [PATCH 3/4] Revert "regen/mk_PL_charclass.pl: Add bit for if
+ character folds"
+
+This reverts commit f79937459278f854cb4aa2d3b88400156a7a51ca.
+---
+ regen/mk_PL_charclass.pl | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git perl-5.18.4/regen/mk_PL_charclass.pl perl-5.18.4/regen/mk_PL_charclass.pl
+index c944f10a87..51c13766e3 100644
+--- perl-5.18.4/regen/mk_PL_charclass.pl
++++ perl-5.18.4/regen/mk_PL_charclass.pl
+@@ -43,7 +43,6 @@ my @properties = qw(
+     WORDCHAR
+     XDIGIT
+     VERTSPACE
+-    IS_IN_SOME_FOLD
+     BACKSLASH_FOO_LBRACE_IS_META
+ );
+ 
+@@ -200,8 +199,6 @@ for my $ord (0..255) {
+             $re = qr/\p{Is_Non_Latin1_Fold}/;
+         } elsif ($name eq 'NON_FINAL_FOLD') {
+             $re = qr/\p{Is_Non_Final_Fold}/;
+-        } elsif ($name eq 'IS_IN_SOME_FOLD') {
+-            $re = qr/\p{_Perl_Any_Folds}/;
+         } elsif ($name eq 'BACKSLASH_FOO_LBRACE_IS_META') {
+ 
+             # This is true for FOO where FOO is the varying character in:
+-- 
+2.49.1

@@ -1,0 +1,3 @@
+f https://www.cpan.org/src/5.0/perl-5.17.4.tar.bz2 42e7eb0d726a6344bc54140be8a0e3636330e1be7be8793e0fb74f415666b95b
+g https://github.com/Perl/metaconfig~79b14e84d83fb88c2b1a07e0dec3b62ccb9a388c https://github.com/Perl/metaconfig/archive/79b14e84d83fb88c2b1a07e0dec3b62ccb9a388c.tar.gz 857e295a3e3ff3121339b348fd295e03459ce8dc3a382870e94f98c2da99a573
+f https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Socket-2.000.tar.gz 91eb0dfaafdf08e450aa03cd8a3285d47facfd432f75f812a5bdafd9e445297b

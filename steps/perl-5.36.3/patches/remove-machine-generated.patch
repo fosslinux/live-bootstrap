@@ -1,0 +1,23 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Artistic-1.0
+
+There is no way to regenerate this easily. It is merely a fallback for when the
+previous fails and it will not fail with our perl.
+
+diff --color -ru perl-5.36.3/cpan/Pod-Simple/lib/Pod/Simple/BlackBox.pm perl-5.36.3/cpan/Pod-Simple/lib/Pod/Simple/BlackBox.pm
+--- perl-5.36.3/cpan/Pod-Simple/lib/Pod/Simple/BlackBox.pm	2025-07-23 21:56:14.121284638 +1000
++++ perl-5.36.3/cpan/Pod-Simple/lib/Pod/Simple/BlackBox.pm	2025-07-23 22:05:05.990255330 +1000
+@@ -74,13 +74,6 @@
+ my $script_run_re = eval 'no warnings "experimental::script_run";
+                           qr/(*script_run: ^ .* $ )/x';
+ my $latin_re = my_qr('[\p{IsLatin}\p{IsInherited}\p{IsCommon}]', "\x{100}");
+-unless ($latin_re) {
+-    # This was machine generated to be the ranges of the union of the above
+-    # three properties, with things that were undefined by Unicode 4.1 filling
+-    # gaps.  That is the version in use when Perl advanced enough to
+-    # successfully compile and execute the above pattern.
+-    $latin_re = my_qr('[\x00-\x{02E9}\x{02EC}-\x{0374}\x{037E}\x{0385}\x{0387}\x{0485}\x{0486}\x{0589}\x{060C}\x{061B}\x{061F}\x{0640}\x{064B}-\x{0655}\x{0670}\x{06DD}\x{0951}-\x{0954}\x{0964}\x{0965}\x{0E3F}\x{10FB}\x{16EB}-\x{16ED}\x{1735}\x{1736}\x{1802}\x{1803}\x{1805}\x{1D00}-\x{1D25}\x{1D2C}-\x{1D5C}\x{1D62}-\x{1D65}\x{1D6B}-\x{1D77}\x{1D79}-\x{1DBE}\x{1DC0}-\x{1EF9}\x{2000}-\x{2125}\x{2127}-\x{27FF}\x{2900}-\x{2B13}\x{2E00}-\x{2E1D}\x{2FF0}-\x{3004}\x{3006}\x{3008}-\x{3020}\x{302A}-\x{302D}\x{3030}-\x{3037}\x{303C}-\x{303F}\x{3099}-\x{309C}\x{30A0}\x{30FB}\x{30FC}\x{3190}-\x{319F}\x{31C0}-\x{31CF}\x{3220}-\x{325F}\x{327F}-\x{32CF}\x{3358}-\x{33FF}\x{4DC0}-\x{4DFF}\x{A700}-\x{A716}\x{FB00}-\x{FB06}\x{FD3E}\x{FD3F}\x{FE00}-\x{FE6B}\x{FEFF}-\x{FF65}\x{FF70}\x{FF9E}\x{FF9F}\x{FFE0}-\x{FFFD}\x{10100}-\x{1013F}\x{1D000}-\x{1D1DD}\x{1D300}-\x{1D7FF}]', "\x{100}");
+-}
+ 
+ my $every_char_is_latin_re = my_qr("^(?:$latin_re)*\\z", "A");

@@ -1,0 +1,2 @@
+f http://www.cpan.org/src/5.0/perl-5.42.0.tar.xz 73cf6cc1ea2b2b1c110a18c14bbbc73a362073003893ffcedc26d22ebdbdd0c3
+g https://github.com/Perl/metaconfig~5.42.0 https://github.com/Perl/metaconfig/archive/5.42.0.tar.gz ac3948bd684a3c017a241b6fc7b899c901f814b36d030ee79887374884e30301
