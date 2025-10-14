@@ -5,6 +5,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Patch kernel headers up to 4.14.341-openela
 
+REUSE-IgnoreStart
+
 diff --git include/crypto/if_alg.h include/crypto/if_alg.h
 index 2ea6a95ca825..f803dc8c45ad 100644
 --- linux-4.14.336/include/crypto/if_alg.h
