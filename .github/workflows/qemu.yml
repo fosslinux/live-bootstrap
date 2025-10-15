@@ -51,7 +51,7 @@ jobs:
       - name: Remount package disk
         if: always()
         run: >
-          DEV=$(sudo losetup -f target/external.img) &&
+          DEV=$(sudo losetup -f --show target/external.img) &&
           sudo partprobe ${DEV}p1 &&
           mkdir -p mnt &&
           sudo mount ${DEV}p1 mnt
