@@ -5,6 +5,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Patch kernel up to 4.14.341-openela
 
+REUSE-IgnoreStart
+
 diff --git Documentation/ABI/testing/sysfs-class-net-queues Documentation/ABI/testing/sysfs-class-net-queues
 index 0c0df91b1516..2734cd9ee43c 100644
 --- linux-4.14.336/Documentation/ABI/testing/sysfs-class-net-queues

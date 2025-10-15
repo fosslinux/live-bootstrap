@@ -1,0 +1,10 @@
+version = 1
+SPDX-PackageName = "live-bootstrap"
+SPDX-PackageSupplier = "fosslinux <fosslinux@aussies.space>"
+SPDX-PackageDownloadLocation = "https://github.com/fosslinux/live-bootstrap"
+
+[[annotations]]
+path = ["steps/**/sources", "steps/**/**.checksums", "steps/SHA256SUMS.pkgs", "steps/**/simple-patches/**", "seed/**.checksums"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "none"
+SPDX-License-Identifier = "MIT"

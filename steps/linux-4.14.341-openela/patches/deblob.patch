@@ -4,6 +4,8 @@ SPDX-License-Identifier: GPL-2.0-only
 
 Remove drivers containing embedded blobs
 
+REUSE-IgnoreStart
+
 diff -ruN ../linux-4.14.336/Documentation/networking/cops.txt ./Documentation/networking/cops.txt
 --- linux-4.14.336/../linux-4.14.336/Documentation/networking/cops.txt	2024-01-10 14:45:41.000000000 +0100
 +++ linux-4.14.336/./Documentation/networking/cops.txt	1970-01-01 01:00:00.000000000 +0100
