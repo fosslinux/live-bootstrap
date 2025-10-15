@@ -12,12 +12,12 @@ on:
       - master
 
 jobs:
-  pass1:
-    name: Run up to Linux build under bubblewrap
+  build:
+    name: Run under bubblewrap
     runs-on: ubuntu-24.04
     steps:
       - name: Install bubblewrap
-        run: sudo apt install bubblewrap
+        run: sudo apt-get install bubblewrap
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -49,105 +49,7 @@ jobs:
             mirror-state
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass1 --mirror file://${PWD}/mirror
-      - name: Archive created packages
-        if: failure() # archive failed builds progress
-        uses: actions/upload-artifact@v4
-        with:
-          name: packages
-          path: target/external/repo/**
-      - name: Tar pass1 image
-        run: tar -cf pass1_image.tar target
-      - name: Archive pass1_image
-        uses: actions/upload-artifact@v4
-        with:
-          name: internal_pass1_image
-          path: pass1_image.tar
-
-  pass2:
-    name: Run up to Python bootstrap under bubblewrap
-    needs: pass1
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Install bubblewrap
-        run: sudo apt install bubblewrap
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          # There is a strange bug(?) in nongnu, when you clone a git repository
-          # against a commit != HEAD with depth=1, it errors out.
-          fetch-depth: 0
-      - name: Work around Ubuntu 24.04 bubblewrap bug
-        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
-      - name: Get pass1_image
-        uses: actions/download-artifact@v4
-        with:
-          name: internal_pass1_image
-      - name: Extract pass1_image
-        run: tar -xf pass1_image.tar
-      - name: Query cache for sources
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            mirror
-            mirror-state
-          key: cache-${{ hashFiles('steps/*/sources') }}
-          fail-on-cache-miss: true
-      - name: Copy distfiles
-        run: ./download-distfiles.sh file:///${PWD}/mirror
-      - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass2 --mirror file://${PWD}/mirror
-      - name: Archive created packages
-        if: failure() # archive failed builds progress
-        uses: actions/upload-artifact@v4
-        with:
-          name: internal_packages_pass2
-          path: target/external/repo/**
-      - name: Tar pass2 image
-        run: tar -cf pass2_image.tar target
-      - name: Archive pass2_image
-        uses: actions/upload-artifact@v4
-        with:
-          name: internal_pass2_image
-          path: pass2_image.tar
-
-  pass3:
-    name: Run remaining builds under bubblewrap
-    needs: pass2
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Install bubblewrap
-        run: sudo apt install bubblewrap
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          # There is a strange bug(?) in nongnu, when you clone a git repository
-          # against a commit != HEAD with depth=1, it errors out.
-          fetch-depth: 0
-      - name: Work around Ubuntu 24.04 bubblewrap bug
-        run: sudo cp .github/workflows/bwrap.apparmor /etc/apparmor.d/bwrap && sudo systemctl reload apparmor
-      - name: Get pass2_image
-        uses: actions/download-artifact@v4
-        with:
-          name: internal_pass2_image
-      - name: Extract pass2_image
-        run: tar -xf pass2_image.tar
-      - name: Query cache for sources
-        id: cache
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            mirror
-            mirror-state
-          key: cache-${{ hashFiles('steps/*/sources') }}
-          fail-on-cache-miss: true
-      - name: Copy distfiles
-        run: ./download-distfiles.sh file:///${PWD}/mirror
-      - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --internal-ci pass3 --mirror file://${PWD}/mirror
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 2 --mirror file://${PWD}/mirror
       - name: Archive created packages
         if: always() # archive both failed and successful builds
         uses: actions/upload-artifact@v4

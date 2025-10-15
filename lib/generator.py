@@ -38,14 +38,6 @@ class Generator():
         self.target_dir = None
         self.external_dir = None
 
-    def reuse(self, target):
-        """
-        Reuse a previously prepared bwrap environment for further stages.
-        """
-        self.target_dir = target.path
-        self.external_dir = os.path.join(self.target_dir, 'external')
-        self.distfiles()
-
     def prepare(self, target, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.

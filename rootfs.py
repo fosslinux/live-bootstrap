@@ -39,7 +39,6 @@ def create_configuration_file(args):
         config.write(f"JOBS={args.cores}\n")
         config.write(f"SWAP_SIZE={args.swap}\n")
         config.write(f"FINAL_JOBS={args.cores}\n")
-        config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
         config.write(f"QEMU={args.qemu}\n")
         config.write(f"BARE_METAL={args.bare_metal or (args.qemu and args.interactive)}\n")
@@ -252,13 +251,10 @@ print(shutil.which('chroot'))
 
     elif args.bwrap:
         init = '/init'
-        if not args.internal_ci or args.internal_ci == "pass1":
-            generator.prepare(target, using_kernel=False)
+        generator.prepare(target, using_kernel=False)
 
-            arch = stage0_arch_map.get(args.arch, args.arch)
-            init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        else:
-            generator.reuse(target)
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
 
         run('env', '-i', 'bwrap', '--unshare-user',
                                   '--uid', '0',
