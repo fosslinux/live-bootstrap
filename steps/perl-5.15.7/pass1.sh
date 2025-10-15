@@ -96,4 +96,10 @@ src_install() {
 
     # Remove messed up manpages
     rm "${DESTDIR}/"*.0
+
+    # In this version of perl there is a weird non-determinism where some
+    # pod files are not installed
+    # as a hacky fix, remove all problematic pod files
+    rm "${DESTDIR}/usr/lib/perl5/5.15.7/i686-linux/"*.pod
+    rm "${DESTDIR}/usr/lib/perl5/5.15.7/i686-linux/.packlist"
 }
