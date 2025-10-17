@@ -1,6 +1,6 @@
 .. SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 .. SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
-.. SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+.. SPDX-FileCopyrightText: 2021 Samuel Tyler <samuel@samuelt.me>
 
 .. SPDX-License-Identifier: CC-BY-SA-4.0
 

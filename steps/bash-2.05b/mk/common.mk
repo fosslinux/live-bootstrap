@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
-# SPDX-FileCopyrightText: 2021 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021 Samuel Tyler <samuel@samuelt.me>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 

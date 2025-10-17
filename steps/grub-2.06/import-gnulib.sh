@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
-# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2023 Samuel Tyler <samuel@samuelt.me>
 # SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later

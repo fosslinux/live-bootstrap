@@ -6,7 +6,7 @@ This file contains all code required to generate the boot image for live-bootstr
 # SPDX-FileCopyrightText: 2022-2023 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
-# SPDX-FileCopyrightText: 2021-23 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-23 Samuel Tyler <samuel@samuelt.me>
 
 import hashlib
 import os

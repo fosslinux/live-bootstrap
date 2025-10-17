@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 Samuel Tyler <samuel@samuelt.me>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 #

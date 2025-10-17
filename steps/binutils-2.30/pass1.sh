@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Dor Askayo <dor.askayo@gmail.com>
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
 # SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
-# SPDX-FileCopyrightText: 2023,2025 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2023,2025 Samuel Tyler <samuel@samuelt.me>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 

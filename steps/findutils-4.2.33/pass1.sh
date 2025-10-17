@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2022,2025 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2022,2025 Samuel Tyler <samuel@samuelt.me>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 

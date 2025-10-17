@@ -2,7 +2,7 @@
 # This script is intentionally written in POSIX sh to be cross-platform.
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
 
 set -e
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2021-22 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2021-22 Samuel Tyler <samuel@samuelt.me>
 # SPDX-FileCopyrightText: 2024 Gábor Stefanik <netrolller.3d@gmail.com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later

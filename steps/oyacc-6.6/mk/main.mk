@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2019 Brian Callahan <bcallah@openbsd.org>
-# SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
 #
 # SPDX-License-Identifier: CC0-1.0
 

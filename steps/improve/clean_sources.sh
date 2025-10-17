@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2023 Eduardo Sánchez Muñoz <eduardosm-dev@e64.io>
-# SPDX-FileCopyrightText: 2024 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2024 Samuel Tyler <samuel@samuelt.me>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 

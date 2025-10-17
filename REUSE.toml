@@ -1,6 +1,6 @@
 version = 1
 SPDX-PackageName = "live-bootstrap"
-SPDX-PackageSupplier = "fosslinux <fosslinux@aussies.space>"
+SPDX-PackageSupplier = "Samuel Tyler <samuel@samuelt.me>"
 SPDX-PackageDownloadLocation = "https://github.com/fosslinux/live-bootstrap"
 
 [[annotations]]

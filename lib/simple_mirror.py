@@ -3,7 +3,7 @@
 This creates a simple "mirror" from a directory
 """
 # SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
 
 import http.server
 import socketserver

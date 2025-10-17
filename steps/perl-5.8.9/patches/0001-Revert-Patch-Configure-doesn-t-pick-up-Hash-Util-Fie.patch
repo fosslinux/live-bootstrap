@@ -1,9 +1,9 @@
-SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
 
 SPDX-License-Identifier: GPL-2.0-or-later
 
 From 0db0a3cd0dd78965cea62c7cfc3724e31fba4e8d Mon Sep 17 00:00:00 2001
-From: fosslinux <fosslinux@aussies.space>
+From: Samuel Tyler <samuel@samuelt.me>
 Date: Sun, 13 Jul 2025 13:39:45 +1000
 Subject: [PATCH] Revert "[Patch] Configure doesn't pick up
  Hash/Util/FieldHash"

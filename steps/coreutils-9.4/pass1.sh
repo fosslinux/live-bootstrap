@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2022 Andrius Štikonas <andrius@stikonas.eu>
-# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+# SPDX-FileCopyrightText: 2023 Samuel Tyler <samuel@samuelt.me>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
