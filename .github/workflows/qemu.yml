@@ -18,13 +18,13 @@ jobs:
     steps:
       - name: Install qemu
         run: >
-          sudo apt-get install build-essential libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build libslirp-dev &&
+          sudo apt-get install build-essential libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build &&
           curl -L -O https://download.qemu.org/qemu-10.1.1.tar.xz &&
           tar -xf qemu-10.1.1.tar.xz &&
           cd qemu-10.1.1 &&
           mkdir build &&
           cd build &&
-          ../configure --disable-user --without-default-features --target-list=i386-softmmu --enable-system --enable-kvm --enable-slirp &&
+          ../configure --disable-user --without-default-features --target-list=i386-softmmu --enable-system --enable-kvm &&
           ninja &&
           sudo ninja install
       - name: Checkout repo
