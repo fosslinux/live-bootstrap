@@ -17,6 +17,7 @@ you can run bootstap inside chroot.
 import argparse
 import os
 import signal
+import sys
 import threading
 
 from lib.generator import Generator, stage0_arch_map
