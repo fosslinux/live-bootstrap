@@ -13,20 +13,11 @@ on:
 
 jobs:
   build:
-    name: Run under QEMU
+    name: Run under bubblewrap
     runs-on: ubuntu-24.04
     steps:
       - name: Install qemu
-        run: >
-          sudo apt-get install build-essential libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build &&
-          curl -L -O https://download.qemu.org/qemu-10.1.1.tar.xz &&
-          tar -xf qemu-10.1.1.tar.xz &&
-          cd qemu-10.1.1 &&
-          mkdir build &&
-          cd build &&
-          ../configure --disable-user --without-default-features --target-list=i386-softmmu --enable-system --enable-kvm &&
-          ninja &&
-          sudo ninja install
+        run: sudo apt-get install qemu-system-x86
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -56,18 +47,12 @@ jobs:
             mirror-state
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: >
-          ulimit -c unlimited  &&
-          sudo ./rootfs.py --qemu --qemu-cmd qemu-system-i386 --external-sources --cores 2 --mirror file://${PWD}/mirror ;
-          echo $? ;
-          sudo coredumpctl list;
-          sudo coredumpctl dump
-          
+        run: sudo ./rootfs.py --qemu --external-sources --cores 2 --mirror file://${PWD}/mirror
       - name: Remount package disk
         if: always()
         run: >
           DEV=$(sudo losetup -f --show target/external.img) &&
-          sudo partprobe ${DEV} &&
+          sudo partprobe ${DEV}p1 &&
           mkdir -p mnt &&
           sudo mount ${DEV}p1 mnt
       - name: Archive created packages
