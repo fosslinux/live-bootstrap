@@ -1,0 +1,28 @@
+SPDX-FileCopyrightText: 2025 fosslinux <fosslinux@aussies.space>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+The code to generate the table in strtofr.c was written in 2004 and not
+updated since. Not sure if this case was ever actually handled.
+Without this check, we end up dividing by zero, which creates problematic
+results.
+To fix this, check if the divisor is zero, and if it is, early exit (and
+fill the rest of the continued fraction with zeros).
+
+--- mpfr-4.1.0/src/strtofr.c	2025-10-03 22:15:37.527948986 +1000
++++ mpfr-4.1.0/src/strtofr.c	2025-10-03 22:18:18.480958600 +1000
+@@ -136,6 +136,14 @@
+           mpfr_floor (y, x);
+           tab[i] = mpfr_get_ui (y, MPFR_RNDN);
+           mpfr_sub (x, x, y, MPFR_RNDN);
++          if (mpfr_zero_p(x))
++            {
++              for (i++; i < N; i++)
++                {
++                  tab[i] = 0;
++                }
++              break;
++            }
+           mpfr_ui_div (x, 1, x, MPFR_RNDN);
+         }
+       for (i = N-1 ; i >= 0 ; i--)
