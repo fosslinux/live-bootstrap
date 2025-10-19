@@ -47,7 +47,7 @@ jobs:
             mirror-state
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: sudo ./rootfs.py --qemu --external-sources --cores 1 --mirror file://${PWD}/mirror
+        run: sudo ./rootfs.py --qemu --qemu-cmd true --external-sources --cores 1 --mirror file://${PWD}/mirror && sudo qemu-system-x86_64 -enable-kvm -m 4096M -smp 2 -drive file=target/init.img,format=raw -drive file=target/external.img,format=raw -machine kernel-irqchip=split -nic user,ipv6=off,model=e1000 -nographic
       - name: Remount package disk
         if: always()
         run: >
