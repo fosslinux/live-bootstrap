@@ -14,7 +14,7 @@ on:
 jobs:
   build:
     name: Run under bubblewrap
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Install qemu
         run: sudo apt-get install qemu-system-x86
@@ -47,7 +47,7 @@ jobs:
             mirror-state
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --qemu --qemu-cmd true --external-sources --cores 1 --mirror file://${PWD}/mirror ; echo hi && sudo qemu-system-x86_64 -enable-kvm -m 4096M -smp 2 -drive file=target/init.img,format=raw -drive file=target/external.img,format=raw -machine kernel-irqchip=split -nic user,ipv6=off,model=e1000 -nographic
+        run: ./rootfs.py --qemu --update-checksums --external-sources --cores 2 --mirror file://${PWD}/mirror
       - name: Remount package disk
         if: always()
         run: >
