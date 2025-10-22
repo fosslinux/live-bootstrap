@@ -336,7 +336,7 @@ print(shutil.which('chroot'))
                 '-nic', 'user,ipv6=off,model=e1000'
             ]
         if not args.interactive:
-            arg_list += ['-no-reboot', '-nographic']
+            arg_list += ['-no-reboot', '-nographic', '-serial', 'file:output']
         run(args.qemu_cmd, *arg_list, cleanup=cleanup)
 
 if __name__ == "__main__":

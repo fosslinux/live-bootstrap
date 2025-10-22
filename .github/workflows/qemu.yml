@@ -47,7 +47,7 @@ jobs:
             mirror-state
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: sudo ./rootfs.py --qemu --update-checksums --external-sources --cores 2 --mirror file://${PWD}/mirror
+        run: sudo ./rootfs.py --qemu --update-checksums --external-sources --cores 2 --mirror file://${PWD}/mirror; cat output
       - name: Remount package disk
         if: always()
         run: >
