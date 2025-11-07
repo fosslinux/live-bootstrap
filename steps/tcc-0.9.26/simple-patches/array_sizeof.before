@@ -1,0 +1,1 @@
+            char buf1[sizeof file->filename];
