@@ -1,0 +1,74 @@
+#!/bin/sh
+
+# SPDX-FileCopyrightText: 2025 Laurent Huberdeau
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -ex
+
+# Variables
+M2LIB="../../../M2-Planet/M2libc/"
+PNUT_BRANCH="laurent-small-fixes-for-TCC"
+PNUT_DIR="pnut-${PNUT_BRANCH}"
+
+# Check tarball checksums
+checksum-transcriber sources
+sha256sum -c sources.SHA256SUM
+
+# Unpack
+mkdir build
+cd build
+# ungz --file ${DISTFILES}/${PNUT_PKG}.tar.gz --output ${PNUT_PKG}.tar
+untar --file ${DISTFILES}/${PNUT_PKG}.tar
+
+M2-Planet                       \
+    --architecture x86          \
+    --debug                     \
+    --expand-includes           \
+    -I ${M2LIB}                 \
+    --file ${PNUT_DIR}/pnut.c   \
+    -D target_i386_linux=1      \
+    -D NO_TERNARY_SUPPORT=1     \
+    -D ONE_PASS_GENERATOR=1     \
+    -D SMALL_HEAP=1             \
+    -o pnut-exe.M1
+
+# Generate basic DWARF debug info (optional)
+blood-elf                   \
+    --file pnut-exe.M1      \
+    --little-endian         \
+    --entry _start          \
+    --output pnut-exe-footer.M1
+
+# Compile to hex2 (for debug: -f pnut-footer.M1)
+M1                                      \
+    --file ${M2LIB}/x86/x86_defs.M1     \
+    --file ${M2LIB}/x86/libc-full.M1    \
+    --file pnut-exe.M1                  \
+    --file pnut-exe-footer.M1           \
+    --architecture x86                  \
+    --little-endian                     \
+    --output pnut-exe.hex2
+
+# Assemble
+mkdir -p bin
+
+hex2                                        \
+    --architecture x86                      \
+    --little-endian                         \
+    --file ${M2LIB}/x86/ELF-x86-debug.hex2  \
+    --file pnut-exe.hex2                    \
+    --base-address 0x8048000                \
+    --output bin/pnut-exe
+
+# Recompile pnut with itself, this time
+./bin/pnut-exe                              \
+    -D target_i386_linux=1                  \
+    -D ONE_PASS_GENERATOR=1                 \
+    -D BOOTSTRAP_TCC=1                      \
+    ${PNUT_DIR}/pnut.c                      \
+    -o bin/pnut-exe-for-tcc
+
+# Install pnut-exe
+cp bin/pnut-exe-for-tcc ${BINDIR}/pnut
+chmod 755 ${BINDIR}/pnut
