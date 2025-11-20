@@ -78,7 +78,7 @@ build: bison-3.4.1
 build: bison-3.4.1
 build: diffutils-2.7
 build: coreutils-5.0
-build: coreutils-6.10
+build: utils-std-0.1.1
 build: gawk-3.0.4
 build: perl-5.000
 build: perl-5.003

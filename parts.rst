@@ -521,11 +521,11 @@ coreutils 5.0
 including ``comm``, ``expr``, ``dd``, ``sort``, ``sync``, ``uname`` and
 ``uniq``. This fixes a variety of issues with existing ``coreutils``.
 
-coreutils 6.10
+utils-std 0.1.1
 ==============
-We build ``date``, ``mktemp`` and ``sha256sum`` from coreutils 6.10 which are
-either missing or don't build correctly in 5.0. Other utils are not built at
-this stage.
+
+Replaces most of coreutils 5.0 as well as providing few more utilities like
+``date``, ``getconf``, ``mktemp``, and ``sha256sum``
 
 gawk 3.0.4
 ==========
