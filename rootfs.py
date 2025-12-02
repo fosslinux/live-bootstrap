@@ -14,6 +14,7 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021-23 Samuel Tyler <samuel@samuelt.me>
 # SPDX-FileCopyrightText: 2023-24 Gábor Stefanik <netrolller.3d@gmail.com>
 # SPDX-FileCopyrightText: 2024 Lance Vick <lance@vick.house>
+# SPDX-FileCopyrightText: 2025 Kevin Nause <kevin@nause.engineering>
 
 import argparse
 import os
@@ -42,8 +43,8 @@ def create_configuration_file(args):
         config.write(f"FINAL_JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
-        config.write(f"BARE_METAL={args.bare_metal}\n")
-        config.write(f"EXTERNAL_SOURCES={args.external_sources}\n")
+        config.write(f"QEMU={args.qemu}\n")
+        config.write(f"BARE_METAL={args.bare_metal or (args.qemu and args.interactive)}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
                 config.write("DISK=sdb1\n")
@@ -262,15 +263,17 @@ print(shutil.which('chroot'))
         generator.prepare(target, using_kernel=False)
         arch = stage0_arch_map.get(args.arch, args.arch)
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        print(generator.target_dir, init)
-        run('env', '-i', 'DOCKER_BUILDKIT=1', 'SOURCE_DATE_EPOCH=1',
-                                                 'docker', 'build',
-                                                 '--build-arg=SOURCE_DATE_EPOCH=1',
-                                                 '--progress=plain',
-                                                 '--platform=linux/amd64',
-                                                 '--target=package',
-                                                 '--tag', 'local/live-bootstrap',
-                                                 '.')
+        target_rel = os.path.relpath(generator.target_dir, os.getcwd())
+        run('env', '-i', 'DOCKER_BUILDKIT=1',
+            'docker', 'build',
+            '--build-arg=ARCH='+ arch,
+            '--build-arg=TARGET=' + target_rel,
+            '--build-arg=SOURCE_DATE_EPOCH=1',
+            '--progress=auto',
+            '--platform=linux/amd64',
+            '--target=package',
+            '--tag=live-bootstrap',
+            '.')
 
     elif args.bwrap:
         init = '/init'
