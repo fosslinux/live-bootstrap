@@ -1,0 +1,118 @@
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Revert "diagnostics: translate bison's own tokens"
+
+This reverts commit 2cc361387c9790b387d205f5d862f493c148e424.
+
+This format is not suppported by Bison 3.4.
+---
+ src/parse-gram.y | 71 ++++++++++++++++++++++++++----------------------
+ 1 file changed, 39 insertions(+), 32 deletions(-)
+
+diff --git bison-3.6.4/src/parse-gram.y bison-3.6.1/src/parse-gram.y
+index d09f49a7..0879ca41 100644
+--- bison-3.6.4/src/parse-gram.y
++++ bison-3.6.4/src/parse-gram.y
+@@ -140,26 +140,32 @@
+   boundary_set (&@$.end, grammar_file, 1, 1, 1);
+ }
+ 
+-%token
+-  STRING              _("string")
+-  TSTRING             _("translatable string")
++/* Define the tokens together with their human representation.  */
++%token GRAM_EOF 0 "end of file"
++%token STRING     "string"
++       TSTRING    "translatable string"
++
++%token PERCENT_TOKEN       "%token"
++%token PERCENT_NTERM       "%nterm"
+ 
+-  PERCENT_TOKEN       "%token"
+-  PERCENT_NTERM       "%nterm"
++%token PERCENT_TYPE        "%type"
++%token PERCENT_DESTRUCTOR  "%destructor"
++%token PERCENT_PRINTER     "%printer"
+ 
+-  PERCENT_TYPE        "%type"
+-  PERCENT_DESTRUCTOR  "%destructor"
+-  PERCENT_PRINTER     "%printer"
++%token PERCENT_LEFT        "%left"
++%token PERCENT_RIGHT       "%right"
++%token PERCENT_NONASSOC    "%nonassoc"
++%token PERCENT_PRECEDENCE  "%precedence"
+ 
+-  PERCENT_LEFT        "%left"
+-  PERCENT_RIGHT       "%right"
+-  PERCENT_NONASSOC    "%nonassoc"
+-  PERCENT_PRECEDENCE  "%precedence"
++%token PERCENT_PREC          "%prec"
++%token PERCENT_DPREC         "%dprec"
++%token PERCENT_MERGE         "%merge"
+ 
+-  PERCENT_PREC        "%prec"
+-  PERCENT_DPREC       "%dprec"
+-  PERCENT_MERGE       "%merge"
++/*----------------------.
++| Global Declarations.  |
++`----------------------*/
+ 
++%token
+   PERCENT_CODE            "%code"
+   PERCENT_DEFAULT_PREC    "%default-prec"
+   PERCENT_DEFINE          "%define"
+@@ -185,23 +191,24 @@
+   PERCENT_TOKEN_TABLE     "%token-table"
+   PERCENT_VERBOSE         "%verbose"
+   PERCENT_YACC            "%yacc"
++;
+ 
+-  BRACED_CODE       "{...}"
+-  BRACED_PREDICATE  "%?{...}"
+-  BRACKETED_ID      _("[identifier]")
+-  CHAR              _("character literal")
+-  COLON             ":"
+-  EPILOGUE          _("epilogue")
+-  EQUAL             "="
+-  ID                _("identifier")
+-  ID_COLON          _("identifier:")
+-  PERCENT_PERCENT   "%%"
+-  PIPE              "|"
+-  PROLOGUE          "%{...%}"
+-  SEMICOLON         ";"
+-  TAG               _("<tag>")
+-  TAG_ANY           "<*>"
+-  TAG_NONE          "<>"
++%token BRACED_CODE     "{...}"
++%token BRACED_PREDICATE "%?{...}"
++%token BRACKETED_ID    "[identifier]"
++%token CHAR            "character literal"
++%token COLON           ":"
++%token EPILOGUE        "epilogue"
++%token EQUAL           "="
++%token ID              "identifier"
++%token ID_COLON        "identifier:"
++%token PERCENT_PERCENT "%%"
++%token PIPE            "|"
++%token PROLOGUE        "%{...%}"
++%token SEMICOLON       ";"
++%token TAG             "<tag>"
++%token TAG_ANY         "<*>"
++%token TAG_NONE        "<>"
+ 
+  /* Experimental feature, don't rely on it.  */
+ %code pre-printer  {tron (yyo);}
+@@ -224,7 +231,7 @@
+ %printer { fprintf (yyo, "%%%s", $$); } PERCENT_FLAG
+ %printer { fprintf (yyo, "<%s>", $$); } TAG tag
+ 
+-%token <int> INT _("integer literal")
++%token <int> INT "integer"
+ %printer { fprintf (yyo, "%d", $$); } <int>
+ 
+ %type <symbol*> id id_colon string_as_id symbol token_decl token_decl_for_prec
+-- 
+2.52.0
+

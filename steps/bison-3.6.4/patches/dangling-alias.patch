@@ -1,0 +1,17 @@
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Our version of bison does not have dangling-alias.
+
+--- bison-3.6.4/Makefile.am	2025-12-15 22:03:53.093822507 +1100
++++ bison-3.6.4/Makefile.am	2025-12-15 22:04:07.336823714 +1100
+@@ -42,7 +42,7 @@
+ BISON = $(top_builddir)/tests/bison
+ BISON_IN = $(top_srcdir)/tests/bison.in
+ YACC = $(BISON) -o y.tab.c
+-AM_YFLAGS_WITH_LINES = --defines -Werror -Wall,dangling-alias --report=all
++AM_YFLAGS_WITH_LINES = --defines -Wall --report=all
+ AM_YFLAGS = $(AM_YFLAGS_WITH_LINES) --no-lines
+ 
+ # Initialization before completion by local.mk's.
