@@ -174,6 +174,7 @@ build: automake-1.16.3
 build: autoconf-2.71
 build: bison-3.6.4
 build: bison-3.7.6
+build: bison-3.8.2
 build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.22.4
 build: perl-Devel-Tokenizer-C-0.11
