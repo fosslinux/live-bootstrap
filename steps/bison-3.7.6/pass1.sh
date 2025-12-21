@@ -32,7 +32,9 @@ src_prepare() {
 src_configure() {
     ./configure --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --disable-nls
+        --disable-nls \
+        --program-suffix=-3.7 \
+        --datarootdir="${PREFIX}/share/bison-3.7"
 }
 
 src_compile() {
@@ -41,4 +43,6 @@ src_compile() {
 
 src_install() {
     make MAKEINFO=true DESTDIR="${DESTDIR}" install
+
+    ln -s bison-3.7 "${DESTDIR}${PREFIX}/bin/bison"
 }
