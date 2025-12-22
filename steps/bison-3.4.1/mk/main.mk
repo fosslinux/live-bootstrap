@@ -21,7 +21,8 @@ bison: src.a lib.a
 FORCE:
 
 install:
-	install -D bison-3.4 $(DESTDIR)$(PREFIX)/bin/bison-3.4
+	install -D bison $(DESTDIR)$(PREFIX)/bin/bison-3.4
+	ln -s bison-3.4 $(DESTDIR)$(PREFIX)/bin/bison
 	install -d $(DESTDIR)$(PREFIX)/share/bison-3.4
 	mv data/skeletons/ $(DESTDIR)$(PREFIX)/share/bison-3.4
 	mv data/m4sugar/ $(DESTDIR)$(PREFIX)/share/bison-3.4

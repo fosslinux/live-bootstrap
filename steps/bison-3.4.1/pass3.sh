@@ -20,9 +20,3 @@ src_prepare() {
 src_compile() {
     make -j1 -f Makefile PREFIX="${PREFIX}"
 }
-
-src_install() {
-    default
-
-    ln -s bison-3.4 "${DESTDIR}${PREFIX}/bin/bison"
-}
