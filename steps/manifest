@@ -154,7 +154,7 @@ build: mpfr-4.1.0
 build: mpc-1.2.1
 build: flex-2.5.33
 build: bison-2.3
-build: zlib-1.2.13
+build: zlib-1.3.1
 build: dist-3.5
 build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.8.9

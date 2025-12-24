@@ -1067,8 +1067,8 @@ curl 8.5.0
 
 We rebuild curl with support for OpenSSL.
 
-zlib 1.2.13
-===========
+zlib 1.3.1
+==========
 
 zlib is a software library used for data compression and implements an abstraction of
 DEFLATE algorithm that is also used in ``gzip``.
