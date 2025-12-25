@@ -1,0 +1,29 @@
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+It is unclear _why_ this is necessary. Something gets broken with
+iconv detection for this version.
+
+--- bison-3.6.4/m4/gettext.m4	2025-12-15 23:14:05.683179597 +1100
++++ bison-3.6.4/m4/gettext.m4	2025-12-15 23:14:18.450180679 +1100
+@@ -93,9 +93,6 @@
+   dnl - Control the expansions in more detail using AC_PROVIDE_IFELSE.
+   dnl Since AC_PROVIDE_IFELSE is only in autoconf >= 2.52 and not
+   dnl documented, we avoid it.
+-  ifelse(gt_included_intl, yes, , [
+-    AC_REQUIRE([AM_ICONV_LINKFLAGS_BODY])
+-  ])
+ 
+   dnl Sometimes, on Mac OS X, libintl requires linking with CoreFoundation.
+   gt_INTL_MACOSX
+@@ -174,9 +171,6 @@
+ 
+         if { eval "gt_val=\$$gt_func_gnugettext_libc"; test "$gt_val" != "yes"; }; then
+           dnl Sometimes libintl requires libiconv, so first search for libiconv.
+-          ifelse(gt_included_intl, yes, , [
+-            AM_ICONV_LINK
+-          ])
+           dnl Search for libintl and define LIBINTL, LTLIBINTL and INCINTL
+           dnl accordingly. Don't use AC_LIB_LINKFLAGS_BODY([intl],[iconv])
+           dnl because that would add "-liconv" to LIBINTL and LTLIBINTL

@@ -1,0 +1,42 @@
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+This was added with the addition of yypcontext_t -- it's the only use,
+remove it. (Bison 3.4 doesn't know about yypcontext_t.)
+
+diff --git bison-3.6.4/src/parse-gram.y bison-3.5.90/src/parse-gram.y
+index d09f49a7..cf1a5bf4 100644
+--- bison-3.6.4/src/parse-gram.y
++++ bison-3.6.4/src/parse-gram.y
+@@ -798,28 +798,9 @@ epilogue.opt:
+ %%
+ 
+ int
+-yyreport_syntax_error (const yypcontext_t *ctx)
++yyreport_syntax_error (const void *ctx)
+ {
+-  int res = 0;
+-  /* Arguments of format: reported tokens (one for the "unexpected",
+-     one per "expected"). */
+-  enum { ARGS_MAX = 5 };
+-  const char *argv[ARGS_MAX];
+-  int argc = 0;
+-  yysymbol_kind_t unexpected = yypcontext_token (ctx);
+-  if (unexpected != YYSYMBOL_YYEMPTY)
+-    {
+-      argv[argc++] = yysymbol_name (unexpected);
+-      yysymbol_kind_t expected[ARGS_MAX - 1];
+-      int nexpected = yypcontext_expected_tokens (ctx, expected, ARGS_MAX - 1);
+-      if (nexpected < 0)
+-        res = nexpected;
+-      else
+-        for (int i = 0; i < nexpected; ++i)
+-          argv[argc++] = yysymbol_name (expected[i]);
+-    }
+-  syntax_error (*yypcontext_location (ctx), argc, argv);
+-  return res;
++  return 0;
+ }
+ 
+ 

@@ -1,0 +1,25 @@
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Can't fetch PO files, no network access.
+
+--- gnulib-ffbb0ce/gnulib-tool	2025-12-15 21:17:35.808587084 +1100
++++ gnulib-ffbb0ce/gnulib-tool	2025-12-15 21:17:55.399588744 +1100
+@@ -5598,16 +5598,6 @@
+       fi
+       func_append added_files "$pobase/POTFILES.in$nl"
+     fi
+-    # Fetch PO files.
+-    TP_URL="https://translationproject.org/latest/"
+-    if $doit; then
+-      echo "Fetching gnulib PO files from $TP_URL"
+-      (cd "$destdir"/$pobase \
+-       && wget --no-verbose --mirror --level=1 -nd -A.po -P . "${TP_URL}gnulib/"
+-      )
+-    else
+-      echo "Fetch gnulib PO files from $TP_URL"
+-    fi
+     # Create po/LINGUAS.
+     if $doit; then
+       func_dest_tmpfilename $pobase/LINGUAS

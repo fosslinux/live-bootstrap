@@ -1,0 +1,19 @@
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Change %header to %defines, this was renamed in development cycle for 3.8.
+
+diff --git bison-3.8.2/src/parse-gram.y bison-3.8.2/src/parse-gram.y
+index 96e95ed1..10240483 100644
+--- bison-3.8.2/src/parse-gram.y
++++ bison-3.8.2/src/parse-gram.y
+@@ -152,7 +152,7 @@
+ %define parse.error custom
+ %define parse.lac full
+ %define parse.trace
+-%header
++%defines
+ %expect 0
+ %verbose
+ 

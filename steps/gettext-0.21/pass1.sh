@@ -17,7 +17,13 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}" --libdir="${LIBDIR}" --enable-static --disable-shared --disable-java
+    INTLBISON=bison-3.6 \
+    TOOLS_BISON=bison-3.6 \
+    ./configure --prefix="${PREFIX}" \
+        --libdir="${LIBDIR}" \
+        --enable-static \
+        --disable-shared \
+        --disable-java
 }
 
 src_compile() {

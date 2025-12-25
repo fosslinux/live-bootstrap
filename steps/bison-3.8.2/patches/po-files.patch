@@ -1,12 +1,12 @@
-SPDX-FileCopyrightText: 2021 Samuel Tyler <samuel@samuelt.me>
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-We don't have network access at this stage to "Fetch PO files".
+Can't fetch PO files, no network access.
 
---- gnulib-672663a/gnulib-tool	2021-04-15 21:07:04.538055553 +1000
-+++ gnulib-672663a/gnulib-tool	2021-04-15 21:07:16.424135984 +1000
-@@ -5564,16 +5564,6 @@
+--- gnulib-7818455/gnulib-tool	2025-12-15 21:17:35.808587084 +1100
++++ gnulib-7818455/gnulib-tool	2025-12-15 21:17:55.399588744 +1100
+@@ -5598,16 +5598,6 @@
        fi
        func_append added_files "$pobase/POTFILES.in$nl"
      fi

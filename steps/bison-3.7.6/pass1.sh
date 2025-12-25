@@ -13,9 +13,18 @@ src_prepare() {
     rm src/scan-skel.c
 
     # Remove pregenerated info files
-    rm doc/bison.info
+    rm doc/bison.info*
+
+    # Remove gettext files
+    rm runtime-po/*.gmo
 
     ../../import-gnulib.sh
+
+    # pregenerated gperf files
+    for f in lib/iconv_open-*.h; do
+        rm "$f"
+        touch "$f"
+    done
 
     AUTOPOINT=true AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
 }
@@ -23,7 +32,9 @@ src_prepare() {
 src_configure() {
     ./configure --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
-        --disable-nls
+        --disable-nls \
+        --program-suffix=-3.7 \
+        --datarootdir="${PREFIX}/share/bison-3.7"
 }
 
 src_compile() {
@@ -32,4 +43,6 @@ src_compile() {
 
 src_install() {
     make MAKEINFO=true DESTDIR="${DESTDIR}" install
+
+    ln -s bison-3.7 "${DESTDIR}${PREFIX}/bin/bison"
 }

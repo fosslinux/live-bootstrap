@@ -4,4 +4,4 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #define LOCALEDIR "/usr/share/locale"
-#define PKGDATADIR "/usr/share/bison"
+#define PKGDATADIR "/usr/share/bison-3.4"

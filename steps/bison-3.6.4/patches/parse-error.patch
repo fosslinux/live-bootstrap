@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: 2025 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+These are directives that don't exist for Bison 3.4.
+
+diff --git bison-3.6.4/src/parse-gram.y bison-3.6.4/src/parse-gram.y
+index d09f49a7..01b8dda9 100644
+--- bison-3.6.4/src/parse-gram.y
++++ bison-3.6.4/src/parse-gram.y
+@@ -122,10 +122,8 @@
+ %define api.header.include {"parse-gram.h"}
+ %define api.prefix {gram_}
+ %define api.pure full
+-%define api.token.raw
+ %define api.value.type union
+ %define locations
+-%define parse.error custom
+ %define parse.lac full
+ %define parse.trace
+ %defines

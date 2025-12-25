@@ -1015,14 +1015,6 @@ This is an older version of bison required for the bison files in older perls.
 We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
 in 2.3. This parser works sufficiently well for perl 5.10.1.
 
-bison 3.4.2
-===========
-
-Bison 3.4.1 is buggy and segfaults when perl is built. This is probably
-because it was built with a hand-written makefile. We do not build the latest
-bison because perl maybe requires bison <= 3.4.2.
-This step could be improved, possibly.
-
 dist 3.5
 ========
 
@@ -1080,17 +1072,6 @@ zlib 1.2.13
 
 zlib is a software library used for data compression and implements an abstraction of
 DEFLATE algorithm that is also used in ``gzip``.
-
-automake 1.16.3
-===============
-
-GNU Automake from 1.16 series that required newer Perl.
-
-autoconf 2.71
-=============
-
-GNU Autoconf 2.71 is even newer version of autoconf. It does not build with miniperl,
-so we postponed it until full perl was built.
 
 patch 2.7.6
 ===========
@@ -1165,6 +1146,30 @@ aforementioned cycle has to be broken with this version. Also, the development
 versions seem to be reasonably buggy again. Many patches need to be added to
 this version to allow any future perl to be built.
 
+automake 1.16.3
+===============
+
+GNU Automake from 1.16 series that required newer Perl.
+
+autoconf 2.71
+=============
+
+GNU Autoconf 2.71 is even newer version of autoconf. It does not build with miniperl,
+so we postponed it until a sufficient version of perl was built.
+
+bison 3.6.4
+===========
+
+With autoconf 2.71, we can build a newer version of Bison that is also less
+buggy than the bootstrapped version. This is the newest version that can
+(without very complicated patching) be built by Bison 3.4.
+
+bison 3.7.6
+===========
+
+Again, a newer version of Bison -- the last version that can be built by
+Bison 3.8 before running into obscure messages.
+
 perl 5.22.4
 ===========
 
@@ -1196,6 +1201,13 @@ perl 5.36.3
 number of new language features into the mk_invlists.pl script that are not
 easily removed (there have been too many changes). 5.36 has enough support
 of the new features.
+
+bison 3.8.2
+===========
+
+The most recent release of Bison.
+We put this here because the previous releases of Perl do not support this
+Bison version.
 
 perl 5.42.0
 ===========
