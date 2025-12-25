@@ -137,7 +137,7 @@ improve: finalize_fhs
 improve: open_console ( CONSOLES == True )
 improve: swap ( SWAP_SIZE != 0 )
 build: musl-1.2.5
-build: curl-8.12.1
+build: curl-8.17.0
 improve: get_network ( CHROOT == False )
 build: bash-5.2.15
 improve: open_console ( CONSOLES == True )
@@ -189,7 +189,7 @@ uninstall: perl-5.6.2 perl-5.8.9
 build: libarchive-3.5.2
 build: openssl-3.0.13
 build: ca-certificates-3.99
-build: curl-8.12.1
+build: curl-8.17.0
 build: patch-2.7.6
 build: gettext-0.21
 build: texinfo-6.7

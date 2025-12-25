@@ -5,18 +5,18 @@
 src_prepare() {
     default
 
+    # pregenerated files
+    rm src/tool_listhelp.c src/tool_hugehelp.c lib/easyoptions.c
+    rm docs/libcurl/libcurl-symbols.md
+    rm -r packages/vms/curlmsg.{h,sdl}
+
     # Regnerate src/tool_cb_prg.c
     sed '/sinus/q' src/tool_cb_prg.c > src/tool_cb_prg.c.new
     perl sinus.pl | sed "s/, $//" >> src/tool_cb_prg.c.new
     sed '1,/^[0-9, ]*[0-9]$/d' src/tool_cb_prg.c >> src/tool_cb_prg.c.new
     mv src/tool_cb_prg.c.new src/tool_cb_prg.c
 
-    # pregenerated files
-    rm src/tool_listhelp.c src/tool_hugehelp.c lib/easyoptions.c
-    rm docs/libcurl/libcurl-symbols.md
-    rm tests/certs/*.der
-
-    AUTOMAKE=automake-1.15 ACLOCAL=aclocal-1.15 autoreconf-2.69 -fi
+    autoreconf-2.71 -fi
 }
 
 src_configure() {

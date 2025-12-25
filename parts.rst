@@ -902,8 +902,8 @@ musl 1.2.5
 At this point, it is guaranteed that we are running on Linux with thread support,
 so we rebuild musl with thread support.
 
-curl 8.5.0 and get_network
-==========================
+curl 8.17.0 and get_network
+===========================
 
 ``curl`` is used to download files using various protocols including HTTP and HTTPS.
 However, this first build does not support encrypted HTTPS yet. ``curl`` requires
@@ -1062,8 +1062,8 @@ ca-certificates 3.99
 Install TLS root certificates from nss. This will allows us to use HTTPS for downloads
 once curl is rebuilt against OpenSSL.
 
-curl 8.5.0
-==========
+curl 8.17.0
+===========
 
 We rebuild curl with support for OpenSSL.
 
