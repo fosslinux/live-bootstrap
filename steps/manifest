@@ -187,7 +187,7 @@ build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.42.0
 uninstall: perl-5.6.2 perl-5.8.9
 build: libarchive-3.5.2
-build: openssl-3.0.13
+build: openssl-3.6.0
 build: ca-certificates-3.99
 build: curl-8.17.0
 build: patch-2.7.6
