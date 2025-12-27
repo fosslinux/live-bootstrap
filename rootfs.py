@@ -13,6 +13,8 @@ you can run bootstap inside chroot.
 # SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
 # SPDX-FileCopyrightText: 2021-23 Samuel Tyler <samuel@samuelt.me>
 # SPDX-FileCopyrightText: 2023-24 Gábor Stefanik <netrolller.3d@gmail.com>
+# SPDX-FileCopyrightText: 2024 Lance Vick <lance@vick.house>
+# SPDX-FileCopyrightText: 2025 Kevin Nause <kevin@nause.engineering>
 
 import argparse
 import os
@@ -34,7 +36,7 @@ def create_configuration_file(args):
         config.write(f"ARCH={args.arch}\n")
         config.write(f"ARCH_DIR={stage0_arch_map.get(args.arch, args.arch)}\n")
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
-        config.write(f"CHROOT={args.chroot or args.bwrap}\n")
+        config.write(f"CHROOT={args.chroot or args.bwrap or args.docker}\n")
         config.write(f"UPDATE_CHECKSUMS={args.update_checksums}\n")
         config.write(f"JOBS={args.cores}\n")
         config.write(f"SWAP_SIZE={args.swap}\n")
@@ -74,6 +76,8 @@ def main():
     parser.add_argument("-c", "--chroot", help="Run inside chroot",
                         action="store_true")
     parser.add_argument("-bw", "--bwrap", help="Run inside a bwrap sandbox",
+                        action="store_true")
+    parser.add_argument("-do", "--docker", help="Run inside a docker build",
                         action="store_true")
     parser.add_argument("-t", "--target", help="Target directory",
                         default="target")
@@ -140,15 +144,17 @@ def main():
             count += 1
         if args.bwrap:
             count += 1
+        if args.docker:
+            count += 1
         if args.bare_metal:
             count += 1
         return count
 
     if check_types() > 1:
-        raise ValueError("No more than one of qemu, chroot, bwrap, bare metal"
+        raise ValueError("No more than one of qemu, chroot, bwrap, docker, bare metal"
                          "may be used.")
     if check_types() == 0:
-        raise ValueError("One of qemu, chroot, bwrap, or bare metal must be selected.")
+        raise ValueError("One of qemu, chroot, bwrap, docker, or bare metal must be selected.")
 
     # Arch validation
     if args.arch != "x86":
@@ -170,6 +176,9 @@ def main():
             (1024 if str(args.target_size).lower().endswith('g') else 1))
     else:
         args.target_size = 0
+
+    if args.docker:
+        args.external_sources = True
 
     # Swap file size validation
     if args.qemu or args.bare_metal:
@@ -249,6 +258,22 @@ print(shutil.which('chroot'))
         init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
         run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init,
                     cleanup=cleanup)
+
+    elif args.docker:
+        generator.prepare(target, using_kernel=False)
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+        target_rel = os.path.relpath(generator.target_dir, os.getcwd())
+        run('env', '-i', 'DOCKER_BUILDKIT=1',
+            'docker', 'build',
+            '--build-arg=ARCH='+ arch,
+            '--build-arg=TARGET=' + target_rel,
+            '--build-arg=SOURCE_DATE_EPOCH=1',
+            '--progress=auto',
+            '--platform=linux/amd64,linux/arm64,linux/i386,linux/riscv64',
+            '--target=package',
+            '--tag=live-bootstrap-' + arch,
+            '.')
 
     elif args.bwrap:
         init = '/init'

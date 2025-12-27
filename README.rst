@@ -33,8 +33,8 @@ Without using Python:
    passing it to ``rootfs.py```).
 1. ``git clone https://github.com/fosslinux/live-bootstrap``
 2. ``git submodule update --init --recursive``
-3. Consider whether you are going to run this in a chroot, in QEMU, or on bare
-   metal. (All of this *can* be automated, but not in a trustable way. See
+3. Consider whether you are going to run this in a chroot, in QEMU, on bare
+   metal, or docker. (All of this *can* be automated, but not in a trustable way. See
    further below.)
 
    a. **chroot:** Create a directory where the chroot will reside, run
@@ -73,6 +73,15 @@ Without using Python:
         (``-nic user,model=e1000``), and ``-machine kernel-irqchip=split``.
    c. **Bare metal:** Follow the same steps as QEMU, but the disks need to be
       two different *physical* disks, and boot from the first disk.
+   d. **Docker:** Follow the same steps as chroot. To debug build errors, see
+      [docker buildx debug](https://docs.docker.com/reference/cli/docker/buildx/debug/).
+
+      ```bash
+      DOCKER_BUILDKIT=1 BUILDX_EXPERIMENTAL=1 \
+      docker buildx debug --invoke /bin/sh build \
+      --build-arg=ARCH=x86 --build-arg=TARGET=target/ --build-arg=SOURCE_DATE_EPOCH=1 \
+      --progress=auto --platform=linux/amd64 --target=install --tag=live-bootstrap-debug .
+      ```
 
 Mirrors
 -------
