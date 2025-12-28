@@ -1,0 +1,16 @@
+f https://mirrors.kernel.org/gnu/patch/patch-2.8.tar.xz f87cee69eec2b4fcbf60a396b030ad6aa3415f192aa5f7ee84cad5e11f7f5ae3
+g https://https.git.savannah.gnu.org/git/gnulib.git~9829f0a _ 377786991f43e21623fa5cbc0fd98f2d8fbe1f95e0d0cad3be9421efd86f39dd gnulib-9829f0a.tar.gz
+f http://ftp.unicode.org/Public/16.0.0/ucd/PropList.txt 53d614508e2a0b2305a8aa21cd60d993de9326cdf65993660dfcce4503548583 PropList-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/DerivedCoreProperties.txt 39d35161f2954497f69e08bdb9e701493f476a3d30222de20028feda36c1dabd DerivedCoreProperties-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/emoji/emoji-data.txt f1365a5173eee18e1f98b240cdc492e84a25f1ce7e0c9d1094eb29c41a22696a emoji-data-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/ArabicShaping.txt 764f420cedfc8b43d9fec251c957a5d55fc45d40f6573f162990ed1dce7e36e0 ArabicShaping-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/Scripts.txt 9e88f0a677df47311106340be8ede2ecdacd9c1c931831218d2be6d5508e0039 Scripts-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/Blocks.txt f3907b395d410f1b97342292ca6bc83dd12eb4b205f2a0c48efdef99e517d7b0 Blocks-16.0.0.txt
+f http://ftp.unicode.org/Public/3.0-Update1/PropList-3.0.1.txt 909eef4adbeddbdddcd9487c856fe8cdbb8912aa8eb315ed7885b6ef65f4dc4c
+f http://ftp.unicode.org/Public/16.0.0/ucd/EastAsianWidth.txt 43adc76c0686a42cb370764eb8cfe2b2a45b10b855e5572a2db4a0eecce15d5b EastAsianWidth-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/LineBreak.txt e97e4259d0d20fab150b9c7b4b28abfae5cd78ca97e7f4ac6ed20d685d5f4a7c LineBreak-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/auxiliary/WordBreakProperty.txt 476464e71a4b7b779b8ba7c5671f4338fea77da8e6b6b05fb82b3fdd14603779 WordBreakProperty-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/auxiliary/GraphemeBreakProperty.txt c29360bd6f7132811d701d29069541e827eb44bfc4c8fbde8c370d6982689dc1 GraphemeBreakProperty-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/CompositionExclusions.txt 89e83cf9cc8bef6c1f8bf77e42cf6f0341dfa42e66261f4dbe9b492e7a23c8ee CompositionExclusions-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/SpecialCasing.txt 8d5de354eef79f2395a54c9c7dcebbaf3d30fc962d0f85611ea97aa973a0c451 SpecialCasing-16.0.0.txt
+f http://ftp.unicode.org/Public/16.0.0/ucd/CaseFolding.txt 6f1f9c588eb4a5c718d9e8f93b782685e5c7fec872cf05e8e6878053599e09bb CaseFolding-16.0.0.txt

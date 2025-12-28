@@ -190,7 +190,7 @@ build: libarchive-3.5.2
 build: openssl-3.6.0
 build: ca-certificates-3.119.1
 build: curl-8.17.0
-build: patch-2.7.6
+build: patch-2.8
 build: gettext-0.21
 build: texinfo-6.7
 build: gcc-4.7.4
