@@ -3,11 +3,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_compile() {
-    cp -a nss/lib/ckfw/builtins/certdata.txt .
+    # Cannot be UNIX time 0 because mk-ca-bundle treats that as falsey
+    touch -t 197001010001.00 certdata.txt
     mk-ca-bundle -n -s ALL -m
 }
 
 src_install() {
     install -D -m 644 ca-bundle.crt "${DESTDIR}/etc/ssl/certs/ca-certificates.crt"
-    ln -s /etc/ssl/certs/ca-certificates.crt "${DESTDIR}/etc/ssl/certs.pem"
+    ln -s certs/ca-certificates.crt "${DESTDIR}/etc/ssl/certs.pem"
 }
