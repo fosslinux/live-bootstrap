@@ -405,6 +405,10 @@ default_src_unpack() {
             fi
         done
     fi
+    if ! [ -e "${dirname}" ]; then
+        # there are no directories extracted
+        dirname=.
+    fi
     # shellcheck disable=SC2162
     tail -n +2 ../sources | while read line; do
         # shellcheck disable=SC2086
