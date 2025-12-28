@@ -1044,11 +1044,6 @@ perl 5.12.5
 This is the final version that can be built by perl 5.8. Again, there are new
 files to be regenerated.
 
-libarchive 3.5.2
-================
-
-``libarchive`` is a C library used to read and write archives.
-
 openssl 3.0.13
 ==============
 
@@ -1513,6 +1508,12 @@ m4 1.4.19
 We are in need of a newer version of m4 for some modern software. Attempts to
 update m4 1.4.7 earlier in the bootstrap demonstrate some issues with Fiwix,
 so we build a newer m4 at the end of the bootstrap instead.
+
+libarchive 3.5.2
+================
+
+``libarchive`` is a C library used to read and write archives. This is useful
+for many applications of live-bootstrap.
 
 cleanup_filesystem
 ==================
