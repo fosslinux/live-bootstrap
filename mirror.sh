@@ -156,7 +156,8 @@ do_file() {
             prefix_ref=${reference}
             # All git repositories we already use remove "v"s from the beginning
             # of branch/tag names in the tarball prefix
-            if echo "${reference}" | grep -Eq "^v[0-9]"; then
+            # except for gitlab
+            if echo "${reference}" | grep -Eq "^v[0-9]" | grep -vq gitlab; then
                 prefix_ref=$(echo "${reference}" | sed "s/^v//")
             fi
             prefix=$(basename "${repo}" | sed "s/.git$//")-${prefix_ref}
