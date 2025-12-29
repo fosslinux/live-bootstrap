@@ -1138,7 +1138,7 @@ gperf 3.1
 
 ``gperf`` is a perfect hash function generator (hash function is injective).
 
-gettext 0.21
+gettext 0.26
 ============
 
 GNU Gettext is an internationalization and localization system used for writing
