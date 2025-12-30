@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
+    rm lib/unictype/ctype_print.h
     ../../import-gnulib.sh
 
     # bison
