@@ -194,7 +194,14 @@ build: gettext-0.21
 build: texinfo-6.7
 build: gcc-4.7.4
 build: binutils-2.41
+build: musl-1.2.5
+build: python-2.0.1
+build: python-2.0.1
+build: python-2.3.7
+build: python-2.3.7
 build: gperf-3.1
+build: gettext-0.21
+build: texinfo-6.7
 build: libunistring-0.9.10
 build: libffi-3.3
 build: libatomic_ops-7.6.10
@@ -204,11 +211,6 @@ build: which-2.21
 build: grep-3.7
 build: sed-4.8
 build: autogen-5.18.16
-build: musl-1.2.5
-build: python-2.0.1
-build: python-2.0.1
-build: python-2.3.7
-build: python-2.3.7
 build: python-2.5.6
 build: python-3.1.5
 build: python-3.1.5

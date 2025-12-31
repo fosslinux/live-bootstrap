@@ -197,7 +197,6 @@ src_configure() {
 src_compile() {
     ln -s . "build/build-${TARGET}"
     for dir in libiberty libcpp libdecnumber gcc; do
-        # We have makeinfo now but it is not happy with gcc .info files, so skip it
         make "${MAKEJOBS}" -C build/$dir LIBGCC2_INCLUDES=-I"${PREFIX}/include" \
             STMP_FIXINC= GMPLIBS="-lmpc -lmpfr -lgmp" MAKEINFO=true
     done
