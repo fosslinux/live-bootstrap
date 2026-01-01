@@ -186,7 +186,6 @@ build: bison-3.8.2
 build: perl-Devel-Tokenizer-C-0.11
 build: perl-5.42.0
 uninstall: perl-5.6.2 perl-5.8.9
-build: libarchive-3.5.2
 build: openssl-3.6.0
 build: ca-certificates-3.119.1
 build: curl-8.17.0
@@ -232,6 +231,7 @@ build: gzip-1.13
 build: diffutils-3.10
 build: gawk-5.3.0
 build: m4-1.4.19
+build: libarchive-3.5.2
 improve: cleanup_filesystem
 improve: null_time ( FORCE_TIMESTAMPS == True )
 improve: update_checksums ( UPDATE_CHECKSUMS == True )
