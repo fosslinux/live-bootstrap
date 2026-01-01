@@ -72,6 +72,9 @@ src_configure() {
 }
 
 src_compile() {
+    declare -x SOURCE_DATE_EPOCH=1759320660
+    declare -x OSSL_COPYRIGHT_YEAR=2025
+
     make generate
     perl util/mkerr.pl -internal -rebuild
     for conf in engines/*.ec; do
@@ -81,7 +84,6 @@ src_compile() {
     done
     mv ./*_err.{c,h} engines/
 
-    declare -x SOURCE_DATE_EPOCH=1638831119
     default
 }
 
