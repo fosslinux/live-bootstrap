@@ -2,6 +2,8 @@ SPDX-FileCopyrightText: 2025 Samuel Tyler <fosslinux@aussies.space>
 
 SPDX-License-Identifier: Apache-2.0
 
+We intentionally have files missing.
+
 --- openssl-3.6.0/Configure	2025-10-01 22:11:48.000000000 +1000
 +++ openssl-3.6.0/Configure	2025-12-26 12:04:24.790872245 +1100
 @@ -2729,7 +2729,6 @@

@@ -1,0 +1,20 @@
+SPDX-FileCopyrightText: 2026 Samuel Tyler <fosslinux@aussies.space>
+
+SPDX-License-Identifier: Apache-2.0
+
+Make the output of mkerr.pl reproducible.
+
+Now the year in the copyright header depends firstly on SOURCE_DATE_EPOCH,
+or if that is not set, the mtime of the config file.
+
+--- openssl-3.6.0/util/mkerr.pl	2025-10-01 22:11:48.000000000 +1000
++++ openssl-3.6.0/util/mkerr.pl 2026-01-01 17:18:06.853472915 +1100
+@@ -26,7 +26,7 @@
+ my %modules         = ();
+ 
+ my $errors       = 0;
+-my @t            = localtime();
++my @t            = gmtime($ENV{SOURCE_DATE_EPOCH} || (stat($config))[9]);
+ my $YEAR         = $t[5] + 1900;
+ 
+ sub phase
