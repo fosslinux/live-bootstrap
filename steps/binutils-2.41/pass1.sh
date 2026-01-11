@@ -135,13 +135,13 @@ src_configure() {
 src_compile() {
     make -C bfd headers
     for dir in libiberty libsframe bfd opcodes libctf binutils gas gprof ld; do
-        make "${MAKEJOBS}" -C $dir tooldir=${PREFIX} CFLAGS="-std=c99"
+        make "${MAKEJOBS}" -C $dir tooldir=${PREFIX} CFLAGS="-std=c99" MAKEINFO=true
     done
 }
 
 src_install() {
     for dir in libiberty bfd opcodes libctf libsframe binutils gas gprof ld; do
-        make -C $dir tooldir=${PREFIX} DESTDIR="${DESTDIR}" install
+        make -C $dir tooldir=${PREFIX} DESTDIR="${DESTDIR}" MAKEINFO=true install
     done
 
     # Create triplet symlinks

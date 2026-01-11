@@ -1074,18 +1074,6 @@ patch 2.7.6
 Our old patch was built with manual makefile and used mes libc.
 This is a newer version which we need in order to import gnulib into gettext.
 
-gettext 0.21
-============
-
-GNU Gettext is an internationalization and localization system used for writing
-multilingual programs.
-
-texinfo 6.7
-===========
-
-Texinfo is a typesetting syntax used for generating documentation. We can now use
-``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
-
 gcc 4.7.4
 =========
 
@@ -1103,6 +1091,65 @@ binutils 2.41
 This version of binutils provides a more comprehensive set of programming tools for
 creating and managing binary programs. It also includes modern versions of the ``ld``
 linker, the ``as`` assembler and the ``ar`` program.
+
+musl 1.2.5
+==========
+
+With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
+with support for dynamic linking.
+
+python 2.0.1
+============
+
+Everything is in place to bootstrap the useful programming language/utility
+Python. While Python is largely written in C, many parts of the codebase are
+generated from Python scripts, which only increases as Python matured over time.
+
+We begin with Python 2.0.1, which has minimal generated code, most of which can
+be removed. Lib/{keyword,token,symbol} scripts are rewritten in C and used to
+regenerate parts of the standard library. Unicode support and sre (regex)
+support is stripped out. 
+
+Using the stripped-down first version of Python 2.0.1, Python 2.0.1 is rebuilt,
+including Unicode and regex support (required for future Python builds). The
+first version is insufficient to run the Lib/{keyword,token,symbol} scripts, so
+those continue to use the C versions.
+
+Precompiled Python code at this point is highly unreproducible, so it is
+deleted (JIT compiled instead). This makes Python itself slower, but this is of
+little consequence.
+
+python 2.3.7
+============
+
+Python 2.0.1 is sufficient to build Python 2.3.7.
+
+Differences to 2.0.1:
+
+* The new "ast" module, performing parsing of Python, is generated from a
+  parsing specification using Python code.
+* 2.0.1 is insufficient to run 2.3.7's unicode regeneration, so Unicode
+  support is again stripped out.
+
+Python 2.3.7 is then rebuilt to include Unicode support.
+
+gperf 3.1
+=========
+
+``gperf`` is a perfect hash function generator (hash function is injective).
+
+gettext 0.26
+============
+
+GNU Gettext is an internationalization and localization system used for writing
+multilingual programs. Now that we have Python 2.3 and gperf, we can regenerate
+all the pregenerated files in Gettext and so build it.
+
+texinfo 6.7
+===========
+
+Texinfo is a typesetting syntax used for generating documentation. We can now use
+``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
 perl 5.15.7
 ===========
@@ -1209,11 +1256,6 @@ perl 5.42.0
 
 5.42 is the latest version of Perl! The Perl bootstrap is complete.
 
-gperf 3.1
-=========
-
-``gperf`` is a perfect hash function generator (hash function is injective).
-
 libunistring 0.9.10
 ===================
 
@@ -1278,47 +1320,6 @@ source is full of pregenerated files that require ``autogen`` to rebuild.
 We use the `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-bootstrapping>`_
 project to rebuild those and create (slightly crippled) ``autogen`` that
 is then able to build a full-featured version.
-
-musl 1.2.5
-==========
-
-With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
-with support for dynamic linking.
-
-python 2.0.1
-============
-
-Everything is in place to bootstrap the useful programming language/utility
-Python. While Python is largely written in C, many parts of the codebase are
-generated from Python scripts, which only increases as Python matured over time.
-
-We begin with Python 2.0.1, which has minimal generated code, most of which can
-be removed. Lib/{keyword,token,symbol} scripts are rewritten in C and used to
-regenerate parts of the standard library. Unicode support and sre (regex)
-support is stripped out. 
-
-Using the stripped-down first version of Python 2.0.1, Python 2.0.1 is rebuilt,
-including Unicode and regex support (required for future Python builds). The
-first version is insufficient to run the Lib/{keyword,token,symbol} scripts, so
-those continue to use the C versions.
-
-Precompiled Python code at this point is highly unreproducible, so it is
-deleted (JIT compiled instead). This makes Python itself slower, but this is of
-little consequence.
-
-python 2.3.7
-============
-
-Python 2.0.1 is sufficient to build Python 2.3.7.
-
-Differences to 2.0.1:
-
-* The new "ast" module, performing parsing of Python, is generated from a
-  parsing specification using Python code.
-* 2.0.1 is insufficient to run 2.3.7's unicode regeneration, so Unicode
-  support is again stripped out.
-
-Python 2.3.7 is then rebuilt to include Unicode support.
 
 python 2.5.6
 ============
