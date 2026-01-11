@@ -118,11 +118,17 @@ src_prepare() {
     temp="$(mktemp -d)"
     pushd "$temp"
     tar -xf "$archive"
-    sed -i "s/%expect 10/%expect 7/" gettext-0.10.*/intl/plural.y
+    sed -i.bak "s/%expect 10/%expect 7/" gettext-0.10.*/intl/plural.y
+    for f in gettext-0.10.*/intl/plural.y; do
+        touch -r "$f.bak" "$f"
+        touch -r "$f.bak" "$(dirname "$f")"
+    done
     find . -path "*/intl/plural.c" | while read -r file; do
         pushd "$(dirname "$file")"
         rm plural.c
         bison -o plural.c plural.y
+        touch -r plural.y plural.c
+        touch -r plural.y .
         popd
     done
     tar -cf "$archive" gettext-*
