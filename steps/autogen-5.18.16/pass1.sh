@@ -6,6 +6,8 @@
 noextract="autogen-5.18.16.tar.xz"
 
 src_prepare() {
+    default
+
     mkdir build
     mv ../autogen-5.18.16 build/src
     mv ../autogen-5.18.16.tar.xz build/
@@ -25,6 +27,7 @@ src_compile() {
 
     SKIP_MAIN=1 . ./bootstrap_tarball.sh
     prepare_tarball
+    patch -Np1 -i ../../gperf-3.3.patch -d build/autogen-5.18.16
     bootstrap_columns
     bootstrap_getdefs
     bootstrap_autogen
@@ -42,10 +45,10 @@ src_compile() {
     SOURCE_DIR="$PWD" ./config/bootstrap
     # Specify timeout to avoid non-reproducibility
     CPPFLAGS=-D_LARGEFILE64_SOURCE=1 ./configure \
-	--prefix="${FINALPREFIX}" \
-	--libdir="${FINALPREFIX}/lib/${TARGET}" \
-	--disable-shared \
-	--enable-timeout=15
+        --prefix="${FINALPREFIX}" \
+        --libdir="${FINALPREFIX}/lib/${TARGET}" \
+        --disable-shared \
+        --enable-timeout=15
     touch doc/agdoc.texi # build later
     make -j1 CFLAGS=-Wno-error
 
