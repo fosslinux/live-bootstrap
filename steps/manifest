@@ -197,7 +197,7 @@ build: python-2.0.1
 build: python-2.0.1
 build: python-2.3.7
 build: python-2.3.7
-build: gperf-3.1
+build: gperf-3.3
 build: gettext-0.26
 build: texinfo-6.7
 build: libunistring-0.9.10

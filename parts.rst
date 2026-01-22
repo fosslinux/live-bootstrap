@@ -1133,7 +1133,7 @@ Differences to 2.0.1:
 
 Python 2.3.7 is then rebuilt to include Unicode support.
 
-gperf 3.1
+gperf 3.3
 =========
 
 ``gperf`` is a perfect hash function generator (hash function is injective).

@@ -1,0 +1,19 @@
+SPDX-FileCopyrightText: 2026 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Make output of the vendored texi2html reproducible.
+
+--- gperf-3.3/doc/texi2html	2026-01-15 21:18:39.886947132 +1100
++++ gperf-3.3/doc/texi2html	2026-01-15 21:22:28.937926499 +1100
+@@ -1842,7 +1842,9 @@
+ 
+     @MoY = ('January', 'February', 'March', 'April', 'May', 'June',
+ 	    'July', 'August', 'September', 'October', 'November', 'December');
+-    ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
++    ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = defined($ENV{SOURCE_DATE_EPOCH}) ?
++                                                                    gmtime($ENV{SOURCE_DATE_EPOCH}) :
++                                                                    localtime(time);
+     $year += ($year < 70) ? 2000 : 1900;
+     return("$mday $MoY[$mon] $year");
+ }

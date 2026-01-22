@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+In gperf 3.3, a new set of #if .. #elif .. #endif is added. Obviously
+this sed then breaks the C preprocessor.
+
+It turns out these are unnecessary.
+
+--- a/autoopts/tpl/str2enum.tpl	2026-01-13 19:48:05.623459591 +1100
++++ b/autoopts/tpl/str2enum.tpl	2026-01-13 19:47:41.613458157 +1100
+@@ -811,9 +811,6 @@
+         -e '/GNUC_.*_INLINE/d' \
+         -e '/__attribute__.*inline/d' \
+         -e '/^#if.*== *32/,/^#endif/d' \
+-        -e '/^#ifdef/d' \
+-        -e '/^#else/d' \
+-        -e '/^#endif$/d' \
+         -e '/key = [=(. base-type-name)=]_hash/s/key = /key = (int)/' \
+         -e 's/^\(const [=(. base-type-name)=]_map_t\)/static inline \1/' \
+     > baseline
