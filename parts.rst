@@ -1015,6 +1015,12 @@ This is an older version of bison required for the bison files in older perls.
 We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
 in 2.3. This parser works sufficiently well for perl 5.10.1.
 
+zlib 1.3.1
+==========
+
+zlib is a software library used for data compression and implements an abstraction of
+DEFLATE algorithm that is also used in ``gzip``.
+
 dist 3.5
 ========
 
@@ -1043,113 +1049,6 @@ perl 5.12.5
 
 This is the final version that can be built by perl 5.8. Again, there are new
 files to be regenerated.
-
-openssl 3.0.13
-==============
-
-OpenSSL is a C library for secure communications/cryptography.
-
-We do not use the latest 3.3.0 release because it causes lockups in curl.
-
-ca-certificates 3.99
-====================
-
-Install TLS root certificates from nss. This will allows us to use HTTPS for downloads
-once curl is rebuilt against OpenSSL.
-
-curl 8.17.0
-===========
-
-We rebuild curl with support for OpenSSL.
-
-zlib 1.3.1
-==========
-
-zlib is a software library used for data compression and implements an abstraction of
-DEFLATE algorithm that is also used in ``gzip``.
-
-patch 2.7.6
-===========
-
-Our old patch was built with manual makefile and used mes libc.
-This is a newer version which we need in order to import gnulib into gettext.
-
-gcc 4.7.4
-=========
-
-GCC 4.7.4 is the last version written in C. This time we build both C and C++ backends.
-The C++ backend has a dependency on ``gperf``, which is written in C++. Fortunately, it is
-easy to patch it out; the resulting ``g++`` compiler is capable of building ``gperf``.
-We also add in two patchsets to the compiler;
-
-* one to add support for musl shared library support
-* one providing a few compiler flags/features that are required later to build GCC 10
-
-binutils 2.41
-=============
-
-This version of binutils provides a more comprehensive set of programming tools for
-creating and managing binary programs. It also includes modern versions of the ``ld``
-linker, the ``as`` assembler and the ``ar`` program.
-
-musl 1.2.5
-==========
-
-With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
-with support for dynamic linking.
-
-python 2.0.1
-============
-
-Everything is in place to bootstrap the useful programming language/utility
-Python. While Python is largely written in C, many parts of the codebase are
-generated from Python scripts, which only increases as Python matured over time.
-
-We begin with Python 2.0.1, which has minimal generated code, most of which can
-be removed. Lib/{keyword,token,symbol} scripts are rewritten in C and used to
-regenerate parts of the standard library. Unicode support and sre (regex)
-support is stripped out. 
-
-Using the stripped-down first version of Python 2.0.1, Python 2.0.1 is rebuilt,
-including Unicode and regex support (required for future Python builds). The
-first version is insufficient to run the Lib/{keyword,token,symbol} scripts, so
-those continue to use the C versions.
-
-Precompiled Python code at this point is highly unreproducible, so it is
-deleted (JIT compiled instead). This makes Python itself slower, but this is of
-little consequence.
-
-python 2.3.7
-============
-
-Python 2.0.1 is sufficient to build Python 2.3.7.
-
-Differences to 2.0.1:
-
-* The new "ast" module, performing parsing of Python, is generated from a
-  parsing specification using Python code.
-* 2.0.1 is insufficient to run 2.3.7's unicode regeneration, so Unicode
-  support is again stripped out.
-
-Python 2.3.7 is then rebuilt to include Unicode support.
-
-gperf 3.3
-=========
-
-``gperf`` is a perfect hash function generator (hash function is injective).
-
-gettext 0.26
-============
-
-GNU Gettext is an internationalization and localization system used for writing
-multilingual programs. Now that we have Python 2.3 and gperf, we can regenerate
-all the pregenerated files in Gettext and so build it.
-
-texinfo 6.7
-===========
-
-Texinfo is a typesetting syntax used for generating documentation. We can now use
-``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
 perl 5.15.7
 ===========
@@ -1255,6 +1154,107 @@ perl 5.42.0
 ===========
 
 5.42 is the latest version of Perl! The Perl bootstrap is complete.
+
+openssl 3.0.13
+==============
+
+OpenSSL is a C library for secure communications/cryptography.
+
+We do not use the latest 3.3.0 release because it causes lockups in curl.
+
+ca-certificates 3.119.1
+=======================
+
+Install TLS root certificates from nss. This will allows us to use HTTPS for downloads
+once curl is rebuilt against OpenSSL.
+
+curl 8.17.0
+===========
+
+We rebuild curl with support for OpenSSL.
+
+patch 2.8
+=========
+
+Our old patch was built with manual makefile and used mes libc.
+This is a newer version which we need in order to import gnulib into gettext.
+
+gcc 4.7.4
+=========
+
+GCC 4.7.4 is the last version written in C. This time we build both C and C++ backends.
+The C++ backend has a dependency on ``gperf``, which is written in C++. Fortunately, it is
+easy to patch it out; the resulting ``g++`` compiler is capable of building ``gperf``.
+We also add in two patchsets to the compiler;
+
+* one to add support for musl shared library support
+* one providing a few compiler flags/features that are required later to build GCC 10
+
+binutils 2.41
+=============
+
+This version of binutils provides a more comprehensive set of programming tools for
+creating and managing binary programs. It also includes modern versions of the ``ld``
+linker, the ``as`` assembler and the ``ar`` program.
+
+musl 1.2.5
+==========
+
+With GCC and binutils supporting a musl-based toolchain natively, musl itself is rebuilt
+with support for dynamic linking.
+
+python 2.0.1
+============
+
+Everything is in place to bootstrap the useful programming language/utility
+Python. While Python is largely written in C, many parts of the codebase are
+generated from Python scripts, which only increases as Python matured over time.
+
+We begin with Python 2.0.1, which has minimal generated code, most of which can
+be removed. Lib/{keyword,token,symbol} scripts are rewritten in C and used to
+regenerate parts of the standard library. Unicode support and sre (regex)
+support is stripped out. 
+
+Using the stripped-down first version of Python 2.0.1, Python 2.0.1 is rebuilt,
+including Unicode and regex support (required for future Python builds). The
+first version is insufficient to run the Lib/{keyword,token,symbol} scripts, so
+those continue to use the C versions.
+
+Precompiled Python code at this point is highly unreproducible, so it is
+deleted (JIT compiled instead). This makes Python itself slower, but this is of
+little consequence.
+
+python 2.3.7
+============
+
+Python 2.0.1 is sufficient to build Python 2.3.7.
+
+Differences to 2.0.1:
+
+* The new "ast" module, performing parsing of Python, is generated from a
+  parsing specification using Python code.
+* 2.0.1 is insufficient to run 2.3.7's unicode regeneration, so Unicode
+  support is again stripped out.
+
+Python 2.3.7 is then rebuilt to include Unicode support.
+
+gperf 3.3
+=========
+
+``gperf`` is a perfect hash function generator (hash function is injective).
+
+gettext 0.26
+============
+
+GNU Gettext is an internationalization and localization system used for writing
+multilingual programs. Now that we have Python 2.3 and gperf, we can regenerate
+all the pregenerated files in Gettext and so build it.
+
+texinfo 7.2
+===========
+
+Texinfo is a typesetting syntax used for generating documentation. We can now use
+``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
 libunistring 0.9.10
 ===================
