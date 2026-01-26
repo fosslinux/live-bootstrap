@@ -1256,64 +1256,11 @@ texinfo 7.2
 Texinfo is a typesetting syntax used for generating documentation. We can now use
 ``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
-libunistring 0.9.10
-===================
-
-Library for manipulating Unicode and C strings according to Unicode standard. This
-is a dependency of GNU Guile.
-
 libffi 3.3
 ==========
 
 The libffi library provides a portable, high level programming interface to various
 calling conventions.
-
-boehm-gc 8.0.4
-==============
-
-The Boehm-Demers-Weiser conservative garbage collector can be used as a garbage
-collecting replacement for C malloc or C++ new.
-
-guile 3.0.9
-===========
-
-GNU Ubiquitous Intelligent Language for Extensions (GNU Guile) is the preferred
-extension language system for the GNU Project and features an implementation
-of the programming language Scheme.
-
-We use ``guile-psyntax-bootstrapping`` project on Guile 3.0.7 to bootstrap
-Guile's ``psyntax.pp`` without relying on pre-expanded code. This is then
-transplanted into Guile 3.0.9.
-
-which 2.21
-==========
-
-``which`` shows the full path of (shell) commands. It mostly duplicates
-bash built-in ``command -v`` but some scripts call ``which`` instead.
-In particular, ``autogen`` scripts use it.
-
-grep 3.7
-========
-
-Newer ``grep`` will be needed to bootstrap ``autogen``.
-
-sed 4.8
-=======
-
-Earlier ``sed`` was built with manual makefile with most features compiled out.
-Build a newer ``sed`` using GNU Autotools build system. In particular this will let
-sed keep executable bit on after in place editing.
-
-autogen 5.18.16
-===============
-
-GNU Autogen is a tool designed to simplify the creation and maintenance of
-programs that contain large amounts of repetitious text. Unfortunately, the
-source is full of pregenerated files that require ``autogen`` to rebuild.
-
-We use the `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-bootstrapping>`_
-project to rebuild those and create (slightly crippled) ``autogen`` that
-is then able to build a full-featured version.
 
 python 2.5.6
 ============
@@ -1403,6 +1350,65 @@ Differences to 3.8.16:
 * Very recent Python versions allow for the use of ``SOURCE_DATE_EPOCH`` to
   make output of precompiled Python libraries (``.pyc``) deterministic.
   Finally, we can re-enable compiling of Python modules.
+
+libunistring 1.4.1
+==================
+
+Library for manipulating Unicode and C strings according to Unicode standard. This
+is a dependency of GNU Guile.
+
+libatomic_ops 7.6.10
+====================
+
+``libatomic_ops`` provides semi-portable access to hardware-provided atomic memory
+update operations on a number of architectures.
+
+boehm-gc 8.0.4
+==============
+
+The Boehm-Demers-Weiser conservative garbage collector can be used as a garbage
+collecting replacement for C malloc or C++ new.
+
+guile 3.0.9
+===========
+
+GNU Ubiquitous Intelligent Language for Extensions (GNU Guile) is the preferred
+extension language system for the GNU Project and features an implementation
+of the programming language Scheme.
+
+We use ``guile-psyntax-bootstrapping`` project on Guile 3.0.7 to bootstrap
+Guile's ``psyntax.pp`` without relying on pre-expanded code. This is then
+transplanted into Guile 3.0.9.
+
+which 2.21
+==========
+
+``which`` shows the full path of (shell) commands. It mostly duplicates
+bash built-in ``command -v`` but some scripts call ``which`` instead.
+In particular, ``autogen`` scripts use it.
+
+grep 3.7
+========
+
+Newer ``grep`` will be needed to bootstrap ``autogen``.
+
+sed 4.8
+=======
+
+Earlier ``sed`` was built with manual makefile with most features compiled out.
+Build a newer ``sed`` using GNU Autotools build system. In particular this will let
+sed keep executable bit on after in place editing.
+
+autogen 5.18.16
+===============
+
+GNU Autogen is a tool designed to simplify the creation and maintenance of
+programs that contain large amounts of repetitious text. Unfortunately, the
+source is full of pregenerated files that require ``autogen`` to rebuild.
+
+We use the `gnu-autogen-bootstrapping <https://github.com/schierlm/gnu-autogen-bootstrapping>`_
+project to rebuild those and create (slightly crippled) ``autogen`` that
+is then able to build a full-featured version.
 
 gcc 10.5.0
 ==========
