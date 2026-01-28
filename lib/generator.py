@@ -248,7 +248,7 @@ class Generator():
                 image_file.write(infile.read().encode())
 
         # Close first with statement before getting file size.
-        with open(image_file_name, 'ab') as image_file:                
+        with open(image_file_name, 'ab') as image_file:
             # Pad to next sector
             current_size = os.stat(image_file_name).st_size
             while current_size % 512 != 0:
