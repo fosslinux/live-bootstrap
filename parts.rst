@@ -1256,8 +1256,8 @@ texinfo 7.2
 Texinfo is a typesetting syntax used for generating documentation. We can now use
 ``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
-libffi 3.3
-==========
+libffi 3.5.2
+===========
 
 The libffi library provides a portable, high level programming interface to various
 calling conventions.
@@ -1356,12 +1356,6 @@ libunistring 1.4.1
 
 Library for manipulating Unicode and C strings according to Unicode standard. This
 is a dependency of GNU Guile.
-
-libatomic_ops 7.6.10
-====================
-
-``libatomic_ops`` provides semi-portable access to hardware-provided atomic memory
-update operations on a number of architectures.
 
 boehm-gc 8.0.4
 ==============
