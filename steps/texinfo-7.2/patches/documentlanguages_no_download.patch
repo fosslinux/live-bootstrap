@@ -1,0 +1,20 @@
+SPDX-FileCopyrightText: 2026 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+We download the files separately, don't use wget in the environment.
+
+--- texinfo-7.2/tp/maintain/regenerate_documentlanguages-loc.pl	2026-01-25 11:41:11.642692461 +1100
++++ texinfo-7.2/tp/maintain/regenerate_documentlanguages-loc.pl	2026-01-25 11:41:38.678693603 +1100
+@@ -26,11 +26,6 @@
+ use Text::CSV;
+ 
+ my $dir = 'maintain';
+-system ("cd $dir && wget -N https://www.loc.gov/standards/iso639-2/ISO-639-2_utf-8.txt");
+-# the ISO 3166-1 alpha-2 codes are not easily accessible from the ISO website, there is
+-# an interface not a raw download (seems incredible, but true...).
+-# Use the country code project list instead
+-system ("cd $dir && wget -N https://raw.githubusercontent.com/datasets/country-codes/master/data/country-codes.csv");
+ 
+ open(TXT, "$dir/ISO-639-2_utf-8.txt") or die "Open $dir/ISO-639-2_utf-8.txt: $!\n";
+ binmode(TXT, ":utf8");

@@ -199,7 +199,8 @@ build: python-2.3.7
 build: python-2.3.7
 build: gperf-3.3
 build: gettext-0.26
-build: texinfo-6.7
+build: perl-Text-CSV-2.06
+build: texinfo-7.2
 build: libunistring-0.9.10
 build: libffi-3.3
 build: libatomic_ops-7.6.10
