@@ -11,6 +11,10 @@ src_prepare() {
     # Useless tests things
     rm tests/*.exp tests/{languages,charsets}.gperf tests/lang-ucs2.in
 
+    # Remove date from manpage
+    sed -i 's/"$date" //' doc/help2man
+    chmod +x doc/help2man
+
     GNULIB_SRCDIR=$(realpath ../gnulib-b08ee1d) \
         AUTOCONF=autoconf-2.71 \
         ./autogen.sh
