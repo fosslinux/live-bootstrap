@@ -203,7 +203,6 @@ build: perl-Text-CSV-2.06
 build: texinfo-7.2
 build: libunistring-0.9.10
 build: libffi-3.3
-build: libatomic_ops-7.6.10
 build: gc-8.0.4
 build: guile-3.0.9
 build: which-2.21
