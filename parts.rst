@@ -1357,8 +1357,8 @@ libunistring 1.4.1
 Library for manipulating Unicode and C strings according to Unicode standard. This
 is a dependency of GNU Guile.
 
-boehm-gc 8.0.4
-==============
+boehm-gc 8.2.12
+===============
 
 The Boehm-Demers-Weiser conservative garbage collector can be used as a garbage
 collecting replacement for C malloc or C++ new.
