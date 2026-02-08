@@ -201,14 +201,7 @@ build: gperf-3.3
 build: gettext-0.26
 build: perl-Text-CSV-2.06
 build: texinfo-7.2
-build: libunistring-0.9.10
 build: libffi-3.3
-build: gc-8.0.4
-build: guile-3.0.9
-build: which-2.21
-build: grep-3.7
-build: sed-4.8
-build: autogen-5.18.16
 build: python-2.5.6
 build: python-3.1.5
 build: python-3.1.5
@@ -217,6 +210,13 @@ build: python-3.4.10
 build: python-3.8.16
 build: python-3.11.1
 uninstall: python-2.0.1 python-2.3.7 python-3.1.5 python-3.3.7 python-3.4.10 python-3.8.16
+build: libunistring-1.4.1
+build: gc-8.0.4
+build: guile-3.0.9
+build: which-2.21
+build: grep-3.7
+build: sed-4.8
+build: autogen-5.18.16
 jump: break ( INTERNAL_CI == pass1 ) # scripts are generated in pass1
 build: gcc-10.5.0
 build: binutils-2.41
