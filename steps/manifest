@@ -201,7 +201,7 @@ build: gperf-3.3
 build: gettext-0.26
 build: perl-Text-CSV-2.06
 build: texinfo-7.2
-build: libffi-3.3
+build: libffi-3.5.2
 build: python-2.5.6
 build: python-3.1.5
 build: python-3.1.5

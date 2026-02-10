@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_prepare() {
-    find . -name '*.info*' -delete
+    rm doc/libffi.{pdf,info}
 
     autoreconf-2.71 -fi
 }
