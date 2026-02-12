@@ -1,0 +1,320 @@
+SPDX-FileCopyrightText: 2017 Haelwenn (lanodan) Monnier <contact+utils@hacktivis.me>
+SPDX-License-Identifier: MPL-2.0
+
+diff --git utils-std-0.1.1/cmd/cut.c utils-std-0.1.1/cmd/cut.c
+index e56a4ca..2481759 100644
+--- utils-std-0.1.1/cmd/cut.c
++++ utils-std-0.1.1/cmd/cut.c
+@@ -5,8 +5,8 @@
+ #define _POSIX_C_SOURCE 202405L
+ 
+ #include "../config.h"
+-#include "../lib/reallocarray.h"
+ #include "../libutils/getopt_nolong.h"
++#include "../libutils/reallocarray.h"
+ 
+ #include <assert.h>
+ #include <ctype.h>
+@@ -121,7 +121,7 @@ parse_list(char *s)
+ 
+ 		if(max > list_len)
+ 		{
+-			list = reallocarray(list, max, sizeof(*list));
++			list = utils_reallocarray(list, max, sizeof(*list));
+ 			if(list == NULL)
+ 			{
+ 				fprintf(stderr, "%s: error: Failed memory allocation: %s\n", argv0, strerror(errno));
+@@ -285,7 +285,7 @@ cut_c(FILE *in, const char *filename)
+ 
+ 		if(nread > line_wsz)
+ 		{
+-			line_w = reallocarray(line_w, nread, sizeof(*line_w));
++			line_w = utils_reallocarray(line_w, nread, sizeof(*line_w));
+ 			if(line_w == NULL)
+ 			{
+ 				fprintf(stderr, "%s: error: Failed memory allocation: %s\n", argv0, strerror(errno));
+diff --git utils-std-0.1.1/cmd/df.c utils-std-0.1.1/cmd/df.c
+index 85627a0..61082ca 100644
+--- utils-std-0.1.1/cmd/df.c
++++ utils-std-0.1.1/cmd/df.c
+@@ -6,9 +6,9 @@
+ #define _DEFAULT_SOURCE // mntent in glibc 2.19+
+ 
+ #include "../config.h"
+-#include "../lib/reallocarray.h"
+ #include "../libutils/getopt_nolong.h"
+ #include "../libutils/humanize.h"
++#include "../libutils/reallocarray.h"
+ 
+ #include <ctype.h> // iscntrl, isspace
+ #include <errno.h> // errno
+@@ -249,7 +249,7 @@ main(int argc, char *argv[])
+ 	// So reallocarray to the rescue
+ 	size_t devices_found = 0;
+ 	size_t devices_len = 100;
+-	devices = reallocarray(NULL, devices_len, sizeof(dev_t));
++	devices = utils_reallocarray(NULL, devices_len, sizeof(dev_t));
+ 	if(!devices)
+ 	{
+ 		fprintf(stderr,
+@@ -354,7 +354,7 @@ main(int argc, char *argv[])
+ 				devices_len *= 2;
+ 				if(devices_len <= 0) abort();
+ 
+-				devices = reallocarray(devices, devices_len, sizeof(dev_t));
++				devices = utils_reallocarray(devices, devices_len, sizeof(dev_t));
+ 
+ 				if(!devices)
+ 				{
+diff --git utils-std-0.1.1/cmd/join.c utils-std-0.1.1/cmd/join.c
+index ed93d92..f411a0a 100644
+--- utils-std-0.1.1/cmd/join.c
++++ utils-std-0.1.1/cmd/join.c
+@@ -33,12 +33,11 @@
+  * SUCH DAMAGE.
+  */
+ 
+-#define _POSIX_C_SOURCE 202405L
+ #define _BSD_SOURCE // fgetln, strsep
+ 
+-#include "../lib/reallocarray.h"
+ #include "../libutils/err.h"
+ #include "../libutils/getopt_nolong.h"
++#include "../libutils/reallocarray.h"
+ 
+ #include <assert.h>
+ #include <errno.h>
+@@ -304,7 +303,7 @@ slurp(INPUT *F)
+ 			cnt = F->setalloc;
+ 			F->setalloc += 50;
+ 			if(F->setalloc <= 0) utils_errx(1, "slurp setalloc overflow");
+-			if((F->set = reallocarray(F->set, F->setalloc, sizeof(LINE))) == NULL)
++			if((F->set = utils_reallocarray(F->set, F->setalloc, sizeof(LINE))) == NULL)
+ 				utils_err(1, "Failed (re)allocating slurp set");
+ 			memset(F->set + cnt, 0, 50 * sizeof(LINE));
+ 
+@@ -356,7 +355,7 @@ slurp(INPUT *F)
+ 			{
+ 				lp->fieldalloc += 50;
+ 				if(lp->fieldalloc < 0) utils_errx(1, "slurp fieldalloc overflow");
+-				if((lp->fields = reallocarray(lp->fields, lp->fieldalloc, sizeof(char *))) == NULL)
++				if((lp->fields = utils_reallocarray(lp->fields, lp->fieldalloc, sizeof(char *))) == NULL)
+ 					utils_err(1, "Failed (re)allocating slurp fieldalloc");
+ 			}
+ 			lp->fields[lp->fieldcnt++] = fieldp;
+@@ -581,7 +580,7 @@ fieldarg(char *option)
+ 		{
+ 			olistalloc += 50;
+ 			if(olistalloc <= 0) utils_errx(1, "fieldarg olistalloc overflow");
+-			if((olist = reallocarray(olist, olistalloc, sizeof(OLIST))) == NULL)
++			if((olist = utils_reallocarray(olist, olistalloc, sizeof(OLIST))) == NULL)
+ 				utils_err(1, "Failed (re)allocating fieldarg");
+ 		}
+ 		olist[olistcnt].filenum = filenum;
+diff --git utils-std-0.1.1/common.mk utils-std-0.1.1/common.mk
+index 0b29a48..8d5be14 100644
+--- utils-std-0.1.1/common.mk
++++ utils-std-0.1.1/common.mk
+@@ -9,4 +9,4 @@ lib/tr_str.o: lib/tr_str.c lib/tr_str.h
+ cmd/cat: cmd/cat.c libutils/fs.o libutils/getopt_nolong.o
+ cmd/printf: cmd/printf.c
+ cmd/rm: cmd/rm.c libutils/consent.o libutils/getopt_nolong.o
+-cmd/tr: cmd/tr.c lib/tr_str.o libutils/err.o libutils/getopt_nolong.o
++cmd/tr: cmd/tr.c lib/tr_str.o libutils/err.o libutils/getopt_nolong.o libutils/reallocarray.o
+diff --git utils-std-0.1.1/configure utils-std-0.1.1/configure
+index 7ccef56..d9905d2 100755
+--- utils-std-0.1.1/configure
++++ utils-std-0.1.1/configure
+@@ -146,14 +146,14 @@ add_commands() {
+ # when there's 3+ commands starting with the same letter, put them on a new line
+ commands="
+ 	arch base64 basename
+-	cat chmod chown chroot cksum cmp date dirname
++	cat chmod chown chroot cksum cmp cut date dirname
+ 	echo env expr false getconf head id install link logname
+ 	mesg mkdir mkfifo mktemp mv
+ 	nice nohup nproc
+ 	paste pathchk printf pwd
+ 	realpath renice rm rmdir
+ 	seq sha1sum sha256sum sha512sum shuf sleep split strings sync
+-	tee test time timeout touch true truncate tty
++	tee test time timeout touch tr true truncate tty
+ 	uname uniq unlink
+ 	wc which whoami yes
+ "
+@@ -254,8 +254,7 @@ add_commands() {
+ 
+ echo
+ 
+-check_header mntent.h
+-has_mntent_h=$?
++check_header mntent.h && add_commands df
+ 
+ check_header sys/sysmacros.h && add_commands mknod
+ 
+@@ -265,16 +264,13 @@ add_commands() {
+ check_conftest configure.d/sendfile_linux.c && cpp_define HAS_SENDFILE
+ check_conftest configure.d/copy_file_range.c && cpp_define HAS_COPY_FILE_RANGE
+ 
+-check_conftest configure.d/reallocarray.c
+-has_reallocarray=$?
+-test 0 -eq $has_reallocarray && add_commands tr cut
++check_conftest configure.d/reallocarray.c && cpp_define HAS_REALLOCARRAY
+ 
+ check_conftest configure.d/getopt_long.c && cpp_define HAS_GETOPT_LONG
+ 
+ check_conftest configure.d/syncfs.c && cpp_define HAS_SYNCFS
+ 
+-check_conftest configure.d/fgetln.c
+-has_fgetln=$?
++check_conftest configure.d/fgetln.c && add_commands join
+ 
+ check_conftest configure.d/mkstemps.c && cpp_define HAS_MKSTEMPS
+ check_conftest configure.d/mkdtemps.c && cpp_define HAS_MKDTEMPS
+@@ -288,13 +284,6 @@ add_commands() {
+ 
+ echo
+ 
+-if test 0 -eq $has_reallocarray; then
+-	test 0 -eq $has_mntent_h && add_commands df
+-	test 0 -eq $has_fgetln && add_commands join
+-fi
+-
+-echo
+-
+ ## Configuration write
+ 
+ printf 'Writing to config.mk ...'
+diff --git utils-std-0.1.1/configure.d/reallocarray.c utils-std-0.1.1/configure.d/reallocarray.c
+index 022df8f..426a6ce 100644
+--- utils-std-0.1.1/configure.d/reallocarray.c
++++ utils-std-0.1.1/configure.d/reallocarray.c
+@@ -3,8 +3,7 @@
+ // SPDX-License-Identifier: MPL-2.0
+ 
+ #define _POSIX_C_SOURCE 202405L
+-
+-#include "../lib/reallocarray.h"
++#define _BSD_SOURCE
+ 
+ #include <stdlib.h> // reallocarray
+ 
+diff --git utils-std-0.1.1/lib/reallocarray.h utils-std-0.1.1/lib/reallocarray.h
+deleted file mode 100644
+index 2d91abd..0000000
+--- utils-std-0.1.1/lib/reallocarray.h
++++ /dev/null
+@@ -1,19 +0,0 @@
+-// utils-std: Collection of commonly available Unix tools
+-// SPDX-FileCopyrightText: 2017 Haelwenn (lanodan) Monnier <contact+utils@hacktivis.me>
+-// SPDX-License-Identifier: 0BSD
+-
+-#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 202405L
+-#error reallocarray needs: define _POSIX_C_SOURCE 202405L
+-#endif
+-
+-// pre-POSIX.1-2024 reallocarray fallback
+-#if !defined(_POSIX_VERSION) || _POSIX_VERSION < 202405L
+-#define _BSD_SOURCE
+-// FreeBSD
+-#undef _POSIX_C_SOURCE
+-#if __NetBSD_Version__ < 1000000000
+-#define _OPENBSD_SOURCE
+-#endif
+-#endif
+-
+-#include <stdlib.h> // reallocarray
+diff --git utils-std-0.1.1/lib/tr_str.c utils-std-0.1.1/lib/tr_str.c
+index 23dfcab..7cb14b9 100644
+--- utils-std-0.1.1/lib/tr_str.c
++++ utils-std-0.1.1/lib/tr_str.c
+@@ -31,15 +31,12 @@
+  * SUCH DAMAGE.
+  */
+ 
+-// clang-format off
+ #define _POSIX_C_SOURCE 202405L
+-// Needs to be the first included header due to this horrible BSD_VISIBLE macro
+-#include "./reallocarray.h"
+ 
+ #include "./tr_str.h"
+-// clang-format on
+ 
+ #include "../libutils/err.h"
++#include "../libutils/reallocarray.h"
+ 
+ #include <assert.h>
+ #include <ctype.h>
+@@ -190,7 +187,7 @@ genclass(STR *s)
+ 	{
+ 		len = NCHARS + 1;
+ 		assert(len != 0);
+-		cp->set = reallocarray(NULL, len, sizeof(*cp->set));
++		cp->set = utils_reallocarray(NULL, len, sizeof(*cp->set));
+ 		if(cp->set == NULL) utils_err(1, NULL);
+ 
+ 		len = 0;
+@@ -201,7 +198,7 @@ genclass(STR *s)
+ 		cp->set[len++] = OOBCH;
+ 
+ 		assert(len != 0);
+-		cp->set = reallocarray(cp->set, len, sizeof(*cp->set));
++		cp->set = utils_reallocarray(cp->set, len, sizeof(*cp->set));
+ 		if(cp->set == NULL) utils_err(1, NULL);
+ 	}
+ 
+diff --git utils-std-0.1.1/libutils/reallocarray.c utils-std-0.1.1/libutils/reallocarray.c
+new file mode 100644
+index 0000000..14b4fd8
+--- /dev/null
++++ utils-std-0.1.1/libutils/reallocarray.c
+@@ -0,0 +1,30 @@
++// Copied from musl
++// Copyright © 2020 Ariadne Conill <ariadne@dereferenced.org>
++// SPDX-License-Identifier: MIT
++
++#define _POSIX_C_SOURCE 202405L
++#define _BSD_SOURCE
++#include "./reallocarray.h"
++
++#include <errno.h>
++#include <stdlib.h>
++
++#ifdef HAS_REALLOCARRAY
++void *
++utils_reallocarray(void *ptr, size_t m, size_t n)
++{
++	return reallocarray(ptr, m, n);
++}
++#else /* HAS_REALLOCARRAY */
++void *
++utils_reallocarray(void *ptr, size_t m, size_t n)
++{
++	if(n && m > -1 / n)
++	{
++		errno = ENOMEM;
++		return 0;
++	}
++
++	return realloc(ptr, m * n);
++}
++#endif
+diff --git utils-std-0.1.1/libutils/reallocarray.h utils-std-0.1.1/libutils/reallocarray.h
+new file mode 100644
+index 0000000..dcafb1e
+--- /dev/null
++++ utils-std-0.1.1/libutils/reallocarray.h
+@@ -0,0 +1,13 @@
++// utils-std: Collection of commonly available Unix tools
++// SPDX-FileCopyrightText: 2017 Haelwenn (lanodan) Monnier <contact+utils@hacktivis.me>
++// SPDX-License-Identifier: 0BSD
++
++#ifndef _BSD_SOURCE
++#  if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 202405L
++#    error reallocarray needs: define _POSIX_C_SOURCE 202405L or define _BSD_SOURCE
++#  endif
++#endif
++
++#include <stdlib.h> // reallocarray
++
++void *utils_reallocarray(void *ptr, size_t m, size_t n);
