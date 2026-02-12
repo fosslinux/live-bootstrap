@@ -525,7 +525,7 @@ utils-std 0.1.1
 ==============
 
 Replaces most of coreutils 5.0 as well as providing few more utilities like
-``date``, ``getconf``, ``mktemp``, and ``sha256sum``
+``date``, ``mktemp``, and ``sha256sum``
 
 gawk 3.0.4
 ==========
