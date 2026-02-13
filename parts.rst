@@ -1363,8 +1363,8 @@ boehm-gc 8.2.12
 The Boehm-Demers-Weiser conservative garbage collector can be used as a garbage
 collecting replacement for C malloc or C++ new.
 
-guile 3.0.9
-===========
+guile 3.0.11
+============
 
 GNU Ubiquitous Intelligent Language for Extensions (GNU Guile) is the preferred
 extension language system for the GNU Project and features an implementation
@@ -1372,7 +1372,7 @@ of the programming language Scheme.
 
 We use ``guile-psyntax-bootstrapping`` project on Guile 3.0.7 to bootstrap
 Guile's ``psyntax.pp`` without relying on pre-expanded code. This is then
-transplanted into Guile 3.0.9.
+transplanted into Guile 3.0.11.
 
 which 2.21
 ==========
