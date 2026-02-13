@@ -1,0 +1,5 @@
+#if HAVE_LONG_LONG_STUB || HAVE_LONG_LONG
+        vtop[0].c.i >>= 32;
+#else
+        vtop[0].c.i = 0;
+#endif
