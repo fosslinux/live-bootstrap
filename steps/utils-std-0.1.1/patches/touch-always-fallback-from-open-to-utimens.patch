@@ -1,0 +1,92 @@
+From 7aa790a03f458ab41a4dc7b0b0810921ee5086ab Mon Sep 17 00:00:00 2001
+From: "Haelwenn (lanodan) Monnier" <contact@hacktivis.me>
+Date: Thu, 12 Feb 2026 01:30:49 +0100
+Subject: [PATCH] cmd/touch: always fallback from open() to utimens()
+SPDX-FileCopyrightText: 2017 Haelwenn (lanodan) Monnier <contact+utils@hacktivis.me>
+SPDX-License-Identifier: MPL-2.0
+
+Allows to set new modification times on files without write access
+but that you do own.
+
+And it is a behavior which POSIX requires.
+---
+ cmd/touch.c       | 30 +++++++-----------------------
+ test-cmd/touch.sh |  9 ++++++---
+ 2 files changed, 13 insertions(+), 26 deletions(-)
+
+diff --git a/cmd/touch.c b/cmd/touch.c
+index 934dc83..a66ab74 100644
+--- utils-std-0.1.1/cmd/touch.c
++++ utils-std-0.1.1/cmd/touch.c
+@@ -262,32 +262,16 @@ main(int argc, char *argv[])
+ 		int fd = open(file, open_flags, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+ 		if(fd == -1)
+ 		{
+-			/* BSD nonsense */
+-#ifdef EMLINK
+-			if(errno == EMLINK) errno = ELOOP;
+-#endif
+-#ifdef EFTYPE
+-			if(errno == EFTYPE) errno = ELOOP;
+-#endif
+-
+-			if(errno == EISDIR || (errno == ELOOP && FIELD_MATCH(open_flags, O_NOFOLLOW)))
++			if(utimensat(AT_FDCWD, file, times, utimensat_flags) != 0)
+ 			{
+-				if(utimensat(AT_FDCWD, file, times, utimensat_flags) != 0)
+-				{
+-					fprintf(stderr,
+-					        "touch: error: Failed setting new times on file '%s': %s\n",
+-					        file,
+-					        strerror(errno));
+-					return 1;
+-				}
+-
+-				continue;
++				fprintf(stderr,
++				        "touch: error: Failed setting new times on file '%s': %s\n",
++				        file,
++				        strerror(errno));
++				return 1;
+ 			}
+ 
+-			if(errno != ENOENT || FIELD_MATCH(open_flags, O_CREAT))
+-				fprintf(stderr, "touch: error: Failed opening file '%s': %s\n", file, strerror(errno));
+-
+-			return 1;
++			continue;
+ 		}
+ 
+ 		if(futimens(fd, times) != 0)
+diff --git a/test-cmd/touch.sh b/test-cmd/touch.sh
+index 96b21db..74b3cb3 100755
+--- utils-std-0.1.1/test-cmd/touch.sh
++++ utils-std-0.1.1/test-cmd/touch.sh
+@@ -2,7 +2,7 @@
+ # SPDX-FileCopyrightText: 2017 Haelwenn (lanodan) Monnier <contact+utils@hacktivis.me>
+ # SPDX-License-Identifier: MPL-2.0
+ 
+-plans=36
++plans=38
+ 
+ if ! command -v stat >/dev/null 2>/dev/null; then
+ 	echo '1..0 # SKIP: missing command: stat'
+@@ -74,10 +74,13 @@
+ t optt "-t 200306021337.42 $tempfile"
+ 
+ touch_empty_str() { "$target" ''; }
+-t_cmd --exit=1 empty_str "touch: error: Failed opening file '': No such file or directory
++t_cmd --exit=1 empty_str "touch: error: Failed setting new times on file '': No such file or directory
+ " touch_empty_str
+ 
+-t_cmd rm_tempfile '' rm "${tempfile}"
++t_cmd file_nowrite:chmod '' chmod -- =r "$tempfile"
++t file_nowrite "$tempfile"
++
++t_cmd rm_tempfile '' rm -f "${tempfile}"
+ t_cmd rm_tempdir '' rm -r "${tempdir}"
+ 
+ t_cmd eloop:setup '' ln -sf /var/empty/enoent eloop
+-- 
+2.52.0
+
