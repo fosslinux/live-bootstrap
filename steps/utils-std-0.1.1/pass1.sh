@@ -7,8 +7,9 @@ src_prepare() {
 
 	sed -i s/_Noreturn// libutils/err.h
 
-	# to avoid changing libtool checksums, although likely means better values
-	sed -i '/^commands="$/,/^"$/'s,getconf,, configure
+	# getconf: to avoid changing libtool checksums, although likely means better values
+	# which: to avoid changing checksums of packages like perl-5.36.3_0
+	sed -i '/^commands="$/,/^"$/{ s,getconf,, ; s,which,, }' configure
 }
 
 src_configure() {
