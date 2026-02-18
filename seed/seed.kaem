@@ -80,6 +80,6 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
 else
     sha256sum -c script-generator.${ARCH}.checksums
 fi
-./script-generator /steps/manifest
+./script-generator /steps/manifest /steps
 
 kaem --file /steps/0.sh

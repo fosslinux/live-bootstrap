@@ -17,6 +17,19 @@ if [ -d /steps/after ]; then
     done
 fi
 
+if [ "${BUILD_GUIX_ALSO}" = True ]; then
+    if [ ! -f /steps-guix/manifest ]; then
+        echo "BUILD_GUIX_ALSO is True but /steps-guix/manifest is missing." >&2
+        exit 1
+    fi
+
+    sed -i '/^BUILD_GUIX_ALSO=/d' /steps/bootstrap.cfg
+    echo 'BUILD_GUIX_ALSO=False' >> /steps/bootstrap.cfg
+
+    /script-generator /steps-guix/manifest /steps
+    kaem --file /steps-guix/0.sh
+fi
+
 if [ "${INTERACTIVE}" = True ]; then
     env - PATH=${PREFIX}/bin PS1="\w # " setsid openvt -fec1 -- bash -i
 fi

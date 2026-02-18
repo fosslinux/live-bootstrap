@@ -32,6 +32,48 @@ struct Directive {
 };
 typedef struct Directive Directive;
 
+char *steps_root = "/steps";
+char *config_root = "/steps";
+
+char *join_path(const char *base, const char *suffix) {
+	char *out = calloc(MAX_STRING, sizeof(char));
+	strcpy(out, base);
+	if (strlen(out) > 0 && out[strlen(out) - 1] != '/') {
+		strcat(out, "/");
+	}
+	while (*suffix == '/') {
+		suffix += 1;
+	}
+	strcat(out, suffix);
+	return out;
+}
+
+char *config_path(const char *suffix) {
+	return join_path(config_root, suffix);
+}
+
+char *dirname_from_path(const char *path) {
+	char *slash = strrchr(path, '/');
+	char *out = calloc(MAX_STRING, sizeof(char));
+	if (slash == NULL) {
+		strcpy(out, ".");
+		return out;
+	}
+	if (slash == path) {
+		strcpy(out, "/");
+		return out;
+	}
+	strncpy(out, path, slash - path);
+	return out;
+}
+
+void write_steps_prefix(FILE *out) {
+	fputs(steps_root, out);
+	if (steps_root[strlen(steps_root) - 1] != '/') {
+		fputs("/", out);
+	}
+}
+
 /* Tokenizer. */
 
 /* Skip over a comment. */
@@ -120,10 +162,11 @@ typedef struct Variable Variable;
 Variable *variables;
 
 Variable *load_config() {
-	FILE *config = fopen("/steps/bootstrap.cfg", "r");
-	/* File does not exist check. */
+	char *config_file = config_path("bootstrap.cfg");
+	FILE *config = fopen(config_file, "r");
 	if (config == NULL) {
-		return NULL;
+		fputs("Unable to open bootstrap.cfg\n", stderr);
+		exit(1);
 	}
 
 	char *line = calloc(MAX_STRING, sizeof(char));
@@ -392,9 +435,12 @@ Directive *interpreter(Directive *directives) {
 
 /* Script generator. */
 FILE *start_script(int id, int bash_build) {
-	/* Create the file /steps/$id.sh */
+	/* Create the file ${steps_root}/$id.sh */
 	char *filename = calloc(MAX_STRING, sizeof(char));
-	strcpy(filename, "/steps/");
+	strcpy(filename, steps_root);
+	if (filename[strlen(filename) - 1] != '/') {
+		strcat(filename, "/");
+	}
 	strcat(filename, int2str(id, 10, 0));
 	strcat(filename, ".sh");
 
@@ -407,6 +453,9 @@ FILE *start_script(int id, int bash_build) {
 	}
 
 	if (bash_build) {
+		char *bootstrap_file = config_path("bootstrap.cfg");
+		char *env_file = config_path("env");
+		char *helpers_file = config_path("helpers.sh");
 		fputs("#!/bin/bash\n", out);
 		if (strcmp(get_var("INTERACTIVE"), "True") == 0) {
 			if (bash_build != 1) {
@@ -420,15 +469,30 @@ FILE *start_script(int id, int bash_build) {
 		} else {
 			fputs("set -e\n", out);
 		}
-		fputs("cd /steps\n", out);
-		fputs(". ./bootstrap.cfg\n", out);
-		fputs(". ./env\n", out);
-		fputs(". ./helpers.sh\n", out);
+		fputs("cd ", out);
+		fputs(steps_root, out);
+		fputs("\n", out);
+		fputs(". ", out);
+		fputs(bootstrap_file, out);
+		fputs("\n", out);
+		fputs(". ", out);
+		fputs(env_file, out);
+		fputs("\n", out);
+		fputs(". ", out);
+		fputs(helpers_file, out);
+		fputs("\n", out);
 	} else {
+		char *env_file = config_path("env");
 		fputs("set -ex\n", out);
-		fputs("cd /steps\n", out);
+		fputs("cd ", out);
+		fputs(steps_root, out);
+		fputs("\n", out);
 		output_config(out);
-		FILE *env = fopen("/steps/env", "r");
+		FILE *env = fopen(env_file, "r");
+		if (env == NULL) {
+			fputs("Unable to open env\n", stderr);
+			exit(1);
+		}
 		char *line = calloc(MAX_STRING, sizeof(char));
 		while (fgets(line, MAX_STRING, env) != 0) {
 			/* Weird M2-Planet behaviour. */
@@ -454,7 +518,7 @@ void output_call_script(FILE *out, char *type, char *name, int bash_build, int s
 	} else {
 		fputs("kaem --file ", out);
 	}
-	fputs("/steps/", out);
+	write_steps_prefix(out);
 	if (strlen(type) != 0) {
 		fputs(type, out);
 		fputs("/", out);
@@ -486,7 +550,8 @@ void generate_preseed_jump(int id) {
 	FILE *out = fopen("/preseed-jump.kaem", "w");
 	fputs("set -ex\n", out);
 	fputs("PATH=/usr/bin\n", out);
-	fputs("bash /steps/", out);
+	fputs("bash ", out);
+	write_steps_prefix(out);
 	fputs(int2str(id, 10, 0), out);
 	fputs(".sh\n", out);
 	fclose(out);
@@ -598,8 +663,8 @@ void generate(Directive *directives) {
 }
 
 void main(int argc, char **argv) {
-	if (argc != 2) {
-		fputs("Usage: script-generator <script>\n", stderr);
+	if (argc != 2 && argc != 3) {
+		fputs("Usage: script-generator <script> [config-root]\n", stderr);
 		exit(1);
 	}
 
@@ -608,12 +673,15 @@ void main(int argc, char **argv) {
 		fputs("Error opening input file\n", stderr);
 		exit(1);
 	}
+	steps_root = dirname_from_path(argv[1]);
+	config_root = (argc == 3) ? argv[2] : steps_root;
 	Directive *directives = tokenizer(in);
 	fclose(in);
 	load_config();
 	directives = interpreter(directives);
 	generate(directives);
-	FILE *config = fopen("/steps/bootstrap.cfg", "w");
+	char *config_file = config_path("bootstrap.cfg");
+	FILE *config = fopen(config_file, "w");
 	output_config(config);
 	fclose(config);
 }

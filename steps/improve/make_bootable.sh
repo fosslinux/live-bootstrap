@@ -39,12 +39,46 @@ cd /steps
 . ./env
 . ./helpers.sh
 trap 'env PATH=${PREFIX}/bin PS1="[TRAP] \w # " bash -i' ERR
-# /dev is automounted by the kernel at this point
-mount | grep '/proc' &> /dev/null || (mkdir -p /proc; mount -t proc proc /proc)
-mount | grep '/sys' &> /dev/null || (mkdir -p /sys; mount -t sysfs sysfs /sys)
-# Make /tmp a ramdisk (speeds up configure etc significantly)
-mount | grep '/tmp' &> /dev/null || (mkdir -p /tmp; mount -t tmpfs tmpfs /tmp)
-mount | grep '/dev/shm' &> /dev/null || (mkdir -p /dev/shm; mount -t tmpfs tmpfs /dev/shm)
+
+setup_kernel_devices() {
+    mount | grep ' on /dev ' &> /dev/null || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)
+    mount | grep ' on /proc ' &> /dev/null || (mkdir -p /proc; mount -t proc proc /proc)
+    mount | grep ' on /sys ' &> /dev/null || (mkdir -p /sys; mount -t sysfs sysfs /sys)
+    # Make /tmp a ramdisk (speeds up configure etc significantly)
+    mount | grep ' on /tmp ' &> /dev/null || (mkdir -p /tmp; mount -t tmpfs tmpfs /tmp)
+    mount | grep ' on /dev/pts ' &> /dev/null || (mkdir -p /dev/pts; mount -t devpts devpts /dev/pts)
+    mount | grep ' on /dev/shm ' &> /dev/null || (mkdir -p /dev/shm; mount -t tmpfs tmpfs /dev/shm)
+
+    test -c /dev/console || mknod -m 666 /dev/console c 5 1
+    test -c /dev/tty || mknod -m 666 /dev/tty c 5 0
+    test -c /dev/ptmx || mknod -m 666 /dev/ptmx c 5 2
+    test -c /dev/tty0 || mknod -m 666 /dev/tty0 c 4 0
+    test -c /dev/tty1 || mknod -m 666 /dev/tty1 c 4 1
+    test -c /dev/tty2 || mknod -m 666 /dev/tty2 c 4 2
+    test -c /dev/ttyS0 || mknod -m 666 /dev/ttyS0 c 4 64
+}
+
+verify_kernel_devices() {
+    mount | grep ' on /dev ' &> /dev/null &&
+    mount | grep ' on /proc ' &> /dev/null &&
+    mount | grep ' on /sys ' &> /dev/null &&
+    mount | grep ' on /tmp ' &> /dev/null &&
+    mount | grep ' on /dev/pts ' &> /dev/null &&
+    mount | grep ' on /dev/shm ' &> /dev/null &&
+    test -c /dev/console &&
+    test -c /dev/tty &&
+    test -c /dev/ptmx &&
+    test -c /dev/tty0 &&
+    test -c /dev/tty1 &&
+    test -c /dev/tty2 &&
+    test -c /dev/ttyS0
+}
+
+setup_kernel_devices
+verify_kernel_devices || {
+    echo "Kernel device setup verification failed." >&2
+    exit 1
+}
 
 if test -f /swapfile; then
     swapon /swapfile
@@ -54,7 +88,15 @@ if [ "${CHROOT}" = False ]; then
     dhcpcd --waitip=4
 fi
 
-env - PATH=${PREFIX}/bin PS1="\w # " setsid openvt -fec1 -- bash -i
+if [ "${QEMU}" = True ] && [ "${BARE_METAL}" = False ]; then
+    if [ -c /dev/ttyS0 ]; then
+        env - PATH=${PREFIX}/bin PS1="\w # " bash -i </dev/ttyS0 >/dev/ttyS0 2>&1
+    else
+        env - PATH=${PREFIX}/bin PS1="\w # " bash -i </dev/console >/dev/console 2>&1
+    fi
+else
+    env - PATH=${PREFIX}/bin PS1="\w # " setsid openvt -fec1 -- bash -i
+fi
 
 # ignore errors due to fstab or swapfile not existing
 swapoff -a &> /dev/null || true

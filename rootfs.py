@@ -43,6 +43,7 @@ def create_configuration_file(args):
         config.write(f"INTERACTIVE={args.interactive}\n")
         config.write(f"QEMU={args.qemu}\n")
         config.write(f"BARE_METAL={args.bare_metal or (args.qemu and args.interactive)}\n")
+        config.write(f"BUILD_GUIX_ALSO={args.build_guix_also}\n")
         if (args.bare_metal or args.qemu) and not args.kernel:
             if args.repo or args.external_sources:
                 config.write("DISK=sdb1\n")
@@ -94,6 +95,9 @@ def main():
                         action="store_true")
     parser.add_argument("--build-kernels",
                         help="Also build kernels in chroot and bwrap builds",
+                        action="store_true")
+    parser.add_argument("--build-guix-also",
+                        help="After main steps finish, switch to steps-guix and run its manifest",
                         action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
@@ -227,7 +231,8 @@ def main():
                           external_sources=args.external_sources,
                           repo_path=args.repo,
                           early_preseed=args.early_preseed,
-                          mirrors=args.mirrors)
+                          mirrors=args.mirrors,
+                          build_guix_also=args.build_guix_also)
 
     bootstrap(args, generator, target, args.target_size, cleanup)
     cleanup()

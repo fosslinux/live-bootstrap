@@ -27,14 +27,18 @@ class Generator():
     distfiles_dir = os.path.join(git_dir, 'distfiles')
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors):
+    def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors,
+                 build_guix_also=False):
         self.arch = arch
         self.early_preseed = early_preseed
         self.external_sources = external_sources
         self.repo_path = repo_path
         self.mirrors = mirrors
-        self.source_manifest = self.get_source_manifest(not self.external_sources)
-        self.early_source_manifest = self.get_source_manifest(True)
+        self.build_guix_also = build_guix_also
+        self.source_manifest = self.get_source_manifest(not self.external_sources,
+                                                        build_guix_also=self.build_guix_also)
+        self.early_source_manifest = self.get_source_manifest(True,
+                                                              build_guix_also=self.build_guix_also)
         self.target_dir = None
         self.external_dir = None
 
@@ -117,6 +121,13 @@ class Generator():
         self.get_packages()
 
         shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.target_dir, 'steps'))
+        if self.build_guix_also:
+            steps_guix_dir = os.path.join(self.git_dir, 'steps-guix')
+            if not os.path.isdir(steps_guix_dir):
+                raise ValueError("steps-guix directory does not exist while --build-guix-also is set.")
+            if not os.path.isfile(os.path.join(steps_guix_dir, 'manifest')):
+                raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
+            shutil.copytree(steps_guix_dir, os.path.join(self.target_dir, 'steps-guix'))
 
     def stage0_posix(self, kernel_bootstrap=False):
         """Copy in all of the stage0-posix"""
@@ -344,43 +355,55 @@ this script the next time")
             self.check_file(path, line[0])
 
     @classmethod
-    def get_source_manifest(cls, pre_network=False):
+    def get_source_manifest(cls, pre_network=False, build_guix_also=False):
         """
         Generate a source manifest for the system.
         """
         entries = []
         directory = os.path.relpath(cls.distfiles_dir, cls.git_dir)
 
-        # Find all source files
-        steps_dir = os.path.join(cls.git_dir, 'steps')
-        with open(os.path.join(steps_dir, 'manifest'), 'r', encoding="utf_8") as file:
-            for line in file:
-                if pre_network and line.strip().startswith("improve: ") and "network" in line:
-                    break
+        manifests = [os.path.join(cls.git_dir, 'steps')]
+        if build_guix_also:
+            steps_guix_dir = os.path.join(cls.git_dir, 'steps-guix')
+            if not os.path.isdir(steps_guix_dir):
+                raise ValueError("steps-guix directory does not exist while --build-guix-also is set.")
+            manifests.append(steps_guix_dir)
 
-                if not line.strip().startswith("build: "):
-                    continue
+        for steps_dir in manifests:
+            manifest_path = os.path.join(steps_dir, 'manifest')
+            if not os.path.isfile(manifest_path):
+                if steps_dir.endswith('steps-guix'):
+                    raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
+                raise ValueError(f"Missing manifest: {manifest_path}")
 
-                step = line.split(" ")[1].split("#")[0].strip()
-                sourcef = os.path.join(steps_dir, step, "sources")
-                if os.path.exists(sourcef):
-                    # Read sources from the source file
-                    with open(sourcef, "r", encoding="utf_8") as sources:
-                        for source in sources.readlines():
-                            source = source.strip().split(" ")
+            with open(manifest_path, 'r', encoding="utf_8") as file:
+                for line in file:
+                    if pre_network and line.strip().startswith("improve: ") and "network" in line:
+                        break
 
-                            if source[0] == "g" or source[0] == "git":
-                                source[1:] = source[2:]
+                    if not line.strip().startswith("build: "):
+                        continue
 
-                            if len(source) > 3:
-                                file_name = source[3]
-                            else:
-                                # Automatically determine file name based on URL.
-                                file_name = os.path.basename(source[1])
+                    step = line.split(" ")[1].split("#")[0].strip()
+                    sourcef = os.path.join(steps_dir, step, "sources")
+                    if os.path.exists(sourcef):
+                        # Read sources from the source file
+                        with open(sourcef, "r", encoding="utf_8") as sources:
+                            for source in sources.readlines():
+                                source = source.strip().split(" ")
 
-                            entry = (source[2], directory, source[1], file_name)
-                            if entry not in entries:
-                                entries.append(entry)
+                                if source[0] == "g" or source[0] == "git":
+                                    source[1:] = source[2:]
+
+                                if len(source) > 3:
+                                    file_name = source[3]
+                                else:
+                                    # Automatically determine file name based on URL.
+                                    file_name = os.path.basename(source[1])
+
+                                entry = (source[2], directory, source[1], file_name)
+                                if entry not in entries:
+                                    entries.append(entry)
 
         return entries
 
