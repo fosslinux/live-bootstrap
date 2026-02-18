@@ -17,12 +17,83 @@ you can run bootstap inside chroot.
 import argparse
 import os
 import signal
+import shutil
+import tempfile
 import threading
 
 from lib.generator import Generator, stage0_arch_map
 from lib.simple_mirror import SimpleMirror
 from lib.target import Target
 from lib.utils import run, run_as_root
+
+def enable_stage0_guix(image_path):
+    """
+    Enable BUILD_GUIX_ALSO in an existing stage0 image and sync /steps-guix.
+    """
+    steps_guix_dir = os.path.abspath("steps-guix")
+    manifest = os.path.join(steps_guix_dir, "manifest")
+    if not os.path.isdir(steps_guix_dir) or not os.path.isfile(manifest):
+        raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
+
+    mountpoint = tempfile.mkdtemp(prefix="lb-stage0-", dir="/tmp")
+    mounted = False
+    try:
+        run_as_root(
+            "mount",
+            "-t", "ext4",
+            "-o", "loop,offset=1073741824",
+            image_path,
+            mountpoint,
+        )
+        mounted = True
+        script = '''
+import os
+import shutil
+import sys
+
+mountpoint = sys.argv[1]
+steps_guix_dir = sys.argv[2]
+
+config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
+if not os.path.isfile(config_path):
+    raise SystemExit(f"Missing config in stage0 image: {config_path}")
+
+with open(config_path, "r", encoding="utf-8") as cfg:
+    lines = [line for line in cfg if not line.startswith("BUILD_GUIX_ALSO=")]
+lines.append("BUILD_GUIX_ALSO=True\\n")
+with open(config_path, "w", encoding="utf-8") as cfg:
+    cfg.writelines(lines)
+
+init_path = os.path.join(mountpoint, "init")
+if not os.path.isfile(init_path):
+    raise SystemExit(f"Missing /init in stage0 image: {init_path}")
+with open(init_path, "r", encoding="utf-8") as init_file:
+    if "run_steps_guix_if_requested()" not in init_file.read():
+        raise SystemExit(
+            "Stage0 image /init does not include guix handoff. "
+            "Rebuild once with current steps/improve/make_bootable.sh."
+        )
+
+dest_steps_guix = os.path.join(mountpoint, "steps-guix")
+if os.path.exists(dest_steps_guix):
+    shutil.rmtree(dest_steps_guix)
+shutil.copytree(steps_guix_dir, dest_steps_guix)
+'''
+        run_as_root("python3", "-c", script, mountpoint, steps_guix_dir)
+    finally:
+        if mounted:
+            run_as_root("umount", mountpoint)
+        os.rmdir(mountpoint)
+
+def prepare_stage0_work_image(base_image, output_dir, build_guix_also):
+    """
+    Copy stage0 base image to a disposable work image, optionally enabling guix.
+    """
+    work_image = os.path.join(output_dir, "stage0-work.img")
+    shutil.copy2(base_image, work_image)
+    if build_guix_also:
+        enable_stage0_guix(work_image)
+    return work_image
 
 def create_configuration_file(args):
     """
@@ -129,6 +200,8 @@ def main():
     parser.add_argument("-qs", "--target-size", help="Size of the target image (for QEMU only)",
                         default="16G")
     parser.add_argument("-qk", "--kernel", help="Custom early kernel to use")
+    parser.add_argument("--stage0-image",
+                        help="Boot an existing stage0 image (target/init.img) directly in QEMU")
 
     parser.add_argument("-b", "--bare-metal", help="Build images for bare metal",
                         action="store_true")
@@ -183,8 +256,17 @@ def main():
         args.swap = 0
 
     # Validate mirrors
-    if not args.mirrors:
+    if not args.mirrors and not args.stage0_image:
         raise ValueError("At least one mirror must be provided.")
+
+    if args.stage0_image:
+        if not args.qemu:
+            raise ValueError("--stage0-image can only be used with --qemu.")
+        if args.kernel:
+            raise ValueError("--stage0-image cannot be combined with --kernel.")
+        if not os.path.isfile(args.stage0_image):
+            raise ValueError(f"Stage0 image does not exist: {args.stage0_image}")
+        args.stage0_image = os.path.abspath(args.stage0_image)
 
     # Set constant umask
     os.umask(0o022)
@@ -203,15 +285,16 @@ def main():
                 mirror_servers.append(server)
 
     # bootstrap.cfg
-    try:
-        os.remove(os.path.join('steps', 'bootstrap.cfg'))
-    except FileNotFoundError:
-        pass
-    if not args.no_create_config:
-        create_configuration_file(args)
-    else:
-        with open(os.path.join('steps', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
+    if not args.stage0_image:
+        try:
+            os.remove(os.path.join('steps', 'bootstrap.cfg'))
+        except FileNotFoundError:
             pass
+        if not args.no_create_config:
+            create_configuration_file(args)
+        else:
+            with open(os.path.join('steps', 'bootstrap.cfg'), 'a', encoding='UTF-8'):
+                pass
 
     # target
     target = Target(path=args.target)
@@ -227,12 +310,14 @@ def main():
             server.shutdown()
     signal.signal(signal.SIGINT, cleanup)
 
-    generator = Generator(arch=args.arch,
-                          external_sources=args.external_sources,
-                          repo_path=args.repo,
-                          early_preseed=args.early_preseed,
-                          mirrors=args.mirrors,
-                          build_guix_also=args.build_guix_also)
+    generator = None
+    if not args.stage0_image:
+        generator = Generator(arch=args.arch,
+                              external_sources=args.external_sources,
+                              repo_path=args.repo,
+                              early_preseed=args.early_preseed,
+                              mirrors=args.mirrors,
+                              build_guix_also=args.build_guix_also)
 
     bootstrap(args, generator, target, args.target_size, cleanup)
     cleanup()
@@ -299,7 +384,17 @@ print(shutil.which('chroot'))
             print(f"  1. Take {path}.img and write it to a boot drive and then boot it.")
 
     else:
-        if args.kernel:
+        if args.stage0_image:
+            work_image = prepare_stage0_work_image(args.stage0_image, target.path, args.build_guix_also)
+            arg_list = [
+                '-enable-kvm',
+                '-m', str(args.qemu_ram) + 'M',
+                '-smp', str(args.cores),
+                '-drive', 'file=' + work_image + ',format=raw',
+                '-machine', 'kernel-irqchip=split',
+                '-nic', 'user,ipv6=off,model=e1000'
+            ]
+        elif args.kernel:
             generator.prepare(target, using_kernel=True, target_size=size)
 
             arg_list = [

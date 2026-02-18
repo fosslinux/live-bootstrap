@@ -27,7 +27,7 @@ if [ "${BUILD_GUIX_ALSO}" = True ]; then
     echo 'BUILD_GUIX_ALSO=False' >> /steps/bootstrap.cfg
 
     /script-generator /steps-guix/manifest /steps
-    kaem --file /steps-guix/0.sh
+    bash /steps-guix/0.sh
 fi
 
 if [ "${INTERACTIVE}" = True ]; then

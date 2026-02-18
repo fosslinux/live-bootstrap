@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -ex
 /configurator /steps/configurator
-/script-generator /steps/manifest /steps
+/script-generator /steps/manifest

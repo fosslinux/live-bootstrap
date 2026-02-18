@@ -87,7 +87,32 @@ fi
 if [ "${CHROOT}" = False ]; then
     dhcpcd --waitip=4
 fi
+EOF
 
+if [ "${BUILD_GUIX_ALSO}" = True ]; then
+cat >> /init <<- 'EOF'
+run_steps_guix_if_requested() {
+    if [ "${BUILD_GUIX_ALSO}" != True ]; then
+        return 1
+    fi
+    if [ ! -f /steps-guix/manifest ]; then
+        echo "BUILD_GUIX_ALSO is True but /steps-guix/manifest is missing." >&2
+        exit 1
+    fi
+
+    sed -i '/^BUILD_GUIX_ALSO=/d' /steps/bootstrap.cfg
+    echo 'BUILD_GUIX_ALSO=False' >> /steps/bootstrap.cfg
+
+    /script-generator /steps-guix/manifest /steps
+    bash /steps-guix/0.sh
+    return 0
+}
+
+run_steps_guix_if_requested || true
+EOF
+fi
+
+cat >> /init <<- 'EOF'
 if [ "${QEMU}" = True ] && [ "${BARE_METAL}" = False ]; then
     if [ -c /dev/ttyS0 ]; then
         env - PATH=${PREFIX}/bin PS1="\w # " bash -i </dev/ttyS0 >/dev/ttyS0 2>&1

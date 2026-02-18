@@ -568,8 +568,11 @@ void generate(Directive *directives) {
 
 	int counter = 0;
 
-	/* Initially, we use kaem, not bash. */
-	int bash_build = 0;
+	/*
+	 * Default /steps manifests start in kaem.
+	 * Alternative step roots (for example /steps-guix) start in bash.
+	 */
+	int bash_build = (strcmp(steps_root, "/steps") == 0) ? 0 : 2;
 
 	FILE *out = start_script(counter, bash_build);
 	counter += 1;
