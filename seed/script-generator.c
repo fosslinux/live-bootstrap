@@ -455,7 +455,7 @@ FILE *start_script(int id, int bash_build) {
 	if (bash_build) {
 		char *bootstrap_file = config_path("bootstrap.cfg");
 		char *env_file = config_path("env");
-		char *helpers_file = config_path("helpers.sh");
+		char *helpers_file = join_path(steps_root, "helpers.sh");
 		fputs("#!/bin/bash\n", out);
 		if (strcmp(get_var("INTERACTIVE"), "True") == 0) {
 			if (bash_build != 1) {
@@ -477,6 +477,9 @@ FILE *start_script(int id, int bash_build) {
 		fputs("\n", out);
 		fputs(". ", out);
 		fputs(env_file, out);
+		fputs("\n", out);
+		fputs("SRCDIR=", out);
+		fputs(steps_root, out);
 		fputs("\n", out);
 		fputs(". ", out);
 		fputs(helpers_file, out);
