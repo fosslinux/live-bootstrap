@@ -157,7 +157,6 @@ src_configure() {
 }
 
 src_compile() {
-    make -C opcodes i386-gen
     default_src_compile
 }
 
