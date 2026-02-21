@@ -13,6 +13,9 @@ src_configure() {
     mkdir build
     cd build
 
+    # argp-standalone's testsuite expects argp.h from source root even when
+    # building out-of-tree.
+    CPPFLAGS="-I${PWD}/.." \
     CC=gcc \
     AR=ar \
     RANLIB=ranlib \
