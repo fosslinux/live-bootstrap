@@ -2,7 +2,6 @@
 
 # Build argp-standalone for the kernel toolchain sysroot. This is used by
 # later kernel-side dependencies (for example elfutils).
-: "${KERNEL_TARGET:=x86_64-unknown-linux-musl}"
 : "${KERNEL_SYSROOT:=/kernel-toolchain}"
 
 src_prepare() {
@@ -11,17 +10,15 @@ src_prepare() {
 }
 
 src_configure() {
-    export PATH="${KERNEL_SYSROOT}/bin:${PATH}"
-
     mkdir build
     cd build
 
+    CC=gcc \
+    AR=ar \
+    RANLIB=ranlib \
     ../configure \
         --prefix="${KERNEL_SYSROOT}" \
-        --libdir="${KERNEL_SYSROOT}/lib" \
-        --build="${TARGET}" \
-        --host="${KERNEL_TARGET}" \
-        --target="${KERNEL_TARGET}"
+        --libdir="${KERNEL_SYSROOT}/lib"
 }
 
 src_compile() {
