@@ -4,4 +4,4 @@
 
 # We need a 64-bit kernel to enable Guix to run 64-bit programs.
 build: binutils-2.41
-
+build: gcc-15.2.0
