@@ -265,6 +265,13 @@ src_configure() {
         --disable-nls \
         --enable-languages=c \
         --without-headers \
+        --disable-threads \
+        --disable-shared \
+        --disable-libssp \
+        --disable-libsanitizer \
+        --disable-libquadmath \
+        --disable-libatomic \
+        --disable-libgomp \
         --enable-multilib
 }
 
