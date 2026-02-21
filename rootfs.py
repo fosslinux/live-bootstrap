@@ -26,14 +26,19 @@ from lib.simple_mirror import SimpleMirror
 from lib.target import Target
 from lib.utils import run, run_as_root
 
-def enable_stage0_guix(image_path):
+def update_stage0_image(image_path, build_guix_also=False, mirrors=None):
     """
-    Enable BUILD_GUIX_ALSO in an existing stage0 image and sync /steps-guix.
+    Update an existing stage0 image bootstrap config and optional guix handoff bits.
     """
-    steps_guix_dir = os.path.abspath("steps-guix")
-    manifest = os.path.join(steps_guix_dir, "manifest")
-    if not os.path.isdir(steps_guix_dir) or not os.path.isfile(manifest):
-        raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
+    if mirrors is None:
+        mirrors = []
+
+    steps_guix_dir = ""
+    if build_guix_also:
+        steps_guix_dir = os.path.abspath("steps-guix")
+        manifest = os.path.join(steps_guix_dir, "manifest")
+        if not os.path.isdir(steps_guix_dir) or not os.path.isfile(manifest):
+            raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
 
     mountpoint = tempfile.mkdtemp(prefix="lb-stage0-", dir="/tmp")
     mounted = False
@@ -53,46 +58,66 @@ import sys
 
 mountpoint = sys.argv[1]
 steps_guix_dir = sys.argv[2]
+build_guix_also = (sys.argv[3] == "True")
+mirrors = sys.argv[4:]
 
 config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
 if not os.path.isfile(config_path):
     raise SystemExit(f"Missing config in stage0 image: {config_path}")
 
 with open(config_path, "r", encoding="utf-8") as cfg:
-    lines = [line for line in cfg if not line.startswith("BUILD_GUIX_ALSO=")]
-lines.append("BUILD_GUIX_ALSO=True\\n")
+    lines = [
+        line for line in cfg
+        if not line.startswith("BUILD_GUIX_ALSO=")
+        and not line.startswith("MIRRORS=")
+        and not line.startswith("MIRRORS_LEN=")
+    ]
+if build_guix_also:
+    lines.append("BUILD_GUIX_ALSO=True\\n")
+if mirrors:
+    lines.append(f'MIRRORS="{" ".join(mirrors)}"\\n')
+    lines.append(f"MIRRORS_LEN={len(mirrors)}\\n")
 with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
 
-init_path = os.path.join(mountpoint, "init")
-if not os.path.isfile(init_path):
-    raise SystemExit(f"Missing /init in stage0 image: {init_path}")
-with open(init_path, "r", encoding="utf-8") as init_file:
-    if "run_steps_guix_if_requested()" not in init_file.read():
-        raise SystemExit(
-            "Stage0 image /init does not include guix handoff. "
-            "Rebuild once with current steps/improve/make_bootable.sh."
-        )
+if build_guix_also:
+    init_path = os.path.join(mountpoint, "init")
+    if not os.path.isfile(init_path):
+        raise SystemExit(f"Missing /init in stage0 image: {init_path}")
+    with open(init_path, "r", encoding="utf-8") as init_file:
+        if "run_steps_guix_if_requested()" not in init_file.read():
+            raise SystemExit(
+                "Stage0 image /init does not include guix handoff. "
+                "Rebuild once with current steps/improve/make_bootable.sh."
+            )
 
-dest_steps_guix = os.path.join(mountpoint, "steps-guix")
-if os.path.exists(dest_steps_guix):
-    shutil.rmtree(dest_steps_guix)
-shutil.copytree(steps_guix_dir, dest_steps_guix)
+    dest_steps_guix = os.path.join(mountpoint, "steps-guix")
+    if os.path.exists(dest_steps_guix):
+        shutil.rmtree(dest_steps_guix)
+    shutil.copytree(steps_guix_dir, dest_steps_guix)
 '''
-        run_as_root("python3", "-c", script, mountpoint, steps_guix_dir)
+        run_as_root(
+            "python3",
+            "-c",
+            script,
+            mountpoint,
+            steps_guix_dir,
+            "True" if build_guix_also else "False",
+            *mirrors,
+        )
     finally:
         if mounted:
             run_as_root("umount", mountpoint)
         os.rmdir(mountpoint)
 
-def prepare_stage0_work_image(base_image, output_dir, build_guix_also):
+def prepare_stage0_work_image(base_image, output_dir, build_guix_also, mirrors=None):
     """
-    Copy stage0 base image to a disposable work image, optionally enabling guix.
+    Copy stage0 base image to a disposable work image, optionally patching config.
     """
     work_image = os.path.join(output_dir, "stage0-work.img")
     shutil.copy2(base_image, work_image)
-    if build_guix_also:
-        enable_stage0_guix(work_image)
+    if build_guix_also or mirrors:
+        update_stage0_image(work_image, build_guix_also=build_guix_also, mirrors=mirrors)
     return work_image
 
 def create_configuration_file(args):
@@ -385,7 +410,12 @@ print(shutil.which('chroot'))
 
     else:
         if args.stage0_image:
-            work_image = prepare_stage0_work_image(args.stage0_image, target.path, args.build_guix_also)
+            work_image = prepare_stage0_work_image(
+                args.stage0_image,
+                target.path,
+                args.build_guix_also,
+                mirrors=args.mirrors,
+            )
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
