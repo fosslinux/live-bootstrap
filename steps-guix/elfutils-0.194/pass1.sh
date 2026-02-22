@@ -22,7 +22,7 @@ src_configure() {
     PKG_CONFIG_LIBDIR="${KERNEL_SYSROOT}/lib/pkgconfig:${KERNEL_SYSROOT}/share/pkgconfig" \
     CPPFLAGS="-I${KERNEL_SYSROOT}/include" \
     LDFLAGS="-L${KERNEL_SYSROOT}/lib" \
-    LIBS="-lfts -largp" \
+    LD_LIBRARY_PATH="${KERNEL_SYSROOT}/lib" \
     CC=gcc \
     AR=ar \
     RANLIB=ranlib \
@@ -30,6 +30,8 @@ src_configure() {
         --prefix="${KERNEL_SYSROOT}" \
         --libdir="${KERNEL_SYSROOT}/lib" \
         --includedir="${KERNEL_SYSROOT}/include" \
+        --build="${TARGET}" \
+        --host="${TARGET}" \
         --disable-debuginfod \
         --disable-libdebuginfod
 }
