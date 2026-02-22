@@ -32,6 +32,8 @@ src_configure() {
         --includedir="${KERNEL_SYSROOT}/include" \
         --build="${TARGET}" \
         --host="${TARGET}" \
+        --disable-shared \
+        --enable-static \
         --disable-debuginfod \
         --disable-libdebuginfod
 }
