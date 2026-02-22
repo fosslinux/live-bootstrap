@@ -2,7 +2,6 @@
 
 # Build elfutils against kernel-toolchain dependencies.
 : "${KERNEL_SYSROOT:=/kernel-toolchain}"
-: "${KERNEL_TARGET:=x86_64-unknown-linux-musl}"
 
 src_prepare() {
     default
@@ -16,8 +15,6 @@ src_prepare() {
 }
 
 src_configure() {
-    export PATH="${KERNEL_SYSROOT}/bin:${PATH}"
-
     mkdir build
     cd build
 
@@ -26,15 +23,13 @@ src_configure() {
     CPPFLAGS="-I${KERNEL_SYSROOT}/include" \
     LDFLAGS="-L${KERNEL_SYSROOT}/lib" \
     LIBS="-lfts -largp" \
-    CC="${KERNEL_TARGET}-gcc" \
-    AR="${KERNEL_TARGET}-ar" \
-    RANLIB="${KERNEL_TARGET}-ranlib" \
+    CC=gcc \
+    AR=ar \
+    RANLIB=ranlib \
     ../configure \
         --prefix="${KERNEL_SYSROOT}" \
         --libdir="${KERNEL_SYSROOT}/lib" \
         --includedir="${KERNEL_SYSROOT}/include" \
-        --build="${TARGET}" \
-        --host="${KERNEL_TARGET}" \
         --disable-debuginfod \
         --disable-libdebuginfod
 }
