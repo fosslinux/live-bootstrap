@@ -38,7 +38,10 @@ src_configure() {
 }
 
 src_compile() {
-    default_src_compile
+    LD_LIBRARY_PATH="${KERNEL_SYSROOT}/lib:${LD_LIBRARY_PATH}" \
+    make "${MAKEJOBS}" \
+        LDFLAGS="-L${KERNEL_SYSROOT}/lib -Wl,-rpath-link,${KERNEL_SYSROOT}/lib" \
+        LIBS="-lfts -lobstack -largp"
 }
 
 src_install() {
