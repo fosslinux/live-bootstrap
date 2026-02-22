@@ -7,4 +7,5 @@ build: binutils-2.41
 build: gcc-15.2.0
 build: argp-standalone-1.4.1
 build: musl-fts-1.2.7
+build: musl-obstack-1.2.3
 build: elfutils-0.194
