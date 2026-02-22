@@ -32,6 +32,7 @@ src_configure() {
         --includedir="${KERNEL_SYSROOT}/include" \
         --build="${TARGET}" \
         --host="${TARGET}" \
+        --disable-textrelcheck \
         --disable-debuginfod \
         --disable-libdebuginfod
 }
