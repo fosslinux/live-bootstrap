@@ -21,8 +21,8 @@ src_configure() {
     PKG_CONFIG_PATH="${KERNEL_SYSROOT}/lib/pkgconfig:${KERNEL_SYSROOT}/share/pkgconfig" \
     PKG_CONFIG_LIBDIR="${KERNEL_SYSROOT}/lib/pkgconfig:${KERNEL_SYSROOT}/share/pkgconfig" \
     CPPFLAGS="-I${KERNEL_SYSROOT}/include" \
-    LDFLAGS="-static -L${KERNEL_SYSROOT}/lib" \
-    LD_LIBRARY_PATH="${KERNEL_SYSROOT}/lib" \
+    CFLAGS="-Wno-error=unused-but-set-variable" \
+    LDFLAGS="-L${KERNEL_SYSROOT}/lib" \
     CC=gcc \
     AR=ar \
     RANLIB=ranlib \
@@ -37,8 +37,7 @@ src_configure() {
 }
 
 src_compile() {
-    make "${MAKEJOBS}" \
-        LDFLAGS="-static -L${KERNEL_SYSROOT}/lib"
+    default_src_compile
 }
 
 src_install() {
