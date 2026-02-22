@@ -21,7 +21,7 @@ src_configure() {
     PKG_CONFIG_PATH="${KERNEL_SYSROOT}/lib/pkgconfig:${KERNEL_SYSROOT}/share/pkgconfig" \
     PKG_CONFIG_LIBDIR="${KERNEL_SYSROOT}/lib/pkgconfig:${KERNEL_SYSROOT}/share/pkgconfig" \
     CPPFLAGS="-I${KERNEL_SYSROOT}/include" \
-    LDFLAGS="-L${KERNEL_SYSROOT}/lib" \
+    LDFLAGS="-static -L${KERNEL_SYSROOT}/lib" \
     LD_LIBRARY_PATH="${KERNEL_SYSROOT}/lib" \
     CC=gcc \
     AR=ar \
@@ -32,14 +32,13 @@ src_configure() {
         --includedir="${KERNEL_SYSROOT}/include" \
         --build="${TARGET}" \
         --host="${TARGET}" \
-        --disable-shared \
-        --enable-static \
         --disable-debuginfod \
         --disable-libdebuginfod
 }
 
 src_compile() {
-    default_src_compile
+    make "${MAKEJOBS}" \
+        LDFLAGS="-static -L${KERNEL_SYSROOT}/lib"
 }
 
 src_install() {
