@@ -2,6 +2,7 @@
 
 src_prepare() {
     default
+    autoreconf -fi
 }
 
 src_configure() {
@@ -11,10 +12,13 @@ src_configure() {
     libgcrypt_prefix="$(PKG_CONFIG_PATH="${pkg_config_path}" pkg-config --variable=prefix libgcrypt)"
     libgcrypt_libdir="$(PKG_CONFIG_PATH="${pkg_config_path}" pkg-config --variable=libdir libgcrypt)"
 
+    mkdir -p build
+    cd build
+
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     PKG_CONFIG_PATH="${pkg_config_path}" \
     LD_LIBRARY_PATH="${libgcrypt_libdir}:${LIBDIR}:${PREFIX}/lib:${LD_LIBRARY_PATH}" \
-    ./configure \
+    ../configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --host="${host_triplet}" \
