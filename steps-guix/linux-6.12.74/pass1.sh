@@ -6,7 +6,12 @@
 : "${KERNEL_TARGET:=x86_64-unknown-linux-musl}"
 
 kernel_env() {
-    export PATH="${KERNEL_SYSROOT}/bin:${PATH}"
+    # Keep host tools on the host toolchain; target tools come from CROSS_COMPILE.
+    export PATH="/usr/bin:/bin"
+    export HOSTCC="gcc"
+    export HOSTCXX="g++"
+    export HOSTLD="ld"
+    export HOSTAR="ar"
     export HOSTCFLAGS="-I${KERNEL_SYSROOT}/include"
     export HOSTLDFLAGS="-L${KERNEL_SYSROOT}/lib"
     export LD_LIBRARY_PATH="${KERNEL_SYSROOT}/lib:${LD_LIBRARY_PATH}"
