@@ -1,5 +1,3 @@
-# SPDX-FileCopyrightText: 2026 Luo Yanpan
-#
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 : "${KERNEL_SYSROOT:=/kernel-toolchain}"

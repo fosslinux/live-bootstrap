@@ -10,7 +10,7 @@ build: musl-fts-1.2.7
 build: musl-obstack-1.2.3
 build: elfutils-0.194
 build: linux-6.12.74
-improve: linux64
+jump: linux64
 build: libgpg-error-1.59
 build: libgcrypt-1.12.1
 build: guile-gcrypt-0.5.0
