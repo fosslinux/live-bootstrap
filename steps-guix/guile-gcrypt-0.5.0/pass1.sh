@@ -13,10 +13,7 @@ src_configure() {
     mkdir -p build
     cd build
 
-    test -x "${PREFIX}/bin/libgcrypt-config"
-
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
-    LIBGCRYPT_CONFIG="${PREFIX}/bin/libgcrypt-config" \
     PKG_CONFIG_LIBDIR="${pkg_config_path}" \
     PKG_CONFIG_PATH="${pkg_config_path}" \
     LD_LIBRARY_PATH="${LIBDIR}:${LD_LIBRARY_PATH}" \
@@ -25,7 +22,7 @@ src_configure() {
         --libdir="${LIBDIR}" \
         --host="${host_triplet}" \
         --build="${host_triplet}" \
-        --with-libgcrypt-prefix="${PREFIX}"
+        --with-libgcrypt-libdir="${LIBDIR}"
 }
 
 src_compile() {
