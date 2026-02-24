@@ -2,4 +2,4 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-exec /steps/improve/after.sh
+exec /steps/improve/finalize_fhs.sh

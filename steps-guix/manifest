@@ -11,6 +11,7 @@ build: musl-obstack-1.2.3
 build: elfutils-0.194
 build: linux-6.12.74
 jump: linux64
+improve: finalize_fhs
 improve: get_network
 build: libgpg-error-1.59
 build: libgcrypt-1.12.1
