@@ -16,4 +16,11 @@ improve: get_network
 build: libgpg-error-1.59
 build: libgcrypt-1.12.1
 build: guile-gcrypt-0.5.0
+build: git-2.53.0
+# build: cmake
+# build: libgit
+# build: nettle-3.10.2
+# build: libtasn1-v4.21.0
+# build: p11-kit-0.26.2
+# build: 
 improve: after
