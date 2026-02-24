@@ -8,4 +8,4 @@ if [ ! -r /proc/mounts ]; then
 fi
 ln -snf /proc/mounts /etc/mtab
 
-exec /steps/improve/finalize_fhs.sh
+. /steps/improve/finalize_fhs.sh
