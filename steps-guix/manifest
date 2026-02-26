@@ -21,6 +21,7 @@ build: cmake-4.2.3
 build: libgit2-1.9.2
 build: nettle-3.10.2
 build: libtasn1-v4.21.0
-# build: p11-kit-0.26.2
+build: gnutls-3.8.0
+build: guile-gnutls-v5.0.1
 
 improve: after
