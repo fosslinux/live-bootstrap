@@ -38,7 +38,28 @@ cd /steps
 . ./bootstrap.cfg
 . ./env
 . ./helpers.sh
-trap 'env PATH=${PREFIX}/bin PS1="[TRAP] \w # " bash -i' ERR
+
+shutdown_system() {
+    status="${1:-0}"
+    echo "init: shutting down (status=${status})" >&2
+    # ignore errors due to fstab or swapfile not existing
+    swapoff -a &> /dev/null || true
+    sync
+    # sysrq to avoid device busy; then mount to wait for it to finish
+    echo u > /proc/sysrq-trigger
+    mount -o remount,ro / || true
+    echo o > /proc/sysrq-trigger # power off
+    while true; do sleep 1; done
+}
+
+on_error() {
+    status=$?
+    trap - ERR
+    echo "init: error detected, aborting bootstrap path." >&2
+    shutdown_system "${status}"
+}
+
+trap 'on_error' ERR
 
 setup_kernel_devices() {
     mount | grep ' on /dev ' &> /dev/null || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)
@@ -77,7 +98,7 @@ verify_kernel_devices() {
 setup_kernel_devices
 verify_kernel_devices || {
     echo "Kernel device setup verification failed." >&2
-    exit 1
+    shutdown_system 1
 }
 
 if test -f /swapfile; then
@@ -97,7 +118,7 @@ run_steps_guix_if_requested() {
     fi
     if [ ! -f /steps-guix/manifest ]; then
         echo "BUILD_GUIX_ALSO is True but /steps-guix/manifest is missing." >&2
-        exit 1
+        return 1
     fi
 
     sed -i '/^BUILD_GUIX_ALSO=/d' /steps/bootstrap.cfg
@@ -105,10 +126,12 @@ run_steps_guix_if_requested() {
 
     /script-generator /steps-guix/manifest /steps
     bash /steps-guix/0.sh
-    return 0
+    return $?
 }
 
-run_steps_guix_if_requested || true
+if [ "${BUILD_GUIX_ALSO}" = True ]; then
+    run_steps_guix_if_requested || shutdown_system $?
+fi
 EOF
 fi
 
@@ -123,14 +146,7 @@ else
     env - PATH=${PREFIX}/bin PS1="\w # " setsid openvt -fec1 -- bash -i
 fi
 
-# ignore errors due to fstab or swapfile not existing
-swapoff -a &> /dev/null || true
-sync
-# sysrq to avoid device busy; then mount to wait for it to finish
-echo u > /proc/sysrq-trigger
-mount -o remount,ro /
-echo o > /proc/sysrq-trigger # power off
-while true; do sleep 1; done
+shutdown_system 0
 EOF
 
 chmod +x /init
