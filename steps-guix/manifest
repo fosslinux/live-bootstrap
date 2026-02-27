@@ -23,8 +23,8 @@ build: nettle-3.10.2
 build: libtasn1-v4.21.0
 build: gnutls-3.8.12
 build: guile-gnutls-v5.0.1
-# build: unzip-6.0
-# build: sqlite-3510200
-# build: guile-sqlite3-0.1.3
+build: unzip-6.0
+build: sqlite-3510200
+build: guile-sqlite3-0.1.3
 
 improve: after
