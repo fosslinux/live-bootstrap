@@ -26,5 +26,7 @@ build: guile-gnutls-v5.0.1
 build: unzip-6.0
 build: sqlite-3510200
 build: guile-sqlite3-0.1.3
+build: guile-zlib-0.2.2
+build: guile-lzlib-0.0.2
 
 improve: after
