@@ -21,9 +21,11 @@ src_configure() {
 }
 
 src_compile() {
-    default_src_compile
+    make "${MAKEJOBS}" -f Makefile PREFIX="${PREFIX}" \
+        CROSS_COMPILING_VARIABLE="AVAHI_GUILE_CROSS_COMPILING=yes"
 }
 
 src_install() {
-    default_src_install
+    make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}" \
+        CROSS_COMPILING_VARIABLE="AVAHI_GUILE_CROSS_COMPILING=yes"
 }
