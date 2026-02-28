@@ -1,1 +1,1 @@
-g https://github.com/aconchillo/guile-json.git~v4.7.3 https://github.com/aconchillo/guile-json/archive/refs/tags/4.7.3.tar.gz 38ba048ed29d12f05b32c5b2fb7a51795c448b41e403a2b1b72ff0035817f388 guile-json-v4.7.3.tar.gz
+g https://github.com/aconchillo/guile-json.git~4.7.3 https://github.com/aconchillo/guile-json/archive/refs/tags/4.7.3.tar.gz 38ba048ed29d12f05b32c5b2fb7a51795c448b41e403a2b1b72ff0035817f388 guile-json-v4.7.3.tar.gz
