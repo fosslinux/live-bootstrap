@@ -18,6 +18,7 @@ build: libgpg-error-1.59
 build: libgcrypt-1.12.1
 build: guile-gcrypt-0.5.0
 build: git-2.53.0
+# CMake for libgit2 and DBus
 build: cmake-4.2.3
 build: libgit2-1.9.2
 build: nettle-3.10.2
@@ -31,6 +32,7 @@ build: guile-zlib-0.2.2
 build: guile-lzlib-0.0.2
 build: scheme-bytestructures-2.0.2
 build: libevent-2.1.12
+build: expat-2.7.4
 build: dbus-1.16.2
 build: avahi-0.8
 build: guile-avahi-0.4.1

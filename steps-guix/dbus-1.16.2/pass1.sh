@@ -13,6 +13,9 @@ src_configure() {
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_INSTALL_LIBDIR="${LIBDIR}" \
         -DCMAKE_INSTALL_INCLUDEDIR="${PREFIX}/include" \
+        -DCMAKE_PREFIX_PATH="${PREFIX}" \
+        -DCMAKE_INCLUDE_PATH="${PREFIX}/include" \
+        -DCMAKE_LIBRARY_PATH="${LIBDIR}:${PREFIX}/lib" \
         -DBUILD_SHARED_LIBS=ON \
         -DDBUS_BUILD_TESTS=OFF \
         -DDBUS_ENABLE_XML_DOCS=OFF \
