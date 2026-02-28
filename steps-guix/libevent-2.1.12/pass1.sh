@@ -16,26 +16,8 @@ src_configure() {
         --includedir="${PREFIX}/include" \
         --host="${host_triplet}" \
         --build="${host_triplet}" \
-        --with-distro=lfs \
         --enable-static \
-        --enable-shared \
-        --disable-glib \
-        --disable-gobject \
-        --disable-gtk \
-        --disable-gtk3 \
-        --disable-qt3 \
-        --disable-qt4 \
-        --disable-qt5 \
-        --disable-python \
-        --disable-python-dbus \
-        --disable-pygobject \
-        --disable-mono \
-        --disable-monodoc \
-        --disable-autoipd \
-        --disable-doxygen-doc \
-        --disable-manpages \
-        --disable-xmltoman \
-        --disable-tests
+        --enable-shared
 }
 
 src_compile() {
