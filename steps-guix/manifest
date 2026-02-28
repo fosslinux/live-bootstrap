@@ -13,6 +13,7 @@ build: linux-6.12.74
 jump: linux64
 improve: finalize_fhs
 improve: get_network
+# Build Guix Dependencies
 build: libgpg-error-1.59
 build: libgcrypt-1.12.1
 build: guile-gcrypt-0.5.0
@@ -30,9 +31,11 @@ build: guile-zlib-0.2.2
 build: guile-lzlib-0.0.2
 build: scheme-bytestructures-2.0.2
 build: libevent-2.1.12
+build: dbus-1.16.2
 build: avahi-0.8
 build: guile-avahi-0.4.1
 build: guile-git-0.10.0
 build: guile-json-4.7.3
+
 
 improve: after
