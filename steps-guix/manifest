@@ -3,6 +3,7 @@
 # Guix extension manifest. Runs after main /steps manifest when BUILD_GUIX_ALSO=True.
 
 # We need a 64-bit kernel to enable Guix to run 64-bit programs.
+# Build 64-bit kernel
 build: binutils-2.41
 build: gcc-15.2.0
 build: argp-standalone-1.4.1
@@ -40,6 +41,6 @@ build: avahi-0.8
 build: guile-avahi-0.4.1
 build: guile-git-0.10.0
 build: guile-json-4.7.3
-
-
+# End of Guix Dependencies
+# Build Guix Bootstrap seeds
 improve: after
