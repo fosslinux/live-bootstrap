@@ -5,17 +5,13 @@ src_prepare() {
 }
 
 src_configure() {
-    local host_triplet
-    host_triplet="$(gcc -dumpmachine)"
-
+    # TODO: The legacy build system does not recognize this musl triplet.
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     PKG_CONFIG_PATH="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --includedir="${PREFIX}/include" \
-        --host="${host_triplet}" \
-        --build="${host_triplet}" \
         --enable-static \
         --enable-shared \
         --disable-examples
