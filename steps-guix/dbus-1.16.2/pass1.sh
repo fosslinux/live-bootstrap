@@ -5,14 +5,20 @@ src_prepare() {
 }
 
 src_configure() {
+    local cmake_libdir
+    cmake_libdir="${LIBDIR#${PREFIX}/}"
+    if [ "${cmake_libdir}" = "${LIBDIR}" ]; then
+        cmake_libdir="${LIBDIR#/}"
+    fi
+
     mkdir -p build
     cd build
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
-        -DCMAKE_INSTALL_LIBDIR="${LIBDIR}" \
-        -DCMAKE_INSTALL_INCLUDEDIR="${PREFIX}/include" \
+        -DCMAKE_INSTALL_LIBDIR="${cmake_libdir}" \
+        -DCMAKE_INSTALL_INCLUDEDIR="include" \
         -DCMAKE_PREFIX_PATH="${PREFIX}" \
         -DCMAKE_INCLUDE_PATH="${PREFIX}/include" \
         -DCMAKE_LIBRARY_PATH="${LIBDIR}:${PREFIX}/lib" \
