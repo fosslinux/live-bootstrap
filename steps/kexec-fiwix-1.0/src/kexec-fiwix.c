@@ -111,8 +111,8 @@ int main(int argc, char **argv) {
 	puts("kexec-fiwix: Placing kernel in memory...");
 
 	int header_num;
-	int found_entry = 0;
-	unsigned int e_entry_phys = 0;
+	int adjusted_entry = 0;
+	unsigned int e_entry_phys = e_entry;
 	for (header_num = 0; header_num < e_phnum; header_num++) {
 		char * fiwix_prog_header = &fiwix_mem[e_phoff + header_num * e_phentsize];
 
@@ -134,9 +134,9 @@ int main(int argc, char **argv) {
 			printf("kexec-fiwix: invalid segment %d, out-of-bounds file range\n", header_num);
 			return EXIT_FAILURE;
 		}
-		if (!found_entry && e_entry >= p_vaddr && (e_entry - p_vaddr) < p_memsz) {
-			e_entry_phys = p_paddr + (e_entry - p_vaddr);
-			found_entry = 1;
+		if (!adjusted_entry) {
+			e_entry_phys -= (p_vaddr - p_paddr);
+			adjusted_entry = 1;
 		}
 
 		printf("header %d:\n", header_num);
@@ -148,8 +148,8 @@ int main(int argc, char **argv) {
 		memset((void *)p_paddr, 0, p_memsz + 0x10000);
 		memcpy((void *)p_paddr, &fiwix_mem[p_offset], p_filesz);
 	}
-	if (!found_entry) {
-		printf("kexec-fiwix: could not map ELF entry 0x%x to a PT_LOAD segment\n", e_entry);
+	if (!adjusted_entry) {
+		printf("kexec-fiwix: no PT_LOAD segments found in kernel ELF\n");
 		return EXIT_FAILURE;
 	}
 	printf("ELF physical entry point      : 0x%x\n", e_entry_phys);
@@ -294,7 +294,7 @@ int main(int argc, char **argv) {
 		0xF3, 0xA4,                     /* rep movsb           */
 		0xB8, 0x00, 0x00, 0x00, 0x00,   /* mov eax, 0x00000000 */
 		0xBB, 0x00, 0x00, 0x00, 0x00,   /* mov ebx, 0x00000000 */
-		0xFB,                           /* sti                 */
+		0xFA,                           /* cli                 */
 		0xEA, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00  /* jmp far 0x0008:0x00000000 */
 	};
 
