@@ -615,3 +615,48 @@ sysroot_src_install_default() {
         prefix="${KERNEL_SYSROOT}" \
         libdir="${KERNEL_SYSROOT}/lib"
 }
+
+seed_require_file() {
+    local path="$1"
+    if [ ! -e "${path}" ]; then
+        echo "Missing required seed input: ${path}" >&2
+        false
+    fi
+}
+
+seed_make_repro_tar_xz() {
+    local src_dir="$1"
+    local out_file="$2"
+    local tmp_dir
+    local tmp_tar
+
+    seed_require_file "${src_dir}"
+    mkdir -p "$(dirname "${out_file}")"
+
+    tmp_dir="$(mktemp -d /tmp/seed-tar.XXXXXX)"
+    tmp_tar="$(mktemp /tmp/seed-tarball.XXXXXX.tar)"
+
+    cp -a "${src_dir}/." "${tmp_dir}/"
+    (
+        cd "${tmp_dir}"
+        reset_timestamp
+        tar --sort=name --hard-dereference \
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw \
+            -cf "${tmp_tar}" .
+    )
+    touch -t 197001010000.00 "${tmp_tar}"
+    xz -T1 -c "${tmp_tar}" > "${out_file}"
+    touch -t 197001010000.00 "${out_file}"
+
+    rm -rf "${tmp_dir}"
+    rm -f "${tmp_tar}"
+}
+
+seed_install_exec() {
+    local src="$1"
+    local dst="$2"
+
+    seed_require_file "${src}"
+    mkdir -p "$(dirname "${dst}")"
+    install -m 0755 "${src}" "${dst}"
+}

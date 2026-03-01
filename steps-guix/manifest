@@ -42,5 +42,28 @@ build: guile-avahi-0.4.1
 build: guile-git-0.10.0
 build: guile-json-4.7.3
 # End of Guix Dependencies
-# Build Guix Bootstrap seeds
+# Build Guix Bootstrap seeds (All flowing must be static)
+# Build static-binaries-0-i686-linux.tar.xz
+build: coreutils-8.30
+build: gawk-4.2.1
+build: grep-3.1
+build: tar-1.30
+build: xz-5.2.4
+build: gzip-1.9
+build: bzip2-1.0.6
+build: patch-2.7.6
+build: bash-4.4.23-1
+build: static-binaries-0-i686-linux
+# Build guile-static-stripped-2.2.4-i686-linux.tar.xz
+build: guile-2.2.4
+# Build mes-minimal-stripped-0.19-i686-linux.tar.xz
+build: mes-minimal-stripped-0.19-i686-linux
+# Build mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz
+build: mescc-tools-static-stripped-0.5.2-i686-linux
+build: guix-hash-compat-1.5.0
+improve: guix-1.5.0
+build: guix-1.5.0
+improve: guix-daemon-and-pull
+improve: guix-build-iso
+
 improve: after

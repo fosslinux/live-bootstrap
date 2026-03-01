@@ -1,0 +1,34 @@
+--- guix-1.5.0/gnu/packages/bootstrap.scm
++++ guix-1.5.0/gnu/packages/bootstrap.scm
+@@ -357,8 +357,9 @@
+ ;;; Bootstrap packages.
+ ;;;
+ 
+-(define %bootstrap-base-urls
+-  ;; This is where the initial binaries come from.
++(define %bootstrap-linux-headers-base-urls
++  ;; Keep linux headers as an explicit exception: text headers can still come
++  ;; from the historical bootstrap mirrors.
+   '("https://ftpmirror.gnu.org/guix/bootstrap/"
+     "https://ftp.gnu.org/gnu/guix/bootstrap"
+     "https://alpha.gnu.org/gnu/guix/bootstrap"
+@@ -369,6 +370,10 @@
+     "http://flashner.co.il/guix/bootstrap"
+     "http://lilypond.org/janneke/guix/"))
+ 
++(define %bootstrap-base-urls
++  ;; All bootstrap binaries must come from local, reproducible distfiles.
++  '("file:///external/distfiles"))
++
+ (define (bootstrap-guile-url-path system)
+   "Return the URI for FILE."
+   (string-append "/" system
+@@ -684,7 +689,7 @@
+        (uri (map (cute string-append <>
+                        "/i686-linux/20190815/"
+                        "linux-libre-headers-stripped-4.14.67-i686-linux.tar.xz")
+-                 %bootstrap-base-urls))
++                 %bootstrap-linux-headers-base-urls))
+        (sha256
+         (base32
+          "0sm2z9x4wk45bh6qfs94p0w1d6hsy6dqx9sw38qsqbvxwa1qzk8s"))))

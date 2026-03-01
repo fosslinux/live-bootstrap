@@ -5,16 +5,11 @@ src_prepare() {
 }
 
 src_configure() {
-    local host_triplet
-    host_triplet="$(gcc -dumpmachine)"
-
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --includedir="${PREFIX}/include" \
-        --host="${host_triplet}" \
-        --build="${host_triplet}" \
         --enable-static \
         --enable-shared
 }
