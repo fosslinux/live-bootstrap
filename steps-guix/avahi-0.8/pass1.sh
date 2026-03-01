@@ -5,11 +5,15 @@ src_prepare() {
 }
 
 src_configure() {
-    local host_triplet
+    local host_triplet pkg_config_path
     host_triplet="$(gcc -dumpmachine)"
+    pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
 
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
-    PKG_CONFIG_PATH="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig" \
+    PKG_CONFIG_PATH="${pkg_config_path}" \
+    PKG_CONFIG_LIBDIR="${pkg_config_path}" \
+    DBUS_CFLAGS="$(pkg-config --cflags dbus-1)" \
+    DBUS_LIBS="$(pkg-config --libs dbus-1)" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
