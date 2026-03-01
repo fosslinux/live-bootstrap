@@ -42,7 +42,6 @@ build: lwext4-1.0.0-lb1 ( BUILD_FIWIX == True )
 build: kexec-fiwix-1.0 ( BUILD_FIWIX == True )
 build: payload-import-1.0 ( KERNEL_BOOTSTRAP == True )
 jump: fiwix ( KERNEL_BOOTSTRAP == True )
-improve: import_payload ( KERNEL_BOOTSTRAP == True )
 improve: reconfigure ( CONFIGURATOR != True )
 define: JOBS = 1 ( KERNEL_BOOTSTRAP == True )
 build: make-3.82
@@ -58,6 +57,7 @@ improve: setup_repo
 improve: update_env
 improve: merged_usr
 improve: populate_device_nodes
+improve: import_payload ( KERNEL_BOOTSTRAP == True )
 define: CONSOLES = ( INTERACTIVE == True && CHROOT == False )
 improve: open_console ( CONSOLES == True )
 build: tcc-0.9.27
