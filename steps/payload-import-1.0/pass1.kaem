@@ -14,6 +14,8 @@ if match x${UPDATE_CHECKSUMS} xTrue; then
         /usr/bin/payload-import
 
     cp ${pkg}.checksums ${SRCDIR}
-elif test -f ${pkg}.checksums; then
-    sha256sum -c ${pkg}.checksums
+else
+    if test -f ${pkg}.checksums; then
+        sha256sum -c ${pkg}.checksums
+    fi
 fi
