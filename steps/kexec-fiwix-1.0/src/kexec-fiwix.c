@@ -156,16 +156,26 @@ int main(int argc, char **argv) {
 	}
 
 	int filenum;
+	int found_image = 0;
 	unsigned int filename_addr;
 	for (filenum = 4, filename_addr = 0x201000; filenum <= 14335; filenum++, filename_addr += 1024) {
 		if (!strcmp((char *) filename_addr, initrd_filename)) {
 			printf("Found image at filenum %d\n", filenum);
+			found_image = 1;
 			break;
 		}
+	}
+	if (!found_image) {
+		printf("kexec-fiwix: initrd image not found in file table: %s\n", initrd_filename);
+		return EXIT_FAILURE;
 	}
 
 	unsigned int initrd_src = *((unsigned int *) (0x01000000 + (16 * filenum) + 4));
 	unsigned int initrd_len = *((unsigned int *) (0x01000000 + (16 * filenum) + 8));
+	if (initrd_src == 0 || initrd_len == 0) {
+		printf("kexec-fiwix: invalid initrd metadata src=0x%08x len=0x%08x\n", initrd_src, initrd_len);
+		return EXIT_FAILURE;
+	}
 	printf("initrd_src: 0x%08x\n", initrd_src);
 	printf("initrd_len: 0x%08x\n", initrd_len);
 
@@ -260,7 +270,7 @@ int main(int argc, char **argv) {
 		0xF3, 0xA4,                     /* rep movsb           */
 		0xB8, 0x00, 0x00, 0x00, 0x00,   /* mov eax, 0x00000000 */
 		0xBB, 0x00, 0x00, 0x00, 0x00,   /* mov ebx, 0x00000000 */
-		0xFB,                           /* sti                 */
+		0xFA,                           /* cli                 */
 		0xEA, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00  /* jmp far 0x0008:0x00000000 */
 	};
 
