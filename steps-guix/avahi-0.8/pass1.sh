@@ -18,7 +18,8 @@ src_configure() {
         --build="${host_triplet}" \
         --with-distro=lfs \
         --disable-stack-protector \
-        --enable-dbm \
+        --enable-gdbm \
+        --disable-dbm \
         --enable-static \
         --enable-shared \
         --disable-glib \
