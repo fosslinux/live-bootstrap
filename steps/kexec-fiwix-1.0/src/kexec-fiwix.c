@@ -6,7 +6,6 @@
 #include "multiboot1.h"
 
 #define MULTIBOOT_MAGIC 0x2BADB002
-#define ELF_PT_LOAD 1
 
 multiboot_uint32_t get_memmap(char *filename, void *memmap_addr) {
 
@@ -100,43 +99,24 @@ int main(int argc, char **argv) {
 	unsigned int e_phentsize = *((unsigned int *) (&fiwix_mem[0x2A]));
 	e_phentsize &= 0xFFFF;
 	printf("ELF size of program  headers  : %d\n", e_phentsize);
-	if ((unsigned long) e_phoff + ((unsigned long) e_phnum * (unsigned long) e_phentsize) > (unsigned long) fiwix_len) {
-		printf("kexec-fiwix: invalid ELF header table (offset=0x%x num=%u entsize=%u)\n",
-		       e_phoff, e_phnum, e_phentsize);
-		return EXIT_FAILURE;
-	}
 
 
 	/* Load the kernel */
 	puts("kexec-fiwix: Placing kernel in memory...");
 
 	int header_num;
-	int adjusted_entry = 0;
-	unsigned int e_entry_phys = e_entry;
 	for (header_num = 0; header_num < e_phnum; header_num++) {
 		char * fiwix_prog_header = &fiwix_mem[e_phoff + header_num * e_phentsize];
 
-		unsigned int p_type = *((unsigned int *) (&fiwix_prog_header[0x00]));
 		unsigned int p_offset = *((unsigned int *) (&fiwix_prog_header[0x04]));
 		unsigned int p_vaddr = *((unsigned int *) (&fiwix_prog_header[0x08]));
 		unsigned int p_paddr = *((unsigned int *) (&fiwix_prog_header[0x0C]));
 		unsigned int p_filesz = *((unsigned int *) (&fiwix_prog_header[0x10]));
 		unsigned int p_memsz = *((unsigned int *) (&fiwix_prog_header[0x14]));
 
-		if (p_type != ELF_PT_LOAD) {
-			continue;
-		}
-		if (p_filesz > p_memsz) {
-			printf("kexec-fiwix: invalid segment %d, p_filesz > p_memsz\n", header_num);
-			return EXIT_FAILURE;
-		}
-		if ((unsigned long) p_offset + (unsigned long) p_filesz > (unsigned long) fiwix_len) {
-			printf("kexec-fiwix: invalid segment %d, out-of-bounds file range\n", header_num);
-			return EXIT_FAILURE;
-		}
-		if (!adjusted_entry) {
-			e_entry_phys -= (p_vaddr - p_paddr);
-			adjusted_entry = 1;
+		if (header_num == 0) {
+        		e_entry -= (p_vaddr - p_paddr);
+			printf("ELF physical entry point      : 0x%x\n", e_entry);
 		}
 
 		printf("header %d:\n", header_num);
@@ -148,11 +128,6 @@ int main(int argc, char **argv) {
 		memset((void *)p_paddr, 0, p_memsz + 0x10000);
 		memcpy((void *)p_paddr, &fiwix_mem[p_offset], p_filesz);
 	}
-	if (!adjusted_entry) {
-		printf("kexec-fiwix: no PT_LOAD segments found in kernel ELF\n");
-		return EXIT_FAILURE;
-	}
-	printf("ELF physical entry point      : 0x%x\n", e_entry_phys);
 
 	puts("Preparing multiboot info for kernel...");
 
@@ -181,26 +156,16 @@ int main(int argc, char **argv) {
 	}
 
 	int filenum;
-	int found_image = 0;
 	unsigned int filename_addr;
 	for (filenum = 4, filename_addr = 0x201000; filenum <= 14335; filenum++, filename_addr += 1024) {
 		if (!strcmp((char *) filename_addr, initrd_filename)) {
 			printf("Found image at filenum %d\n", filenum);
-			found_image = 1;
 			break;
 		}
-	}
-	if (!found_image) {
-		printf("kexec-fiwix: initrd image not found in file table: %s\n", initrd_filename);
-		return EXIT_FAILURE;
 	}
 
 	unsigned int initrd_src = *((unsigned int *) (0x01000000 + (16 * filenum) + 4));
 	unsigned int initrd_len = *((unsigned int *) (0x01000000 + (16 * filenum) + 8));
-	if (initrd_src == 0 || initrd_len == 0) {
-		printf("kexec-fiwix: invalid initrd metadata src=0x%08x len=0x%08x\n", initrd_src, initrd_len);
-		return EXIT_FAILURE;
-	}
 	printf("initrd_src: 0x%08x\n", initrd_src);
 	printf("initrd_len: 0x%08x\n", initrd_len);
 
@@ -276,6 +241,7 @@ int main(int argc, char **argv) {
 
 	/* Jump to kernel entry point */
 	unsigned int magic = MULTIBOOT_BOOTLOADER_MAGIC;
+	unsigned int dummy = 0;
 	unsigned int multiboot_info_num = (unsigned int) pmultiboot_info;
 
 	printf("Preparing trampoline...\n");
@@ -294,7 +260,7 @@ int main(int argc, char **argv) {
 		0xF3, 0xA4,                     /* rep movsb           */
 		0xB8, 0x00, 0x00, 0x00, 0x00,   /* mov eax, 0x00000000 */
 		0xBB, 0x00, 0x00, 0x00, 0x00,   /* mov ebx, 0x00000000 */
-		0xFA,                           /* cli                 */
+		0xFB,                           /* sti                 */
 		0xEA, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00  /* jmp far 0x0008:0x00000000 */
 	};
 
@@ -304,7 +270,7 @@ int main(int argc, char **argv) {
 	*((unsigned int *) &trampoline[11]) = initrd_len;
 	*((unsigned int *) &trampoline[19])  = magic;
 	*((unsigned int *) &trampoline[24])  = multiboot_info_num;
-	*((unsigned int *) &trampoline[30])  = e_entry_phys;
+	*((unsigned int *) &trampoline[30])  = e_entry;
 
 	memcpy((void *)0x4000, trampoline, sizeof(trampoline));
 

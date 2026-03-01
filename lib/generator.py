@@ -12,6 +12,7 @@ import hashlib
 import os
 import random
 import shutil
+import struct
 import tarfile
 import traceback
 
@@ -25,6 +26,7 @@ class Generator():
 
     git_dir = os.path.join(os.path.dirname(os.path.join(__file__)), '..')
     distfiles_dir = os.path.join(git_dir, 'distfiles')
+    payload_magic = b'LBPAYLD1'
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors,
@@ -39,6 +41,9 @@ class Generator():
                                                         build_guix_also=self.build_guix_also)
         self.early_source_manifest = self.get_source_manifest(True,
                                                               build_guix_also=self.build_guix_also)
+        self.bootstrap_source_manifest = self.source_manifest
+        self.payload_source_manifest = []
+        self.payload_image = None
         self.target_dir = None
         self.external_dir = None
 
@@ -50,6 +55,69 @@ class Generator():
         self.external_dir = os.path.join(self.target_dir, 'external')
         self.distfiles()
 
+    def _prepare_kernel_bootstrap_payload_manifests(self):
+        """
+        Split early source payload from full offline payload.
+        """
+        # Keep the early builder payload small enough to avoid overrunning
+        # builder-hex0 memory file allocation before we can jump into Fiwix.
+        self.bootstrap_source_manifest = self.get_source_manifest(True, build_guix_also=False)
+
+        full_manifest = self.get_source_manifest(False, build_guix_also=self.build_guix_also)
+        bootstrap_set = set(self.bootstrap_source_manifest)
+        self.payload_source_manifest = [entry for entry in full_manifest if entry not in bootstrap_set]
+
+    def _copy_manifest_distfiles(self, out_dir, manifest):
+        os.makedirs(out_dir, exist_ok=True)
+        for entry in manifest:
+            file_name = entry[3].strip()
+            shutil.copy2(os.path.join(self.distfiles_dir, file_name),
+                         os.path.join(out_dir, file_name))
+
+    def _ensure_manifest_distfiles(self, manifest):
+        for entry in manifest:
+            checksum, directory, url, file_name = entry
+            distfile_path = os.path.join(directory, file_name)
+            if not os.path.isfile(distfile_path):
+                self.download_file(url, directory, file_name)
+            self.check_file(distfile_path, checksum)
+
+    def _create_raw_payload_image(self, target_path, manifest):
+        if not manifest:
+            return None
+
+        # Guarantee all payload distfiles exist and match checksums.
+        self._ensure_manifest_distfiles(manifest)
+
+        files_by_name = {}
+        for checksum, _, _, file_name in manifest:
+            if file_name in files_by_name and files_by_name[file_name] != checksum:
+                raise ValueError(f"Conflicting payload file with same name but different hash: {file_name}")
+            files_by_name[file_name] = checksum
+
+        payload_path = os.path.join(target_path, "payload.img")
+        ordered_names = sorted(files_by_name.keys())
+        with open(payload_path, "wb") as payload:
+            payload.write(self.payload_magic)
+            payload.write(struct.pack("<I", len(ordered_names)))
+            for file_name in ordered_names:
+                file_name_bytes = file_name.encode("utf_8")
+                if len(file_name_bytes) > 0xFFFFFFFF:
+                    raise ValueError(f"Payload file name too long: {file_name}")
+
+                src_path = os.path.join(self.distfiles_dir, file_name)
+                file_size = os.path.getsize(src_path)
+                if file_size > 0xFFFFFFFF:
+                    raise ValueError(f"Payload file too large for raw container format: {file_name}")
+
+                payload.write(struct.pack("<II", len(file_name_bytes), file_size))
+                payload.write(file_name_bytes)
+
+                with open(src_path, "rb") as src_file:
+                    shutil.copyfileobj(src_file, payload, 1024 * 1024)
+
+        return payload_path
+
     def prepare(self, target, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
@@ -59,6 +127,9 @@ class Generator():
         """
         self.target_dir = target.path
         self.external_dir = os.path.join(self.target_dir, 'external')
+        self.payload_image = None
+        self.payload_source_manifest = []
+        self.bootstrap_source_manifest = self.source_manifest
 
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
@@ -74,6 +145,7 @@ class Generator():
 
             if not self.repo_path and not self.external_sources:
                 self.external_dir = os.path.join(self.target_dir, 'external')
+                self._prepare_kernel_bootstrap_payload_manifests()
         elif using_kernel:
             self.target_dir = os.path.join(self.target_dir, 'disk')
             self.external_dir = os.path.join(self.target_dir, 'external')
@@ -108,6 +180,9 @@ class Generator():
             if self.repo_path or self.external_sources:
                 mkfs_args = ['-d', os.path.join(target.path, 'external')]
                 target.add_disk("external", filesystem="ext3", mkfs_args=mkfs_args)
+            elif self.payload_source_manifest:
+                self.payload_image = self._create_raw_payload_image(target.path, self.payload_source_manifest)
+                target.add_existing_disk("payload", self.payload_image)
         elif using_kernel:
             mkfs_args = ['-F', '-d', os.path.join(target.path, 'disk')]
             target.add_disk("disk",
@@ -158,26 +233,16 @@ class Generator():
 
     def distfiles(self):
         """Copy in distfiles"""
-        def copy_no_network_distfiles(out, early):
-            # Note that "no disk" implies "no network" for kernel bootstrap mode
-            manifest = self.early_source_manifest if early else self.source_manifest
-            for file in manifest:
-                file = file[3].strip()
-                shutil.copy2(os.path.join(self.distfiles_dir, file),
-                             os.path.join(out, file))
-
         early_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
         main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
         if early_distfile_dir != main_distfile_dir:
-            os.makedirs(early_distfile_dir, exist_ok=True)
-            copy_no_network_distfiles(early_distfile_dir, True)
+            self._copy_manifest_distfiles(early_distfile_dir, self.early_source_manifest)
 
         if self.external_sources:
             shutil.copytree(self.distfiles_dir, main_distfile_dir, dirs_exist_ok=True)
         else:
-            os.mkdir(main_distfile_dir)
-            copy_no_network_distfiles(main_distfile_dir, False)
+            self._copy_manifest_distfiles(main_distfile_dir, self.bootstrap_source_manifest)
 
     @staticmethod
     def output_dir(srcfs_file, dirpath):

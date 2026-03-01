@@ -127,6 +127,10 @@ def create_configuration_file(args):
     """
     config_path = os.path.join('steps', 'bootstrap.cfg')
     with open(config_path, "w", encoding="utf_8") as config:
+        payload_required = ((args.bare_metal or args.qemu)
+                            and not args.kernel
+                            and not args.repo
+                            and not args.external_sources)
         config.write(f"ARCH={args.arch}\n")
         config.write(f"ARCH_DIR={stage0_arch_map.get(args.arch, args.arch)}\n")
         config.write(f"FORCE_TIMESTAMPS={args.force_timestamps}\n")
@@ -137,6 +141,7 @@ def create_configuration_file(args):
         config.write(f"FINAL_JOBS={args.cores}\n")
         config.write(f"INTERNAL_CI={args.internal_ci or False}\n")
         config.write(f"INTERACTIVE={args.interactive}\n")
+        config.write(f"PAYLOAD_REQUIRED={payload_required}\n")
         config.write(f"QEMU={args.qemu}\n")
         config.write(f"BARE_METAL={args.bare_metal or (args.qemu and args.interactive)}\n")
         config.write(f"BUILD_GUIX_ALSO={args.build_guix_also}\n")
@@ -407,6 +412,11 @@ print(shutil.which('chroot'))
             path = os.path.join(args.target, os.path.relpath(generator.target_dir, args.target))
             print("Please:")
             print(f"  1. Take {path}.img and write it to a boot drive and then boot it.")
+            payload_disk = target.get_disk("payload")
+            if payload_disk is not None:
+                payload_path = os.path.join(args.target, os.path.relpath(payload_disk, args.target))
+                print("  2. Take " +
+                      f"{payload_path} and attach it as a second raw disk (/dev/sdb preferred).")
 
     else:
         if args.stage0_image:
@@ -459,6 +469,10 @@ print(shutil.which('chroot'))
             if target.get_disk("external") is not None:
                 arg_list += [
                     '-drive', 'file=' + target.get_disk("external") + ',format=raw',
+                ]
+            if target.get_disk("payload") is not None:
+                arg_list += [
+                    '-drive', 'file=' + target.get_disk("payload") + ',format=raw',
                 ]
             arg_list += [
                 '-machine', 'kernel-irqchip=split',
