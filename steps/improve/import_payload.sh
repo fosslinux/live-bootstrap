@@ -7,21 +7,28 @@ set -ex
 
 if [ "${PAYLOAD_REQUIRED}" = True ]; then
     mkdir -p /external/distfiles
-    found_payload=0
+    mkdir -p /proc
+    mount -t proc proc /proc >/dev/null 2>&1 || :
 
-    # Probe all block devices reported by the running kernel instead of
-    # assuming fixed names like /dev/sdb or /dev/hdb.
+    if [ ! -r /proc/partitions ]; then
+        echo "payload-import failed: /proc/partitions is unavailable." >&2
+        exit 1
+    fi
+
+    found_payload=0
     while read -r major minor blocks name; do
         case "${name}" in
-            ""|name|ram*|loop*|fd*|sr*|md*)
+            ""|name|ram*|loop*|fd*|sr*|md*|dm-*|nbd*)
+                continue
+                ;;
+            *[0-9])
+                # Skip partitions (sda1, vdb2, ...); payload is attached as a whole disk.
                 continue
                 ;;
         esac
 
         dev_path="/dev/${name}"
-        if [ ! -b "${dev_path}" ]; then
-            mknod -m 600 "${dev_path}" b "${major}" "${minor}" || :
-        fi
+        mknod -m 600 "${dev_path}" b "${major}" "${minor}" >/dev/null 2>&1 || :
 
         if payload-import --probe "${dev_path}"; then
             payload-import --device "${dev_path}" /external/distfiles
@@ -31,7 +38,7 @@ if [ "${PAYLOAD_REQUIRED}" = True ]; then
     done < /proc/partitions
 
     if [ "${found_payload}" != 1 ]; then
-        echo "payload-import failed: no payload image found on detected block devices." >&2
+        echo "payload-import failed: no payload image found on probed block devices." >&2
         exit 1
     fi
 fi
