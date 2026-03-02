@@ -2,16 +2,23 @@
 /* SPDX-License-Identifier: MIT */
 
 #include <errno.h>
+#include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #define MAGIC "LBPAYLD1"
 #define MAGIC_LEN 8
 #define MAX_NAME_LEN 1024
 #define COPY_BUFSZ 65536
+
+/* mount(2) is available in the bootstrap libc, but some header stacks
+ * don't expose a prototype consistently. */
+extern int mount(const char *source, const char *target,
+	const char *filesystemtype, unsigned int mountflags, const void *data);
 
 static unsigned int read_u32le(const unsigned char *buf)
 {
@@ -104,6 +111,55 @@ static int has_payload_magic(const char *path)
 		return 1;
 	}
 	return 0;
+}
+
+static int starts_with(const char *s, const char *prefix)
+{
+	while (*prefix != 0) {
+		if (*s != *prefix) {
+			return 0;
+		}
+		s++;
+		prefix++;
+	}
+	return 1;
+}
+
+static int ends_with_digit(const char *s)
+{
+	char c = 0;
+
+	while (*s != 0) {
+		c = *s;
+		s++;
+	}
+	return c >= '0' && c <= '9';
+}
+
+static int is_proc_partition_candidate(const char *name)
+{
+	if (*name == 0 || strcmp(name, "name") == 0) {
+		return 0;
+	}
+	if (starts_with(name, "ram")
+	 || starts_with(name, "loop")
+	 || starts_with(name, "fd")
+	 || starts_with(name, "sr")
+	 || starts_with(name, "md")
+	 || starts_with(name, "dm-")
+	 || starts_with(name, "nbd")) {
+		return 0;
+	}
+	if (ends_with_digit(name)) {
+		/* Skip partitions; payload is attached as a whole disk. */
+		return 0;
+	}
+	return 1;
+}
+
+static unsigned int mkdev_u8(unsigned int major, unsigned int minor)
+{
+	return ((major & 0xFFU) << 8) | (minor & 0xFFU);
 }
 
 static int extract_payload(const char *device, const char *dest_dir)
@@ -225,28 +281,110 @@ static int extract_payload(const char *device, const char *dest_dir)
 	return 0;
 }
 
-static int import_from_first_payload(const char *dest_dir)
+static int ensure_proc_partitions(void)
 {
-	const char *prefixes[] = {"/dev/sd", "/dev/hd", "/dev/vd", "/dev/xvd"};
-	int p;
+	struct stat st;
 
-	for (p = 0; p < 4; ++p) {
-		char letter;
-		for (letter = 'b'; letter <= 'z'; ++letter) {
-			char device[16];
-			if (snprintf(device, sizeof(device), "%s%c", prefixes[p], letter) >= (int)sizeof(device)) {
-				continue;
-			}
-			if (access(device, R_OK) != 0) {
-				continue;
-			}
-			if (has_payload_magic(device) == 0) {
-				return extract_payload(device, dest_dir);
-			}
+	if (stat("/proc/partitions", &st) == 0) {
+		return 0;
+	}
+
+	if (stat("/proc", &st) != 0) {
+		if (mkdir("/proc", 0755) != 0 && errno != EEXIST) {
+			return 1;
 		}
 	}
 
-	fputs("payload-import: no payload disk found\n", stderr);
+	if (mount("proc", "/proc", "proc", 0, (const void *)0) != 0) {
+		return 1;
+	}
+
+	if (stat("/proc/partitions", &st) != 0) {
+		return 1;
+	}
+	return 0;
+}
+
+static int import_from_proc_partitions(const char *dest_dir)
+{
+	FILE *fp;
+	char line[256];
+
+	if (ensure_proc_partitions() != 0) {
+		return 1;
+	}
+
+	fp = fopen("/proc/partitions", "r");
+	if (fp == NULL) {
+		return 1;
+	}
+
+	while (fgets(line, sizeof(line), fp) != NULL) {
+		unsigned int major, minor, blocks;
+		char name[64];
+		char dev_path[96];
+
+		if (sscanf(line, " %u %u %u %63s", &major, &minor, &blocks, name) != 4) {
+			continue;
+		}
+		if (!is_proc_partition_candidate(name)) {
+			continue;
+		}
+
+		if (snprintf(dev_path, sizeof(dev_path), "/dev/%s", name) >= (int)sizeof(dev_path)) {
+			continue;
+		}
+
+		if (access(dev_path, F_OK) != 0) {
+			if (mknod(dev_path, S_IFBLK | 0600, mkdev_u8(major, minor)) != 0) {
+				continue;
+			}
+		}
+		if (has_payload_magic(dev_path) == 0) {
+			fclose(fp);
+			return extract_payload(dev_path, dest_dir);
+		}
+	}
+
+	fclose(fp);
+	return 2;
+}
+
+static int import_from_dev_nodes(const char *dest_dir)
+{
+	DIR *dir;
+	struct dirent *entry;
+
+	dir = opendir("/dev");
+	if (dir == NULL) {
+		return 2;
+	}
+
+	entry = readdir(dir);
+	while (entry != NULL) {
+		char path[512];
+		struct stat st;
+
+		if (entry->d_name[0] == '.') {
+			entry = readdir(dir);
+			continue;
+		}
+		if (snprintf(path, sizeof(path), "/dev/%s", entry->d_name) >= (int)sizeof(path)) {
+			entry = readdir(dir);
+			continue;
+		}
+		if (lstat(path, &st) != 0 || !S_ISBLK(st.st_mode)) {
+			entry = readdir(dir);
+			continue;
+		}
+		if (has_payload_magic(path) == 0) {
+			closedir(dir);
+			return extract_payload(path, dest_dir);
+		}
+		entry = readdir(dir);
+	}
+
+	closedir(dir);
 	return 2;
 }
 
@@ -255,8 +393,9 @@ static void usage(const char *name)
 	fprintf(stderr,
 		"Usage:\n"
 		"  %s --probe <device>\n"
+		"  %s --from-proc <dest-dir>\n"
 		"  %s [--device <device>] <dest-dir>\n",
-		name, name);
+		name, name, name);
 }
 
 int main(int argc, char **argv)
@@ -267,6 +406,9 @@ int main(int argc, char **argv)
 
 	if (argc == 3 && strcmp(argv[1], "--probe") == 0) {
 		return has_payload_magic(argv[2]);
+	}
+	if (argc == 3 && strcmp(argv[1], "--from-proc") == 0) {
+		return import_from_proc_partitions(argv[2]);
 	}
 
 	for (i = 1; i < argc; ++i) {
@@ -293,5 +435,12 @@ int main(int argc, char **argv)
 	if (device != NULL) {
 		return extract_payload(device, dest_dir);
 	}
-	return import_from_first_payload(dest_dir);
+	i = import_from_proc_partitions(dest_dir);
+	if (i == 0) {
+		return 0;
+	}
+	if (i == 1) {
+		fputs("payload-import: /proc/partitions unavailable, falling back to /dev scan\n", stderr);
+	}
+	return import_from_dev_nodes(dest_dir);
 }
