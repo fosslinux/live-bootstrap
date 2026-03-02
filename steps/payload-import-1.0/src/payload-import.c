@@ -227,10 +227,10 @@ static int extract_payload(const char *device, const char *dest_dir)
 
 static int import_from_first_payload(const char *dest_dir)
 {
-	const char *prefixes[] = {"/dev/sd", "/dev/vd", "/dev/hd"};
+	const char *prefixes[] = {"/dev/sd", "/dev/hd", "/dev/vd", "/dev/xvd"};
 	int p;
 
-	for (p = 0; p < 3; ++p) {
+	for (p = 0; p < 4; ++p) {
 		char letter;
 		for (letter = 'b'; letter <= 'z'; ++letter) {
 			char device[16];

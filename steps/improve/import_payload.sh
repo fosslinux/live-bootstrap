@@ -8,8 +8,11 @@ set -ex
 if [ "${PAYLOAD_REQUIRED}" = True ]; then
     mkdir -p /external/distfiles
     mkdir -p /proc
-    mount -t proc proc /proc >/dev/null 2>&1 || :
 
+    # Reliable enumeration in Fiwix: mount procfs and read /proc/partitions.
+    if [ ! -r /proc/partitions ]; then
+        mount -t proc proc /proc
+    fi
     if [ ! -r /proc/partitions ]; then
         echo "payload-import failed: /proc/partitions is unavailable." >&2
         exit 1
@@ -22,13 +25,13 @@ if [ "${PAYLOAD_REQUIRED}" = True ]; then
                 continue
                 ;;
             *[0-9])
-                # Skip partitions (sda1, vdb2, ...); payload is attached as a whole disk.
+                # Skip partitions (hda1, sdb2, ...); payload is a whole disk.
                 continue
                 ;;
         esac
 
         dev_path="/dev/${name}"
-        mknod -m 600 "${dev_path}" b "${major}" "${minor}" >/dev/null 2>&1 || :
+        [ -b "${dev_path}" ] || mknod -m 600 "${dev_path}" b "${major}" "${minor}"
 
         if payload-import --probe "${dev_path}"; then
             payload-import --device "${dev_path}" /external/distfiles
@@ -38,7 +41,7 @@ if [ "${PAYLOAD_REQUIRED}" = True ]; then
     done < /proc/partitions
 
     if [ "${found_payload}" != 1 ]; then
-        echo "payload-import failed: no payload image found on probed block devices." >&2
+        echo "payload-import failed: no payload image found in /proc/partitions." >&2
         exit 1
     fi
 fi
