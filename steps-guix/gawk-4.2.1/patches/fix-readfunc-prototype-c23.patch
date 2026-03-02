@@ -1,0 +1,64 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Use an explicit function pointer prototype for readfunc so gawk 4.2.1
+builds with modern C compilers where an empty parameter list is treated
+as a no-argument function.
+
+--- gawk-4.2.1/awkgram.y
++++ gawk-4.2.1/awkgram.y
+@@ -2870,22 +2870,17 @@
+ 	struct stat sbuf;
+ 
+ 	/*
+-	 * No argument prototype on readfunc on purpose,
+-	 * avoids problems with some ancient systems where
+-	 * the types of arguments to read() aren't up to date.
++	 * Use an explicit prototype so modern C compilers (C23 and newer)
++	 * do not treat an empty parameter list as a no-argument function.
+ 	 */
+-	static ssize_t (*readfunc)() = 0;
++	static ssize_t (*readfunc)(int, void *, size_t) = NULL;
+ 
+ 	if (readfunc == NULL) {
+ 		char *cp = getenv("AWKREADFUNC");
+ 
+ 		/* If necessary, one day, test value for different functions.  */
+ 		if (cp == NULL)
+-			/*
+-			 * cast is to remove warnings on systems with
+-			 * different return types for read.
+-			 */
+-			readfunc = ( ssize_t(*)() ) read;
++			readfunc = read;
+ 		else
+ 			readfunc = read_one_line;
+ 	}
+--- gawk-4.2.1/awkgram.c
++++ gawk-4.2.1/awkgram.c
+@@ -5290,22 +5290,17 @@
+ 	struct stat sbuf;
+ 
+ 	/*
+-	 * No argument prototype on readfunc on purpose,
+-	 * avoids problems with some ancient systems where
+-	 * the types of arguments to read() aren't up to date.
++	 * Use an explicit prototype so modern C compilers (C23 and newer)
++	 * do not treat an empty parameter list as a no-argument function.
+ 	 */
+-	static ssize_t (*readfunc)() = 0;
++	static ssize_t (*readfunc)(int, void *, size_t) = NULL;
+ 
+ 	if (readfunc == NULL) {
+ 		char *cp = getenv("AWKREADFUNC");
+ 
+ 		/* If necessary, one day, test value for different functions.  */
+ 		if (cp == NULL)
+-			/*
+-			 * cast is to remove warnings on systems with
+-			 * different return types for read.
+-			 */
+-			readfunc = ( ssize_t(*)() ) read;
++			readfunc = read;
+ 		else
+ 			readfunc = read_one_line;
+ 	}
