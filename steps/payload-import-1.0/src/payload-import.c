@@ -12,6 +12,7 @@
 #define MAGIC_LEN 8
 #define MAX_NAME_LEN 1024
 #define COPY_BUFSZ 65536
+#define SYS_MOUNT 21
 
 static unsigned int read_u32le(const unsigned char *buf)
 {
@@ -103,6 +104,51 @@ static int has_payload_magic(const char *path)
 	if (memcmp(magic, MAGIC, MAGIC_LEN) != 0) {
 		return 1;
 	}
+	return 0;
+}
+
+static int sys_mount(const char *source, const char *target,
+	const char *fstype, unsigned int flags, const void *data)
+{
+	int ret;
+
+	__asm__ __volatile__(
+		"int $0x80"
+		: "=a"(ret)
+		: "0"(SYS_MOUNT),
+		  "b"(source),
+		  "c"(target),
+		  "d"(fstype),
+		  "S"(flags),
+		  "D"(data)
+		: "memory"
+	);
+
+	return ret;
+}
+
+static int ensure_proc_partitions(void)
+{
+	struct stat st;
+	int ret;
+
+	if (stat("/proc/partitions", &st) == 0) {
+		return 0;
+	}
+
+	if (mkdir("/proc", 0755) != 0 && errno != EEXIST) {
+		return 1;
+	}
+
+	ret = sys_mount("proc", "/proc", "proc", 0U, (const void *)0);
+	if (ret < 0) {
+		return 1;
+	}
+
+	if (stat("/proc/partitions", &st) != 0) {
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -229,9 +275,10 @@ static void usage(const char *name)
 {
 	fprintf(stderr,
 		"Usage:\n"
+		"  %s --mount-proc\n"
 		"  %s --probe <device>\n"
 		"  %s --device <device> <dest-dir>\n",
-		name, name);
+		name, name, name);
 }
 
 int main(int argc, char **argv)
@@ -239,6 +286,10 @@ int main(int argc, char **argv)
 	const char *device = NULL;
 	const char *dest_dir = NULL;
 	int i;
+
+	if (argc == 2 && strcmp(argv[1], "--mount-proc") == 0) {
+		return ensure_proc_partitions();
+	}
 
 	if (argc == 3 && strcmp(argv[1], "--probe") == 0) {
 		return has_payload_magic(argv[2]);

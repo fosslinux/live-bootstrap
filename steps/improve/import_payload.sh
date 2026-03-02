@@ -11,6 +11,10 @@ if [ "${PAYLOAD_REQUIRED}" = True ]; then
     mkdir -p /dev
 
     if [ ! -r /proc/partitions ]; then
+        payload-import --mount-proc >/dev/null 2>&1 || :
+    fi
+
+    if [ ! -r /proc/partitions ]; then
         echo "payload-import failed: /proc/partitions is unavailable." >&2
         exit 1
     fi
