@@ -1,15 +1,14 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Fix legacy strtod declaration to match modern libc prototype.
+Drop obsolete K&R-style strtod declaration in node.c.
 
 --- gawk-4.2.1/node.c
 +++ gawk-4.2.1/node.c
-@@ -62,7 +62,7 @@
- #endif
- 
- #ifndef __STDC__
+@@ -62,7 +62,6 @@ r_force_number(NODE *n)
+ 	char *cpend;
+ 	char save;
+ 	char *ptr;
 -	extern double strtod();
-+	extern double strtod(const char *, char **);
- #endif
  
- /* r_force_number --- force a value to be numeric */
+ 	if ((n->flags & NUMCUR) != 0)
+ 		return n;
