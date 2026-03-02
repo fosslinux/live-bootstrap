@@ -126,11 +126,14 @@ static int has_payload_magic(const char *path)
 	return 0;
 }
 
+#ifndef __i386__
+#error "This is only for x86 i386 fiwix/linux"
+#endif
 static int sys_mount(const char *source, const char *target,
 	const char *fstype, unsigned int flags, const void *data)
 {
 	int ret;
-
+	// Only for x86 fiwix/linux
 	__asm__ __volatile__(
 		"int $0x80"
 		: "=a"(ret)
