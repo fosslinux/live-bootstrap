@@ -57,7 +57,6 @@ improve: setup_repo
 improve: update_env
 improve: merged_usr
 improve: populate_device_nodes
-improve: import_payload ( KERNEL_BOOTSTRAP == True )
 define: CONSOLES = ( INTERACTIVE == True && CHROOT == False )
 improve: open_console ( CONSOLES == True )
 build: tcc-0.9.27
@@ -134,6 +133,7 @@ jump: break ( INTERNAL_CI == pass1 )
 improve: populate_device_nodes
 jump: linux ( CHROOT == False )
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
+improve: import_payload ( KERNEL_BOOTSTRAP == True )
 improve: finalize_job_count
 improve: finalize_fhs
 improve: open_console ( CONSOLES == True )
