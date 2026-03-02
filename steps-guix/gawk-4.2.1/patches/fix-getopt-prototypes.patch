@@ -1,0 +1,26 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Fix legacy getopt declarations that conflict with modern libc headers.
+
+--- gawk-4.2.1/support/getopt.c
++++ gawk-4.2.1/support/getopt.c
+@@ -152,7 +152,7 @@
+    whose names are inconsistent.  */
+ 
+ #ifndef getenv
+-extern char *getenv ();
++extern char *getenv (const char *);
+ #endif
+ 
+ #endif /* not __GNU_LIBRARY__ */
+--- gawk-4.2.1/support/getopt.h
++++ gawk-4.2.1/support/getopt.h
+@@ -181,7 +181,7 @@
+ #  endif
+ # endif
+ #else /* not __GNU_LIBRARY__ */
+-extern int getopt ();
++extern int getopt (int, char *const *, const char *);
+ #endif /* __GNU_LIBRARY__ */
+ 
+ #ifndef __need_getopt
