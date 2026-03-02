@@ -27,6 +27,8 @@ src_prepare() {
         -e "s|@EXEC_XZ_HASH@|${EXEC_XZ_HASH}|g" \
         -e "s|@STATIC_BINARIES_SEED_HASH@|${STATIC_BINARIES_SEED_HASH}|g" \
         -e "s|@GUILE_SEED_HASH@|${GUILE_SEED_HASH}|g" \
+        -e "s|@MES_MINIMAL_SEED_HASH@|${MES_MINIMAL_SEED_HASH}|g" \
+        -e "s|@MESCC_TOOLS_SEED_HASH@|${MESCC_TOOLS_SEED_HASH}|g" \
         "${patch_template}" > "${rendered_patch}"
 
     if grep -Eq '@[A-Z0-9_]+@' "${rendered_patch}"; then
@@ -41,8 +43,12 @@ src_prepare() {
     grep -q "${EXEC_BASH_HASH}" "${bootstrap_scm}"
     grep -q "${STATIC_BINARIES_SEED_HASH}" "${bootstrap_scm}"
     grep -q "${GUILE_SEED_HASH}" "${bootstrap_scm}"
+    grep -q "${MES_MINIMAL_SEED_HASH}" "${bootstrap_scm}"
+    grep -q "${MESCC_TOOLS_SEED_HASH}" "${bootstrap_scm}"
     grep -q "All bootstrap binaries must come from local, reproducible distfiles." "${bootstrap_scm}"
     grep -q "%bootstrap-linux-headers-base-urls" "${bootstrap_scm}"
+    grep -q "mes-minimal-stripped-0.19-i686-linux.tar.xz" "${bootstrap_scm}"
+    grep -q "mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz" "${bootstrap_scm}"
     grep -q "Offline bootstrap environment: require explicit channels." guix/channels.scm
 }
 

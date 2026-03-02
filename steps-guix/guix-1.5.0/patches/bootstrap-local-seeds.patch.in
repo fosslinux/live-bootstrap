@@ -97,6 +97,76 @@
                                ("armhf-linux"
                                 (base32
                                  "0gf0fn2kbpxkjixkmx5f4z6hv6qpmgixl69zgg74dbsfdfj8jdv5"))
+@@ -675,6 +672,44 @@
+                            (if (not (elf-file? "bin/egrep"))
+                              (substitute* '("bin/egrep" "bin/fgrep")
+                                (("^exec grep") (string-append (getcwd) "/bin/grep"))))
+                            (chmod "bin" #o555))))
++
++(define (bootstrap-mes-minimal-origin system)
++  (origin
++    (method url-fetch)
++    (uri (map (cut string-append <>
++                   "/mes-minimal-stripped-0.19-i686-linux.tar.xz")
++              %bootstrap-base-urls))
++    (sha256
++     (match system
++       ((or "i686-linux" "x86_64-linux")
++        (base32 "@MES_MINIMAL_SEED_HASH@"))
++       (_
++        (base32 "@MES_MINIMAL_SEED_HASH@"))))))
++
++(define %bootstrap-mes-minimal
++  (package-from-tarball "mes-minimal-bootstrap"
++                        bootstrap-mes-minimal-origin
++                        "mes"
++                        "Bootstrap Mes minimal binary seed"))
++
++(define (bootstrap-mescc-tools-origin system)
++  (origin
++    (method url-fetch)
++    (uri (map (cut string-append <>
++                   "/mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz")
++              %bootstrap-base-urls))
++    (sha256
++     (match system
++       ((or "i686-linux" "x86_64-linux")
++        (base32 "@MESCC_TOOLS_SEED_HASH@"))
++       (_
++        (base32 "@MESCC_TOOLS_SEED_HASH@"))))))
++
++(define %bootstrap-mescc-tools
++  (package-from-tarball "mescc-tools-bootstrap"
++                        bootstrap-mescc-tools-origin
++                        "M2-Planet"
++                        "Bootstrap MesCC tools binary seed"))
+ (define-public %bootstrap-linux-libre-headers
+   (package-from-tarball
+@@ -989,11 +1022,15 @@
+   ;; own packages.
+   (match (%current-system)
+     ((or "i686-linux" "x86_64-linux")
+-     `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)))
++     `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
++       ("mes-minimal" ,%bootstrap-mes-minimal)
++       ("mescc-tools" ,%bootstrap-mescc-tools)))
+     (_
+      `(("libc" ,%bootstrap-glibc)
+        ("gcc" ,%bootstrap-gcc)
+        ("binutils" ,%bootstrap-binutils)
+        ("coreutils&co" ,%bootstrap-coreutils&co)
++       ("mes-minimal" ,%bootstrap-mes-minimal)
++       ("mescc-tools" ,%bootstrap-mescc-tools)
+        ;; In gnu-build-system.scm, we rely on the availability of Bash.
+        ("bash" ,%bootstrap-coreutils&co)))))
+@@ -1005,5 +1042,7 @@
+   `(("libc" ,%bootstrap-glibc)
+     ("gcc" ,%bootstrap-gcc)
+     ("binutils" ,%bootstrap-binutils)
+     ("coreutils&co" ,%bootstrap-coreutils&co)
++    ("mes-minimal" ,%bootstrap-mes-minimal)
++    ("mescc-tools" ,%bootstrap-mescc-tools)
+     ("bash" ,%bootstrap-coreutils&co)))
 --- a/guix/channels.scm
 +++ b/guix/channels.scm
 @@ -194,8 +194,8 @@
