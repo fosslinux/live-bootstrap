@@ -37,10 +37,14 @@ class Generator():
         self.repo_path = repo_path
         self.mirrors = mirrors
         self.build_guix_also = build_guix_also
-        self.source_manifest = self.get_source_manifest(not self.external_sources,
-                                                        build_guix_also=self.build_guix_also)
-        self.early_source_manifest = self.get_source_manifest(True,
-                                                              build_guix_also=self.build_guix_also)
+        self.source_manifest = self.get_source_manifest(
+            stop_before_improve=("get_network" if not self.external_sources else None),
+            build_guix_also=self.build_guix_also
+        )
+        self.early_source_manifest = self.get_source_manifest(
+            stop_before_improve="get_network",
+            build_guix_also=self.build_guix_also
+        )
         self.bootstrap_source_manifest = self.source_manifest
         self.payload_source_manifest = []
         self.payload_image = None
@@ -59,11 +63,17 @@ class Generator():
         """
         Split early source payload from full offline payload.
         """
-        # Keep the early builder payload small enough to avoid overrunning
-        # builder-hex0 memory file allocation before we can jump into Fiwix.
-        self.bootstrap_source_manifest = self.get_source_manifest(True, build_guix_also=False)
+        # Keep the early builder payload small: include only sources needed
+        # before improve: import_payload runs, so payload.img is the primary
+        # carrier for the rest of the offline distfiles.
+        self.bootstrap_source_manifest = self.get_source_manifest(
+            stop_before_improve="import_payload",
+            build_guix_also=False
+        )
 
-        full_manifest = self.get_source_manifest(False, build_guix_also=self.build_guix_also)
+        full_manifest = self.get_source_manifest(build_guix_also=self.build_guix_also)
+        if self.bootstrap_source_manifest == full_manifest:
+            raise ValueError("steps/manifest must include `improve: import_payload` in kernel-bootstrap mode.")
         bootstrap_set = set(self.bootstrap_source_manifest)
         self.payload_source_manifest = [entry for entry in full_manifest if entry not in bootstrap_set]
 
@@ -83,11 +93,12 @@ class Generator():
             self.check_file(distfile_path, checksum)
 
     def _create_raw_payload_image(self, target_path, manifest):
-        if not manifest:
-            return None
+        if manifest is None:
+            manifest = []
 
-        # Guarantee all payload distfiles exist and match checksums.
-        self._ensure_manifest_distfiles(manifest)
+        if manifest:
+            # Guarantee all payload distfiles exist and match checksums.
+            self._ensure_manifest_distfiles(manifest)
 
         files_by_name = {}
         for checksum, _, _, file_name in manifest:
@@ -180,7 +191,9 @@ class Generator():
             if self.repo_path or self.external_sources:
                 mkfs_args = ['-d', os.path.join(target.path, 'external')]
                 target.add_disk("external", filesystem="ext3", mkfs_args=mkfs_args)
-            elif self.payload_source_manifest:
+            else:
+                # Offline kernel-bootstrap mode keeps the early image small and
+                # puts remaining distfiles in payload.img.
                 self.payload_image = self._create_raw_payload_image(target.path, self.payload_source_manifest)
                 target.add_existing_disk("payload", self.payload_image)
         elif using_kernel:
@@ -420,7 +433,7 @@ this script the next time")
             self.check_file(path, line[0])
 
     @classmethod
-    def get_source_manifest(cls, pre_network=False, build_guix_also=False):
+    def get_source_manifest(cls, stop_before_improve=None, build_guix_also=False):
         """
         Generate a source manifest for the system.
         """
@@ -443,10 +456,13 @@ this script the next time")
 
             with open(manifest_path, 'r', encoding="utf_8") as file:
                 for line in file:
-                    if pre_network and line.strip().startswith("improve: ") and "network" in line:
-                        break
+                    stripped = line.strip()
+                    if stop_before_improve and stripped.startswith("improve: "):
+                        improve_step = stripped.split(" ")[1].split("#")[0].strip()
+                        if improve_step == stop_before_improve:
+                            break
 
-                    if not line.strip().startswith("build: "):
+                    if not stripped.startswith("build: "):
                         continue
 
                     step = line.split(" ")[1].split("#")[0].strip()

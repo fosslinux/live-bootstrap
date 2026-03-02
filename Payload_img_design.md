@@ -1,0 +1,102 @@
+# live-bootstrap
+
+This repository uses [`README.rst`](./README.rst) as the canonical main documentation.
+
+## Kernel-bootstrap `payload.img`
+
+`payload.img` is a raw container disk used in kernel-bootstrap offline mode
+(`--repo` and `--external-sources` are both unset).
+
+### Why not put everything in the initial image?
+
+In kernel-bootstrap mode, the first boot image is consumed by very early
+runtime code before the system reaches the normal bash-based build stage.
+That early stage has tight assumptions about memory layout and file table usage.
+
+When too many distfiles are packed into the initial image, those assumptions can
+be exceeded, which leads to unstable handoff behavior (for example, failures
+around the Fiwix transition in QEMU or on bare metal).
+
+So the design is intentionally split:
+
+- Initial image: only what is required to reach `improve: import_payload`
+- `payload.img`: the rest of offline distfiles
+
+This is not a patch-style workaround. It is a two-phase transport design that
+keeps early boot deterministic and moves bulk data import to a stage where the
+runtime is robust enough to process it safely.
+
+### Why import from an external image and copy into main filesystem?
+
+Because the bootstrap still expects distfiles to end up under the normal local
+path (`/external/distfiles`) for later steps. `payload.img` is used as a
+transport medium only.
+
+The flow is:
+
+1. Boot minimal initial image.
+2. Reach `improve: import_payload`.
+3. Detect the payload disk by magic (`LBPAYLD1`) across detected block devices.
+4. Copy payload files into `/external/distfiles`.
+5. Continue the build exactly as if files had been present locally all along.
+
+### Format
+
+- Magic: `LBPAYLD1` (8 bytes)
+- Then: little-endian `u32` file count
+- Repeated entries:
+  - little-endian `u32` name length
+  - little-endian `u32` file size
+  - file name bytes (no terminator)
+  - file bytes
+
+The importer probes detected block devices and selects the one with magic `LBPAYLD1`.
+
+### Manual creation without Python
+
+Prepare `payload.list` as:
+
+```text
+<archive-name> <absolute-path-to-archive>
+```
+
+Then:
+
+```sh
+cat > make-payload.sh <<'SH'
+#!/bin/sh
+set -e
+out="${1:-payload.img}"
+list="${2:-payload.list}"
+
+write_u32le() {
+  v="$1"
+  printf '%08x' "$v" | sed -E 's/(..)(..)(..)(..)/\4\3\2\1/' | xxd -r -p
+}
+
+count="$(wc -l < "${list}" | tr -d ' ')"
+: > "${out}"
+printf 'LBPAYLD1' >> "${out}"
+write_u32le "${count}" >> "${out}"
+
+while read -r name path; do
+  [ -n "${name}" ] || continue
+  size="$(wc -c < "${path}" | tr -d ' ')"
+  write_u32le "${#name}" >> "${out}"
+  write_u32le "${size}" >> "${out}"
+  printf '%s' "${name}" >> "${out}"
+  cat "${path}" >> "${out}"
+done < "${list}"
+SH
+chmod +x make-payload.sh
+./make-payload.sh payload.img payload.list
+```
+
+Attach `payload.img` as an extra raw disk in QEMU, or as the second disk on bare metal.
+
+### When it is used
+
+- Used in kernel-bootstrap offline mode.
+- Not used when `--repo` or `--external-sources` is provided.
+- `--build-guix-also` increases payload contents (includes post-early `steps-guix`
+  sources), but does not change the mechanism.

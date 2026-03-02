@@ -71,12 +71,14 @@ with open(config_path, "r", encoding="utf-8") as cfg:
         if not line.startswith("BUILD_GUIX_ALSO=")
         and not line.startswith("MIRRORS=")
         and not line.startswith("MIRRORS_LEN=")
+        and not line.startswith("PAYLOAD_REQUIRED=")
     ]
 if build_guix_also:
     lines.append("BUILD_GUIX_ALSO=True\\n")
 if mirrors:
     lines.append(f'MIRRORS="{" ".join(mirrors)}"\\n')
     lines.append(f"MIRRORS_LEN={len(mirrors)}\\n")
+lines.append("PAYLOAD_REQUIRED=False\\n")
 with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
 
@@ -470,9 +472,10 @@ print(shutil.which('chroot'))
                 arg_list += [
                     '-drive', 'file=' + target.get_disk("external") + ',format=raw',
                 ]
-            if target.get_disk("payload") is not None:
+            payload_disk = target.get_disk("payload")
+            if payload_disk is not None:
                 arg_list += [
-                    '-drive', 'file=' + target.get_disk("payload") + ',format=raw',
+                    '-drive', 'file=' + payload_disk + ',format=raw',
                 ]
             arg_list += [
                 '-machine', 'kernel-irqchip=split',

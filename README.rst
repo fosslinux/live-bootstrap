@@ -63,16 +63,77 @@ Without using Python:
 
         * *Only* copy distfiles listed in ``sources`` files for ``build:`` steps
           manifested before ``improve: get_network`` into this disk.
-      * Optionally (if you don't do this, distfiles will be network downloaded):
+      * In kernel-bootstrap offline mode (no ``--repo`` and no
+        ``--external-sources``), use the second image as ``payload.img``.
+        ``payload.img`` is a raw container (not a filesystem) used to carry the
+        distfiles that are not needed before ``improve: import_payload``.
+        In other words, the first image only carries the minimal set needed to
+        reach the importer; the rest of the offline distfiles live in payload.
 
-        * On the second image, create an MSDOS partition table and one ext3
-          partition.
-        * Copy ``distfiles/`` into this disk.
-      * Run QEMU, with 4+G RAM, optionally SMP (multicore), both drives (in the
-        order introduced above), a NIC with model E1000
+        * Header magic: ``LBPAYLD1`` (8 bytes).
+        * Then: little-endian ``u32`` file count.
+        * Repeated for each file: little-endian ``u32`` name length,
+          little-endian ``u32`` file size, raw file name bytes, raw file bytes.
+
+      * If you are not in that mode, the second disk can still be used as an
+        optional ext3 distfiles disk, as before.
+      * Run QEMU, with 4+G RAM, optionally SMP (multicore), both drives (main
+        builder image plus payload/ext3 image), a NIC with model E1000
         (``-nic user,model=e1000``), and ``-machine kernel-irqchip=split``.
    c. **Bare metal:** Follow the same steps as QEMU, but the disks need to be
       two different *physical* disks, and boot from the first disk.
+
+Manual ``payload.img`` preparation
+----------------------------------
+
+The following script creates a raw ``payload.img`` from a manually prepared
+file list. This is equivalent to what ``rootfs.py`` does for kernel-bootstrap
+offline mode.
+
+1. Prepare a ``payload.list`` with one file per line, formatted as:
+   ``<archive-name> <absolute-path-to-archive>``.
+2. Run:
+
+   ::
+
+      cat > make-payload.sh <<'EOF'
+      #!/bin/sh
+      set -e
+      out="${1:-payload.img}"
+      list="${2:-payload.list}"
+
+      write_u32le() {
+          v="$1"
+          printf '%08x' "$v" | sed -E 's/(..)(..)(..)(..)/\4\3\2\1/' | xxd -r -p
+      }
+
+      count="$(wc -l < "${list}" | tr -d ' ')"
+      : > "${out}"
+      printf 'LBPAYLD1' >> "${out}"
+      write_u32le "${count}" >> "${out}"
+
+      while read -r name path; do
+          [ -n "${name}" ] || continue
+          size="$(wc -c < "${path}" | tr -d ' ')"
+          write_u32le "${#name}" >> "${out}"
+          write_u32le "${size}" >> "${out}"
+          printf '%s' "${name}" >> "${out}"
+          cat "${path}" >> "${out}"
+      done < "${list}"
+      EOF
+      chmod +x make-payload.sh
+      ./make-payload.sh payload.img payload.list
+
+3. Attach ``payload.img`` as an additional raw disk when booting in QEMU, or
+   as the second physical disk on bare metal.
+
+Notes:
+
+* ``payload.img`` is used in kernel-bootstrap offline mode regardless of
+  ``--build-guix-also``. With ``--build-guix-also``, the payload content is
+  larger because it also includes post-early sources from ``steps-guix``.
+* The runtime importer identifies the correct disk by checking the magic
+  ``LBPAYLD1`` on each detected block device, not by assuming a device name.
 
 Mirrors
 -------
