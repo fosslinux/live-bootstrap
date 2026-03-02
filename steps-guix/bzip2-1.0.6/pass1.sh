@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 SEED_PREFIX="/bootstrap-seeds/bzip2-1.0.6"
+SYSTEM_PREFIX="/usr"
 
 src_configure() {
     :
@@ -11,5 +12,6 @@ src_compile() {
 }
 
 src_install() {
+    make PREFIX="${SYSTEM_PREFIX}" DESTDIR="${DESTDIR}" install
     make PREFIX="${SEED_PREFIX}" DESTDIR="${DESTDIR}" install
 }
