@@ -37,7 +37,8 @@ static int read_exact(FILE *in, void *buf, unsigned int len)
 	return 0;
 }
 
-static int copy_exact(FILE *in, FILE *out, unsigned int len)
+static int copy_exact(FILE *in, FILE *out, unsigned int len,
+	const char *device, const char *name, const char *out_path)
 {
 	unsigned char *buf;
 	unsigned int remaining = len;
@@ -50,16 +51,34 @@ static int copy_exact(FILE *in, FILE *out, unsigned int len)
 
 	while (remaining > 0) {
 		unsigned int chunk = remaining;
+		unsigned int copied = len - remaining;
+		size_t nread;
 		size_t written;
 		if (chunk > COPY_BUFSZ) {
 			chunk = COPY_BUFSZ;
 		}
-		if (read_exact(in, buf, chunk) != 0) {
+		nread = fread(buf, 1, chunk, in);
+		if (nread != chunk) {
+			if (feof(in)) {
+				fprintf(stderr,
+					"payload-import: truncated payload while reading %s from %s "
+					"(offset=%u wanted=%u got=%u)\n",
+					name, device, copied, chunk, (unsigned int)nread);
+			} else {
+				fprintf(stderr,
+					"payload-import: read error while reading %s from %s "
+					"(offset=%u): %s\n",
+					name, device, copied, strerror(errno));
+			}
 			free(buf);
 			return 1;
 		}
 		written = fwrite(buf, 1, chunk, out);
 		if (written != chunk) {
+			fprintf(stderr,
+				"payload-import: write error while writing %s to %s "
+				"(offset=%u wanted=%u wrote=%u): %s\n",
+				name, out_path, copied, chunk, (unsigned int)written, strerror(errno));
 			free(buf);
 			return 1;
 		}
@@ -254,10 +273,10 @@ static int extract_payload(const char *device, const char *dest_dir)
 			return 1;
 		}
 
-		if (copy_exact(in, out, data_len) != 0) {
-			fprintf(stderr, "payload-import: failed while copying %s\n", name);
+		if (copy_exact(in, out, data_len, device, name, out_path) != 0) {
 			free(name);
 			fclose(out);
+			unlink(out_path);
 			fclose(in);
 			return 1;
 		}
