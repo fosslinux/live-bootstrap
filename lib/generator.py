@@ -37,14 +37,19 @@ class Generator():
         self.repo_path = repo_path
         self.mirrors = mirrors
         self.build_guix_also = build_guix_also
-        self.source_manifest = self.get_source_manifest(
-            stop_before_improve=("get_network" if not self.external_sources else None),
-            build_guix_also=self.build_guix_also
-        )
-        self.early_source_manifest = self.get_source_manifest(
+        self.pre_network_source_manifest = self.get_source_manifest(
             stop_before_improve="get_network",
-            build_guix_also=self.build_guix_also
+            build_guix_also=False,
         )
+        self.pre_import_source_manifest = self.get_source_manifest(
+            stop_before_improve="import_payload",
+            build_guix_also=False,
+        )
+        # Only raw-external mode needs full upfront availability for container generation.
+        if self.external_sources and not self.repo_path:
+            self.source_manifest = self.get_source_manifest(build_guix_also=self.build_guix_also)
+        else:
+            self.source_manifest = self.pre_network_source_manifest
         self.bootstrap_source_manifest = self.source_manifest
         self.external_source_manifest = []
         self.external_image = None
@@ -81,7 +86,7 @@ class Generator():
         # Network-only mode keeps pre-network distfiles inside init image.
         self.external_dir = os.path.join(self.target_dir, 'external')
         self.kernel_bootstrap_mode = "network_only"
-        self.bootstrap_source_manifest = self.early_source_manifest
+        self.bootstrap_source_manifest = self.pre_network_source_manifest
         self.external_source_manifest = []
 
     def _prepare_kernel_bootstrap_external_manifests(self):
@@ -91,10 +96,7 @@ class Generator():
         # Keep the early builder image small: include only sources needed
         # before improve: import_payload runs, so external.img is the primary
         # carrier for the remaining distfiles.
-        self.bootstrap_source_manifest = self.get_source_manifest(
-            stop_before_improve="import_payload",
-            build_guix_also=False
-        )
+        self.bootstrap_source_manifest = self.pre_import_source_manifest
 
         full_manifest = self.get_source_manifest(build_guix_also=self.build_guix_also)
         if self.bootstrap_source_manifest == full_manifest:
@@ -107,9 +109,9 @@ class Generator():
         Return the exact manifest that is allowed inside init image.
         """
         mode_to_manifest = {
-            "network_only": self.early_source_manifest,      # up to get_network
+            "network_only": self.pre_network_source_manifest,  # up to get_network
             "raw_external": self.bootstrap_source_manifest,  # up to import_payload
-            "repo": self.bootstrap_source_manifest,          # keep existing behavior
+            "repo": self.pre_network_source_manifest,        # up to get_network
         }
         manifest = mode_to_manifest.get(self.kernel_bootstrap_mode)
         if manifest is None:
@@ -293,13 +295,13 @@ class Generator():
         if self.kernel_bootstrap_mode is not None:
             # Kernel bootstrap always copies a bounded manifest, never full distfiles tree.
             init_manifest = self._kernel_bootstrap_init_manifest()
-            self._copy_manifest_distfiles(distfile_dir, init_manifest)
+            init_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
+            self._copy_manifest_distfiles(init_distfile_dir, init_manifest)
 
             if self.kernel_bootstrap_mode == "repo":
                 # Repo mode also stages the same bounded set for the second ext3 disk.
-                staged_distfile_dir = os.path.join(os.path.dirname(self.target_dir),
-                                                   'external', 'distfiles')
-                if staged_distfile_dir != distfile_dir:
+                staged_distfile_dir = distfile_dir
+                if staged_distfile_dir != init_distfile_dir:
                     self._copy_manifest_distfiles(staged_distfile_dir, init_manifest)
             return
 
