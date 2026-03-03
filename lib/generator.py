@@ -102,6 +102,20 @@ class Generator():
         bootstrap_set = set(self.bootstrap_source_manifest)
         self.external_source_manifest = [entry for entry in full_manifest if entry not in bootstrap_set]
 
+    def _kernel_bootstrap_init_manifest(self):
+        """
+        Return the exact manifest that is allowed inside init image.
+        """
+        mode_to_manifest = {
+            "network_only": self.early_source_manifest,      # up to get_network
+            "raw_external": self.bootstrap_source_manifest,  # up to import_payload
+            "repo": self.bootstrap_source_manifest,          # keep existing behavior
+        }
+        manifest = mode_to_manifest.get(self.kernel_bootstrap_mode)
+        if manifest is None:
+            raise ValueError(f"Unexpected kernel bootstrap mode: {self.kernel_bootstrap_mode}")
+        return manifest
+
     def _copy_manifest_distfiles(self, out_dir, manifest):
         os.makedirs(out_dir, exist_ok=True)
         for entry in manifest:
@@ -276,20 +290,17 @@ class Generator():
         """Copy in distfiles"""
         distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
-        if self.kernel_bootstrap_mode == "raw_external":
-            self._copy_manifest_distfiles(distfile_dir, self.bootstrap_source_manifest)
-            return
+        if self.kernel_bootstrap_mode is not None:
+            # Kernel bootstrap always copies a bounded manifest, never full distfiles tree.
+            init_manifest = self._kernel_bootstrap_init_manifest()
+            self._copy_manifest_distfiles(distfile_dir, init_manifest)
 
-        if self.kernel_bootstrap_mode == "network_only":
-            self._copy_manifest_distfiles(distfile_dir, self.early_source_manifest)
-            return
-
-        if self.kernel_bootstrap_mode == "repo":
-            # Repo mode needs early distfiles in init image and staged external disk.
-            init_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
-            self._copy_manifest_distfiles(init_distfile_dir, self.bootstrap_source_manifest)
-            if init_distfile_dir != distfile_dir:
-                self._copy_manifest_distfiles(distfile_dir, self.bootstrap_source_manifest)
+            if self.kernel_bootstrap_mode == "repo":
+                # Repo mode also stages the same bounded set for the second ext3 disk.
+                staged_distfile_dir = os.path.join(os.path.dirname(self.target_dir),
+                                                   'external', 'distfiles')
+                if staged_distfile_dir != distfile_dir:
+                    self._copy_manifest_distfiles(staged_distfile_dir, init_manifest)
             return
 
         if self.external_sources:
