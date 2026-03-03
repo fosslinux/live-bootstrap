@@ -65,15 +65,21 @@ class Generator():
         Select how kernel-bootstrap should transport distfiles.
         """
         if self.repo_path:
+            # Keep second-disk staging outside init image for ext3 repo mode.
+            self.external_dir = os.path.join(os.path.dirname(self.target_dir), 'external')
             self.kernel_bootstrap_mode = "repo"
             self.external_source_manifest = []
             return
 
         if self.external_sources:
+            # Raw external container mode keeps early distfiles inside init image.
+            self.external_dir = os.path.join(self.target_dir, 'external')
             self.kernel_bootstrap_mode = "raw_external"
             self._prepare_kernel_bootstrap_external_manifests()
             return
 
+        # Network-only mode keeps pre-network distfiles inside init image.
+        self.external_dir = os.path.join(self.target_dir, 'external')
         self.kernel_bootstrap_mode = "network_only"
         self.bootstrap_source_manifest = self.early_source_manifest
         self.external_source_manifest = []
@@ -270,12 +276,20 @@ class Generator():
         """Copy in distfiles"""
         distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
-        if self.kernel_bootstrap_mode in ("raw_external", "repo"):
+        if self.kernel_bootstrap_mode == "raw_external":
             self._copy_manifest_distfiles(distfile_dir, self.bootstrap_source_manifest)
             return
 
         if self.kernel_bootstrap_mode == "network_only":
             self._copy_manifest_distfiles(distfile_dir, self.early_source_manifest)
+            return
+
+        if self.kernel_bootstrap_mode == "repo":
+            # Repo mode needs early distfiles in init image and staged external disk.
+            init_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
+            self._copy_manifest_distfiles(init_distfile_dir, self.bootstrap_source_manifest)
+            if init_distfile_dir != distfile_dir:
+                self._copy_manifest_distfiles(distfile_dir, self.bootstrap_source_manifest)
             return
 
         if self.external_sources:
