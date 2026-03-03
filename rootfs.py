@@ -109,20 +109,17 @@ with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
 
 if build_guix_also:
-    init_path = os.path.join(mountpoint, "init")
-    if not os.path.isfile(init_path):
-        raise SystemExit(f"Missing /init in stage0 image: {init_path}")
-    with open(init_path, "r", encoding="utf-8") as init_file:
-        if "run_steps_guix_if_requested()" not in init_file.read():
-            raise SystemExit(
-                "Stage0 image /init does not include guix handoff. "
-                "Rebuild once with current steps/improve/make_bootable.sh."
-            )
-
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")
-    if os.path.exists(dest_steps_guix):
-        shutil.rmtree(dest_steps_guix)
-    shutil.copytree(steps_guix_dir, dest_steps_guix)
+    has_resume_scripts = False
+    if os.path.isdir(dest_steps_guix):
+        for entry in os.listdir(dest_steps_guix):
+            if entry.endswith(".sh") and entry[:-3].isdigit():
+                has_resume_scripts = True
+                break
+    if not has_resume_scripts:
+        if os.path.exists(dest_steps_guix):
+            shutil.rmtree(dest_steps_guix)
+        shutil.copytree(steps_guix_dir, dest_steps_guix)
 
 if break_scope and break_step:
     if internal_ci in ("", "False"):
