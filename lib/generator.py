@@ -26,7 +26,7 @@ class Generator():
 
     git_dir = os.path.join(os.path.dirname(os.path.join(__file__)), '..')
     distfiles_dir = os.path.join(git_dir, 'distfiles')
-    payload_magic = b'LBPAYLD1'
+    raw_container_magic = b'LBPAYLD1'
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors,
@@ -46,8 +46,9 @@ class Generator():
             build_guix_also=self.build_guix_also
         )
         self.bootstrap_source_manifest = self.source_manifest
-        self.payload_source_manifest = []
-        self.payload_image = None
+        self.external_source_manifest = []
+        self.external_image = None
+        self.kernel_bootstrap_mode = None
         self.target_dir = None
         self.external_dir = None
 
@@ -59,13 +60,31 @@ class Generator():
         self.external_dir = os.path.join(self.target_dir, 'external')
         self.distfiles()
 
-    def _prepare_kernel_bootstrap_payload_manifests(self):
+    def _select_kernel_bootstrap_mode(self):
         """
-        Split early source payload from full offline payload.
+        Select how kernel-bootstrap should transport distfiles.
         """
-        # Keep the early builder payload small: include only sources needed
-        # before improve: import_payload runs, so payload.img is the primary
-        # carrier for the rest of the offline distfiles.
+        if self.repo_path:
+            self.kernel_bootstrap_mode = "repo"
+            self.external_source_manifest = []
+            return
+
+        if self.external_sources:
+            self.kernel_bootstrap_mode = "raw_external"
+            self._prepare_kernel_bootstrap_external_manifests()
+            return
+
+        self.kernel_bootstrap_mode = "network_only"
+        self.bootstrap_source_manifest = self.early_source_manifest
+        self.external_source_manifest = []
+
+    def _prepare_kernel_bootstrap_external_manifests(self):
+        """
+        Split distfiles between init image and external raw container.
+        """
+        # Keep the early builder image small: include only sources needed
+        # before improve: import_payload runs, so external.img is the primary
+        # carrier for the remaining distfiles.
         self.bootstrap_source_manifest = self.get_source_manifest(
             stop_before_improve="import_payload",
             build_guix_also=False
@@ -75,7 +94,7 @@ class Generator():
         if self.bootstrap_source_manifest == full_manifest:
             raise ValueError("steps/manifest must include `improve: import_payload` in kernel-bootstrap mode.")
         bootstrap_set = set(self.bootstrap_source_manifest)
-        self.payload_source_manifest = [entry for entry in full_manifest if entry not in bootstrap_set]
+        self.external_source_manifest = [entry for entry in full_manifest if entry not in bootstrap_set]
 
     def _copy_manifest_distfiles(self, out_dir, manifest):
         os.makedirs(out_dir, exist_ok=True)
@@ -92,7 +111,7 @@ class Generator():
                 self.download_file(url, directory, file_name)
             self.check_file(distfile_path, checksum)
 
-    def _create_raw_payload_image(self, target_path, manifest):
+    def _create_raw_container_image(self, target_path, manifest, image_name="external.img"):
         if manifest is None:
             manifest = []
 
@@ -103,31 +122,33 @@ class Generator():
         files_by_name = {}
         for checksum, _, _, file_name in manifest:
             if file_name in files_by_name and files_by_name[file_name] != checksum:
-                raise ValueError(f"Conflicting payload file with same name but different hash: {file_name}")
+                raise ValueError(
+                    f"Conflicting container file with same name but different hash: {file_name}"
+                )
             files_by_name[file_name] = checksum
 
-        payload_path = os.path.join(target_path, "payload.img")
+        container_path = os.path.join(target_path, image_name)
         ordered_names = sorted(files_by_name.keys())
-        with open(payload_path, "wb") as payload:
-            payload.write(self.payload_magic)
-            payload.write(struct.pack("<I", len(ordered_names)))
+        with open(container_path, "wb") as container:
+            container.write(self.raw_container_magic)
+            container.write(struct.pack("<I", len(ordered_names)))
             for file_name in ordered_names:
                 file_name_bytes = file_name.encode("utf_8")
                 if len(file_name_bytes) > 0xFFFFFFFF:
-                    raise ValueError(f"Payload file name too long: {file_name}")
+                    raise ValueError(f"Container file name too long: {file_name}")
 
                 src_path = os.path.join(self.distfiles_dir, file_name)
                 file_size = os.path.getsize(src_path)
                 if file_size > 0xFFFFFFFF:
-                    raise ValueError(f"Payload file too large for raw container format: {file_name}")
+                    raise ValueError(f"Container file too large for raw container format: {file_name}")
 
-                payload.write(struct.pack("<II", len(file_name_bytes), file_size))
-                payload.write(file_name_bytes)
+                container.write(struct.pack("<II", len(file_name_bytes), file_size))
+                container.write(file_name_bytes)
 
                 with open(src_path, "rb") as src_file:
-                    shutil.copyfileobj(src_file, payload, 1024 * 1024)
+                    shutil.copyfileobj(src_file, container, 1024 * 1024)
 
-        return payload_path
+        return container_path
 
     def prepare(self, target, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
@@ -138,9 +159,10 @@ class Generator():
         """
         self.target_dir = target.path
         self.external_dir = os.path.join(self.target_dir, 'external')
-        self.payload_image = None
-        self.payload_source_manifest = []
+        self.external_image = None
+        self.external_source_manifest = []
         self.bootstrap_source_manifest = self.source_manifest
+        self.kernel_bootstrap_mode = None
 
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
@@ -153,10 +175,7 @@ class Generator():
         if kernel_bootstrap:
             self.target_dir = os.path.join(self.target_dir, 'init')
             os.mkdir(self.target_dir)
-
-            if not self.repo_path and not self.external_sources:
-                self.external_dir = os.path.join(self.target_dir, 'external')
-                self._prepare_kernel_bootstrap_payload_manifests()
+            self._select_kernel_bootstrap_mode()
         elif using_kernel:
             self.target_dir = os.path.join(self.target_dir, 'disk')
             self.external_dir = os.path.join(self.target_dir, 'external')
@@ -188,14 +207,17 @@ class Generator():
         if kernel_bootstrap:
             self.create_builder_hex0_disk_image(self.target_dir + '.img', target_size)
 
-            if self.repo_path or self.external_sources:
+            if self.kernel_bootstrap_mode == "repo":
                 mkfs_args = ['-d', os.path.join(target.path, 'external')]
                 target.add_disk("external", filesystem="ext3", mkfs_args=mkfs_args)
-            else:
-                # Offline kernel-bootstrap mode keeps the early image small and
-                # puts remaining distfiles in payload.img.
-                self.payload_image = self._create_raw_payload_image(target.path, self.payload_source_manifest)
-                target.add_existing_disk("payload", self.payload_image)
+            elif self.kernel_bootstrap_mode == "raw_external":
+                # external.img is a raw container, imported at improve: import_payload.
+                self.external_image = self._create_raw_container_image(
+                    target.path,
+                    self.external_source_manifest,
+                    image_name="external.img",
+                )
+                target.add_existing_disk("external", self.external_image)
         elif using_kernel:
             mkfs_args = ['-F', '-d', os.path.join(target.path, 'disk')]
             target.add_disk("disk",
@@ -246,16 +268,20 @@ class Generator():
 
     def distfiles(self):
         """Copy in distfiles"""
-        early_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
-        main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
+        distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
-        if early_distfile_dir != main_distfile_dir:
-            self._copy_manifest_distfiles(early_distfile_dir, self.early_source_manifest)
+        if self.kernel_bootstrap_mode in ("raw_external", "repo"):
+            self._copy_manifest_distfiles(distfile_dir, self.bootstrap_source_manifest)
+            return
+
+        if self.kernel_bootstrap_mode == "network_only":
+            self._copy_manifest_distfiles(distfile_dir, self.early_source_manifest)
+            return
 
         if self.external_sources:
-            shutil.copytree(self.distfiles_dir, main_distfile_dir, dirs_exist_ok=True)
+            shutil.copytree(self.distfiles_dir, distfile_dir, dirs_exist_ok=True)
         else:
-            self._copy_manifest_distfiles(main_distfile_dir, self.bootstrap_source_manifest)
+            self._copy_manifest_distfiles(distfile_dir, self.bootstrap_source_manifest)
 
     @staticmethod
     def output_dir(srcfs_file, dirpath):
