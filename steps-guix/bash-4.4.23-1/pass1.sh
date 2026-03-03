@@ -2,6 +2,10 @@
 
 SEED_PREFIX="/bootstrap-seeds/bash-4.4.23-1"
 
+src_prepare() {
+    default
+}
+
 src_configure() {
     ./configure \
         --prefix="${SEED_PREFIX}" \
