@@ -1,0 +1,19 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Fix SIGRETURN for Linux builds when VOID_SIGHANDLER probe is inaccurate.
+
+On modern Linux toolchains, signal handlers return void. If VOID_SIGHANDLER
+is not defined during configure probing, SIGRETURN expands to return(n),
+which fails in void handlers (e.g. eval.c: alrm_catcher).
+
+--- bash-4.4/sig.h
++++ bash-4.4/sig.h
+@@ -34,7 +34,7 @@
+ #define sighandler RETSIGTYPE
+ typedef RETSIGTYPE SigHandler __P((int));
+ 
+-#if defined (VOID_SIGHANDLER)
++#if defined (VOID_SIGHANDLER) || defined (__linux__)
+ #  define SIGRETURN(n)	return
+ #else
+ #  define SIGRETURN(n)	return(n)
