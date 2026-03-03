@@ -12,8 +12,9 @@ src_compile() {
 }
 
 src_install() {
-    make CFLAGS="-O2" LDFLAGS="-static" PREFIX="${SYSTEM_PREFIX}" DESTDIR="${DESTDIR}" install
-    make CFLAGS="-O2" LDFLAGS="-static" PREFIX="${SEED_PREFIX}" DESTDIR="${DESTDIR}" install
+    # Upstream bzip2 Makefile does not support DESTDIR, so PREFIX must include it.
+    make CFLAGS="-O2" LDFLAGS="-static" PREFIX="${DESTDIR}${SYSTEM_PREFIX}" install
+    make CFLAGS="-O2" LDFLAGS="-static" PREFIX="${DESTDIR}${SEED_PREFIX}" install
 
     # Fail early if either installed binary is not executable in this environment.
     "${DESTDIR}${SYSTEM_PREFIX}/bin/bzip2" --help >/dev/null
