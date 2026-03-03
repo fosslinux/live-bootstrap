@@ -26,7 +26,27 @@ from lib.simple_mirror import SimpleMirror
 from lib.target import Target
 from lib.utils import run, run_as_root
 
-def update_stage0_image(image_path, build_guix_also=False, mirrors=None):
+def parse_internal_ci_break_after(value):
+    """
+    Parse INTERNAL_CI break directive in the form '<scope>:<step>'.
+    """
+    if not value:
+        return None, None
+    scope, separator, step_name = value.partition(":")
+    scope = scope.strip()
+    step_name = step_name.strip()
+    if separator != ":" or scope not in ("steps", "steps-guix") or not step_name:
+        raise ValueError(
+            "--internal-ci-break-after must be in the form "
+            "'steps:<name>' or 'steps-guix:<name>'."
+        )
+    return scope, step_name
+
+def update_stage0_image(image_path,
+                        build_guix_also=False,
+                        mirrors=None,
+                        internal_ci=False,
+                        internal_ci_break_after=None):
     """
     Update an existing stage0 image bootstrap config and optional guix handoff bits.
     """
@@ -39,6 +59,7 @@ def update_stage0_image(image_path, build_guix_also=False, mirrors=None):
         manifest = os.path.join(steps_guix_dir, "manifest")
         if not os.path.isdir(steps_guix_dir) or not os.path.isfile(manifest):
             raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
+    break_scope, break_step = parse_internal_ci_break_after(internal_ci_break_after)
 
     mountpoint = tempfile.mkdtemp(prefix="lb-stage0-", dir="/tmp")
     mounted = False
@@ -59,7 +80,10 @@ import sys
 mountpoint = sys.argv[1]
 steps_guix_dir = sys.argv[2]
 build_guix_also = (sys.argv[3] == "True")
-mirrors = sys.argv[4:]
+internal_ci = sys.argv[4]
+break_scope = sys.argv[5]
+break_step = sys.argv[6]
+mirrors = sys.argv[7:]
 
 config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
 if not os.path.isfile(config_path):
@@ -69,6 +93,7 @@ with open(config_path, "r", encoding="utf-8") as cfg:
     lines = [
         line for line in cfg
         if not line.startswith("BUILD_GUIX_ALSO=")
+        and not line.startswith("INTERNAL_CI=")
         and not line.startswith("MIRRORS=")
         and not line.startswith("MIRRORS_LEN=")
         and not line.startswith("PAYLOAD_REQUIRED=")
@@ -78,6 +103,7 @@ if build_guix_also:
 if mirrors:
     lines.append(f'MIRRORS="{" ".join(mirrors)}"\\n')
     lines.append(f"MIRRORS_LEN={len(mirrors)}\\n")
+lines.append(f"INTERNAL_CI={internal_ci}\\n")
 lines.append("PAYLOAD_REQUIRED=False\\n")
 with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
@@ -97,6 +123,42 @@ if build_guix_also:
     if os.path.exists(dest_steps_guix):
         shutil.rmtree(dest_steps_guix)
     shutil.copytree(steps_guix_dir, dest_steps_guix)
+
+if break_scope and break_step:
+    if internal_ci in ("", "False"):
+        raise SystemExit("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
+
+    manifest_path = os.path.join(mountpoint, break_scope, "manifest")
+    if not os.path.isfile(manifest_path):
+        raise SystemExit(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {manifest_path}")
+
+    with open(manifest_path, "r", encoding="utf-8") as manifest_file:
+        manifest_lines = manifest_file.readlines()
+
+    inserted = False
+    break_line = f"jump: break ( INTERNAL_CI == {internal_ci} )\\n"
+    output_lines = []
+    for line in manifest_lines:
+        output_lines.append(line)
+        stripped = line.strip()
+        if inserted or not stripped.startswith("build: "):
+            continue
+
+        step_name = stripped[len("build: "):].split("#", 1)[0].strip()
+        if step_name == break_step:
+            output_lines.append(break_line)
+            inserted = True
+
+    if not inserted:
+        raise SystemExit(
+            "INTERNAL_CI_BREAK_AFTER target not found in "
+            + break_scope
+            + "/manifest: "
+            + break_step
+        )
+
+    with open(manifest_path, "w", encoding="utf-8") as manifest_file:
+        manifest_file.writelines(output_lines)
 '''
         run_as_root(
             "python3",
@@ -105,6 +167,9 @@ if build_guix_also:
             mountpoint,
             steps_guix_dir,
             "True" if build_guix_also else "False",
+            str(internal_ci) if internal_ci else "False",
+            break_scope or "",
+            break_step or "",
             *mirrors,
         )
     finally:
@@ -112,14 +177,23 @@ if build_guix_also:
             run_as_root("umount", mountpoint)
         os.rmdir(mountpoint)
 
-def prepare_stage0_work_image(base_image, output_dir, build_guix_also, mirrors=None):
+def prepare_stage0_work_image(base_image,
+                              output_dir,
+                              build_guix_also,
+                              mirrors=None,
+                              internal_ci=False,
+                              internal_ci_break_after=None):
     """
     Copy stage0 base image to a disposable work image, optionally patching config.
     """
     work_image = os.path.join(output_dir, "stage0-work.img")
     shutil.copy2(base_image, work_image)
-    if build_guix_also or mirrors:
-        update_stage0_image(work_image, build_guix_also=build_guix_also, mirrors=mirrors)
+    if build_guix_also or mirrors or internal_ci or internal_ci_break_after:
+        update_stage0_image(work_image,
+                            build_guix_also=build_guix_also,
+                            mirrors=mirrors,
+                            internal_ci=internal_ci,
+                            internal_ci_break_after=internal_ci_break_after)
     return work_image
 
 def create_configuration_file(args):
@@ -214,6 +288,10 @@ def main():
     parser.add_argument("--early-preseed",
                         help="Skip early stages of live-bootstrap", nargs=None)
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
+    parser.add_argument("--internal-ci-break-after",
+                        help="With --stage0-image: insert a temporary "
+                             "jump: break after a build step using "
+                             "'steps:<name>' or 'steps-guix:<name>'.")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
 
@@ -294,6 +372,10 @@ def main():
         if not os.path.isfile(args.stage0_image):
             raise ValueError(f"Stage0 image does not exist: {args.stage0_image}")
         args.stage0_image = os.path.abspath(args.stage0_image)
+        if args.internal_ci_break_after:
+            if not args.internal_ci:
+                raise ValueError("--internal-ci-break-after requires --internal-ci (e.g. pass1).")
+            parse_internal_ci_break_after(args.internal_ci_break_after)
 
     # Set constant umask
     os.umask(0o022)
@@ -427,6 +509,8 @@ print(shutil.which('chroot'))
                 target.path,
                 args.build_guix_also,
                 mirrors=args.mirrors,
+                internal_ci=args.internal_ci,
+                internal_ci_break_after=args.internal_ci_break_after,
             )
             arg_list = [
                 '-enable-kvm',
