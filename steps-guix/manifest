@@ -60,6 +60,7 @@ build: guile-2.2.4
 build: mes-minimal-stripped-0.19-i686-linux
 # Build mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz
 build: mescc-tools-static-stripped-0.5.2-i686-linux
+# End of Guix Bootstrap seeds
 build: guix-hash-compat-1.5.0
 improve: guix-1.5.0
 build: guix-1.5.0

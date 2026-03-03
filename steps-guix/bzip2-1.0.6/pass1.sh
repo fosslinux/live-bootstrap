@@ -12,6 +12,10 @@ src_compile() {
 }
 
 src_install() {
-    make PREFIX="${SYSTEM_PREFIX}" DESTDIR="${DESTDIR}" install
-    make PREFIX="${SEED_PREFIX}" DESTDIR="${DESTDIR}" install
+    make CFLAGS="-O2" LDFLAGS="-static" PREFIX="${SYSTEM_PREFIX}" DESTDIR="${DESTDIR}" install
+    make CFLAGS="-O2" LDFLAGS="-static" PREFIX="${SEED_PREFIX}" DESTDIR="${DESTDIR}" install
+
+    # Fail early if either installed binary is not executable in this environment.
+    "${DESTDIR}${SYSTEM_PREFIX}/bin/bzip2" --help >/dev/null
+    "${DESTDIR}${SEED_PREFIX}/bin/bzip2" --help >/dev/null
 }

@@ -579,6 +579,13 @@ src_apply() {
     fi
     "${BZIP2_PREFIX}bzip2" -dc "/external/repo/${pkg}_${revision}.tar.bz2" | \
         "${TAR_PREFIX}tar" -C / -xpf -
+    if [[ "${pkg}" == bzip2-* ]]; then
+        if ! "${PREFIX}/bin/bzip2" --help >/dev/null 2>&1; then
+            echo "${pkg}: installed ${PREFIX}/bin/bzip2 is not runnable." >&2
+            mv -f "/tmp/bzip2" "${PREFIX}/bin/bzip2" || true
+            false
+        fi
+    fi
     rm -f "/tmp/bzip2" "/tmp/tar"
 }
 
