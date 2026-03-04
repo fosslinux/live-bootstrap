@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_get() { :; }
-src_unpack() { :; }
+src_unpack() {
+    mkdir -p static-binaries-0-i686-linux
+}
 src_prepare() { :; }
 src_configure() { :; }
-BUILD_DIRNAME=.
 
 src_compile() {
     local stage dist

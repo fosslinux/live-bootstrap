@@ -181,7 +181,7 @@ build() {
     pkg=$1
     get_revision "${pkg}"
     script_name=${2:-pass$((revision+1)).sh}
-    build_dir=${3:-${pkg}}
+    dirname=${3:-${pkg}}
 
     # shellcheck disable=SC2015
     bin_preseed && return || true # Normal build if preseed fails
@@ -206,9 +206,6 @@ build() {
         # shellcheck source=/dev/null
         . "${build_script}"
     fi
-    if [ -n "${BUILD_DIRNAME+x}" ]; then
-        build_dir="${BUILD_DIRNAME}"
-    fi
 
     echo "${pkg}: getting sources."
     build_stage=src_get
@@ -219,7 +216,7 @@ build() {
     call $build_stage
     unset EXTRA_DISTFILES
 
-    cd "${build_dir}" || (echo "Cannot cd into build/${build_dir}!"; kill $$)
+    cd "${dirname}" || (echo "Cannot cd into build/${dirname}!"; kill $$)
 
     echo "${pkg}: preparing source."
     build_stage=src_prepare
