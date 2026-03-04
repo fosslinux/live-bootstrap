@@ -14,12 +14,15 @@ src_compile() {
 
 src_install() {
     local compat_src
+    local compat_bin
     compat_src="${DESTDIR}/usr/libexec/guix-hash-compat/guix-1.5.0"
+    compat_bin="${DESTDIR}/usr/bin/guix-hash-compat"
 
     mkdir -p "${compat_src}"
     cp -a . "${compat_src}/"
+    mkdir -p "$(dirname "${compat_bin}")"
 
-    install -D -m 0755 /dev/stdin "${DESTDIR}/usr/bin/guix-hash-compat" <<'EOS'
+    cat > "${compat_bin}" <<'EOS'
 #!/bin/sh
 set -e
 
@@ -31,4 +34,5 @@ fi
 cd "${src_dir}"
 exec ./pre-inst-env guix hash "$@"
 EOS
+    chmod 0755 "${compat_bin}"
 }

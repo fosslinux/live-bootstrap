@@ -131,6 +131,29 @@ lines.append("PAYLOAD_REQUIRED=False\\n")
 with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
 
+# Ensure resumed stage0-image /init has minimal early mounts for runtime.
+init_path = os.path.join(mountpoint, "init")
+mount_marker = "# LB_STAGE0_EARLY_MOUNTS"
+if os.path.isfile(init_path):
+    with open(init_path, "r", encoding="utf-8", errors="ignore") as init_file:
+        init_content = init_file.read()
+
+    if mount_marker not in init_content:
+        first_newline = init_content.find("\\n")
+        if first_newline != -1:
+            mount_block = (
+                mount_marker + "\\n"
+                + "mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)\\n"
+                + "mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)\\n"
+            )
+            init_content = (
+                init_content[: first_newline + 1]
+                + mount_block
+                + init_content[first_newline + 1 :]
+            )
+            with open(init_path, "w", encoding="utf-8") as init_file:
+                init_file.write(init_content)
+
 if build_guix_also:
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")
     if os.path.isdir(dest_steps_guix):
