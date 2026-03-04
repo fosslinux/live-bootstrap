@@ -95,6 +95,11 @@ mirrors = sys.argv[8:]
 old_config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
 if not os.path.isfile(old_config_path):
     raise SystemExit(f"Missing config in stage0 image: {old_config_path}")
+old_env_path = os.path.join(mountpoint, "steps", "env")
+old_env_content = None
+if os.path.isfile(old_env_path):
+    with open(old_env_path, "rb") as env_file:
+        old_env_content = env_file.read()
 
 with open(old_config_path, "r", encoding="utf-8") as cfg:
     lines = [
@@ -111,6 +116,9 @@ if os.path.isdir(dest_steps):
     shutil.copytree(steps_dir, dest_steps, dirs_exist_ok=True)
 else:
     shutil.copytree(steps_dir, dest_steps)
+if old_env_content is not None:
+    with open(os.path.join(dest_steps, "env"), "wb") as env_file:
+        env_file.write(old_env_content)
 
 config_path = os.path.join(dest_steps, "bootstrap.cfg")
 if build_guix_also:
