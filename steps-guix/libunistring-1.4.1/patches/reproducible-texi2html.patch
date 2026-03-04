@@ -1,0 +1,25 @@
+SPDX-FileCopyrightText: 2026 Samuel Tyler <samuel@samuelt.me>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Make the vendored copy of texi2html reproducible.
+
+--- libunistring-1.4.1/build-aux/texi2html	2026-02-08 09:56:18.855886133 +1100
++++ libunistring-1.4.1/build-aux/texi2html	2026-02-08 10:02:34.030891700 +1100
+@@ -8854,14 +8854,13 @@
+         if (!$Texi2HTML::Config::TEST)
+         {
+             print STDERR "# Setting date in $Texi2HTML::Config::LANG\n" if ($T2H_DEBUG);
+-            $Texi2HTML::THISDOC{'today'} = Texi2HTML::I18n::pretty_date($Texi2HTML::Config::LANG);  # like "20 September 1993";
++            $Texi2HTML::THISDOC{'today'} = '';
+         }
+         else
+         {
+             $Texi2HTML::THISDOC{'today'} = 'a sunny day';
+         }
+-        $Texi2HTML::THISDOC{'today'} = $Texi2HTML::Config::DATE 
+-            if (defined($Texi2HTML::Config::DATE));
++        $Texi2HTML::THISDOC{'today'} = '';
+         $::things_map_ref->{'today'} = $Texi2HTML::THISDOC{'today'};
+         $::pre_map_ref->{'today'} = $Texi2HTML::THISDOC{'today'};
+         $::texi_map_ref->{'today'} = $Texi2HTML::THISDOC{'today'};

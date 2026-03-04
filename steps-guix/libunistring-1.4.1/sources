@@ -1,0 +1,19 @@
+f https://mirrors.kernel.org/gnu/libunistring/libunistring-1.4.1.tar.xz 67d88430892527861903788868c77802a217b0959990f7449f2976126a307763
+g https://https.git.savannah.gnu.org/git/gnulib.git~6d64a31 _ 04541986073955243d0ce7aa0e5f4017298ae17892a0064ae0b5513808cdad1b gnulib-6d64a31.tar.gz
+f http://ftp.unicode.org/Public/17.0.0/ucd/UnicodeData.txt 2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c UnicodeData-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/PropList.txt 130dcddcaadaf071008bdfce1e7743e04fdfbc910886f017d9f9ac931d8c64dd PropList-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/DerivedCoreProperties.txt 24c7fed1195c482faaefd5c1e7eb821c5ee1fb6de07ecdbaa64b56a99da22c08 DerivedCoreProperties-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/emoji/emoji-data.txt 2cb2bb9455cda83e8481541ecf5b6dfda66a3bb89efa3fa7c5297eccf607b72b emoji-data-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/ArabicShaping.txt 39afa01e680e27d0fd10b67a9b27be13fbaa3d0efecfb5be45991de9a0d267d0 ArabicShaping-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/Scripts.txt 9f5e50d3abaee7d6ce09480f325c706f485ae3240912527e651954d2d6b035bf Scripts-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/Blocks.txt c0edefaf1a19771e830a82735472716af6bf3c3975f6c2a23ffbe2580fbbcb15 Blocks-17.0.0.txt
+f http://ftp.unicode.org/Public/3.0-Update1/PropList-3.0.1.txt 909eef4adbeddbdddcd9487c856fe8cdbb8912aa8eb315ed7885b6ef65f4dc4c
+f http://ftp.unicode.org/Public/17.0.0/ucd/BidiMirroring.txt a2f16fb873ab4fcdf3221cb1a8a85a134ddd6ed03603181823ff5206af3741ce BidiMirroring-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/EastAsianWidth.txt ea7ce50f3444a050333448dffef1cadd9325af55cbb764b4a2280faf52170a33 EastAsianWidth-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/LineBreak.txt e6a18fa91f8f6a6f8e534b1d3f128c21ada45bfe152eb6b1bcc5e15fd8ac92e6 LineBreak-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/auxiliary/WordBreakProperty.txt 72274cac1e6b919507db35655c3e175aa27274668a1ece95c28d2069f2ad9852 WordBreakProperty-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/auxiliary/GraphemeBreakProperty.txt d6b51d1d2ae5c33b451b7ed994b48f1f4dc62b2272a5831e7fd418514a6bae89 GraphemeBreakProperty-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/CompositionExclusions.txt 2f239196ef3b5b61db5cc476e9bd80f534d15aa1b74e1be1dea5d042a344c85f CompositionExclusions-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/SpecialCasing.txt efc25faf19de21b92c1194c111c932e03d2a5eaf18194e33f1156e96de4c9588 SpecialCasing-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/CaseFolding.txt ff8d8fefbf123574205085d6714c36149eb946d717a0c585c27f0f4ef58c4183 CaseFolding-17.0.0.txt
+f http://ftp.unicode.org/Public/17.0.0/ucd/NameAliases.txt 793f6f1e4d15fd90f05ae66460191dc4d75d1fea90136a25f30dd6a4cb950eac NameAliases-17.0.0.txt
