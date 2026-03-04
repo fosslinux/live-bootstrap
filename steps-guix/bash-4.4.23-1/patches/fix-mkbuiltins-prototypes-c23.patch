@@ -4,12 +4,14 @@ Fix mkbuiltins prototypes and definitions for C23-compatible compilers.
 
 --- bash-4.4/builtins/mkbuiltins.c
 +++ bash-4.4/builtins/mkbuiltins.c
-@@ -191,12 +191,12 @@
+@@ -190,13 +190,13 @@
+ 
  void write_file_headers ();
  void write_file_footers ();
- void write_ifdefs ();
+-void write_ifdefs ();
 -void write_endifs ();
 -void write_documentation ();
++void write_ifdefs (FILE *, char **);
 +void write_endifs (FILE *, char **);
 +void write_documentation (FILE *, char **, int, int);
  void write_longdocs ();
