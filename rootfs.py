@@ -83,7 +83,8 @@ build_guix_also = (sys.argv[3] == "True")
 internal_ci = sys.argv[4]
 break_scope = sys.argv[5]
 break_step = sys.argv[6]
-mirrors = sys.argv[7:]
+force_refresh_steps_guix = (sys.argv[7] == "True")
+mirrors = sys.argv[8:]
 
 config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
 if not os.path.isfile(config_path):
@@ -110,15 +111,11 @@ with open(config_path, "w", encoding="utf-8") as cfg:
 
 if build_guix_also:
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")
-    has_resume_scripts = False
-    if os.path.isdir(dest_steps_guix):
-        for entry in os.listdir(dest_steps_guix):
-            if entry.endswith(".sh") and entry[:-3].isdigit():
-                has_resume_scripts = True
-                break
-    if not has_resume_scripts:
+    if force_refresh_steps_guix:
         if os.path.exists(dest_steps_guix):
             shutil.rmtree(dest_steps_guix)
+        shutil.copytree(steps_guix_dir, dest_steps_guix)
+    elif not os.path.isdir(dest_steps_guix):
         shutil.copytree(steps_guix_dir, dest_steps_guix)
 
 if break_scope and break_step:
@@ -167,6 +164,7 @@ if break_scope and break_step:
             str(internal_ci) if internal_ci else "False",
             break_scope or "",
             break_step or "",
+            "True" if break_scope == "steps-guix" and break_step else "False",
             *mirrors,
         )
     finally:
@@ -372,7 +370,9 @@ def main():
         if args.internal_ci_break_after:
             if not args.internal_ci:
                 raise ValueError("--internal-ci-break-after requires --internal-ci (e.g. pass1).")
-            parse_internal_ci_break_after(args.internal_ci_break_after)
+            break_scope, _ = parse_internal_ci_break_after(args.internal_ci_break_after)
+            if break_scope == "steps-guix" and not args.build_guix_also:
+                raise ValueError("--internal-ci-break-after steps-guix:* requires --build-guix-also.")
 
     # Set constant umask
     os.umask(0o022)
