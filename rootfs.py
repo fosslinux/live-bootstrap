@@ -108,30 +108,6 @@ lines.append("PAYLOAD_REQUIRED=False\\n")
 with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
 
-# Compatibility for older checkpoints: patch simple resume /init stubs in-place.
-init_path = os.path.join(mountpoint, "init")
-if os.path.isfile(init_path):
-    with open(init_path, "r", encoding="utf-8") as init_file:
-        init_text = init_file.read()
-    init_lines = [line.strip() for line in init_text.splitlines() if line.strip()]
-    if ("dhcpcd --waitip=4" not in init_text
-            and len(init_lines) == 2
-            and init_lines[0].startswith("#!/bin/bash")
-            and init_lines[1].startswith("bash /")
-            and init_lines[1].endswith(".sh")):
-        with open(init_path, "w", encoding="utf-8") as init_file:
-            init_file.write("#!/bin/bash\\n")
-            init_file.write("if [ -f /steps/bootstrap.cfg ]; then\\n")
-            init_file.write(". /steps/bootstrap.cfg\\n")
-            init_file.write("fi\\n")
-            init_file.write(
-                "if [ \\"${CHROOT}\\" = False ] && command -v dhcpcd >/dev/null 2>&1; then\\n"
-            )
-            init_file.write("dhcpcd --waitip=4 || true\\n")
-            init_file.write("fi\\n")
-            init_file.write(f"exec {init_lines[1]}\\n")
-        os.chmod(init_path, 0o755)
-
 if build_guix_also:
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")
     has_resume_scripts = False
