@@ -74,7 +74,6 @@ def update_stage0_image(image_path,
         mounted = True
         script = '''
 import os
-import re
 import shutil
 import sys
 
@@ -109,31 +108,29 @@ lines.append("PAYLOAD_REQUIRED=False\\n")
 with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
 
-# Resumed jump init scripts look like "bash /steps*/N.sh" and miss network bring-up.
-# Wrap only that form to keep normal /init behavior unchanged.
+# Compatibility for older checkpoints: patch simple resume /init stubs in-place.
 init_path = os.path.join(mountpoint, "init")
 if os.path.isfile(init_path):
     with open(init_path, "r", encoding="utf-8") as init_file:
         init_text = init_file.read()
-
-    if "dhcpcd --waitip=4" not in init_text:
-        resume_match = re.search(
-            r"^\\s*bash\\s+(/(?:steps|steps-guix)/[0-9]+\\.sh)\\s*$",
-            init_text,
-            re.MULTILINE,
-        )
-        if resume_match:
-            resume_script = resume_match.group(1)
-            wrapped_init = f"""#!/usr/bin/bash
-set -e
-if command -v dhcpcd >/dev/null 2>&1; then
-    dhcpcd --waitip=4 || true
-fi
-exec bash {resume_script}
-"""
-            with open(init_path, "w", encoding="utf-8") as init_file:
-                init_file.write(wrapped_init)
-            os.chmod(init_path, 0o755)
+    init_lines = [line.strip() for line in init_text.splitlines() if line.strip()]
+    if ("dhcpcd --waitip=4" not in init_text
+            and len(init_lines) == 2
+            and init_lines[0].startswith("#!/bin/bash")
+            and init_lines[1].startswith("bash /")
+            and init_lines[1].endswith(".sh")):
+        with open(init_path, "w", encoding="utf-8") as init_file:
+            init_file.write("#!/bin/bash\\n")
+            init_file.write("if [ -f /steps/bootstrap.cfg ]; then\\n")
+            init_file.write(". /steps/bootstrap.cfg\\n")
+            init_file.write("fi\\n")
+            init_file.write(
+                "if [ \\"${CHROOT}\\" = False ] && command -v dhcpcd >/dev/null 2>&1; then\\n"
+            )
+            init_file.write("dhcpcd --waitip=4 || true\\n")
+            init_file.write("fi\\n")
+            init_file.write(f"exec {init_lines[1]}\\n")
+        os.chmod(init_path, 0o755)
 
 if build_guix_also:
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")

@@ -530,6 +530,15 @@ void output_call_script(FILE *out, char *type, char *name, int bash_build, int s
 	fputs(".sh\n", out);
 }
 
+void output_resume_network_init(FILE *out) {
+	fputs("if [ -f /steps/bootstrap.cfg ]; then\n", out);
+	fputs(". /steps/bootstrap.cfg\n", out);
+	fputs("fi\n", out);
+	fputs("if [ \"${CHROOT}\" = False ] && command -v dhcpcd >/dev/null 2>&1; then\n", out);
+	fputs("dhcpcd --waitip=4 || true\n", out);
+	fputs("fi\n", out);
+}
+
 void output_build(FILE *out, Directive *directive, int pass_no, int bash_build) {
 	if (bash_build) {
 		fputs("build ", out);
@@ -650,6 +659,7 @@ void generate(Directive *directives) {
 					exit(1);
 				}
 				fputs("#!/bin/bash\n", out);
+				output_resume_network_init(out);
 			} else {
 				out = fopen(filename, "w");
 				if (out == NULL) {
