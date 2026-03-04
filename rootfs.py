@@ -48,10 +48,16 @@ def update_stage0_image(image_path,
                         internal_ci=False,
                         internal_ci_break_after=None):
     """
-    Update an existing stage0 image bootstrap config and optional guix handoff bits.
+    Update an existing stage0 image by refreshing step sources from the working
+    tree and patching bootstrap config / optional guix handoff bits.
     """
     if mirrors is None:
         mirrors = []
+
+    steps_dir = os.path.abspath("steps")
+    steps_manifest = os.path.join(steps_dir, "manifest")
+    if not os.path.isdir(steps_dir) or not os.path.isfile(steps_manifest):
+        raise ValueError("steps/manifest does not exist.")
 
     steps_guix_dir = ""
     if build_guix_also:
@@ -78,19 +84,19 @@ import shutil
 import sys
 
 mountpoint = sys.argv[1]
-steps_guix_dir = sys.argv[2]
-build_guix_also = (sys.argv[3] == "True")
-internal_ci = sys.argv[4]
-break_scope = sys.argv[5]
-break_step = sys.argv[6]
-force_refresh_steps_guix = (sys.argv[7] == "True")
+steps_dir = sys.argv[2]
+steps_guix_dir = sys.argv[3]
+build_guix_also = (sys.argv[4] == "True")
+internal_ci = sys.argv[5]
+break_scope = sys.argv[6]
+break_step = sys.argv[7]
 mirrors = sys.argv[8:]
 
-config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
-if not os.path.isfile(config_path):
-    raise SystemExit(f"Missing config in stage0 image: {config_path}")
+old_config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
+if not os.path.isfile(old_config_path):
+    raise SystemExit(f"Missing config in stage0 image: {old_config_path}")
 
-with open(config_path, "r", encoding="utf-8") as cfg:
+with open(old_config_path, "r", encoding="utf-8") as cfg:
     lines = [
         line for line in cfg
         if not line.startswith("BUILD_GUIX_ALSO=")
@@ -99,6 +105,13 @@ with open(config_path, "r", encoding="utf-8") as cfg:
         and not line.startswith("MIRRORS_LEN=")
         and not line.startswith("PAYLOAD_REQUIRED=")
     ]
+
+dest_steps = os.path.join(mountpoint, "steps")
+if os.path.exists(dest_steps):
+    shutil.rmtree(dest_steps)
+shutil.copytree(steps_dir, dest_steps)
+
+config_path = os.path.join(dest_steps, "bootstrap.cfg")
 if build_guix_also:
     lines.append("BUILD_GUIX_ALSO=True\\n")
 if mirrors:
@@ -111,12 +124,9 @@ with open(config_path, "w", encoding="utf-8") as cfg:
 
 if build_guix_also:
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")
-    if force_refresh_steps_guix:
-        if os.path.exists(dest_steps_guix):
-            shutil.rmtree(dest_steps_guix)
-        shutil.copytree(steps_guix_dir, dest_steps_guix)
-    elif not os.path.isdir(dest_steps_guix):
-        shutil.copytree(steps_guix_dir, dest_steps_guix)
+    if os.path.exists(dest_steps_guix):
+        shutil.rmtree(dest_steps_guix)
+    shutil.copytree(steps_guix_dir, dest_steps_guix)
 
 if break_scope and break_step:
     if internal_ci in ("", "False"):
@@ -159,12 +169,12 @@ if break_scope and break_step:
             "-c",
             script,
             mountpoint,
+            steps_dir,
             steps_guix_dir,
             "True" if build_guix_also else "False",
             str(internal_ci) if internal_ci else "False",
             break_scope or "",
             break_step or "",
-            "True" if break_scope == "steps-guix" and break_step else "False",
             *mirrors,
         )
     finally:
@@ -179,16 +189,15 @@ def prepare_stage0_work_image(base_image,
                               internal_ci=False,
                               internal_ci_break_after=None):
     """
-    Copy stage0 base image to a disposable work image, optionally patching config.
+    Copy stage0 base image to a disposable work image and refresh steps/config.
     """
     work_image = os.path.join(output_dir, "stage0-work.img")
     shutil.copy2(base_image, work_image)
-    if build_guix_also or mirrors or internal_ci or internal_ci_break_after:
-        update_stage0_image(work_image,
-                            build_guix_also=build_guix_also,
-                            mirrors=mirrors,
-                            internal_ci=internal_ci,
-                            internal_ci_break_after=internal_ci_break_after)
+    update_stage0_image(work_image,
+                        build_guix_also=build_guix_also,
+                        mirrors=mirrors,
+                        internal_ci=internal_ci,
+                        internal_ci_break_after=internal_ci_break_after)
     return work_image
 
 def create_configuration_file(args):
