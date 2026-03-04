@@ -277,6 +277,20 @@ randomize() {
     fi
 }
 
+ensure_network_ready() {
+    if [ "${NETWORK_READY}" = "True" ]; then
+        return
+    fi
+
+    # Resumed QEMU boots (e.g. from stage0-work.img) can lose configured links.
+    # Bring the interface up deterministically before any source download.
+    if [ "${QEMU}" = "True" ] && [ "${CHROOT}" != "True" ]; then
+        dhcpcd --waitip=4
+    fi
+
+    NETWORK_READY=True
+}
+
 download_source_line() {
     upstream_url="${1}"
     checksum="${2}"
@@ -330,6 +344,7 @@ source_line_action() {
 
 # Default get function that downloads source tarballs.
 default_src_get() {
+    ensure_network_ready
     # shellcheck disable=SC2153
     cd "${DISTFILES}"
     # shellcheck disable=SC2162
