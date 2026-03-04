@@ -4,6 +4,7 @@ src_get() { :; }
 src_unpack() { :; }
 src_prepare() { :; }
 src_configure() { :; }
+BUILD_DIRNAME=.
 
 src_compile() {
     local stage copied
