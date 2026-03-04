@@ -55,6 +55,7 @@ build: patch-2.7.6
 build: bash-5.3-1
 build: static-binaries-0-i686-linux
 # Build guile-static-stripped-2.2.4-i686-linux.tar.xz
+build: libffi-3.5.2
 build: guile-2.2.4
 # Build mes-minimal-stripped-0.19-i686-linux.tar.xz
 build: mes-minimal-stripped-0.19-i686-linux
