@@ -23,7 +23,7 @@ src_compile() {
     cp -a /bootstrap-seeds/gzip-1.9/bin/gzip "${stage}/bin/"
     cp -a /bootstrap-seeds/bzip2-1.0.6/bin/bzip2 "${stage}/bin/"
     cp -a /bootstrap-seeds/patch-2.7.6/bin/patch "${stage}/bin/"
-    cp -a /bootstrap-seeds/bash-4.4.23-1/bin/bash "${stage}/bin/"
+    cp -a /bootstrap-seeds/bash-5.3-1/bin/bash "${stage}/bin/"
 
     ln -sf bash "${stage}/bin/sh"
     ln -sf gawk "${stage}/bin/awk"
