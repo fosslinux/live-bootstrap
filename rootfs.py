@@ -107,9 +107,10 @@ with open(old_config_path, "r", encoding="utf-8") as cfg:
     ]
 
 dest_steps = os.path.join(mountpoint, "steps")
-if os.path.exists(dest_steps):
-    shutil.rmtree(dest_steps)
-shutil.copytree(steps_dir, dest_steps)
+if os.path.isdir(dest_steps):
+    shutil.copytree(steps_dir, dest_steps, dirs_exist_ok=True)
+else:
+    shutil.copytree(steps_dir, dest_steps)
 
 config_path = os.path.join(dest_steps, "bootstrap.cfg")
 if build_guix_also:
@@ -124,9 +125,10 @@ with open(config_path, "w", encoding="utf-8") as cfg:
 
 if build_guix_also:
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")
-    if os.path.exists(dest_steps_guix):
-        shutil.rmtree(dest_steps_guix)
-    shutil.copytree(steps_guix_dir, dest_steps_guix)
+    if os.path.isdir(dest_steps_guix):
+        shutil.copytree(steps_guix_dir, dest_steps_guix, dirs_exist_ok=True)
+    else:
+        shutil.copytree(steps_guix_dir, dest_steps_guix)
 
 if break_scope and break_step:
     if internal_ci in ("", "False"):
