@@ -39,7 +39,7 @@ src_configure() {
 }
 
 src_compile() {
-    local pkg_config_path guile_cflags guile_static_libs gnutls_static_libs
+    local pkg_config_path guile_cflags guile_static_libs gnutls_cflags gnutls_static_libs
     local main_c
 
     pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
@@ -47,11 +47,27 @@ src_compile() {
         /usr/bin/pkg-config --cflags guile-3.0)"
     guile_static_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --static --libs guile-3.0)"
+    gnutls_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
+        /usr/bin/pkg-config --cflags gnutls)"
     gnutls_static_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --static --libs gnutls)"
 
-    make "${MAKEJOBS}" -C guile/src built-sources
-    make "${MAKEJOBS}" -C guile/src core.lo errors.lo utils.lo
+    if [ -z "${guile_cflags}" ]; then
+        echo "guile-gnutls: pkg-config returned empty cflags for guile-3.0" >&2
+        false
+    fi
+    if [ -z "${gnutls_cflags}" ]; then
+        echo "guile-gnutls: pkg-config returned empty cflags for gnutls" >&2
+        false
+    fi
+
+    make "${MAKEJOBS}" -C guile/src \
+        CPPFLAGS="${guile_cflags} ${gnutls_cflags} ${CPPFLAGS:-}" \
+        GUILE_CFLAGS="${guile_cflags}" \
+        GUILE_LDFLAGS="${guile_static_libs}" \
+        GNUTLS_CFLAGS="${gnutls_cflags}" \
+        GNUTLS_LIBS="${gnutls_static_libs}" \
+        guile-gnutls-v-2.la
     make "${MAKEJOBS}" -C guile modules/gnutls.scm GNUTLS_GUILE_CROSS_COMPILING=yes
 
     mkdir -p static
