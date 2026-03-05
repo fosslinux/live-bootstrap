@@ -15,26 +15,29 @@ Do not patch Scheme sources; rewrite generated gnutls.scm at build time.
  AM_CONDITIONAL(HAVE_GCC_GNU89_INLINE_OPTION, test "$gnu89_inline" = "yes"])
 --- guile-gnutls-v5.0.1/guile/Makefile.am
 +++ guile-gnutls-v5.0.1/guile/Makefile.am
-@@ -43,9 +43,18 @@
+@@ -43,11 +43,21 @@
  
  CLEANFILES = modules/gnutls.scm
  
 +if ENABLE_SHARED
-+scm_static_fixup =
-+else
-+scm_static_fixup =							\
-+  -e "1,/(unless (getenv \"GNUTLS_GUILE_CROSS_COMPILING\")/s|(unless (getenv \"GNUTLS_GUILE_CROSS_COMPILING\")|(when #f|" \
-+  -e "s|(unless (getenv \"GNUTLS_GUILE_CROSS_COMPILING\")|(when (module-variable (current-module) 'protocol/ssl3)|"
-+endif
-+
  .in.scm:
  	$(AM_V_GEN)$(MKDIR_P) "`dirname "$@"`" ; cat "$^" |		\
  	  $(SED) -e's|[@]maybe_guileextensiondir[@]|$(maybe_guileextensiondir)|g' \
-+	  $(scm_static_fixup) \
  	  > "$@.tmp"
  	$(AM_V_at)mv "$@.tmp" "$@"
++else
++.in.scm:
++	$(AM_V_GEN)$(MKDIR_P) "`dirname "$@"`" ; cat "$^" |		\
++	  $(SED) -e's|[@]maybe_guileextensiondir[@]|$(maybe_guileextensiondir)|g' \
++	    -e '1,/(unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")/s|(unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")|(when #f|' \
++	    -e "s|(unless (getenv \\\"GNUTLS_GUILE_CROSS_COMPILING\\\")|(when (module-variable (current-module) 'protocol/ssl3)|" \
++	  > "$@.tmp"
++	$(AM_V_at)mv "$@.tmp" "$@"
++endif
  
-@@ -56,6 +65,7 @@
+ 
+ #
+@@ -56,6 +66,7 @@
  
  if HAVE_GUILD
  
@@ -42,7 +45,7 @@ Do not patch Scheme sources; rewrite generated gnutls.scm at build time.
  guilesiteccachesubdir = $(guilesiteccachedir)/gnutls
  nodist_guilesiteccache_DATA = modules/gnutls.go
  nodist_guilesiteccachesub_DATA = modules/gnutls/extra.go
-@@ -94,6 +104,7 @@
+@@ -94,6 +105,7 @@
  	  -o "$@" "$<" >&$$out
  
  SUFFIXES = .go
