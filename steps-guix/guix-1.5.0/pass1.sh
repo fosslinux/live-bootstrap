@@ -76,6 +76,78 @@ src_prepare() {
     grep -q "Offline bootstrap environment: require explicit channels." guix/channels.scm
 }
 
+probe_guile_module() {
+    local module_name debug_log
+    local guile_site_path guile_site_ccache guile_core_ccache guile_ext_path
+    local pkg_config_path probe_label probe_pkg_config
+    local find_name find_module
+
+    module_name="$1"
+    debug_log="/tmp/${module_name}-guile-probe.log"
+    pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
+    guile_site_path="${PREFIX}/share/guile/site/3.0:${PREFIX}/share/guile/3.0"
+    guile_site_ccache="${LIBDIR}/guile/3.0/site-ccache"
+    guile_core_ccache="${LIBDIR}/guile/3.0/ccache"
+    guile_ext_path="${LIBDIR}/guile/3.0/extensions"
+
+    case "${module_name}" in
+        git)
+            probe_label="git-related"
+            probe_pkg_config="libgit2"
+            find_name='libguile-git*'
+            find_module='git'
+            ;;
+        gnutls)
+            probe_label="gnutls-related"
+            probe_pkg_config="gnutls"
+            find_name='libguile-gnutls*'
+            find_module='gnutls'
+            ;;
+        *)
+            probe_label="${module_name}-related"
+            probe_pkg_config=""
+            find_name="*${module_name}*"
+            find_module="${module_name}"
+            ;;
+    esac
+
+    rm -f "${debug_log}"
+
+    echo "guix: probing (${module_name}) before configure" >&2
+    echo "guix: GUILE_LOAD_PATH=${guile_site_path}" >&2
+    echo "guix: GUILE_LOAD_COMPILED_PATH=${guile_site_ccache}:${guile_core_ccache}" >&2
+    echo "guix: GUILE_EXTENSIONS_PATH=${guile_ext_path}" >&2
+    if [ -n "${probe_pkg_config}" ]; then
+        echo "guix: ${probe_pkg_config} pkg-config libs=$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" /usr/bin/pkg-config --libs "${probe_pkg_config}")" >&2
+        echo "guix: ${probe_pkg_config} pkg-config static-libs=$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" /usr/bin/pkg-config --static --libs "${probe_pkg_config}")" >&2
+    fi
+
+    if command -v find >/dev/null 2>&1; then
+        echo "guix: installed Guile ${probe_label} files:" >&2
+        find "${PREFIX}/share/guile" "${LIBDIR}/guile" -type f \
+            \( -path "*/${find_module}/*.scm" -o -path "*/${find_module}.scm" -o -path "*/${find_module}/*.go" -o -path "*/${find_module}.go" -o -name "${find_name}" \) \
+            2>/dev/null | LC_ALL=C sort >&2 || true
+    fi
+
+    if ! PATH="${PREFIX}/bin:/usr/bin:/bin" \
+        PKG_CONFIG="/usr/bin/pkg-config" \
+        PKG_CONFIG_LIBDIR="${pkg_config_path}" \
+        PKG_CONFIG_PATH="${pkg_config_path}" \
+        LD_LIBRARY_PATH="${LIBDIR}:${PREFIX}/lib:${LD_LIBRARY_PATH}" \
+        GUILE_LOAD_PATH="${guile_site_path}" \
+        GUILE_LOAD_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
+        GUILE_SYSTEM_PATH="${guile_site_path}" \
+        GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
+        GUILE_EXTENSIONS_PATH="${guile_ext_path}" \
+        GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}" \
+        "${PREFIX}/bin/guile" -c "(use-modules (${module_name})) (display \"${module_name}-module-ok\\n\")" \
+        >"${debug_log}" 2>&1; then
+        echo "guix: explicit (${module_name}) probe failed; raw Guile output follows:" >&2
+        cat "${debug_log}" >&2 || true
+        false
+    fi
+}
+
 src_configure() {
     local host_triplet pkg_config_path guile_cflags guile_libs
     local guile_site_path guile_site_ccache guile_core_ccache guile_ext_path
@@ -89,6 +161,9 @@ src_configure() {
         /usr/bin/pkg-config --cflags guile-3.0)"
     guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --libs guile-3.0)"
+
+    probe_guile_module gnutls
+    probe_guile_module git
 
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     PKG_CONFIG="/usr/bin/pkg-config" \

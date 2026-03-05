@@ -28,6 +28,8 @@ src_configure() {
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
+        '--with-guile-site-dir=$(datarootdir)/guile/site/$(GUILE_EFFECTIVE_VERSION)' \
+        '--with-guile-extension-dir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions' \
         --host="${host_triplet}" \
         --build="${host_triplet}"
 }
