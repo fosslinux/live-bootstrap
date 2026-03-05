@@ -65,7 +65,6 @@ build: mes-minimal-stripped-0.19-i686-linux
 build: mescc-tools-static-stripped-0.5.2-i686-linux
 # End of Guix Bootstrap seeds
 build: guix-hash-compat-1.5.0
-improve: guix-1.5.0
 build: guix-1.5.0
 improve: guix-daemon-and-pull
 improve: guix-build-iso
