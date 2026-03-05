@@ -56,11 +56,6 @@ src_compile() {
         echo "guile-gnutls: pkg-config returned empty cflags for guile-3.0" >&2
         false
     fi
-    if [ -z "${gnutls_cflags}" ]; then
-        echo "guile-gnutls: pkg-config returned empty cflags for gnutls" >&2
-        false
-    fi
-
     make "${MAKEJOBS}" -C guile/src \
         CPPFLAGS="${guile_cflags} ${gnutls_cflags} ${CPPFLAGS:-}" \
         GUILE_CFLAGS="${guile_cflags}" \
