@@ -1,0 +1,22 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+In static bootstrap profile, initialize bindings from symbols linked into the
+main Guile executable rather than loading a shared extension object.
+
+--- guile-gnutls-v5.0.1/guile/modules/gnutls.in
++++ guile-gnutls-v5.0.1/guile/modules/gnutls.in
+@@ -817,11 +817,9 @@
+         ;; save 'extensiondir' only if it's different from what Guile expects.
+         @maybe_guileextensiondir@))
+ 
+-  (unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
+-    (load-extension (if %libdir
+-                        (string-append %libdir "/guile-gnutls-v-2")
+-                        "guile-gnutls-v-2")
+-                    "scm_init_gnutls")))
++  (unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
++    (dynamic-call "scm_init_gnutls"
++                  (dynamic-link #f))))
+ 
+ (define-syntax define-deprecated
+   (lambda (s)

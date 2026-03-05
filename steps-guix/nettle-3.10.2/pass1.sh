@@ -14,6 +14,8 @@ src_configure() {
         --libdir="${LIBDIR}" \
         --host="${host_triplet}" \
         --build="${host_triplet}" \
+        --enable-static \
+        --disable-shared \
         --disable-documentation
 }
 

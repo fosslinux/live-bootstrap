@@ -16,7 +16,9 @@ src_configure() {
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --host="${host_triplet}" \
-        --build="${host_triplet}"
+        --build="${host_triplet}" \
+        --enable-static \
+        --disable-shared
 }
 
 src_compile() {

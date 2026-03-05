@@ -17,7 +17,7 @@ src_configure() {
         --host="${host_triplet}" \
         --build="${host_triplet}" \
         --enable-static \
-        --enable-shared \
+        --disable-shared \
         --disable-doc \
         --disable-tests \
         --disable-tools \
