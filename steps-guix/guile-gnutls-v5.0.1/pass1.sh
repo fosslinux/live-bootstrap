@@ -40,7 +40,6 @@ src_configure() {
 
 src_compile() {
     local pkg_config_path guile_cflags guile_static_libs gnutls_cflags gnutls_static_libs
-    local main_c
 
     pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
     guile_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
@@ -58,48 +57,10 @@ src_compile() {
         GNUTLS_CFLAGS="${gnutls_cflags}" \
         GNUTLS_LIBS="${gnutls_static_libs}" \
         default_src_compile
-
-    mkdir -p static
-    ar rcs static/libguile-gnutls-static.a \
-        guile/src/.libs/core.o \
-        guile/src/.libs/errors.o \
-        guile/src/.libs/utils.o
-
-    main_c="static/guile-static-main.c"
-    cat > "${main_c}" <<'EOF_C'
-#include <libguile.h>
-
-void scm_init_gnutls(void);
-
-static void
-inner_main(void *closure, int argc, char **argv)
-{
-  (void) closure;
-  scm_init_gnutls();
-  scm_shell(argc, argv);
-}
-
-int
-main(int argc, char **argv)
-{
-  scm_boot_guile(argc, argv, inner_main, NULL);
-  return 0;
-}
-EOF_C
-
-    gcc -O2 -static ${guile_cflags} \
-        -o static/guile \
-        "${main_c}" \
-        static/libguile-gnutls-static.a \
-        ${guile_static_libs} \
-        ${gnutls_static_libs}
 }
 
 src_install() {
     default_src_install
-    install -Dm755 static/guile "${DESTDIR}${PREFIX}/bin/guile"
-    install -Dm644 static/libguile-gnutls-static.a \
-        "${DESTDIR}${LIBDIR}/libguile-gnutls-static.a"
 }
 
 src_postprocess() {
