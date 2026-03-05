@@ -12,7 +12,7 @@ src_configure() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
         -DCMAKE_INSTALL_LIBDIR="${LIBDIR}" \
-        -DBUILD_SHARED_LIBS=OFF \
+        -DBUILD_SHARED_LIBS=ON \
         -DBUILD_TESTS=OFF \
         -DBUILD_CLI=OFF \
         -DBUILD_EXAMPLES=OFF \
