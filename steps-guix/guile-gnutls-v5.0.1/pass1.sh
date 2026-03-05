@@ -52,18 +52,12 @@ src_compile() {
     gnutls_static_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --static --libs gnutls)"
 
-    if [ -z "${guile_cflags}" ]; then
-        echo "guile-gnutls: pkg-config returned empty cflags for guile-3.0" >&2
-        false
-    fi
-    make "${MAKEJOBS}" -C guile/src \
-        CPPFLAGS="${guile_cflags} ${gnutls_cflags} ${CPPFLAGS:-}" \
+    CPPFLAGS="${guile_cflags} ${gnutls_cflags} ${CPPFLAGS:-}" \
         GUILE_CFLAGS="${guile_cflags}" \
         GUILE_LDFLAGS="${guile_static_libs}" \
         GNUTLS_CFLAGS="${gnutls_cflags}" \
         GNUTLS_LIBS="${gnutls_static_libs}" \
-        guile-gnutls-v-2.la
-    make "${MAKEJOBS}" -C guile modules/gnutls.scm GNUTLS_GUILE_CROSS_COMPILING=yes
+        default_src_compile
 
     mkdir -p static
     ar rcs static/libguile-gnutls-static.a \
@@ -102,11 +96,8 @@ EOF_C
 }
 
 src_install() {
+    default_src_install
     install -Dm755 static/guile "${DESTDIR}${PREFIX}/bin/guile"
-    install -Dm644 guile/modules/gnutls.scm \
-        "${DESTDIR}${PREFIX}/share/guile/site/3.0/gnutls.scm"
-    install -Dm644 guile/modules/gnutls/extra.scm \
-        "${DESTDIR}${PREFIX}/share/guile/site/3.0/gnutls/extra.scm"
     install -Dm644 static/libguile-gnutls-static.a \
         "${DESTDIR}${LIBDIR}/libguile-gnutls-static.a"
 }

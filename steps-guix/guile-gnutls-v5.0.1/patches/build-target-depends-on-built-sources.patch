@@ -1,0 +1,13 @@
+--- guile-gnutls-v5.0.1/guile/src/Makefile.am
++++ guile-gnutls-v5.0.1/guile/src/Makefile.am
+@@ -46,6 +46,10 @@ guileextension_LTLIBRARIES  = guile-gnutls-v-2.la
+ # <https://lists.gnutls.org/pipermail/gnutls-devel/2014-December/007294.html>.
+ guile_gnutls_v_2_la_LDFLAGS = -module -no-undefined
+ 
++# When this specific libtool target is built directly, force generation of
++# Automake built sources (e.g. enums.h) first.
++guile-gnutls-v-2.la: $(BUILT_SOURCES)
++
+ guile_gnutls_v_2_la_SOURCES = core.c errors.c utils.c
+ guile_gnutls_v_2_la_CFLAGS =			\
+   $(AM_CFLAGS) $(GNULIB_CFLAGS) $(GUILE_CFLAGS) $(GNUTLS_CFLAGS)

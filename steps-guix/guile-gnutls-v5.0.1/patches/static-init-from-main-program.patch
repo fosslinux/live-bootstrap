@@ -1,11 +1,13 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
-In static bootstrap profile, initialize bindings from symbols linked into the
-main Guile executable rather than loading a shared extension object.
+Make Guile module initialization work in both static and shared builds without
+relying on GNUTLS_GUILE_CROSS_COMPILING. Prefer symbols linked into the main
+program (static profile), and fall back to load-extension when they are not
+available.
 
 --- guile-gnutls-v5.0.1/guile/modules/gnutls.in
 +++ guile-gnutls-v5.0.1/guile/modules/gnutls.in
-@@ -817,11 +817,9 @@
+@@ -817,11 +817,18 @@
          ;; save 'extensiondir' only if it's different from what Guile expects.
          @maybe_guileextensiondir@))
  
@@ -14,9 +16,28 @@ main Guile executable rather than loading a shared extension object.
 -                        (string-append %libdir "/guile-gnutls-v-2")
 -                        "guile-gnutls-v-2")
 -                    "scm_init_gnutls")))
-+  (unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
-+    (dynamic-call "scm_init_gnutls"
-+                  (dynamic-link #f))))
++  ;; Static profile: bindings are linked into the main program.
++  ;; Shared profile: fall back to loading the extension.
++  (let* ((self-handle (false-if-exception (dynamic-link #f)))
++         (loaded-in-place?
++          (and self-handle
++               (false-if-exception
++                (dynamic-call "scm_init_gnutls" self-handle)))))
++    (unless loaded-in-place?
++      (load-extension (if %libdir
++                          (string-append %libdir "/guile-gnutls-v-2")
++                          "guile-gnutls-v-2")
++                      "scm_init_gnutls"))))
  
  (define-syntax define-deprecated
    (lambda (s)
+@@ -866,7 +873,8 @@
+ (define certificate-verify/allow-any-x509-v1-ca-certificate #f)
+ (define certificate-verify/allow-x509-v1-ca-certificate #f)
+ 
+-(unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
++(when (module-variable (current-module) 'protocol/ssl3)
++
+   ;; Renaming.
+   (set! protocol/ssl-3 protocol/ssl3)
+   (set! protocol/tls-1.0 protocol/tls1-0)
