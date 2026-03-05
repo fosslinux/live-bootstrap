@@ -100,6 +100,7 @@ src_configure() {
     GUILE_SYSTEM_PATH="${guile_site_path}" \
     GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
     GUILE_EXTENSIONS_PATH="${guile_ext_path}" \
+    GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}" \
     GUILE_CFLAGS="${guile_cflags}" \
     GUILE_LIBS="${guile_libs}" \
     ./configure \
