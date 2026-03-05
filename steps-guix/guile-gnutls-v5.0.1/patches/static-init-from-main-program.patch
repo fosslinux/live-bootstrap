@@ -1,15 +1,55 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Make Guile module initialization work in both static and shared builds without
-relying on GNUTLS_GUILE_CROSS_COMPILING. Prefer symbols linked into the main
-program (static profile), and fall back to load-extension when they are not
-available.
+Make static/shared initialization deterministic in the build system, without
+using GNUTLS_GUILE_CROSS_COMPILING and without probing shared-library suffixes.
 
+--- guile-gnutls-v5.0.1/configure.ac
++++ guile-gnutls-v5.0.1/configure.ac
+@@ -508,6 +508,7 @@
+ fi
+ 
+ AC_SUBST([maybe_guileextensiondir])
++AM_CONDITIONAL([ENABLE_SHARED], [test "x$enable_shared" != "xno"])
+ AM_CONDITIONAL([HAVE_GUILD], [test "x$GUILD" != "x"])
+ AM_CONDITIONAL([CROSS_COMPILING], [test "x$cross_compiling" = "xyes"])
+ AM_CONDITIONAL(HAVE_GCC_GNU89_INLINE_OPTION, test "$gnu89_inline" = "yes"])
+--- guile-gnutls-v5.0.1/guile/Makefile.am
++++ guile-gnutls-v5.0.1/guile/Makefile.am
+@@ -43,9 +43,18 @@
+ 
+ CLEANFILES = modules/gnutls.scm
+ 
++if ENABLE_SHARED
++maybe_load_extension = #t
++guile_extension_dir_variable = GNUTLS_GUILE_EXTENSION_DIR="$(abs_top_builddir)/guile/src"
++else
++maybe_load_extension = #f
++guile_extension_dir_variable =
++endif
++
+ .in.scm:
+ 	$(AM_V_GEN)$(MKDIR_P) "`dirname "$@"`" ; cat "$^" |		\
+ 	  $(SED) -e's|[@]maybe_guileextensiondir[@]|$(maybe_guileextensiondir)|g' \
++	  -e's|[@]maybe_load_extension[@]|$(maybe_load_extension)|g' \
+ 	  > "$@.tmp"
+ 	$(AM_V_at)mv "$@.tmp" "$@"
+ 
+@@ -86,7 +95,7 @@
+ 	$(AM_V_P) && out=1 || out=- ;					\
+ 	unset GUILE_LOAD_COMPILED_PATH ; LC_ALL=C			\
+ 	GUILE_AUTO_COMPILE=0 $(CROSS_COMPILING_VARIABLE)		\
+-	GNUTLS_GUILE_EXTENSION_DIR="$(abs_top_builddir)/guile/src"	\
++	$(guile_extension_dir_variable)				\
+ 	$(GUILD) compile --target="$(host)"				\
+ 	  -L "$(top_builddir)/guile/modules"				\
+ 	  -L "$(top_srcdir)/guile/modules"				\
 --- guile-gnutls-v5.0.1/guile/modules/gnutls.in
 +++ guile-gnutls-v5.0.1/guile/modules/gnutls.in
-@@ -817,11 +817,18 @@
+@@ -816,12 +816,21 @@
+         ;; The .scm file is supposed to be architecture-independent.  Thus,
          ;; save 'extensiondir' only if it's different from what Guile expects.
          @maybe_guileextensiondir@))
++  (define %load-extension? @maybe_load_extension@)
  
 -  (unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
 -    (load-extension (if %libdir
@@ -17,27 +57,27 @@ available.
 -                        "guile-gnutls-v-2")
 -                    "scm_init_gnutls")))
 +  ;; Static profile: bindings are linked into the main program.
-+  ;; Shared profile: fall back to loading the extension.
++  ;; Shared profile: load the extension.
 +  (let* ((self-handle (false-if-exception (dynamic-link #f)))
 +         (loaded-in-place?
 +          (and self-handle
 +               (false-if-exception
 +                (dynamic-call "scm_init_gnutls" self-handle)))))
 +    (unless loaded-in-place?
-+      (load-extension (if %libdir
-+                          (string-append %libdir "/guile-gnutls-v-2")
-+                          "guile-gnutls-v-2")
-+                      "scm_init_gnutls"))))
++      (when %load-extension?
++        (load-extension (if %libdir
++                            (string-append %libdir "/guile-gnutls-v-2")
++                            "guile-gnutls-v-2")
++                        "scm_init_gnutls")))))
  
  (define-syntax define-deprecated
    (lambda (s)
-@@ -866,7 +873,8 @@
+@@ -866,7 +875,7 @@
  (define certificate-verify/allow-any-x509-v1-ca-certificate #f)
  (define certificate-verify/allow-x509-v1-ca-certificate #f)
  
 -(unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
 +(when (module-variable (current-module) 'protocol/ssl3)
-+
    ;; Renaming.
    (set! protocol/ssl-3 protocol/ssl3)
    (set! protocol/tls-1.0 protocol/tls1-0)
