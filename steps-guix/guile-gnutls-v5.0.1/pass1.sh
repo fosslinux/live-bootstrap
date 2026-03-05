@@ -11,12 +11,13 @@ src_configure() {
     pkg_config_path="${LIBDIR}/pkgconfig"
 
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
+    PKG_CONFIG="/usr/bin/pkg-config" \
     PKG_CONFIG_LIBDIR="${pkg_config_path}" \
     PKG_CONFIG_PATH="${pkg_config_path}" \
     LD_LIBRARY_PATH="${LIBDIR}:${LD_LIBRARY_PATH}" \
-    LIBS="$(pkg-config --static --libs guile-3.0)" \
-    GUILE_LIBS="$(pkg-config --static --libs guile-3.0)" \
-    GNUTLS_LIBS="$(pkg-config --static --libs gnutls)" \
+    LIBS="$(pkg-config --libs guile-3.0)" \
+    GUILE_LIBS="$(pkg-config --libs guile-3.0)" \
+    GNUTLS_LIBS="$(pkg-config --libs gnutls)" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
