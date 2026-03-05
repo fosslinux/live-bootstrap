@@ -77,9 +77,19 @@ src_prepare() {
 }
 
 src_configure() {
-    local host_triplet
+    local host_triplet pkg_config_path guile_cflags guile_libs
     host_triplet="$(gcc -dumpmachine)"
+    pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
+    guile_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
+        /usr/bin/pkg-config --cflags guile-3.0)"
+    guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
+        /usr/bin/pkg-config --libs guile-3.0)"
 
+    PKG_CONFIG="/usr/bin/pkg-config" \
+    PKG_CONFIG_LIBDIR="${pkg_config_path}" \
+    PKG_CONFIG_PATH="${pkg_config_path}" \
+    GUILE_CFLAGS="${guile_cflags}" \
+    GUILE_LIBS="${guile_libs}" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
