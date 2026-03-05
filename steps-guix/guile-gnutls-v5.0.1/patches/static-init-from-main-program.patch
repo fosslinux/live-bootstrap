@@ -1,7 +1,7 @@
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Make static/shared initialization deterministic in the build system, without
-using GNUTLS_GUILE_CROSS_COMPILING and without probing shared-library suffixes.
+Make static/shared initialization deterministic from the build system only.
+Do not patch Scheme sources; rewrite generated gnutls.scm at build time.
 
 --- guile-gnutls-v5.0.1/configure.ac
 +++ guile-gnutls-v5.0.1/configure.ac
@@ -15,69 +15,28 @@ using GNUTLS_GUILE_CROSS_COMPILING and without probing shared-library suffixes.
  AM_CONDITIONAL(HAVE_GCC_GNU89_INLINE_OPTION, test "$gnu89_inline" = "yes"])
 --- guile-gnutls-v5.0.1/guile/Makefile.am
 +++ guile-gnutls-v5.0.1/guile/Makefile.am
-@@ -43,9 +43,18 @@
- 
- CLEANFILES = modules/gnutls.scm
- 
-+if ENABLE_SHARED
-+maybe_load_extension = #t
-+guile_extension_dir_variable = GNUTLS_GUILE_EXTENSION_DIR="$(abs_top_builddir)/guile/src"
-+else
-+maybe_load_extension = #f
-+guile_extension_dir_variable =
-+endif
-+
+@@ -46,6 +46,8 @@
  .in.scm:
  	$(AM_V_GEN)$(MKDIR_P) "`dirname "$@"`" ; cat "$^" |		\
  	  $(SED) -e's|[@]maybe_guileextensiondir[@]|$(maybe_guileextensiondir)|g' \
-+	  -e's|[@]maybe_load_extension[@]|$(maybe_load_extension)|g' \
++	  -e "1,/(unless (getenv \"GNUTLS_GUILE_CROSS_COMPILING\")/s|(unless (getenv \"GNUTLS_GUILE_CROSS_COMPILING\")|(unless (or (false-if-exception (dynamic-call \"scm_init_gnutls\" (dynamic-link #f))) (getenv \"GNUTLS_GUILE_CROSS_COMPILING\"))|" \
++	  -e "s|(unless (getenv \"GNUTLS_GUILE_CROSS_COMPILING\")|(when (module-variable (current-module) 'protocol/ssl3)|" \
  	  > "$@.tmp"
  	$(AM_V_at)mv "$@.tmp" "$@"
  
-@@ -86,7 +95,7 @@
- 	$(AM_V_P) && out=1 || out=- ;					\
- 	unset GUILE_LOAD_COMPILED_PATH ; LC_ALL=C			\
- 	GUILE_AUTO_COMPILE=0 $(CROSS_COMPILING_VARIABLE)		\
--	GNUTLS_GUILE_EXTENSION_DIR="$(abs_top_builddir)/guile/src"	\
-+	$(guile_extension_dir_variable)				\
- 	$(GUILD) compile --target="$(host)"				\
- 	  -L "$(top_builddir)/guile/modules"				\
- 	  -L "$(top_srcdir)/guile/modules"				\
---- guile-gnutls-v5.0.1/guile/modules/gnutls.in
-+++ guile-gnutls-v5.0.1/guile/modules/gnutls.in
-@@ -816,12 +816,21 @@
-         ;; The .scm file is supposed to be architecture-independent.  Thus,
-         ;; save 'extensiondir' only if it's different from what Guile expects.
-         @maybe_guileextensiondir@))
-+  (define %load-extension? @maybe_load_extension@)
+@@ -56,6 +58,7 @@
  
--  (unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
--    (load-extension (if %libdir
--                        (string-append %libdir "/guile-gnutls-v-2")
--                        "guile-gnutls-v-2")
--                    "scm_init_gnutls")))
-+  ;; Static profile: bindings are linked into the main program.
-+  ;; Shared profile: load the extension.
-+  (let* ((self-handle (false-if-exception (dynamic-link #f)))
-+         (loaded-in-place?
-+          (and self-handle
-+               (false-if-exception
-+                (dynamic-call "scm_init_gnutls" self-handle)))))
-+    (unless loaded-in-place?
-+      (when %load-extension?
-+        (load-extension (if %libdir
-+                            (string-append %libdir "/guile-gnutls-v-2")
-+                            "guile-gnutls-v-2")
-+                        "scm_init_gnutls")))))
+ if HAVE_GUILD
  
- (define-syntax define-deprecated
-   (lambda (s)
-@@ -866,7 +875,7 @@
- (define certificate-verify/allow-any-x509-v1-ca-certificate #f)
- (define certificate-verify/allow-x509-v1-ca-certificate #f)
++if ENABLE_SHARED
+ guilesiteccachesubdir = $(guilesiteccachedir)/gnutls
+ nodist_guilesiteccache_DATA = modules/gnutls.go
+ nodist_guilesiteccachesub_DATA = modules/gnutls/extra.go
+@@ -94,6 +97,7 @@
+ 	  -o "$@" "$<" >&$$out
  
--(unless (getenv "GNUTLS_GUILE_CROSS_COMPILING")
-+(when (module-variable (current-module) 'protocol/ssl3)
-   ;; Renaming.
-   (set! protocol/ssl-3 protocol/ssl3)
-   (set! protocol/tls-1.0 protocol/tls1-0)
+ SUFFIXES = .go
++endif ENABLE_SHARED
+ 
+ endif HAVE_GUILD
+ 
