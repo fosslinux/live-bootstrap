@@ -42,6 +42,47 @@ def parse_internal_ci_break_after(value):
         )
     return scope, step_name
 
+def apply_internal_ci_break_to_tree(tree_root, break_scope, break_step, internal_ci):
+    """
+    Inject INTERNAL_CI break jump after a build step in a prepared steps tree.
+    """
+    if not break_scope or not break_step:
+        return
+    if internal_ci in ("", "False", None):
+        raise ValueError("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
+
+    manifest_path = os.path.join(tree_root, break_scope, "manifest")
+    if not os.path.isfile(manifest_path):
+        raise ValueError(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {manifest_path}")
+
+    with open(manifest_path, "r", encoding="utf-8") as manifest_file:
+        manifest_lines = manifest_file.readlines()
+
+    inserted = False
+    break_line = f"jump: break ( INTERNAL_CI == {internal_ci} )\n"
+    output_lines = []
+    for line in manifest_lines:
+        output_lines.append(line)
+        stripped = line.strip()
+        if inserted or not stripped.startswith("build: "):
+            continue
+
+        step_name = stripped[len("build: "):].split("#", 1)[0].strip()
+        if step_name == break_step:
+            output_lines.append(break_line)
+            inserted = True
+
+    if not inserted:
+        raise ValueError(
+            "INTERNAL_CI_BREAK_AFTER target not found in "
+            + break_scope
+            + "/manifest: "
+            + break_step
+        )
+
+    with open(manifest_path, "w", encoding="utf-8") as manifest_file:
+        manifest_file.writelines(output_lines)
+
 def update_stage0_image(image_path,
                         build_guix_also=False,
                         mirrors=None,
@@ -72,6 +113,7 @@ def update_stage0_image(image_path,
     try:
         run_as_root(
             "mount",
+            "-t", "ext4",
             "-o", "loop,offset=1073741824",
             image_path,
             mountpoint,
@@ -359,8 +401,8 @@ def main():
                         help="Skip early stages of live-bootstrap", nargs=None)
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
     parser.add_argument("--internal-ci-break-after",
-                        help="Insert a temporary jump: break after a build step "
-                             "using 'steps:<name>' or 'steps-guix:<name>' "
+                        help="Insert a temporary jump: break after a build step using "
+                             "'steps:<name>' or 'steps-guix:<name>' "
                              "for --stage0-image resume runs and fresh --qemu kernel-bootstrap runs.")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
@@ -623,21 +665,21 @@ print(shutil.which('chroot'))
                              'root=/dev/sda1 rootfstype=ext3 init=/init rw']
         else:
             generator.prepare(target, kernel_bootstrap=True, target_size=size)
-            boot_image = generator.target_dir + '.img'
             if args.internal_ci_break_after:
-                boot_image = prepare_stage0_work_image(
-                    boot_image,
-                    target.path,
-                    args.build_guix_also,
-                    mirrors=args.mirrors,
-                    internal_ci=args.internal_ci,
-                    internal_ci_break_after=args.internal_ci_break_after,
+                break_scope, break_step = parse_internal_ci_break_after(args.internal_ci_break_after)
+                apply_internal_ci_break_to_tree(
+                    generator.target_dir,
+                    break_scope,
+                    break_step,
+                    args.internal_ci,
                 )
+                os.remove(generator.target_dir + '.img')
+                generator.create_builder_hex0_disk_image(generator.target_dir + '.img', size)
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
-                '-drive', 'file=' + boot_image + ',format=raw'
+                '-drive', 'file=' + generator.target_dir + '.img' + ',format=raw'
             ]
             if target.get_disk("external") is not None:
                 arg_list += [
