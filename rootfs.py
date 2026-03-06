@@ -119,6 +119,17 @@ else:
 if old_env_content is not None:
     with open(os.path.join(dest_steps, "env"), "wb") as env_file:
         env_file.write(old_env_content)
+env_path = os.path.join(dest_steps, "env")
+if os.path.isfile(env_path):
+    with open(env_path, "r", encoding="utf-8", errors="ignore") as env_file:
+        env_content = env_file.read()
+else:
+    env_content = ""
+if "NETWORK_READY=" not in env_content:
+    with open(env_path, "a", encoding="utf-8") as env_file:
+        if env_content and not env_content.endswith("\\n"):
+            env_file.write("\\n")
+        env_file.write("NETWORK_READY=False\\n")
 
 config_path = os.path.join(dest_steps, "bootstrap.cfg")
 if build_guix_also:
@@ -131,10 +142,29 @@ lines.append("PAYLOAD_REQUIRED=False\\n")
 with open(config_path, "w", encoding="utf-8") as cfg:
     cfg.writelines(lines)
 
-# Ensure resumed stage0-image /init has minimal early mounts for runtime.
-init_path = os.path.join(mountpoint, "init")
+# Ensure resumed stage0-image init scripts have minimal early mounts and
+# only restore networking after get_network has run.
 mount_marker = "# LB_STAGE0_EARLY_MOUNTS"
-if os.path.isfile(init_path):
+legacy_network_block = (
+    'if [ "${CHROOT}" = False ] && command -v dhcpcd >/dev/null 2>&1; then\\n'
+    'dhcpcd --waitip=4 || true\\n'
+    'fi\\n'
+)
+gated_network_block = (
+    'if [ -f /steps/env ]; then\\n'
+    '. /steps/env\\n'
+    'fi\\n'
+    'if [ "${CHROOT}" = False ] && [ "${NETWORK_READY}" = True ] && command -v dhcpcd >/dev/null 2>&1; then\\n'
+    'dhcpcd --waitip=4 || true\\n'
+    'fi\\n'
+)
+for init_name in os.listdir(mountpoint):
+    if init_name != "init" and not init_name.startswith("init."):
+        continue
+    init_path = os.path.join(mountpoint, init_name)
+    if not os.path.isfile(init_path):
+        continue
+
     with open(init_path, "r", encoding="utf-8", errors="ignore") as init_file:
         init_content = init_file.read()
 
@@ -151,8 +181,12 @@ if os.path.isfile(init_path):
                 + mount_block
                 + init_content[first_newline + 1 :]
             )
-            with open(init_path, "w", encoding="utf-8") as init_file:
-                init_file.write(init_content)
+
+    if legacy_network_block in init_content and gated_network_block not in init_content:
+        init_content = init_content.replace(legacy_network_block, gated_network_block)
+
+    with open(init_path, "w", encoding="utf-8") as init_file:
+        init_file.write(init_content)
 
 if build_guix_also:
     dest_steps_guix = os.path.join(mountpoint, "steps-guix")

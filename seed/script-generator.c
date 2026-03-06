@@ -534,9 +534,12 @@ void output_resume_network_init(FILE *out) {
 	fputs("if [ -f /steps/bootstrap.cfg ]; then\n", out);
 	fputs(". /steps/bootstrap.cfg\n", out);
 	fputs("fi\n", out);
+	fputs("if [ -f /steps/env ]; then\n", out);
+	fputs(". /steps/env\n", out);
+	fputs("fi\n", out);
 	fputs("mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)\n", out);
 	fputs("mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)\n", out);
-	fputs("if [ \"${CHROOT}\" = False ] && command -v dhcpcd >/dev/null 2>&1; then\n", out);
+	fputs("if [ \"${CHROOT}\" = False ] && [ \"${NETWORK_READY}\" = True ] && command -v dhcpcd >/dev/null 2>&1; then\n", out);
 	fputs("dhcpcd --waitip=4 || true\n", out);
 	fputs("fi\n", out);
 }

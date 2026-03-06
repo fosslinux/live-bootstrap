@@ -344,7 +344,6 @@ source_line_action() {
 
 # Default get function that downloads source tarballs.
 default_src_get() {
-    ensure_network_ready
     # shellcheck disable=SC2153
     cd "${DISTFILES}"
     # shellcheck disable=SC2162
