@@ -72,7 +72,6 @@ def update_stage0_image(image_path,
     try:
         run_as_root(
             "mount",
-            "-t", "ext4",
             "-o", "loop,offset=1073741824",
             image_path,
             mountpoint,
@@ -362,7 +361,7 @@ def main():
     parser.add_argument("--internal-ci-break-after",
                         help="Insert a temporary jump: break after a build step "
                              "using 'steps:<name>' or 'steps-guix:<name>' "
-                             "for --stage0-image resume runs.")
+                             "for --stage0-image resume runs and fresh --qemu kernel-bootstrap runs.")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
 
@@ -441,8 +440,8 @@ def main():
         break_scope, _ = parse_internal_ci_break_after(args.internal_ci_break_after)
         if break_scope == "steps-guix" and not args.build_guix_also:
             raise ValueError("--internal-ci-break-after steps-guix:* requires --build-guix-also.")
-        if not args.qemu or not args.stage0_image:
-            raise ValueError("--internal-ci-break-after currently requires --stage0-image with --qemu.")
+        if not args.qemu:
+            raise ValueError("--internal-ci-break-after currently requires --qemu.")
         if args.kernel:
             raise ValueError("--internal-ci-break-after cannot be used with --kernel.")
 
@@ -624,11 +623,21 @@ print(shutil.which('chroot'))
                              'root=/dev/sda1 rootfstype=ext3 init=/init rw']
         else:
             generator.prepare(target, kernel_bootstrap=True, target_size=size)
+            boot_image = generator.target_dir + '.img'
+            if args.internal_ci_break_after:
+                boot_image = prepare_stage0_work_image(
+                    boot_image,
+                    target.path,
+                    args.build_guix_also,
+                    mirrors=args.mirrors,
+                    internal_ci=args.internal_ci,
+                    internal_ci_break_after=args.internal_ci_break_after,
+                )
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
                 '-smp', str(args.cores),
-                '-drive', 'file=' + generator.target_dir + '.img' + ',format=raw'
+                '-drive', 'file=' + boot_image + ',format=raw'
             ]
             if target.get_disk("external") is not None:
                 arg_list += [
