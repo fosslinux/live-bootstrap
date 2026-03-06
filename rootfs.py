@@ -362,8 +362,7 @@ def main():
     parser.add_argument("--internal-ci-break-after",
                         help="Insert a temporary jump: break after a build step "
                              "using 'steps:<name>' or 'steps-guix:<name>' "
-                             "for --stage0-image and fresh --qemu "
-                             "kernel-bootstrap runs.")
+                             "for --stage0-image resume runs.")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
 
@@ -442,10 +441,10 @@ def main():
         break_scope, _ = parse_internal_ci_break_after(args.internal_ci_break_after)
         if break_scope == "steps-guix" and not args.build_guix_also:
             raise ValueError("--internal-ci-break-after steps-guix:* requires --build-guix-also.")
-        if not args.qemu:
-            raise ValueError("--internal-ci-break-after currently requires --qemu.")
+        if not args.qemu or not args.stage0_image:
+            raise ValueError("--internal-ci-break-after currently requires --stage0-image with --qemu.")
         if args.kernel:
-            raise ValueError("--internal-ci-break-after is only supported in kernel-bootstrap mode (without --kernel).")
+            raise ValueError("--internal-ci-break-after cannot be used with --kernel.")
 
     if args.stage0_image:
         if not args.qemu:
@@ -625,16 +624,6 @@ print(shutil.which('chroot'))
                              'root=/dev/sda1 rootfstype=ext3 init=/init rw']
         else:
             generator.prepare(target, kernel_bootstrap=True, target_size=size)
-            if args.internal_ci_break_after:
-                # Allow first-run qemu kernel-bootstrap to inject the same scoped breakpoints
-                # supported by --stage0-image resume runs.
-                update_stage0_image(
-                    generator.target_dir + '.img',
-                    build_guix_also=args.build_guix_also,
-                    mirrors=args.mirrors,
-                    internal_ci=args.internal_ci,
-                    internal_ci_break_after=args.internal_ci_break_after,
-                )
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
