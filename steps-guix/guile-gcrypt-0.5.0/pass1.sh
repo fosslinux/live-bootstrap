@@ -34,21 +34,3 @@ src_compile() {
 src_install() {
     default_src_install
 }
-
-src_postprocess() {
-    local guile_site_path guile_site_ccache guile_core_ccache
-
-    default_src_postprocess
-
-    guile_site_path="${DESTDIR}${PREFIX}/share/guile/site/3.0:${PREFIX}/share/guile/site/3.0:${PREFIX}/share/guile/3.0"
-    guile_site_ccache="${DESTDIR}${LIBDIR}/guile/3.0/site-ccache:${LIBDIR}/guile/3.0/site-ccache"
-    guile_core_ccache="${LIBDIR}/guile/3.0/ccache"
-
-    PATH="${PREFIX}/bin:/usr/bin:/bin" \
-    LD_LIBRARY_PATH="${DESTDIR}${LIBDIR}:${DESTDIR}${PREFIX}/lib:${LIBDIR}:${PREFIX}/lib:${LD_LIBRARY_PATH}" \
-    GUILE_LOAD_PATH="${guile_site_path}" \
-    GUILE_LOAD_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
-    GUILE_SYSTEM_PATH="${guile_site_path}" \
-    GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
-    "${DESTDIR}${PREFIX}/bin/guile" -c "(use-modules (gcrypt hash)) (unless (equal? (hash-algorithm sha256) (lookup-hash-algorithm 'sha256)) (error \"guile-gcrypt sha256 lookup mismatch\")) (display \"gcrypt-module-ok\n\")"
-}

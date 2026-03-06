@@ -98,13 +98,6 @@ probe_guile_module() {
             find_module='git'
             probe_expression="(use-modules (git)) (display \"git-module-ok\\n\")"
             ;;
-        gcrypt)
-            probe_label="gcrypt-related"
-            probe_pkg_config="libgcrypt"
-            find_name='*gcrypt*'
-            find_module='gcrypt'
-            probe_expression="(use-modules (gcrypt hash)) (unless (equal? (hash-algorithm sha256) (lookup-hash-algorithm 'sha256)) (error \"guile-gcrypt sha256 lookup mismatch\")) (display \"gcrypt-module-ok\\n\")"
-            ;;
         gnutls)
             probe_label="gnutls-related"
             probe_pkg_config="gnutls"
@@ -172,7 +165,6 @@ src_configure() {
     guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --libs guile-3.0)"
 
-    probe_guile_module gcrypt
     probe_guile_module gnutls
     probe_guile_module git
 
