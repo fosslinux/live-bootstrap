@@ -360,9 +360,10 @@ def main():
                         help="Skip early stages of live-bootstrap", nargs=None)
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
     parser.add_argument("--internal-ci-break-after",
-                        help="With --stage0-image: insert a temporary "
-                             "jump: break after a build step using "
-                             "'steps:<name>' or 'steps-guix:<name>'.")
+                        help="Insert a temporary jump: break after a build step "
+                             "using 'steps:<name>' or 'steps-guix:<name>' "
+                             "for --stage0-image and fresh --qemu "
+                             "kernel-bootstrap runs.")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
 
@@ -435,6 +436,17 @@ def main():
     if not args.mirrors and not args.stage0_image:
         raise ValueError("At least one mirror must be provided.")
 
+    if args.internal_ci_break_after:
+        if not args.internal_ci:
+            raise ValueError("--internal-ci-break-after requires --internal-ci (e.g. pass2).")
+        break_scope, _ = parse_internal_ci_break_after(args.internal_ci_break_after)
+        if break_scope == "steps-guix" and not args.build_guix_also:
+            raise ValueError("--internal-ci-break-after steps-guix:* requires --build-guix-also.")
+        if not args.qemu:
+            raise ValueError("--internal-ci-break-after currently requires --qemu.")
+        if args.kernel:
+            raise ValueError("--internal-ci-break-after is only supported in kernel-bootstrap mode (without --kernel).")
+
     if args.stage0_image:
         if not args.qemu:
             raise ValueError("--stage0-image can only be used with --qemu.")
@@ -443,12 +455,6 @@ def main():
         if not os.path.isfile(args.stage0_image):
             raise ValueError(f"Stage0 image does not exist: {args.stage0_image}")
         args.stage0_image = os.path.abspath(args.stage0_image)
-        if args.internal_ci_break_after:
-            if not args.internal_ci:
-                raise ValueError("--internal-ci-break-after requires --internal-ci (e.g. pass1).")
-            break_scope, _ = parse_internal_ci_break_after(args.internal_ci_break_after)
-            if break_scope == "steps-guix" and not args.build_guix_also:
-                raise ValueError("--internal-ci-break-after steps-guix:* requires --build-guix-also.")
 
     # Set constant umask
     os.umask(0o022)
@@ -619,6 +625,16 @@ print(shutil.which('chroot'))
                              'root=/dev/sda1 rootfstype=ext3 init=/init rw']
         else:
             generator.prepare(target, kernel_bootstrap=True, target_size=size)
+            if args.internal_ci_break_after:
+                # Allow first-run qemu kernel-bootstrap to inject the same scoped breakpoints
+                # supported by --stage0-image resume runs.
+                update_stage0_image(
+                    generator.target_dir + '.img',
+                    build_guix_also=args.build_guix_also,
+                    mirrors=args.mirrors,
+                    internal_ci=args.internal_ci,
+                    internal_ci_break_after=args.internal_ci_break_after,
+                )
             arg_list = [
                 '-enable-kvm',
                 '-m', str(args.qemu_ram) + 'M',
