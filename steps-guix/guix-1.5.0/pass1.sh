@@ -79,7 +79,7 @@ src_prepare() {
 probe_guile_module() {
     local module_name debug_log
     local guile_site_path guile_site_ccache guile_core_ccache guile_ext_path
-    local pkg_config_path probe_label probe_pkg_config
+    local pkg_config_path probe_label probe_pkg_config probe_expression
     local find_name find_module
 
     module_name="$1"
@@ -96,18 +96,28 @@ probe_guile_module() {
             probe_pkg_config="libgit2"
             find_name='libguile-git*'
             find_module='git'
+            probe_expression="(use-modules (git)) (display \"git-module-ok\\n\")"
+            ;;
+        gcrypt)
+            probe_label="gcrypt-related"
+            probe_pkg_config="libgcrypt"
+            find_name='*gcrypt*'
+            find_module='gcrypt'
+            probe_expression="(use-modules (gcrypt hash)) (unless (equal? (hash-algorithm sha256) (lookup-hash-algorithm 'sha256)) (error \"guile-gcrypt sha256 lookup mismatch\")) (display \"gcrypt-module-ok\\n\")"
             ;;
         gnutls)
             probe_label="gnutls-related"
             probe_pkg_config="gnutls"
             find_name='libguile-gnutls*'
             find_module='gnutls'
+            probe_expression="(use-modules (gnutls)) (display \"gnutls-module-ok\\n\")"
             ;;
         *)
             probe_label="${module_name}-related"
             probe_pkg_config=""
             find_name="*${module_name}*"
             find_module="${module_name}"
+            probe_expression="(use-modules (${module_name})) (display \"${module_name}-module-ok\\n\")"
             ;;
     esac
 
@@ -140,7 +150,7 @@ probe_guile_module() {
         GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
         GUILE_EXTENSIONS_PATH="${guile_ext_path}" \
         GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}" \
-        "${PREFIX}/bin/guile" -c "(use-modules (${module_name})) (display \"${module_name}-module-ok\\n\")" \
+        "${PREFIX}/bin/guile" -c "${probe_expression}" \
         >"${debug_log}" 2>&1; then
         echo "guix: explicit (${module_name}) probe failed; raw Guile output follows:" >&2
         cat "${debug_log}" >&2 || true
@@ -162,6 +172,7 @@ src_configure() {
     guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --libs guile-3.0)"
 
+    probe_guile_module gcrypt
     probe_guile_module gnutls
     probe_guile_module git
 

@@ -14,6 +14,8 @@ src_configure() {
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --includedir="${PREFIX}/include" \
+        --enable-shared \
+        --enable-static \
         --host="${host_triplet}" \
         --build="${host_triplet}"
 }
