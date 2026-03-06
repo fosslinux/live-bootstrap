@@ -167,6 +167,7 @@ src_configure() {
 
     probe_guile_module gnutls
     probe_guile_module git
+    probe_guile_module zlib
 
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     PKG_CONFIG="/usr/bin/pkg-config" \
