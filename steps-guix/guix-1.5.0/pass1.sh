@@ -192,7 +192,14 @@ src_configure() {
 }
 
 src_compile() {
-    default_src_compile
+    # Build environment may provide aclocal/automake without a matching
+    # version-suffixed binary (e.g. aclocal-1.17). Force generic tool names.
+    make "${MAKEJOBS}" -f Makefile PREFIX="${PREFIX}" \
+        ACLOCAL=aclocal \
+        AUTOCONF=autoconf \
+        AUTOHEADER=autoheader \
+        AUTOMAKE=automake \
+        AUTORECONF=autoreconf
 }
 
 src_install() {
