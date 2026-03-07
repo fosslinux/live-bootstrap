@@ -27,5 +27,5 @@ src_prepare() {
 }
 
 src_configure() {
-    ./configure --prefix="${PREFIX}" --libdir="${LIBDIR}" --static
+    ./configure --prefix="${PREFIX}" --libdir="${LIBDIR}" --shared
 }
