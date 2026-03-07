@@ -169,6 +169,7 @@ src_configure() {
     probe_guile_module git
     probe_guile_module zlib
     probe_guile_module lzlib
+    probe_guile_module semver
 
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     PKG_CONFIG="/usr/bin/pkg-config" \

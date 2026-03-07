@@ -186,10 +186,20 @@ with open(config_path, "w", encoding="utf-8") as cfg:
 # Ensure resumed stage0-image init scripts have minimal early mounts and
 # only restore networking after get_network has run.
 mount_marker = "# LB_STAGE0_EARLY_MOUNTS"
+regen_marker = "# LB_STAGE0_REGENERATE_SCRIPTS"
 legacy_network_block = (
     'if [ "${CHROOT}" = False ] && command -v dhcpcd >/dev/null 2>&1; then\\n'
     'dhcpcd --waitip=4 || true\\n'
     'fi\\n'
+)
+regen_block = (
+    regen_marker + "\\n"
+    + 'if [ -x /script-generator ] && [ -f /steps/manifest ]; then\\n'
+    + '/script-generator /steps/manifest\\n'
+    + 'fi\\n'
+    + 'if [ -x /script-generator ] && [ -f /steps-guix/manifest ]; then\\n'
+    + '/script-generator /steps-guix/manifest /steps\\n'
+    + 'fi\\n'
 )
 gated_network_block = (
     'if [ -f /steps/env ]; then\\n'
@@ -225,6 +235,15 @@ for init_name in os.listdir(mountpoint):
 
     if legacy_network_block in init_content and gated_network_block not in init_content:
         init_content = init_content.replace(legacy_network_block, gated_network_block)
+
+    if regen_marker not in init_content:
+        first_newline = init_content.find("\\n")
+        if first_newline != -1:
+            init_content = (
+                init_content[: first_newline + 1]
+                + regen_block
+                + init_content[first_newline + 1 :]
+            )
 
     with open(init_path, "w", encoding="utf-8") as init_file:
         init_file.write(init_content)
