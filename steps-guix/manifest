@@ -42,6 +42,7 @@ build: avahi-0.8
 build: guile-avahi-0.4.1
 build: guile-git-0.10.0
 build: guile-json-4.7.3
+build: guile-semver-0.2.0
 # End of Guix Dependencies
 # Build Guix Bootstrap seeds (All flowing must be static)
 # Build static-binaries-0-i686-linux.tar.xz
