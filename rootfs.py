@@ -42,22 +42,74 @@ def parse_internal_ci_break_after(value):
         )
     return scope, step_name
 
-def apply_internal_ci_break_to_tree(tree_root, break_scope, break_step, internal_ci):
-    """
-    Inject INTERNAL_CI break jump after a build step in a prepared steps tree.
-    """
-    if not break_scope or not break_step:
-        return
-    if internal_ci in ("", "False", None):
-        raise ValueError("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
+_INIT_MOUNT_MARKER = "# LB_STAGE0_EARLY_MOUNTS"
+_INIT_REGEN_MARKER = "# LB_STAGE0_REGENERATE_SCRIPTS"
+_INIT_LEGACY_NETWORK_BLOCK = (
+    'if [ "${CHROOT}" = False ] && command -v dhcpcd >/dev/null 2>&1; then\n'
+    'dhcpcd --waitip=4 || true\n'
+    'fi\n'
+)
+_INIT_GATED_NETWORK_BLOCK = (
+    'if [ -f /steps/env ]; then\n'
+    '. /steps/env\n'
+    'fi\n'
+    'if [ "${CHROOT}" = False ] && [ "${NETWORK_READY}" = True ] && command -v dhcpcd >/dev/null 2>&1; then\n'
+    'dhcpcd --waitip=4 || true\n'
+    'fi\n'
+)
+_INIT_MOUNT_BLOCK = (
+    _INIT_MOUNT_MARKER + "\n"
+    + "mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)\n"
+    + "mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)\n"
+)
+_INIT_REGEN_BLOCK = (
+    _INIT_REGEN_MARKER + "\n"
+    + "# Regenerate scripts from current manifests so resume runs stay deterministic.\n"
+    + 'resume_entry=""\n'
+    + 'resume_root=""\n'
+    + 'resume_pkg=""\n'
+    + 'if [ -f "$0" ]; then\n'
+    + 'resume_entry="$(sed -n "s/.*bash \\(\\/steps[^ ]*\\/[0-9][0-9]*\\.sh\\).*/\\1/p" "$0" | head -n1)"\n'
+    + 'fi\n'
+    + 'if [ -n "${resume_entry}" ]; then\n'
+    + 'resume_root="$(dirname "${resume_entry}")"\n'
+    + 'if [ -f "${resume_entry}" ]; then\n'
+    + 'resume_pkg="$(sed -n "s/^build \\([^ ]*\\) .*/\\1/p" "${resume_entry}" | head -n1)"\n'
+    + 'fi\n'
+    + 'fi\n'
+    + 'if [ -x /script-generator ] && [ -f /steps/manifest ]; then\n'
+    + '/script-generator /steps/manifest\n'
+    + 'fi\n'
+    + 'if [ -x /script-generator ] && [ -f /steps-guix/manifest ]; then\n'
+    + '/script-generator /steps-guix/manifest /steps\n'
+    + 'fi\n'
+    + 'if [ -n "${resume_pkg}" ] && [ -d "${resume_root}" ]; then\n'
+    + 'mapped_entry="$(grep -F -l "build ${resume_pkg} " "${resume_root}"/[0-9]*.sh 2>/dev/null | head -n1 || true)"\n'
+    + 'if [ -n "${mapped_entry}" ]; then\n'
+    + 'resume_entry="${mapped_entry}"\n'
+    + 'fi\n'
+    + 'fi\n'
+    + 'if [ -n "${resume_entry}" ] && [ -f "${resume_entry}" ] && [ "${resume_entry}" != "$0" ]; then\n'
+    + 'if ! bash "${resume_entry}"; then\n'
+    + 'status=$?\n'
+    + 'echo "bootstrap script failed with status ${status}; dropping to rescue shell" >&2\n'
+    + 'PATH=/bin:/usr/bin:/sbin:/usr/sbin:${PREFIX}/bin:${PATH}\n'
+    + 'while true; do\n'
+    + 'if command -v bash >/dev/null 2>&1; then\n'
+    + 'env PS1="[FAIL ${status}] \\w # " bash -i\n'
+    + 'elif command -v sh >/dev/null 2>&1; then\n'
+    + 'env PS1="[FAIL ${status}] \\w # " sh -i\n'
+    + 'else\n'
+    + 'sleep 60\n'
+    + 'fi\n'
+    + 'done\n'
+    + 'fi\n'
+    + 'exit 0\n'
+    + 'fi\n'
+)
 
-    manifest_path = os.path.join(tree_root, break_scope, "manifest")
-    if not os.path.isfile(manifest_path):
-        raise ValueError(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {manifest_path}")
 
-    with open(manifest_path, "r", encoding="utf-8") as manifest_file:
-        manifest_lines = manifest_file.readlines()
-
+def _insert_internal_ci_break(manifest_lines, break_step, internal_ci, context_label):
     inserted = False
     break_line = f"jump: break ( INTERNAL_CI == {internal_ci} )\n"
     output_lines = []
@@ -75,11 +127,194 @@ def apply_internal_ci_break_to_tree(tree_root, break_scope, break_step, internal
     if not inserted:
         raise ValueError(
             "INTERNAL_CI_BREAK_AFTER target not found in "
-            + break_scope
-            + "/manifest: "
+            + context_label
+            + ": "
             + break_step
         )
+    return output_lines
 
+
+def _copytree_replace(src, dst):
+    if os.path.isdir(dst):
+        shutil.copytree(src, dst, dirs_exist_ok=True)
+    else:
+        shutil.copytree(src, dst)
+
+
+def _inject_block_after_shebang(content, marker, block):
+    if marker in content:
+        return content
+    first_newline = content.find("\n")
+    if first_newline == -1:
+        return content
+    return content[: first_newline + 1] + block + content[first_newline + 1 :]
+
+
+def _patch_resume_init_scripts(mountpoint):
+    for init_name in os.listdir(mountpoint):
+        if init_name != "init" and not init_name.startswith("init."):
+            continue
+        init_path = os.path.join(mountpoint, init_name)
+        if not os.path.isfile(init_path):
+            continue
+
+        with open(init_path, "r", encoding="utf-8", errors="ignore") as init_file:
+            init_content = init_file.read()
+
+        init_content = _inject_block_after_shebang(
+            init_content,
+            _INIT_MOUNT_MARKER,
+            _INIT_MOUNT_BLOCK,
+        )
+        if (
+            _INIT_LEGACY_NETWORK_BLOCK in init_content
+            and _INIT_GATED_NETWORK_BLOCK not in init_content
+        ):
+            init_content = init_content.replace(
+                _INIT_LEGACY_NETWORK_BLOCK,
+                _INIT_GATED_NETWORK_BLOCK,
+            )
+        init_content = _inject_block_after_shebang(
+            init_content,
+            _INIT_REGEN_MARKER,
+            _INIT_REGEN_BLOCK,
+        )
+
+        with open(init_path, "w", encoding="utf-8") as init_file:
+            init_file.write(init_content)
+
+
+def _update_stage0_tree(mountpoint,
+                        steps_dir,
+                        steps_guix_dir,
+                        build_guix_also,
+                        mirrors,
+                        internal_ci,
+                        break_scope,
+                        break_step):
+    """
+    Apply all resume updates directly to a mounted stage0 filesystem tree.
+    """
+    old_config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
+    if not os.path.isfile(old_config_path):
+        raise SystemExit(f"Missing config in stage0 image: {old_config_path}")
+    old_env_path = os.path.join(mountpoint, "steps", "env")
+    old_env_content = None
+    if os.path.isfile(old_env_path):
+        with open(old_env_path, "rb") as env_file:
+            old_env_content = env_file.read()
+
+    with open(old_config_path, "r", encoding="utf-8") as cfg:
+        lines = [
+            line for line in cfg
+            if not line.startswith("BUILD_GUIX_ALSO=")
+            and not line.startswith("INTERNAL_CI=")
+            and not line.startswith("MIRRORS=")
+            and not line.startswith("MIRRORS_LEN=")
+            and not line.startswith("PAYLOAD_REQUIRED=")
+        ]
+
+    dest_steps = os.path.join(mountpoint, "steps")
+    _copytree_replace(steps_dir, dest_steps)
+
+    env_path = os.path.join(dest_steps, "env")
+    if old_env_content is not None:
+        with open(env_path, "wb") as env_file:
+            env_file.write(old_env_content)
+
+    if os.path.isfile(env_path):
+        with open(env_path, "r", encoding="utf-8", errors="ignore") as env_file:
+            env_content = env_file.read()
+    else:
+        env_content = ""
+    if "NETWORK_READY=" not in env_content:
+        with open(env_path, "a", encoding="utf-8") as env_file:
+            if env_content and not env_content.endswith("\n"):
+                env_file.write("\n")
+            env_file.write("NETWORK_READY=False\n")
+
+    config_path = os.path.join(dest_steps, "bootstrap.cfg")
+    if build_guix_also:
+        lines.append("BUILD_GUIX_ALSO=True\n")
+    if mirrors:
+        lines.append(f'MIRRORS="{" ".join(mirrors)}"\n')
+        lines.append(f"MIRRORS_LEN={len(mirrors)}\n")
+    lines.append(f"INTERNAL_CI={internal_ci}\n")
+    lines.append("PAYLOAD_REQUIRED=False\n")
+    with open(config_path, "w", encoding="utf-8") as cfg:
+        cfg.writelines(lines)
+
+    _patch_resume_init_scripts(mountpoint)
+
+    if build_guix_also:
+        dest_steps_guix = os.path.join(mountpoint, "steps-guix")
+        _copytree_replace(steps_guix_dir, dest_steps_guix)
+
+    if break_scope and break_step:
+        if internal_ci in ("", "False", None):
+            raise SystemExit("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
+        manifest_path = os.path.join(mountpoint, break_scope, "manifest")
+        if not os.path.isfile(manifest_path):
+            raise SystemExit(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {manifest_path}")
+        with open(manifest_path, "r", encoding="utf-8") as manifest_file:
+            manifest_lines = manifest_file.readlines()
+        output_lines = _insert_internal_ci_break(
+            manifest_lines,
+            break_step,
+            internal_ci,
+            f"{break_scope}/manifest",
+        )
+        with open(manifest_path, "w", encoding="utf-8") as manifest_file:
+            manifest_file.writelines(output_lines)
+
+
+def _stage0_update_cli(argv):
+    """
+    Internal entrypoint executed as root for mutating mounted stage0 trees.
+    """
+    if len(argv) < 7:
+        raise SystemExit("stage0 update cli expects at least 7 arguments")
+    mountpoint = argv[0]
+    steps_dir = argv[1]
+    steps_guix_dir = argv[2]
+    build_guix_also = (argv[3] == "True")
+    internal_ci = argv[4]
+    break_scope = argv[5]
+    break_step = argv[6]
+    mirrors = argv[7:]
+    _update_stage0_tree(
+        mountpoint,
+        steps_dir,
+        steps_guix_dir,
+        build_guix_also,
+        mirrors,
+        internal_ci,
+        break_scope,
+        break_step,
+    )
+
+
+def apply_internal_ci_break_to_tree(tree_root, break_scope, break_step, internal_ci):
+    """
+    Inject INTERNAL_CI break jump after a build step in a prepared steps tree.
+    """
+    if not break_scope or not break_step:
+        return
+    if internal_ci in ("", "False", None):
+        raise ValueError("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
+
+    manifest_path = os.path.join(tree_root, break_scope, "manifest")
+    if not os.path.isfile(manifest_path):
+        raise ValueError(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {manifest_path}")
+
+    with open(manifest_path, "r", encoding="utf-8") as manifest_file:
+        manifest_lines = manifest_file.readlines()
+    output_lines = _insert_internal_ci_break(
+        manifest_lines,
+        break_step,
+        internal_ci,
+        f"{break_scope}/manifest",
+    )
     with open(manifest_path, "w", encoding="utf-8") as manifest_file:
         manifest_file.writelines(output_lines)
 
@@ -119,217 +354,18 @@ def update_stage0_image(image_path,
             mountpoint,
         )
         mounted = True
-        script = '''
-import os
-import shutil
-import sys
-
-mountpoint = sys.argv[1]
-steps_dir = sys.argv[2]
-steps_guix_dir = sys.argv[3]
-build_guix_also = (sys.argv[4] == "True")
-internal_ci = sys.argv[5]
-break_scope = sys.argv[6]
-break_step = sys.argv[7]
-mirrors = sys.argv[8:]
-
-old_config_path = os.path.join(mountpoint, "steps", "bootstrap.cfg")
-if not os.path.isfile(old_config_path):
-    raise SystemExit(f"Missing config in stage0 image: {old_config_path}")
-old_env_path = os.path.join(mountpoint, "steps", "env")
-old_env_content = None
-if os.path.isfile(old_env_path):
-    with open(old_env_path, "rb") as env_file:
-        old_env_content = env_file.read()
-
-with open(old_config_path, "r", encoding="utf-8") as cfg:
-    lines = [
-        line for line in cfg
-        if not line.startswith("BUILD_GUIX_ALSO=")
-        and not line.startswith("INTERNAL_CI=")
-        and not line.startswith("MIRRORS=")
-        and not line.startswith("MIRRORS_LEN=")
-        and not line.startswith("PAYLOAD_REQUIRED=")
-    ]
-
-dest_steps = os.path.join(mountpoint, "steps")
-if os.path.isdir(dest_steps):
-    shutil.copytree(steps_dir, dest_steps, dirs_exist_ok=True)
-else:
-    shutil.copytree(steps_dir, dest_steps)
-if old_env_content is not None:
-    with open(os.path.join(dest_steps, "env"), "wb") as env_file:
-        env_file.write(old_env_content)
-env_path = os.path.join(dest_steps, "env")
-if os.path.isfile(env_path):
-    with open(env_path, "r", encoding="utf-8", errors="ignore") as env_file:
-        env_content = env_file.read()
-else:
-    env_content = ""
-if "NETWORK_READY=" not in env_content:
-    with open(env_path, "a", encoding="utf-8") as env_file:
-        if env_content and not env_content.endswith("\\n"):
-            env_file.write("\\n")
-        env_file.write("NETWORK_READY=False\\n")
-
-config_path = os.path.join(dest_steps, "bootstrap.cfg")
-if build_guix_also:
-    lines.append("BUILD_GUIX_ALSO=True\\n")
-if mirrors:
-    lines.append(f'MIRRORS="{" ".join(mirrors)}"\\n')
-    lines.append(f"MIRRORS_LEN={len(mirrors)}\\n")
-lines.append(f"INTERNAL_CI={internal_ci}\\n")
-lines.append("PAYLOAD_REQUIRED=False\\n")
-with open(config_path, "w", encoding="utf-8") as cfg:
-    cfg.writelines(lines)
-
-# Ensure resumed stage0-image init scripts have minimal early mounts and
-# only restore networking after get_network has run.
-mount_marker = "# LB_STAGE0_EARLY_MOUNTS"
-regen_marker = "# LB_STAGE0_REGENERATE_SCRIPTS"
-legacy_network_block = (
-    'if [ "${CHROOT}" = False ] && command -v dhcpcd >/dev/null 2>&1; then\\n'
-    'dhcpcd --waitip=4 || true\\n'
-    'fi\\n'
-)
-regen_block = (
-    regen_marker + "\\n"
-    + 'resume_entry=""\\n'
-    + 'resume_root=""\\n'
-    + 'resume_pkg=""\\n'
-    + 'if [ -f "$0" ]; then\\n'
-    + 'resume_entry="$(sed -n \'s/.*bash \\\\(\\\\/steps[^ ]*\\\\/[0-9][0-9]*\\\\.sh\\\\).*/\\\\1/p\' "$0" | head -n1)"\\n'
-    + 'fi\\n'
-    + 'if [ -n "${resume_entry}" ]; then\\n'
-    + 'resume_root="$(dirname "${resume_entry}")"\\n'
-    + 'if [ -f "${resume_entry}" ]; then\\n'
-    + 'resume_pkg="$(sed -n \'s/^build \\\\([^ ]*\\\\) .*/\\\\1/p\' "${resume_entry}" | head -n1)"\\n'
-    + 'fi\\n'
-    + 'fi\\n'
-    + 'if [ -x /script-generator ] && [ -f /steps/manifest ]; then\\n'
-    + '/script-generator /steps/manifest\\n'
-    + 'fi\\n'
-    + 'if [ -x /script-generator ] && [ -f /steps-guix/manifest ]; then\\n'
-    + '/script-generator /steps-guix/manifest /steps\\n'
-    + 'fi\\n'
-    + 'if [ -n "${resume_pkg}" ] && [ -d "${resume_root}" ]; then\\n'
-    + 'mapped_entry="$(grep -F -l "build ${resume_pkg} " "${resume_root}"/[0-9]*.sh 2>/dev/null | head -n1 || true)"\\n'
-    + 'if [ -n "${mapped_entry}" ]; then\\n'
-    + 'resume_entry="${mapped_entry}"\\n'
-    + 'fi\\n'
-    + 'fi\\n'
-    + 'if [ -n "${resume_entry}" ] && [ -f "${resume_entry}" ] && [ "${resume_entry}" != "$0" ]; then\\n'
-    + 'if ! bash "${resume_entry}"; then\\n'
-    + 'status=$?\\n'
-    + 'echo "bootstrap script failed with status ${status}; dropping to rescue shell" >&2\\n'
-    + 'PATH=/bin:/usr/bin:/sbin:/usr/sbin:${PREFIX}/bin:${PATH}\\n'
-    + 'while true; do\\n'
-    + 'if command -v bash >/dev/null 2>&1; then\\n'
-    + 'env PS1="[FAIL ${status}] \\\\w # " bash -i\\n'
-    + 'elif command -v sh >/dev/null 2>&1; then\\n'
-    + 'env PS1="[FAIL ${status}] \\\\w # " sh -i\\n'
-    + 'else\\n'
-    + 'sleep 60\\n'
-    + 'fi\\n'
-    + 'done\\n'
-    + 'fi\\n'
-    + 'exit 0\\n'
-    + 'fi\\n'
-)
-gated_network_block = (
-    'if [ -f /steps/env ]; then\\n'
-    '. /steps/env\\n'
-    'fi\\n'
-    'if [ "${CHROOT}" = False ] && [ "${NETWORK_READY}" = True ] && command -v dhcpcd >/dev/null 2>&1; then\\n'
-    'dhcpcd --waitip=4 || true\\n'
-    'fi\\n'
-)
-for init_name in os.listdir(mountpoint):
-    if init_name != "init" and not init_name.startswith("init."):
-        continue
-    init_path = os.path.join(mountpoint, init_name)
-    if not os.path.isfile(init_path):
-        continue
-
-    with open(init_path, "r", encoding="utf-8", errors="ignore") as init_file:
-        init_content = init_file.read()
-
-    if mount_marker not in init_content:
-        first_newline = init_content.find("\\n")
-        if first_newline != -1:
-            mount_block = (
-                mount_marker + "\\n"
-                + "mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)\\n"
-                + "mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)\\n"
-            )
-            init_content = (
-                init_content[: first_newline + 1]
-                + mount_block
-                + init_content[first_newline + 1 :]
-            )
-
-    if legacy_network_block in init_content and gated_network_block not in init_content:
-        init_content = init_content.replace(legacy_network_block, gated_network_block)
-
-    if regen_marker not in init_content:
-        first_newline = init_content.find("\\n")
-        if first_newline != -1:
-            init_content = (
-                init_content[: first_newline + 1]
-                + regen_block
-                + init_content[first_newline + 1 :]
-            )
-
-    with open(init_path, "w", encoding="utf-8") as init_file:
-        init_file.write(init_content)
-
-if build_guix_also:
-    dest_steps_guix = os.path.join(mountpoint, "steps-guix")
-    if os.path.isdir(dest_steps_guix):
-        shutil.copytree(steps_guix_dir, dest_steps_guix, dirs_exist_ok=True)
-    else:
-        shutil.copytree(steps_guix_dir, dest_steps_guix)
-
-if break_scope and break_step:
-    if internal_ci in ("", "False"):
-        raise SystemExit("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
-
-    manifest_path = os.path.join(mountpoint, break_scope, "manifest")
-    if not os.path.isfile(manifest_path):
-        raise SystemExit(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {manifest_path}")
-
-    with open(manifest_path, "r", encoding="utf-8") as manifest_file:
-        manifest_lines = manifest_file.readlines()
-
-    inserted = False
-    break_line = f"jump: break ( INTERNAL_CI == {internal_ci} )\\n"
-    output_lines = []
-    for line in manifest_lines:
-        output_lines.append(line)
-        stripped = line.strip()
-        if inserted or not stripped.startswith("build: "):
-            continue
-
-        step_name = stripped[len("build: "):].split("#", 1)[0].strip()
-        if step_name == break_step:
-            output_lines.append(break_line)
-            inserted = True
-
-    if not inserted:
-        raise SystemExit(
-            "INTERNAL_CI_BREAK_AFTER target not found in "
-            + break_scope
-            + "/manifest: "
-            + break_step
+        loader = (
+            "import importlib.util, sys;"
+            "spec=importlib.util.spec_from_file_location('lb_rootfs', sys.argv[1]);"
+            "mod=importlib.util.module_from_spec(spec);"
+            "spec.loader.exec_module(mod);"
+            "mod._stage0_update_cli(sys.argv[2:])"
         )
-
-    with open(manifest_path, "w", encoding="utf-8") as manifest_file:
-        manifest_file.writelines(output_lines)
-'''
         run_as_root(
             "python3",
             "-c",
-            script,
+            loader,
+            os.path.abspath(__file__),
             mountpoint,
             steps_dir,
             steps_guix_dir,
@@ -604,148 +640,173 @@ def main():
     bootstrap(args, generator, target, args.target_size, cleanup)
     cleanup()
 
+def _bootstrap_chroot(args, generator, target, cleanup):
+    find_chroot = """
+import shutil
+print(shutil.which('chroot'))
+"""
+    chroot_binary = run_as_root(
+        'python3',
+        '-c',
+        find_chroot,
+        capture_output=True,
+    ).stdout.decode().strip()
+
+    generator.prepare(target, using_kernel=False)
+    arch = stage0_arch_map.get(args.arch, args.arch)
+    init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+    run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init, cleanup=cleanup)
+
+
+def _bootstrap_bwrap(args, generator, target, cleanup):
+    init = '/init'
+    if not args.internal_ci or args.internal_ci == "pass1":
+        generator.prepare(target, using_kernel=False)
+        arch = stage0_arch_map.get(args.arch, args.arch)
+        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
+    else:
+        generator.reuse(target)
+
+    run('env', '-i', 'bwrap', '--unshare-user',
+        '--uid', '0',
+        '--gid', '0',
+        '--unshare-net' if args.external_sources else None,
+        '--setenv', 'PATH', '/usr/bin',
+        '--bind', generator.target_dir, '/',
+        '--dir', '/dev',
+        '--dev-bind', '/dev/null', '/dev/null',
+        '--dev-bind', '/dev/zero', '/dev/zero',
+        '--dev-bind', '/dev/random', '/dev/random',
+        '--dev-bind', '/dev/urandom', '/dev/urandom',
+        '--dev-bind', '/dev/ptmx', '/dev/ptmx',
+        '--dev-bind', '/dev/tty', '/dev/tty',
+        '--tmpfs', '/dev/shm',
+        '--proc', '/proc',
+        '--bind', '/sys', '/sys',
+        '--tmpfs', '/tmp',
+        init,
+        cleanup=cleanup)
+
+
+def _bootstrap_bare_metal(args, generator, target, size):
+    if args.kernel:
+        generator.prepare(target, using_kernel=True, target_size=size)
+        path = os.path.join(args.target, os.path.relpath(generator.target_dir, args.target))
+        print("Please:")
+        print(f"  1. Take {path}/initramfs and your kernel, boot using this.")
+        print(f"  2. Take {path}/disk.img and put this on a writable storage medium.")
+        return
+
+    generator.prepare(target, kernel_bootstrap=True, target_size=size)
+    path = os.path.join(args.target, os.path.relpath(generator.target_dir, args.target))
+    print("Please:")
+    print(f"  1. Take {path}.img and write it to a boot drive and then boot it.")
+    external_disk = target.get_disk("external")
+    if external_disk is None:
+        return
+    external_path = os.path.join(args.target, os.path.relpath(external_disk, args.target))
+    if args.repo:
+        print("  2. Take " + f"{external_path} and attach it as a second disk (/dev/sdb preferred).")
+    else:
+        print("  2. Take " + f"{external_path} and attach it as a second raw container disk (/dev/sdb preferred).")
+
+
+def _qemu_arg_list_for_stage0_image(args, target):
+    work_image = prepare_stage0_work_image(
+        args.stage0_image,
+        target.path,
+        args.build_guix_also,
+        mirrors=args.mirrors,
+        internal_ci=args.internal_ci,
+        internal_ci_break_after=args.internal_ci_break_after,
+    )
+    return [
+        '-enable-kvm',
+        '-m', str(args.qemu_ram) + 'M',
+        '-smp', str(args.cores),
+        '-drive', 'file=' + work_image + ',format=raw',
+        '-machine', 'kernel-irqchip=split',
+        '-nic', 'user,ipv6=off,model=e1000',
+    ]
+
+
+def _qemu_arg_list_for_kernel(args, generator, target, size):
+    generator.prepare(target, using_kernel=True, target_size=size)
+
+    arg_list = [
+        '-enable-kvm',
+        '-m', str(args.qemu_ram) + 'M',
+        '-smp', str(args.cores),
+        '-drive', 'file=' + target.get_disk("disk") + ',format=raw',
+    ]
+    if target.get_disk("external") is not None:
+        arg_list += [
+            '-drive', 'file=' + target.get_disk("external") + ',format=raw',
+        ]
+    arg_list += [
+        '-nic', 'user,ipv6=off,model=e1000',
+        '-kernel', args.kernel,
+        '-append',
+    ]
+    if args.interactive:
+        arg_list += ['consoleblank=0 earlyprintk=vga root=/dev/sda1 rootfstype=ext3 init=/init rw']
+    else:
+        arg_list += ['console=ttyS0 earlycon=uart8250,io,0x3f8,115200n8 root=/dev/sda1 rootfstype=ext3 init=/init rw']
+    return arg_list
+
+
+def _qemu_arg_list_for_kernel_bootstrap(args, generator, target, size):
+    generator.prepare(target, kernel_bootstrap=True, target_size=size)
+    if args.internal_ci_break_after:
+        break_scope, break_step = parse_internal_ci_break_after(args.internal_ci_break_after)
+        apply_internal_ci_break_to_tree(
+            generator.target_dir,
+            break_scope,
+            break_step,
+            args.internal_ci,
+        )
+        os.remove(generator.target_dir + '.img')
+        generator.create_builder_hex0_disk_image(generator.target_dir + '.img', size)
+
+    arg_list = [
+        '-enable-kvm',
+        '-m', str(args.qemu_ram) + 'M',
+        '-smp', str(args.cores),
+        '-drive', 'file=' + generator.target_dir + '.img' + ',format=raw',
+    ]
+    if target.get_disk("external") is not None:
+        arg_list += [
+            '-drive', 'file=' + target.get_disk("external") + ',format=raw',
+        ]
+    arg_list += [
+        '-machine', 'kernel-irqchip=split',
+        '-nic', 'user,ipv6=off,model=e1000',
+    ]
+    return arg_list
+
+
 def bootstrap(args, generator, target, size, cleanup):
     """Kick off bootstrap process."""
     print(f"Bootstrapping {args.arch}", flush=True)
     if args.chroot:
-        find_chroot = """
-import shutil
-print(shutil.which('chroot'))
-"""
-        chroot_binary = run_as_root('python3', '-c', find_chroot,
-                                    capture_output=True).stdout.decode().strip()
+        _bootstrap_chroot(args, generator, target, cleanup)
+        return
+    if args.bwrap:
+        _bootstrap_bwrap(args, generator, target, cleanup)
+        return
+    if args.bare_metal:
+        _bootstrap_bare_metal(args, generator, target, size)
+        return
 
-        generator.prepare(target, using_kernel=False)
-
-        arch = stage0_arch_map.get(args.arch, args.arch)
-        init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        run_as_root('env', '-i', 'PATH=/bin', chroot_binary, generator.target_dir, init,
-                    cleanup=cleanup)
-
-    elif args.bwrap:
-        init = '/init'
-        if not args.internal_ci or args.internal_ci == "pass1":
-            generator.prepare(target, using_kernel=False)
-
-            arch = stage0_arch_map.get(args.arch, args.arch)
-            init = os.path.join(os.sep, 'bootstrap-seeds', 'POSIX', arch, 'kaem-optional-seed')
-        else:
-            generator.reuse(target)
-
-        run('env', '-i', 'bwrap', '--unshare-user',
-                                  '--uid', '0',
-                                  '--gid', '0',
-                                  '--unshare-net' if args.external_sources else None,
-                                  '--setenv', 'PATH', '/usr/bin',
-                                  '--bind', generator.target_dir, '/',
-                                  '--dir', '/dev',
-                                  '--dev-bind', '/dev/null', '/dev/null',
-                                  '--dev-bind', '/dev/zero', '/dev/zero',
-                                  '--dev-bind', '/dev/random', '/dev/random',
-                                  '--dev-bind', '/dev/urandom', '/dev/urandom',
-                                  '--dev-bind', '/dev/ptmx', '/dev/ptmx',
-                                  '--dev-bind', '/dev/tty', '/dev/tty',
-                                  '--tmpfs', '/dev/shm',
-                                  '--proc', '/proc',
-                                  '--bind', '/sys', '/sys',
-                                  '--tmpfs', '/tmp',
-                                  init,
-            cleanup=cleanup)
-
-    elif args.bare_metal:
-        if args.kernel:
-            generator.prepare(target, using_kernel=True, target_size=size)
-            path = os.path.join(args.target, os.path.relpath(generator.target_dir, args.target))
-            print("Please:")
-            print(f"  1. Take {path}/initramfs and your kernel, boot using this.")
-            print(f"  2. Take {path}/disk.img and put this on a writable storage medium.")
-        else:
-            generator.prepare(target, kernel_bootstrap=True, target_size=size)
-            path = os.path.join(args.target, os.path.relpath(generator.target_dir, args.target))
-            print("Please:")
-            print(f"  1. Take {path}.img and write it to a boot drive and then boot it.")
-            external_disk = target.get_disk("external")
-            if external_disk is not None:
-                external_path = os.path.join(args.target, os.path.relpath(external_disk, args.target))
-                if args.repo:
-                    print("  2. Take " +
-                          f"{external_path} and attach it as a second disk (/dev/sdb preferred).")
-                else:
-                    print("  2. Take " +
-                          f"{external_path} and attach it as a second raw container disk "
-                          "(/dev/sdb preferred).")
-
+    if args.stage0_image:
+        arg_list = _qemu_arg_list_for_stage0_image(args, target)
+    elif args.kernel:
+        arg_list = _qemu_arg_list_for_kernel(args, generator, target, size)
     else:
-        if args.stage0_image:
-            work_image = prepare_stage0_work_image(
-                args.stage0_image,
-                target.path,
-                args.build_guix_also,
-                mirrors=args.mirrors,
-                internal_ci=args.internal_ci,
-                internal_ci_break_after=args.internal_ci_break_after,
-            )
-            arg_list = [
-                '-enable-kvm',
-                '-m', str(args.qemu_ram) + 'M',
-                '-smp', str(args.cores),
-                '-drive', 'file=' + work_image + ',format=raw',
-                '-machine', 'kernel-irqchip=split',
-                '-nic', 'user,ipv6=off,model=e1000'
-            ]
-        elif args.kernel:
-            generator.prepare(target, using_kernel=True, target_size=size)
-
-            arg_list = [
-                '-enable-kvm',
-                '-m', str(args.qemu_ram) + 'M',
-                '-smp', str(args.cores),
-                '-drive', 'file=' + target.get_disk("disk") + ',format=raw'
-            ]
-            if target.get_disk("external") is not None:
-                arg_list += [
-                    '-drive', 'file=' + target.get_disk("external") + ',format=raw',
-                ]
-            arg_list += [
-                '-nic', 'user,ipv6=off,model=e1000',
-                '-kernel', args.kernel,
-                '-append',
-            ]
-            if args.interactive:
-                arg_list += ['consoleblank=0 earlyprintk=vga root=/dev/sda1 '
-                             'rootfstype=ext3 init=/init rw']
-            else:
-                arg_list += ['console=ttyS0 earlycon=uart8250,io,0x3f8,115200n8 '
-                             'root=/dev/sda1 rootfstype=ext3 init=/init rw']
-        else:
-            generator.prepare(target, kernel_bootstrap=True, target_size=size)
-            if args.internal_ci_break_after:
-                break_scope, break_step = parse_internal_ci_break_after(args.internal_ci_break_after)
-                apply_internal_ci_break_to_tree(
-                    generator.target_dir,
-                    break_scope,
-                    break_step,
-                    args.internal_ci,
-                )
-                os.remove(generator.target_dir + '.img')
-                generator.create_builder_hex0_disk_image(generator.target_dir + '.img', size)
-            arg_list = [
-                '-enable-kvm',
-                '-m', str(args.qemu_ram) + 'M',
-                '-smp', str(args.cores),
-                '-drive', 'file=' + generator.target_dir + '.img' + ',format=raw'
-            ]
-            if target.get_disk("external") is not None:
-                arg_list += [
-                    '-drive', 'file=' + target.get_disk("external") + ',format=raw',
-                ]
-            arg_list += [
-                '-machine', 'kernel-irqchip=split',
-                '-nic', 'user,ipv6=off,model=e1000'
-            ]
-        if not args.interactive:
-            arg_list += ['-no-reboot', '-nographic']
-        run(args.qemu_cmd, *arg_list, cleanup=cleanup)
+        arg_list = _qemu_arg_list_for_kernel_bootstrap(args, generator, target, size)
+    if not args.interactive:
+        arg_list += ['-no-reboot', '-nographic']
+    run(args.qemu_cmd, *arg_list, cleanup=cleanup)
 
 if __name__ == "__main__":
     main()
