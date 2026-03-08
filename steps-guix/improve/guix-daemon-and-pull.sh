@@ -32,6 +32,23 @@ have_user() {
     fi
 }
 
+have_tty_device() {
+    for dev in /dev/tty /dev/tty[0-9]* /dev/ttyS*; do
+        if [ -c "${dev}" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+verify_terminal_devices() {
+    mount | grep ' on /dev ' >/dev/null 2>&1 &&
+    mount | grep ' on /dev/pts ' >/dev/null 2>&1 &&
+    test -c /dev/ptmx &&
+    test -c /dev/pts/ptmx &&
+    have_tty_device
+}
+
 mkdir -p /proc /sys /dev "${guix_localstate_dir}/daemon-socket" /var/lib/guix /root/.config/guix
 mount | grep ' on /proc ' >/dev/null 2>&1 || mount -t proc proc /proc
 mount | grep ' on /sys ' >/dev/null 2>&1 || mount -t sysfs sysfs /sys
@@ -39,6 +56,17 @@ mount | grep ' on /dev ' >/dev/null 2>&1 || mount -t devtmpfs devtmpfs /dev
 if ! mount | grep ' on /dev/pts ' >/dev/null 2>&1; then
     mkdir -p /dev/pts
     mount -t devpts devpts /dev/pts
+fi
+test -c /dev/tty || mknod -m 666 /dev/tty c 5 0
+test -c /dev/ptmx || mknod -m 666 /dev/ptmx c 5 2
+test -c /dev/tty0 || mknod -m 666 /dev/tty0 c 4 0
+test -c /dev/tty1 || mknod -m 666 /dev/tty1 c 4 1
+test -c /dev/tty2 || mknod -m 666 /dev/tty2 c 4 2
+test -c /dev/ttyS0 || mknod -m 666 /dev/ttyS0 c 4 64
+
+if ! verify_terminal_devices; then
+    echo "Missing terminal devices required for Guix: /dev/ptmx, /dev/pts/ptmx, or /dev/tty*" >&2
+    exit 1
 fi
 
 if ! have_group guixbuild; then

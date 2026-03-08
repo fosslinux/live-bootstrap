@@ -82,6 +82,15 @@ setup_kernel_devices() {
     test -c /dev/ttyS0 || mknod -m 666 /dev/ttyS0 c 4 64
 }
 
+have_tty_device() {
+    for dev in /dev/tty /dev/tty[0-9]* /dev/ttyS*; do
+        if [ -c "${dev}" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 verify_kernel_devices() {
     mount | grep ' on /dev ' &> /dev/null &&
     mount | grep ' on /proc ' &> /dev/null &&
@@ -90,12 +99,9 @@ verify_kernel_devices() {
     mount | grep ' on /dev/pts ' &> /dev/null &&
     mount | grep ' on /dev/shm ' &> /dev/null &&
     test -c /dev/console &&
-    test -c /dev/tty &&
     test -c /dev/ptmx &&
-    test -c /dev/tty0 &&
-    test -c /dev/tty1 &&
-    test -c /dev/tty2 &&
-    test -c /dev/ttyS0
+    test -c /dev/pts/ptmx &&
+    have_tty_device
 }
 
 setup_kernel_devices
