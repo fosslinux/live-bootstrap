@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+: "${KERNEL_SYSROOT:=/kernel-toolchain}"
+
 src_prepare() {
     local bootstrap_scm patch_template rendered_patch
     local mes_patch_template rendered_mes_patch
@@ -74,6 +76,14 @@ src_prepare() {
     grep -q '("mes-minimal" ,%bootstrap-mes-minimal)' "${bootstrap_scm}"
     grep -q '("mescc-tools" ,%bootstrap-mescc-tools)' "${bootstrap_scm}"
     grep -q "Offline bootstrap environment: require explicit channels." guix/channels.scm
+
+    # Regenerate autotools files with tool names available in this environment.
+    ACLOCAL=aclocal \
+    AUTOCONF=autoconf \
+    AUTOHEADER=autoheader \
+    AUTOMAKE=automake \
+    AUTOPOINT=true \
+    autoreconf -fi
 }
 
 probe_guile_module() {
@@ -153,6 +163,7 @@ probe_guile_module() {
 
 src_configure() {
     local host_triplet pkg_config_path guile_cflags guile_libs
+    local argp_cppflags argp_ldflags
     local guile_site_path guile_site_ccache guile_core_ccache guile_ext_path
     host_triplet="$(gcc -dumpmachine)"
     pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
@@ -160,6 +171,8 @@ src_configure() {
     guile_site_ccache="${LIBDIR}/guile/3.0/site-ccache"
     guile_core_ccache="${LIBDIR}/guile/3.0/ccache"
     guile_ext_path="${LIBDIR}/guile/3.0/extensions"
+    argp_cppflags="-I${KERNEL_SYSROOT}/include"
+    argp_ldflags="-L${KERNEL_SYSROOT}/lib"
     guile_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --cflags guile-3.0)"
     guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
@@ -184,6 +197,9 @@ src_configure() {
     GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}" \
     GUILE_CFLAGS="${guile_cflags}" \
     GUILE_LIBS="${guile_libs}" \
+    CPPFLAGS="${argp_cppflags} ${CPPFLAGS:-}" \
+    LDFLAGS="${argp_ldflags} ${LDFLAGS:-}" \
+    LIBS="-largp ${LIBS:-}" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
@@ -192,14 +208,7 @@ src_configure() {
 }
 
 src_compile() {
-    # Build environment may provide aclocal/automake without a matching
-    # version-suffixed binary (e.g. aclocal-1.17). Force generic tool names.
-    make "${MAKEJOBS}" -f Makefile PREFIX="${PREFIX}" \
-        ACLOCAL=aclocal \
-        AUTOCONF=autoconf \
-        AUTOHEADER=autoheader \
-        AUTOMAKE=automake \
-        AUTORECONF=autoreconf
+    default_src_compile
 }
 
 src_install() {
