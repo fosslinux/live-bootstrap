@@ -42,8 +42,24 @@ def parse_internal_ci_break_after(value):
         )
     return scope, step_name
 
+
+def _parse_build_step_name(line):
+    """
+    Extract the package name from a manifest build directive.
+    """
+    stripped = line.strip()
+    if not stripped.startswith("build: "):
+        return None
+    payload = stripped[len("build: "):].split("#", 1)[0].strip()
+    if not payload:
+        return None
+    return payload.split()[0]
+
 _INIT_MOUNT_MARKER = "# LB_STAGE0_EARLY_MOUNTS"
 _INIT_REGEN_MARKER = "# LB_STAGE0_REGENERATE_SCRIPTS"
+_RESUME_NEXT_PATH = "/steps/.lb-resume-next"
+_RESUME_NEXT_SCOPE_VAR = "LB_RESUME_NEXT_SCOPE"
+_RESUME_NEXT_PACKAGE_VAR = "LB_RESUME_NEXT_PACKAGE"
 _INIT_LEGACY_NETWORK_BLOCK = (
     'if [ "${CHROOT}" = False ] && command -v dhcpcd >/dev/null 2>&1; then\n'
     'dhcpcd --waitip=4 || true\n'
@@ -68,6 +84,8 @@ _INIT_REGEN_BLOCK = (
     + 'resume_entry=""\n'
     + 'resume_root=""\n'
     + 'resume_pkg=""\n'
+    + 'resume_next_scope=""\n'
+    + 'resume_next_pkg=""\n'
     + 'if [ -f "$0" ]; then\n'
     + 'resume_entry="$(sed -n "s/.*bash \\(\\/steps[^ ]*\\/[0-9][0-9]*\\.sh\\).*/\\1/p" "$0" | head -n1)"\n'
     + 'fi\n'
@@ -76,6 +94,22 @@ _INIT_REGEN_BLOCK = (
     + 'if [ -f "${resume_entry}" ]; then\n'
     + 'resume_pkg="$(sed -n "s/^build \\([^ ]*\\) .*/\\1/p" "${resume_entry}" | head -n1)"\n'
     + 'fi\n'
+    + 'fi\n'
+    + f'if [ -f "{_RESUME_NEXT_PATH}" ]; then\n'
+    + f'resume_next_scope="$(sed -n "s/^scope=//p" "{_RESUME_NEXT_PATH}" | head -n1)"\n'
+    + f'resume_next_pkg="$(sed -n "s/^package=//p" "{_RESUME_NEXT_PATH}" | head -n1)"\n'
+    + 'case "${resume_next_scope}" in\n'
+    + 'steps)\n'
+    + 'resume_root="/steps"\n'
+    + ';;\n'
+    + 'steps-guix)\n'
+    + 'resume_root="/steps-guix"\n'
+    + ';;\n'
+    + 'esac\n'
+    + 'if [ -n "${resume_next_pkg}" ]; then\n'
+    + 'resume_pkg="${resume_next_pkg}"\n'
+    + 'fi\n'
+    + f'rm -f "{_RESUME_NEXT_PATH}"\n'
     + 'fi\n'
     + 'if [ -x /script-generator ] && [ -f /steps/manifest ]; then\n'
     + '/script-generator /steps/manifest\n'
@@ -109,17 +143,42 @@ _INIT_REGEN_BLOCK = (
 )
 
 
+def _find_next_build_after(manifest_lines, break_step, context_label):
+    """
+    Return the next build step after break_step within the same manifest.
+    """
+    found_break = False
+    for line in manifest_lines:
+        step_name = _parse_build_step_name(line)
+        if step_name is None:
+            continue
+        if found_break:
+            return step_name
+        if step_name == break_step:
+            found_break = True
+
+    if not found_break:
+        raise ValueError(
+            "INTERNAL_CI_BREAK_AFTER target not found in "
+            + context_label
+            + ": "
+            + break_step
+        )
+    return None
+
+
 def _insert_internal_ci_break(manifest_lines, break_step, internal_ci, context_label):
     inserted = False
     break_line = f"jump: break ( INTERNAL_CI == {internal_ci} )\n"
     output_lines = []
     for line in manifest_lines:
         output_lines.append(line)
-        stripped = line.strip()
-        if inserted or not stripped.startswith("build: "):
+        if inserted:
             continue
 
-        step_name = stripped[len("build: "):].split("#", 1)[0].strip()
+        step_name = _parse_build_step_name(line)
+        if step_name is None:
+            continue
         if step_name == break_step:
             output_lines.append(break_line)
             inserted = True
@@ -200,6 +259,9 @@ def _update_stage0_tree(mountpoint,
         raise SystemExit(f"Missing config in stage0 image: {old_config_path}")
     old_env_path = os.path.join(mountpoint, "steps", "env")
     old_env_content = None
+    break_output_lines = None
+    break_manifest_relpath = None
+    next_step = None
     if os.path.isfile(old_env_path):
         with open(old_env_path, "rb") as env_file:
             old_env_content = env_file.read()
@@ -209,6 +271,8 @@ def _update_stage0_tree(mountpoint,
             line for line in cfg
             if not line.startswith("BUILD_GUIX_ALSO=")
             and not line.startswith("INTERNAL_CI=")
+            and not line.startswith(_RESUME_NEXT_SCOPE_VAR + "=")
+            and not line.startswith(_RESUME_NEXT_PACKAGE_VAR + "=")
             and not line.startswith("MIRRORS=")
             and not line.startswith("MIRRORS_LEN=")
             and not line.startswith("PAYLOAD_REQUIRED=")
@@ -233,6 +297,33 @@ def _update_stage0_tree(mountpoint,
                 env_file.write("\n")
             env_file.write("NETWORK_READY=False\n")
 
+    if break_scope and break_step:
+        if internal_ci in ("", "False", None):
+            raise SystemExit("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
+        source_manifest_path = os.path.join(
+            steps_guix_dir if break_scope == "steps-guix" else steps_dir,
+            "manifest",
+        )
+        if not os.path.isfile(source_manifest_path):
+            raise SystemExit(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {source_manifest_path}")
+        with open(source_manifest_path, "r", encoding="utf-8") as manifest_file:
+            manifest_lines = manifest_file.readlines()
+        next_step = _find_next_build_after(
+            manifest_lines,
+            break_step,
+            f"{break_scope}/manifest",
+        )
+        break_output_lines = _insert_internal_ci_break(
+            manifest_lines,
+            break_step,
+            internal_ci,
+            f"{break_scope}/manifest",
+        )
+        break_manifest_relpath = os.path.join(break_scope, "manifest")
+        if next_step:
+            lines.append(f"{_RESUME_NEXT_SCOPE_VAR}={break_scope}\n")
+            lines.append(f"{_RESUME_NEXT_PACKAGE_VAR}={next_step}\n")
+
     config_path = os.path.join(dest_steps, "bootstrap.cfg")
     if build_guix_also:
         lines.append("BUILD_GUIX_ALSO=True\n")
@@ -250,22 +341,12 @@ def _update_stage0_tree(mountpoint,
         dest_steps_guix = os.path.join(mountpoint, "steps-guix")
         _copytree_replace(steps_guix_dir, dest_steps_guix)
 
-    if break_scope and break_step:
-        if internal_ci in ("", "False", None):
-            raise SystemExit("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
-        manifest_path = os.path.join(mountpoint, break_scope, "manifest")
+    if break_output_lines is not None and break_manifest_relpath is not None:
+        manifest_path = os.path.join(mountpoint, break_manifest_relpath)
         if not os.path.isfile(manifest_path):
             raise SystemExit(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {manifest_path}")
-        with open(manifest_path, "r", encoding="utf-8") as manifest_file:
-            manifest_lines = manifest_file.readlines()
-        output_lines = _insert_internal_ci_break(
-            manifest_lines,
-            break_step,
-            internal_ci,
-            f"{break_scope}/manifest",
-        )
         with open(manifest_path, "w", encoding="utf-8") as manifest_file:
-            manifest_file.writelines(output_lines)
+            manifest_file.writelines(break_output_lines)
 
 
 def _stage0_update_cli(argv):
