@@ -6,13 +6,15 @@ set -e
 . /steps/bootstrap.cfg
 . /steps/env
 
-daemon_socket="/var/guix/daemon-socket/socket"
+guix_localstate_dir="/var/guix"
+daemon_socket="${guix_localstate_dir}/daemon-socket/socket"
 channel_root="/var/lib/guix/local-channels"
 channel_repo="${channel_root}/guix"
 channel_work="/tmp/guix-local-channel-work"
 channels_file="/root/.config/guix/channels.scm"
 distfiles="${DISTFILES:-/external/distfiles}"
 PATH="/usr/sbin:/sbin:${PATH}"
+export GUIX_DAEMON_SOCKET="${daemon_socket}"
 
 have_group() {
     if command -v getent >/dev/null 2>&1; then
@@ -30,7 +32,7 @@ have_user() {
     fi
 }
 
-mkdir -p /proc /sys /dev /var/guix/daemon-socket /var/lib/guix /root/.config/guix
+mkdir -p /proc /sys /dev "${guix_localstate_dir}/daemon-socket" /var/lib/guix /root/.config/guix
 mount | grep ' on /proc ' >/dev/null 2>&1 || mount -t proc proc /proc
 mount | grep ' on /sys ' >/dev/null 2>&1 || mount -t sysfs sysfs /sys
 mount | grep ' on /dev ' >/dev/null 2>&1 || mount -t devtmpfs devtmpfs /dev

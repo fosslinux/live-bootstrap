@@ -6,8 +6,10 @@ set -e
 . /steps/bootstrap.cfg
 . /steps/env
 
-daemon_socket="/var/guix/daemon-socket/socket"
+guix_localstate_dir="/var/guix"
+daemon_socket="${guix_localstate_dir}/daemon-socket/socket"
 out_dir="/external/guix-images"
+export GUIX_DAEMON_SOCKET="${daemon_socket}"
 
 if [ ! -S "${daemon_socket}" ]; then
     echo "guix-daemon socket is missing: ${daemon_socket}" >&2

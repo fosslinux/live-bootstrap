@@ -205,6 +205,8 @@ src_configure() {
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
+        --sysconfdir=/etc \
+        --localstatedir=/var \
         --host="${host_triplet}" \
         --build="${host_triplet}"
 }
