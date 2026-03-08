@@ -175,8 +175,10 @@ src_configure() {
     argp_ldflags="-L${KERNEL_SYSROOT}/lib"
     guile_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --cflags guile-3.0)"
+    # Guix daemon links Guile statically in this environment; use --static so
+    # private deps (e.g. libunistring for uc_* symbols) are included.
     guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
-        /usr/bin/pkg-config --libs guile-3.0)"
+        /usr/bin/pkg-config --static --libs guile-3.0)"
 
     probe_guile_module gnutls
     probe_guile_module git
@@ -199,7 +201,7 @@ src_configure() {
     GUILE_LIBS="${guile_libs}" \
     CPPFLAGS="${argp_cppflags} ${CPPFLAGS:-}" \
     LDFLAGS="${argp_ldflags} ${LDFLAGS:-}" \
-    LIBS="-largp ${LIBS:-}" \
+    LIBS="${LIBS:-} -largp" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
