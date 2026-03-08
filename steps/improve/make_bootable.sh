@@ -67,7 +67,10 @@ setup_kernel_devices() {
     mount | grep ' on /sys ' &> /dev/null || (mkdir -p /sys; mount -t sysfs sysfs /sys)
     # Make /tmp a ramdisk (speeds up configure etc significantly)
     mount | grep ' on /tmp ' &> /dev/null || (mkdir -p /tmp; mount -t tmpfs tmpfs /tmp)
-    mount | grep ' on /dev/pts ' &> /dev/null || (mkdir -p /dev/pts; mount -t devpts devpts /dev/pts)
+    if ! mount | grep ' on /dev/pts ' &> /dev/null; then
+        mkdir -p /dev/pts
+        mount -t devpts devpts /dev/pts
+    fi
     mount | grep ' on /dev/shm ' &> /dev/null || (mkdir -p /dev/shm; mount -t tmpfs tmpfs /dev/shm)
 
     test -c /dev/console || mknod -m 666 /dev/console c 5 1

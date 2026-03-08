@@ -36,6 +36,10 @@ mkdir -p /proc /sys /dev "${guix_localstate_dir}/daemon-socket" /var/lib/guix /r
 mount | grep ' on /proc ' >/dev/null 2>&1 || mount -t proc proc /proc
 mount | grep ' on /sys ' >/dev/null 2>&1 || mount -t sysfs sysfs /sys
 mount | grep ' on /dev ' >/dev/null 2>&1 || mount -t devtmpfs devtmpfs /dev
+if ! mount | grep ' on /dev/pts ' >/dev/null 2>&1; then
+    mkdir -p /dev/pts
+    mount -t devpts devpts /dev/pts
+fi
 
 if ! have_group guixbuild; then
     groupadd --system guixbuild
