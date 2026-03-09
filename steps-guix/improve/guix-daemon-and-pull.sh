@@ -13,6 +13,8 @@ channel_repo="${channel_root}/guix"
 channel_work="/tmp/guix-local-channel-work"
 channels_file="/root/.config/guix/channels.scm"
 distfiles="${DISTFILES:-/external/distfiles}"
+guix_seed_helper="/steps-guix/improve/guix-1.5.0.sh"
+guix_patch_dir="/steps-guix/guix-1.5.0/patches"
 PATH="/usr/sbin:/sbin:${PATH}"
 export GUIX_DAEMON_SOCKET="${daemon_socket}"
 
@@ -47,6 +49,60 @@ verify_terminal_devices() {
     test -c /dev/ptmx &&
     test -c /dev/pts/ptmx &&
     have_tty_device
+}
+
+prepare_local_channel_checkout() {
+    rendered_patch="/tmp/guix-bootstrap-local-seeds.patch"
+    rendered_mes_patch="/tmp/guix-bootstrap-local-mes-extra.patch"
+
+    if [ ! -x "${guix_seed_helper}" ]; then
+        echo "Missing Guix seed helper: ${guix_seed_helper}" >&2
+        exit 1
+    fi
+    if [ ! -d "${guix_patch_dir}" ]; then
+        echo "Missing Guix patch directory: ${guix_patch_dir}" >&2
+        exit 1
+    fi
+
+    "${guix_seed_helper}"
+    if [ ! -f /tmp/guix-bootstrap-seeds.env ]; then
+        echo "Missing /tmp/guix-bootstrap-seeds.env" >&2
+        exit 1
+    fi
+    . /tmp/guix-bootstrap-seeds.env
+
+    sed \
+        -e "s|@EXEC_BASH_HASH@|${EXEC_BASH_HASH}|g" \
+        -e "s|@EXEC_MKDIR_HASH@|${EXEC_MKDIR_HASH}|g" \
+        -e "s|@EXEC_TAR_HASH@|${EXEC_TAR_HASH}|g" \
+        -e "s|@EXEC_XZ_HASH@|${EXEC_XZ_HASH}|g" \
+        -e "s|@STATIC_BINARIES_SEED_HASH@|${STATIC_BINARIES_SEED_HASH}|g" \
+        -e "s|@GUILE_SEED_HASH@|${GUILE_SEED_HASH}|g" \
+        -e "s|@MES_MINIMAL_SEED_HASH@|${MES_MINIMAL_SEED_HASH}|g" \
+        -e "s|@MESCC_TOOLS_SEED_HASH@|${MESCC_TOOLS_SEED_HASH}|g" \
+        "${guix_patch_dir}/bootstrap-local-seeds.patch.in" > "${rendered_patch}"
+    sed \
+        -e "s|@MES_MINIMAL_SEED_HASH@|${MES_MINIMAL_SEED_HASH}|g" \
+        -e "s|@MESCC_TOOLS_SEED_HASH@|${MESCC_TOOLS_SEED_HASH}|g" \
+        "${guix_patch_dir}/bootstrap-local-mes-extra.patch.in" > "${rendered_mes_patch}"
+
+    if grep -Eq '@[A-Z0-9_]+@' "${rendered_patch}" "${rendered_mes_patch}"; then
+        echo "Unexpanded placeholder found while rendering Guix channel patches." >&2
+        exit 1
+    fi
+
+    (
+        cd "${channel_repo}"
+        patch --dry-run -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
+        patch -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
+        patch --dry-run -p1 < "${rendered_patch}"
+        patch -p1 < "${rendered_patch}"
+        patch --dry-run -p1 < "${rendered_mes_patch}"
+        patch -p1 < "${rendered_mes_patch}"
+        git init -q
+        git add -A
+        git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel snapshot'
+    )
 }
 
 mkdir -p /proc /sys /dev "${guix_localstate_dir}/daemon-socket" /var/lib/guix /root/.config/guix
@@ -154,14 +210,14 @@ fi
 
 mv "${src_dir}" "${channel_repo}"
 
-(
-    cd "${channel_repo}"
-    git init -q
-    git add -A
-    git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel snapshot'
-)
+prepare_local_channel_checkout
 
 channel_commit="$(git -C "${channel_repo}" rev-parse HEAD)"
+channel_branch="$(git -C "${channel_repo}" symbolic-ref --quiet --short HEAD)"
+if [ -z "${channel_branch}" ]; then
+    echo "Failed to determine local Guix channel branch." >&2
+    exit 1
+fi
 
 cat > "${channels_file}" <<EOF
 (use-modules (guix channels))
@@ -169,7 +225,7 @@ cat > "${channels_file}" <<EOF
  (channel
   (name 'guix)
   (url "file://${channel_repo}")
-  (branch "master")
+  (branch "${channel_branch}")
   (commit "${channel_commit}")))
 EOF
 
