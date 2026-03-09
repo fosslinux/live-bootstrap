@@ -26,4 +26,7 @@ else
     kexec -l "${current_kernel}" --console-serial \
         --append="console=ttyS0 root=/dev/sda1 init=/init rw rootwait"
 fi
+sync
+echo u > /proc/sysrq-trigger || true
+mount -o remount,ro / || true
 kexec -e

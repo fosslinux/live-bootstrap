@@ -830,9 +830,9 @@ def _qemu_arg_list_for_kernel(args, generator, target, size):
         '-append',
     ]
     if args.interactive:
-        arg_list += ['consoleblank=0 earlyprintk=vga root=/dev/sda1 rootfstype=ext3 init=/init rw']
+        arg_list += ['consoleblank=0 earlyprintk=vga root=/dev/sda1 init=/init rw']
     else:
-        arg_list += ['console=ttyS0 earlycon=uart8250,io,0x3f8,115200n8 root=/dev/sda1 rootfstype=ext3 init=/init rw']
+        arg_list += ['console=ttyS0 earlycon=uart8250,io,0x3f8,115200n8 root=/dev/sda1 init=/init rw']
     return arg_list
 
 

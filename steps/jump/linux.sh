@@ -23,10 +23,13 @@ else
     # kexec time
     if [ "${BARE_METAL}" = True ]; then
         kexec -l "/boot/vmlinuz" \
-            --append="root=/dev/sda1 rootfstype=ext3 init=/init rw rootwait"
+            --append="root=/dev/sda1 init=/init rw rootwait"
     else
         kexec -l "/boot/vmlinuz" --console-serial \
-            --append="console=ttyS0 root=/dev/sda1 rootfstype=ext3 init=/init rw rootwait"
+            --append="console=ttyS0 root=/dev/sda1 init=/init rw rootwait"
     fi
+    sync
+    echo u > /proc/sysrq-trigger || true
+    mount -o remount,ro / || true
     kexec -e
 fi
