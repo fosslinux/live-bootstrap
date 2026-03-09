@@ -21,7 +21,7 @@ diff -urN guile-avahi-0.4.1/Makefile.am guile-avahi-0.4.1/Makefile.am
  nobase_guileextension_LTLIBRARIES  = guile-avahi-v-0.la
  
  # Use '-module' to build a "dlopenable module", in Libtool terms.
-@@ -72,11 +78,28 @@
+@@ -72,11 +78,29 @@
    src/utils.c src/errors.c src/watch.c		\
    src/common.c src/client.c			\
    src/publish.c src/lookup.c
@@ -46,7 +46,8 @@ diff -urN guile-avahi-0.4.1/Makefile.am guile-avahi-0.4.1/Makefile.am
 +guile_CPPFLAGS = $(AM_CPPFLAGS)
 +guile_CFLAGS = $(guile_avahi_common_cflags)
 +guile_LDFLAGS = -static
-+guile_LDADD = libguile-avahi-static.a $(GUILE_LDFLAGS) $(AVAHI_LIBS) $(LIBS)
++guile_LDADD = libguile-avahi-static.a $(GUILE_GNUTLS_STATIC_LIB) \
++  $(GUILE_LDFLAGS) $(AVAHI_LIBS) $(GNUTLS_LIBS) $(LIBS)
 +endif
 +
  AM_CFLAGS   = $(GCC_CFLAGS)
@@ -141,9 +142,10 @@ diff -urN guile-avahi-0.4.1/modules/avahi/client.scm guile-avahi-0.4.1/modules/a
 diff -urN guile-avahi-0.4.1/src/guile-static-main.c guile-avahi-0.4.1/src/guile-static-main.c
 --- guile-avahi-0.4.1/src/guile-static-main.c	1969-12-31 19:00:00
 +++ guile-avahi-0.4.1/src/guile-static-main.c	2026-03-08 10:22:35
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,26 @@
 +#include <libguile.h>
 +
++void scm_init_gnutls(void);
 +void scm_avahi_common_init(void);
 +void scm_avahi_client_init(void);
 +void scm_avahi_lookup_init(void);
@@ -153,6 +155,7 @@ diff -urN guile-avahi-0.4.1/src/guile-static-main.c guile-avahi-0.4.1/src/guile-
 +inner_main(void *closure, int argc, char **argv)
 +{
 +  (void) closure;
++  scm_init_gnutls();
 +  scm_avahi_common_init();
 +  scm_avahi_client_init();
 +  scm_avahi_lookup_init();

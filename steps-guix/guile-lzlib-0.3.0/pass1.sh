@@ -28,3 +28,21 @@ src_compile() {
 src_install() {
     default_src_install
 }
+
+src_postprocess() {
+    local guile_site_path guile_core_site guile_site_ccache guile_core_ccache
+
+    default_src_postprocess
+
+    guile_site_path="${DESTDIR}${PREFIX}/share/guile/site/3.0"
+    guile_core_site="${PREFIX}/share/guile/3.0"
+    guile_site_ccache="${DESTDIR}${LIBDIR}/guile/3.0/site-ccache"
+    guile_core_ccache="${LIBDIR}/guile/3.0/ccache"
+
+    PATH="${DESTDIR}${PREFIX}/bin:${PREFIX}/bin:/usr/bin:/bin" \
+    GUILE_LOAD_PATH="${guile_site_path}:${guile_core_site}" \
+    GUILE_LOAD_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
+    GUILE_SYSTEM_PATH="${guile_site_path}:${guile_core_site}" \
+    GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
+    "${DESTDIR}${PREFIX}/bin/guile" -c '(use-modules (lzlib)) (display "lzlib-module-ok\n")'
+}

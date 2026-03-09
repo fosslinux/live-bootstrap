@@ -77,10 +77,14 @@ src_postprocess() {
     guile_site_ccache="${DESTDIR}${LIBDIR}/guile/3.0/site-ccache:${LIBDIR}/guile/3.0/site-ccache"
     guile_core_ccache="${LIBDIR}/guile/3.0/ccache"
 
-    PATH="${PREFIX}/bin:/usr/bin:/bin" \
+    PATH="${DESTDIR}${PREFIX}/bin:${PREFIX}/bin:/usr/bin:/bin" \
     GUILE_LOAD_PATH="${guile_site_path}" \
     GUILE_LOAD_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
     GUILE_SYSTEM_PATH="${guile_site_path}" \
     GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
-    "${DESTDIR}${PREFIX}/bin/guile" -c '(use-modules (gnutls)) (display "gnutls-module-ok\n")'
+    "${DESTDIR}${PREFIX}/bin/guile" -c '
+      (use-modules (gnutls))
+      (unless (session? (make-session connection-end/client))
+        (error "gnutls session init failed"))
+      (display "gnutls-module-ok\n")'
 }

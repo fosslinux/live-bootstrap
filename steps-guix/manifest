@@ -31,6 +31,7 @@ build: sqlite-3510200
 build: zlib-1.3.1-guix
 build: guile-sqlite3-0.1.3
 build: guile-zlib-0.2.2
+build: lzlib-1.9
 build: guile-lzlib-0.3.0
 build: scheme-bytestructures-2.0.2
 build: libevent-2.1.12
