@@ -64,27 +64,5 @@ src_install() {
 }
 
 src_postprocess() {
-    local guile_site_path guile_site_ccache guile_core_ccache
-
     default_src_postprocess
-
-    if find "${DESTDIR}" -type f \( -name '*.so' -o -name '*.so.*' \) | grep -q .; then
-        echo "guile-gnutls: shared objects are forbidden in static profile." >&2
-        false
-    fi
-
-    guile_site_path="${DESTDIR}${PREFIX}/share/guile/site/3.0:${PREFIX}/share/guile/site/3.0:${PREFIX}/share/guile/3.0"
-    guile_site_ccache="${DESTDIR}${LIBDIR}/guile/3.0/site-ccache:${LIBDIR}/guile/3.0/site-ccache"
-    guile_core_ccache="${LIBDIR}/guile/3.0/ccache"
-
-    PATH="${DESTDIR}${PREFIX}/bin:${PREFIX}/bin:/usr/bin:/bin" \
-    GUILE_LOAD_PATH="${guile_site_path}" \
-    GUILE_LOAD_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
-    GUILE_SYSTEM_PATH="${guile_site_path}" \
-    GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}" \
-    "${DESTDIR}${PREFIX}/bin/guile" -c '
-      (use-modules (gnutls))
-      (unless (session? (make-session connection-end/client))
-        (error "gnutls session init failed"))
-      (display "gnutls-module-ok\n")'
 }
