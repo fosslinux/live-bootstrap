@@ -231,4 +231,4 @@ EOF
 
 chmod 0644 "${channels_file}"
 
-guix pull --bootstrap --no-substitutes --channels="${channels_file}"
+guix pull --bootstrap --no-substitutes --channels="${channels_file}" --disable-authentication
