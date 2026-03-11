@@ -113,7 +113,7 @@ probe_guile_module() {
             probe_pkg_config="gnutls"
             find_name='libguile-gnutls*'
             find_module='gnutls'
-            probe_expression="(use-modules (gnutls)) (display \"gnutls-module-ok\\n\")"
+            probe_expression="(use-modules (gnutls)) (if (module-variable (resolve-module '(gnutls)) 'make-session) (display \"gnutls-module-ok\\n\") (begin (display \"gnutls-make-session-missing\\n\") (exit 1)))"
             ;;
         *)
             probe_label="${module_name}-related"

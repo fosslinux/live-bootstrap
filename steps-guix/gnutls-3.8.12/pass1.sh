@@ -16,8 +16,8 @@ src_configure() {
         --includedir="${PREFIX}/include" \
         --host="${host_triplet}" \
         --build="${host_triplet}" \
-        --enable-static \
-        --disable-shared \
+        --enable-shared \
+        --disable-static \
         --disable-doc \
         --disable-tests \
         --disable-tools \

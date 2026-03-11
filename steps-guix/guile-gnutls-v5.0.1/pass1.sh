@@ -6,15 +6,15 @@ src_prepare() {
 }
 
 src_configure() {
-    local host_triplet pkg_config_path guile_cflags guile_static_libs gnutls_static_libs
+    local host_triplet pkg_config_path guile_cflags guile_libs gnutls_libs
     host_triplet="$(gcc -dumpmachine)"
     pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
     guile_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --cflags guile-3.0)"
-    guile_static_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
-        /usr/bin/pkg-config --static --libs guile-3.0)"
-    gnutls_static_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
-        /usr/bin/pkg-config --static --libs gnutls)"
+    guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
+        /usr/bin/pkg-config --libs guile-3.0)"
+    gnutls_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
+        /usr/bin/pkg-config --libs gnutls)"
 
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     PKG_CONFIG="/usr/bin/pkg-config" \
@@ -24,38 +24,38 @@ src_configure() {
     CXXFLAGS="-fPIC" \
     LD_LIBRARY_PATH="${LIBDIR}:${PREFIX}/lib:${LD_LIBRARY_PATH}" \
     GUILE_CFLAGS="${guile_cflags}" \
-    GUILE_LIBS="${guile_static_libs}" \
-    GNUTLS_LIBS="${gnutls_static_libs}" \
+    GUILE_LIBS="${guile_libs}" \
+    GNUTLS_LIBS="${gnutls_libs}" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
         --host="${host_triplet}" \
         --build="${host_triplet}" \
-        --enable-static \
-        --disable-shared \
+        --enable-shared \
+        --disable-static \
         '--with-guile-site-dir=$(datarootdir)/guile/site/$(GUILE_EFFECTIVE_VERSION)' \
         '--with-guile-site-ccache-dir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache' \
         '--with-guile-extension-dir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions'
 }
 
 src_compile() {
-    local pkg_config_path guile_cflags guile_static_libs gnutls_cflags gnutls_static_libs
+    local pkg_config_path guile_cflags guile_libs gnutls_cflags gnutls_libs
 
     pkg_config_path="${LIBDIR}/pkgconfig:${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig"
     guile_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --cflags guile-3.0)"
-    guile_static_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
-        /usr/bin/pkg-config --static --libs guile-3.0)"
+    guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
+        /usr/bin/pkg-config --libs guile-3.0)"
     gnutls_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --cflags gnutls)"
-    gnutls_static_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
-        /usr/bin/pkg-config --static --libs gnutls)"
+    gnutls_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
+        /usr/bin/pkg-config --libs gnutls)"
 
     CPPFLAGS="${guile_cflags} ${gnutls_cflags} ${CPPFLAGS:-}" \
         GUILE_CFLAGS="${guile_cflags}" \
-        GUILE_LDFLAGS="${guile_static_libs}" \
+        GUILE_LDFLAGS="${guile_libs}" \
         GNUTLS_CFLAGS="${gnutls_cflags}" \
-        GNUTLS_LIBS="${gnutls_static_libs}" \
+        GNUTLS_LIBS="${gnutls_libs}" \
         default_src_compile
 }
 

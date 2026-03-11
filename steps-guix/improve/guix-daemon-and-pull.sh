@@ -231,4 +231,9 @@ EOF
 
 chmod 0644 "${channels_file}"
 
+if ! guile -c '(use-modules (gnutls)) (if (module-variable (resolve-module (quote (gnutls))) (quote make-session)) (exit 0) (exit 1))'; then
+    echo "Guile GnuTLS bindings are incomplete: (gnutls) is missing make-session." >&2
+    exit 1
+fi
+
 guix pull --bootstrap --no-substitutes --channels="${channels_file}" --disable-authentication
