@@ -107,6 +107,8 @@ prepare_local_channel_checkout() {
 
     (
         cd "${channel_repo}"
+        patch --dry-run -p1 < "${guix_patch_dir}/allow-local-distfiles-in-perform-download.patch"
+        patch -p1 < "${guix_patch_dir}/allow-local-distfiles-in-perform-download.patch"
         patch --dry-run -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
         patch -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
         patch --dry-run -p1 < "${rendered_patch}"

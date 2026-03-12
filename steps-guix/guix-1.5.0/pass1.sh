@@ -33,6 +33,8 @@ src_prepare() {
         false
     fi
 
+    patch --dry-run -p1 < "${base_dir}/patches/allow-local-distfiles-in-perform-download.patch"
+    patch -p1 < "${base_dir}/patches/allow-local-distfiles-in-perform-download.patch"
     sed \
         -e "s|@EXEC_BASH_HASH@|${EXEC_BASH_HASH}|g" \
         -e "s|@EXEC_MKDIR_HASH@|${EXEC_MKDIR_HASH}|g" \
@@ -69,6 +71,8 @@ src_prepare() {
     grep -q "${MESCC_TOOLS_SEED_HASH}" "${bootstrap_scm}"
     grep -q "All bootstrap binaries must come from local, reproducible distfiles." "${bootstrap_scm}"
     grep -q "%bootstrap-linux-headers-base-urls" "${bootstrap_scm}"
+    grep -q "%allowed-local-download-directories" guix/scripts/perform-download.scm
+    grep -q '"/external/distfiles"' guix/scripts/perform-download.scm
     grep -q '^(define (bootstrap-mes-minimal-origin system)' "${bootstrap_scm}"
     grep -q '^(define %bootstrap-mescc-tools' "${bootstrap_scm}"
     grep -q "mes-minimal-stripped-0.19-i686-linux.tar.xz" "${bootstrap_scm}"

@@ -1,0 +1,51 @@
+--- a/guix/scripts/perform-download.scm
++++ b/guix/scripts/perform-download.scm
+@@ -97,16 +97,46 @@ a list of wrapper procedures for safely calling the list of procedures that
+   (call-with-port (open file (logior O_NOFOLLOW O_RDONLY))
+     proc))
+ 
++(define %allowed-local-download-directories
++  ;; Allow only the explicitly prepared offline distfiles directory.  Other
++  ;; local file URLs remain forbidden.
++  '("/external/distfiles"))
++
++(define (path-within-directory? path directory)
++  (or (string=? path directory)
++      (string-prefix? (string-append directory "/") path)))
++
++(define (allowed-local-file? path)
++  (let ((canon-path (false-if-exception (canonicalize-path path))))
++    (and canon-path
++         (let loop ((directories %allowed-local-download-directories))
++           (match directories
++             (() #f)
++             ((directory rest ...)
++              (let ((canon-directory
++                     (false-if-exception (canonicalize-path directory))))
++                (if (and canon-directory
++                         (path-within-directory? canon-path canon-directory))
++                    #t
++                    (loop rest)))))))))
++
++(define (file-uri-allowed? url)
++  (let ((uri (string->uri url)))
++    (and uri
++         (eq? (uri-scheme uri) 'file)
++         (allowed-local-file? (uri-path uri)))))
++
+ (define (assert-non-local-urls url)
+   "Exit if URL (or any element of URL if it is a list) is either not a valid
+ URL or is a URL for a local file."
+   (for-each (lambda (url)
+-              (let ((scheme (and=> (string->uri url) uri-scheme)))
+-                (unless scheme
++              (let ((uri (string->uri url)))
++                (unless uri
+                   (leave (G_ "URL ~S can't be decoded~%") url))
+-                (when (eq? scheme 'file)
++                (when (and (eq? (uri-scheme uri) 'file)
++                           (not (file-uri-allowed? url)))
+                   (leave (G_ "URL ~S is for a local file~%") url))))
+             (if (list? url)
+                 url
+                 (list url))))
