@@ -17,6 +17,20 @@ guix_seed_helper="/steps-guix/improve/guix-1.5.0.sh"
 guix_patch_dir="/steps-guix/guix-1.5.0/patches"
 PATH="/usr/sbin:/sbin:${PATH}"
 export GUIX_DAEMON_SOCKET="${daemon_socket}"
+guile_site_path="${PREFIX}/share/guile/site/3.0:${PREFIX}/share/guile/3.0"
+guile_site_ccache="${LIBDIR}/guile/3.0/site-ccache"
+guile_core_ccache="${LIBDIR}/guile/3.0/ccache"
+guile_ext_path="${LIBDIR}/guile/3.0/extensions"
+
+# Keep Guile runtime lookup deterministic for both CLI and daemon-side Guile
+# helpers.
+export LD_LIBRARY_PATH="${LIBDIR}:${PREFIX}/lib:${LD_LIBRARY_PATH}"
+export GUILE_LOAD_PATH="${guile_site_path}"
+export GUILE_LOAD_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}"
+export GUILE_SYSTEM_PATH="${guile_site_path}"
+export GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}"
+export GUILE_EXTENSIONS_PATH="${guile_ext_path}"
+export GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}"
 
 have_group() {
     if command -v getent >/dev/null 2>&1; then

@@ -175,10 +175,10 @@ src_configure() {
     argp_ldflags="-L${KERNEL_SYSROOT}/lib"
     guile_cflags="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
         /usr/bin/pkg-config --cflags guile-3.0)"
-    # Guix daemon links Guile statically in this environment; use --static so
-    # private deps (e.g. libunistring for uc_* symbols) are included.
+    # Guix runtime loads Guile extensions such as guile-gnutls dynamically.
+    # Link against the shared libguile so those extensions reuse one runtime.
     guile_libs="$(PKG_CONFIG_LIBDIR="${pkg_config_path}" PKG_CONFIG_PATH="${pkg_config_path}" \
-        /usr/bin/pkg-config --static --libs guile-3.0)"
+        /usr/bin/pkg-config --libs guile-3.0)"
 
     probe_guile_module gnutls
     probe_guile_module git
