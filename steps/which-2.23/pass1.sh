@@ -2,13 +2,18 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-urls="https://carlowood.github.io/which/which-2.21.tar.gz"
+src_unpack() {
+    default
+    mv cwm4* cwm4
+}
 
 src_prepare() {
-    rm configure Makefile.in aclocal.m4 which.1
-    touch ChangeLog which.1
-    sed -i '/@ACLOCAL_CWFLAGS@/d' Makefile.am
-    autoreconf-2.69 -fi
+    default
+    rmdir cwm4
+    ln -s ../cwm4 cwm4
+    touch ChangeLog which.1 which.info m4/submodules.m4 version.texi
+    ./autogen.sh
+    sed -i 's/@CW_SUBDIRS@//' Makefile.in
 }
 
 src_configure() {
