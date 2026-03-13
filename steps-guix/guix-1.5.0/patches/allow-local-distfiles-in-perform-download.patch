@@ -1,5 +1,5 @@
---- a/guix/scripts/perform-download.scm
-+++ b/guix/scripts/perform-download.scm
+--- guix-1.5.0/guix/scripts/perform-download.scm
++++ guix-1.5.0/guix/scripts/perform-download.scm
 @@ -97,16 +97,46 @@ a list of wrapper procedures for safely calling the list of procedures that
    (call-with-port (open file (logior O_NOFOLLOW O_RDONLY))
      proc))

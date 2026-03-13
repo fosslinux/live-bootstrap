@@ -33,8 +33,6 @@ src_prepare() {
         false
     fi
 
-    patch --dry-run -p1 < "${base_dir}/patches/allow-local-distfiles-in-perform-download.patch"
-    patch -p1 < "${base_dir}/patches/allow-local-distfiles-in-perform-download.patch"
     sed \
         -e "s|@EXEC_BASH_HASH@|${EXEC_BASH_HASH}|g" \
         -e "s|@EXEC_MKDIR_HASH@|${EXEC_MKDIR_HASH}|g" \
