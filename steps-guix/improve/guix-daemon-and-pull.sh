@@ -13,6 +13,11 @@ channel_repo="${channel_root}/guix"
 channel_work="/tmp/guix-local-channel-work"
 channels_file="/root/.config/guix/channels.scm"
 distfiles="${DISTFILES:-/external/distfiles}"
+distfiles_http_host="127.0.0.1"
+distfiles_http_port="38445"
+distfiles_http_base_url="http://${distfiles_http_host}:${distfiles_http_port}"
+distfiles_http_pid=""
+distfiles_http_log="/tmp/distfiles-httpd.log"
 guix_seed_helper="/steps-guix/improve/guix-1.5.0.sh"
 guix_patch_dir="/steps-guix/guix-1.5.0/patches"
 PATH="/usr/sbin:/sbin:${PATH}"
@@ -31,6 +36,55 @@ export GUILE_SYSTEM_PATH="${guile_site_path}"
 export GUILE_SYSTEM_COMPILED_PATH="${guile_site_ccache}:${guile_core_ccache}"
 export GUILE_EXTENSIONS_PATH="${guile_ext_path}"
 export GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}"
+
+stop_distfiles_http_server() {
+    if [ -n "${distfiles_http_pid}" ] && kill -0 "${distfiles_http_pid}" >/dev/null 2>&1; then
+        kill "${distfiles_http_pid}" >/dev/null 2>&1 || true
+        wait "${distfiles_http_pid}" >/dev/null 2>&1 || true
+    fi
+}
+
+start_distfiles_http_server() {
+    if [ ! -d "${distfiles}" ]; then
+        echo "Distfiles directory is missing: ${distfiles}" >&2
+        exit 1
+    fi
+
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo "python3 is required to serve local distfiles over HTTP." >&2
+        exit 1
+    fi
+
+    rm -f "${distfiles_http_log}"
+
+    echo "Starting local distfiles HTTP server at ${distfiles_http_base_url}"
+    python3 -m http.server "${distfiles_http_port}" \
+        --bind "${distfiles_http_host}" \
+        --directory "${distfiles}" \
+        >"${distfiles_http_log}" 2>&1 &
+    distfiles_http_pid="$!"
+
+    retry=0
+    while [ "${retry}" -lt 30 ]; do
+        if ! kill -0 "${distfiles_http_pid}" >/dev/null 2>&1; then
+            echo "Local distfiles HTTP server exited unexpectedly." >&2
+            cat "${distfiles_http_log}" >&2 || true
+            exit 1
+        fi
+        if python3 -c "import urllib.request; urllib.request.urlopen('${distfiles_http_base_url}/', timeout=2).read(1)" \
+            >/dev/null 2>&1; then
+            return
+        fi
+        retry=$((retry + 1))
+        sleep 1
+    done
+
+    echo "Timed out waiting for local distfiles HTTP server: ${distfiles_http_base_url}" >&2
+    cat "${distfiles_http_log}" >&2 || true
+    exit 1
+}
+
+trap stop_distfiles_http_server EXIT INT TERM HUP
 
 have_group() {
     if command -v getent >/dev/null 2>&1; then
@@ -107,8 +161,6 @@ prepare_local_channel_checkout() {
 
     (
         cd "${channel_repo}"
-        patch --dry-run -p1 < "${guix_patch_dir}/allow-local-distfiles-in-perform-download.patch"
-        patch -p1 < "${guix_patch_dir}/allow-local-distfiles-in-perform-download.patch"
         patch --dry-run -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
         patch -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
         patch --dry-run -p1 < "${rendered_patch}"
@@ -252,4 +304,5 @@ if ! guile -c '(use-modules (gnutls)) (if (module-variable (resolve-module (quot
     exit 1
 fi
 
+start_distfiles_http_server
 guix pull --bootstrap --no-substitutes --channels="${channels_file}" --disable-authentication

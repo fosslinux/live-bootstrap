@@ -17,8 +17,8 @@
      "http://lilypond.org/janneke/guix/"))
  
 +(define %bootstrap-base-urls
-+  ;; All bootstrap binaries must come from local, reproducible distfiles.
-+  '("file:///external/distfiles"))
++  ;; All bootstrap binaries must come from the local bootstrap mirror.
++  '("http://127.0.0.1:38445"))
 +
  (define (bootstrap-guile-url-path system)
    "Return the URI for FILE."

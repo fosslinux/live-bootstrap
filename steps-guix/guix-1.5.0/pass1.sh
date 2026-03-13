@@ -61,16 +61,14 @@ src_prepare() {
     patch --dry-run -p1 < "${rendered_mes_patch}"
     patch -p1 < "${rendered_mes_patch}"
 
-    grep -q 'file:///external/distfiles/' "${bootstrap_scm}"
+    grep -q '127.0.0.1:38445' "${bootstrap_scm}"
     grep -q "${EXEC_BASH_HASH}" "${bootstrap_scm}"
     grep -q "${STATIC_BINARIES_SEED_HASH}" "${bootstrap_scm}"
     grep -q "${GUILE_SEED_HASH}" "${bootstrap_scm}"
     grep -q "${MES_MINIMAL_SEED_HASH}" "${bootstrap_scm}"
     grep -q "${MESCC_TOOLS_SEED_HASH}" "${bootstrap_scm}"
-    grep -q "All bootstrap binaries must come from local, reproducible distfiles." "${bootstrap_scm}"
+    grep -q "All bootstrap binaries must come from the local bootstrap mirror." "${bootstrap_scm}"
     grep -q "%bootstrap-linux-headers-base-urls" "${bootstrap_scm}"
-    grep -q "%allowed-local-download-directories" guix/scripts/perform-download.scm
-    grep -q '"/external/distfiles"' guix/scripts/perform-download.scm
     grep -q '^(define (bootstrap-mes-minimal-origin system)' "${bootstrap_scm}"
     grep -q '^(define %bootstrap-mescc-tools' "${bootstrap_scm}"
     grep -q "mes-minimal-stripped-0.19-i686-linux.tar.xz" "${bootstrap_scm}"

@@ -27,7 +27,7 @@
 -    "https://alpha.gnu.org/gnu/guix/bootstrap/"
 -    "http://flashner.co.il/guix/bootstrap/"
 -    "http://lilypond.org/janneke/guix/"))
-+  '("file:///external/distfiles/"))
++  '("http://127.0.0.1:38445/"))
  
  (define (bootstrap-executable-file-name system program)
    "Return the FILE-NAME part of url where PROGRAM can be found for SYSTEM."
