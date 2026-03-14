@@ -4,6 +4,16 @@ SEED_PREFIX="/bootstrap-seeds/guile-2.2.4"
 
 src_prepare() {
     default
+
+    # Match Guix's static bootstrap Guile approach: force the final `guile`
+    # executable to be linked through libtool with -all-static.
+    sed -i \
+        -e 's|^guile_LDADD =.*$|guile_LDADD = libguile-@GUILE_EFFECTIVE_VERSION@.la -ldl|' \
+        -e 's|^guile_LDFLAGS =.*$|guile_LDFLAGS = -all-static|' \
+        libguile/Makefile.in
+
+    grep -q '^guile_LDADD = libguile-@GUILE_EFFECTIVE_VERSION@.la -ldl$' libguile/Makefile.in
+    grep -q '^guile_LDFLAGS = -all-static$' libguile/Makefile.in
 }
 
 src_configure() {
@@ -18,7 +28,7 @@ src_configure() {
     PKG_CONFIG_PATH="${pkg_config_path}" \
     LIBFFI_CFLAGS="${libffi_cflags}" \
     LIBFFI_LIBS="${libffi_libs}" \
-    LDFLAGS="-static" \
+    LDFLAGS="-ldl" \
     ./configure \
         --prefix="${SEED_PREFIX}" \
         --disable-shared \
@@ -26,13 +36,13 @@ src_configure() {
 }
 
 src_compile() {
-    make "${MAKEJOBS}" -f Makefile PREFIX="${PREFIX}" LDFLAGS="-static"
+    default_src_compile
 }
 
 src_install() {
     local stage
     stage="${DESTDIR}${SEED_PREFIX}"
 
-    make DESTDIR="${DESTDIR}" LDFLAGS="-static" install
+    make DESTDIR="${DESTDIR}" install
     seed_make_repro_tar_xz "${stage}" "${DISTFILES}/guile-static-stripped-2.2.4-i686-linux.tar.xz"
 }
