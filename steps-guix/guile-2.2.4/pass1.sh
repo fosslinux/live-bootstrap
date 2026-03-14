@@ -18,6 +18,7 @@ src_configure() {
     PKG_CONFIG_PATH="${pkg_config_path}" \
     LIBFFI_CFLAGS="${libffi_cflags}" \
     LIBFFI_LIBS="${libffi_libs}" \
+    LDFLAGS="-static" \
     ./configure \
         --prefix="${SEED_PREFIX}" \
         --disable-shared \
@@ -25,13 +26,13 @@ src_configure() {
 }
 
 src_compile() {
-    default_src_compile
+    make "${MAKEJOBS}" -f Makefile PREFIX="${PREFIX}" LDFLAGS="-static"
 }
 
 src_install() {
     local stage
     stage="${DESTDIR}${SEED_PREFIX}"
 
-    make DESTDIR="${DESTDIR}" install
+    make DESTDIR="${DESTDIR}" LDFLAGS="-static" install
     seed_make_repro_tar_xz "${stage}" "${DISTFILES}/guile-static-stripped-2.2.4-i686-linux.tar.xz"
 }
