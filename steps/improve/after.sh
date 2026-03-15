@@ -17,17 +17,27 @@ if [ -d /steps/after ]; then
     done
 fi
 
-if [ "${BUILD_GUIX_ALSO}" = True ]; then
-    if [ ! -f /steps-guix/manifest ]; then
-        echo "BUILD_GUIX_ALSO is True but /steps-guix/manifest is missing." >&2
-        exit 1
-    fi
+extra_builds="${EXTRA_BUILDS:-}"
+# Backward compatibility for older bootstrap.cfg.
+if [ -z "${extra_builds}" ] && [ "${BUILD_GUIX_ALSO}" = True ]; then
+    extra_builds="guix"
+fi
 
-    sed -i '/^BUILD_GUIX_ALSO=/d' /steps/bootstrap.cfg
-    echo 'BUILD_GUIX_ALSO=False' >> /steps/bootstrap.cfg
-
-    /script-generator /steps-guix/manifest /steps
-    bash /steps-guix/0.sh
+if [ -n "${extra_builds}" ]; then
+    old_ifs="${IFS}"
+    IFS=','
+    for extra_build in ${extra_builds}; do
+        [ -n "${extra_build}" ] || continue
+        extra_manifest="/steps-${extra_build}/manifest"
+        if [ ! -f "${extra_manifest}" ]; then
+            echo "EXTRA_BUILDS includes '${extra_build}' but ${extra_manifest} is missing." >&2
+            IFS="${old_ifs}"
+            exit 1
+        fi
+        /script-generator "${extra_manifest}" /steps
+        bash "/steps-${extra_build}/0.sh"
+    done
+    IFS="${old_ifs}"
 fi
 
 if [ "${INTERACTIVE}" = True ]; then

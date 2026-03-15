@@ -119,30 +119,39 @@ if [ "${CHROOT}" = False ]; then
 fi
 EOF
 
-if [ "${BUILD_GUIX_ALSO}" = True ]; then
 cat >> /init <<- 'EOF'
-run_steps_guix_if_requested() {
-    if [ "${BUILD_GUIX_ALSO}" != True ]; then
-        return 1
+run_extra_builds_if_requested() {
+    extra_builds="${EXTRA_BUILDS:-}"
+    # Backward compatibility for older bootstrap.cfg.
+    if [ -z "${extra_builds}" ] && [ "${BUILD_GUIX_ALSO}" = True ]; then
+        extra_builds="guix"
     fi
-    if [ ! -f /steps-guix/manifest ]; then
-        echo "BUILD_GUIX_ALSO is True but /steps-guix/manifest is missing." >&2
-        return 1
+    if [ -z "${extra_builds}" ]; then
+        return 0
     fi
 
-    sed -i '/^BUILD_GUIX_ALSO=/d' /steps/bootstrap.cfg
-    echo 'BUILD_GUIX_ALSO=False' >> /steps/bootstrap.cfg
-
-    /script-generator /steps-guix/manifest /steps
-    bash /steps-guix/0.sh
-    return $?
+    old_ifs="${IFS}"
+    IFS=','
+    for extra_build in ${extra_builds}; do
+        [ -n "${extra_build}" ] || continue
+        extra_manifest="/steps-${extra_build}/manifest"
+        if [ ! -f "${extra_manifest}" ]; then
+            echo "EXTRA_BUILDS includes '${extra_build}' but ${extra_manifest} is missing." >&2
+            IFS="${old_ifs}"
+            return 1
+        fi
+        /script-generator "${extra_manifest}" /steps
+        bash "/steps-${extra_build}/0.sh" || {
+            IFS="${old_ifs}"
+            return 1
+        }
+    done
+    IFS="${old_ifs}"
+    return 0
 }
 
-if [ "${BUILD_GUIX_ALSO}" = True ]; then
-    run_steps_guix_if_requested || shutdown_system $?
-fi
+run_extra_builds_if_requested || shutdown_system $?
 EOF
-fi
 
 cat >> /init <<- 'EOF'
 if [ "${QEMU}" = True ] && [ "${BARE_METAL}" = False ]; then

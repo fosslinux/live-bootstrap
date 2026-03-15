@@ -35,12 +35,56 @@ def parse_internal_ci_break_after(value):
     scope, separator, step_name = value.partition(":")
     scope = scope.strip()
     step_name = step_name.strip()
-    if separator != ":" or scope not in ("steps", "steps-guix") or not step_name:
+    if (
+        separator != ":"
+        or not _is_valid_manifest_scope(scope)
+        or not step_name
+    ):
         raise ValueError(
             "--internal-ci-break-after must be in the form "
-            "'steps:<name>' or 'steps-guix:<name>'."
+            "'steps:<name>' or 'steps-<extra>:<name>'."
         )
     return scope, step_name
+
+
+def _is_valid_extra_build_name(name):
+    if not name:
+        return False
+    return all(ch.isalnum() or ch in ("-", "_") for ch in name)
+
+
+def parse_extra_builds(value):
+    """
+    Parse comma-separated extra build namespaces (e.g. 'guix,gentoo').
+    """
+    if not value:
+        return []
+
+    builds = []
+    for raw_name in value.split(","):
+        name = raw_name.strip()
+        if not name:
+            continue
+        if not _is_valid_extra_build_name(name):
+            raise ValueError(
+                "--extra-builds must be a comma-separated list of names using "
+                "letters, digits, '-' or '_'."
+            )
+        if name not in builds:
+            builds.append(name)
+    return builds
+
+
+def _scope_for_extra_build(extra_build):
+    return f"steps-{extra_build}"
+
+
+def _is_valid_manifest_scope(scope):
+    if scope == "steps":
+        return True
+    if not scope.startswith("steps-"):
+        return False
+    return _is_valid_extra_build_name(scope[len("steps-"):])
 
 
 def _parse_build_step_name(line):
@@ -98,14 +142,11 @@ _INIT_REGEN_BLOCK = (
     + f'if [ -f "{_RESUME_NEXT_PATH}" ]; then\n'
     + f'resume_next_scope="$(sed -n "s/^scope=//p" "{_RESUME_NEXT_PATH}" | head -n1)"\n'
     + f'resume_next_pkg="$(sed -n "s/^package=//p" "{_RESUME_NEXT_PATH}" | head -n1)"\n'
-    + 'case "${resume_next_scope}" in\n'
-    + 'steps)\n'
+    + 'if [ "${resume_next_scope}" = "steps" ]; then\n'
     + 'resume_root="/steps"\n'
-    + ';;\n'
-    + 'steps-guix)\n'
-    + 'resume_root="/steps-guix"\n'
-    + ';;\n'
-    + 'esac\n'
+    + 'elif echo "${resume_next_scope}" | grep -Eq "^steps-[A-Za-z0-9_-]+$"; then\n'
+    + 'resume_root="/${resume_next_scope}"\n'
+    + 'fi\n'
     + 'if [ -n "${resume_next_pkg}" ]; then\n'
     + 'resume_pkg="${resume_next_pkg}"\n'
     + 'fi\n'
@@ -114,9 +155,14 @@ _INIT_REGEN_BLOCK = (
     + 'if [ -x /script-generator ] && [ -f /steps/manifest ]; then\n'
     + '/script-generator /steps/manifest\n'
     + 'fi\n'
-    + 'if [ -x /script-generator ] && [ -f /steps-guix/manifest ]; then\n'
-    + '/script-generator /steps-guix/manifest /steps\n'
+    + 'for extra_manifest in /steps-*/manifest; do\n'
+    + 'if [ ! -f "${extra_manifest}" ]; then\n'
+    + 'continue\n'
     + 'fi\n'
+    + 'if [ -x /script-generator ]; then\n'
+    + '/script-generator "${extra_manifest}" /steps\n'
+    + 'fi\n'
+    + 'done\n'
     + 'if [ -n "${resume_pkg}" ] && [ -d "${resume_root}" ]; then\n'
     + 'mapped_entry="$(grep -F -l "build ${resume_pkg} " "${resume_root}"/[0-9]*.sh 2>/dev/null | head -n1 || true)"\n'
     + 'if [ -n "${mapped_entry}" ]; then\n'
@@ -245,8 +291,7 @@ def _patch_resume_init_scripts(mountpoint):
 
 def _update_stage0_tree(mountpoint,
                         steps_dir,
-                        steps_guix_dir,
-                        build_guix_also,
+                        extra_builds,
                         mirrors,
                         internal_ci,
                         break_scope,
@@ -270,6 +315,7 @@ def _update_stage0_tree(mountpoint,
         lines = [
             line for line in cfg
             if not line.startswith("BUILD_GUIX_ALSO=")
+            and not line.startswith("EXTRA_BUILDS=")
             and not line.startswith("INTERNAL_CI=")
             and not line.startswith(_RESUME_NEXT_SCOPE_VAR + "=")
             and not line.startswith(_RESUME_NEXT_PACKAGE_VAR + "=")
@@ -300,10 +346,19 @@ def _update_stage0_tree(mountpoint,
     if break_scope and break_step:
         if internal_ci in ("", "False", None):
             raise SystemExit("INTERNAL_CI must be set when INTERNAL_CI_BREAK_AFTER is used.")
-        source_manifest_path = os.path.join(
-            steps_guix_dir if break_scope == "steps-guix" else steps_dir,
-            "manifest",
-        )
+        if break_scope == "steps":
+            source_manifest_path = os.path.join(steps_dir, "manifest")
+        else:
+            allowed_scopes = {_scope_for_extra_build(extra) for extra in extra_builds}
+            if break_scope not in allowed_scopes:
+                raise SystemExit(
+                    f"INTERNAL_CI_BREAK_AFTER scope '{break_scope}' is not enabled by EXTRA_BUILDS."
+                )
+            source_manifest_path = os.path.join(
+                os.path.dirname(steps_dir),
+                break_scope,
+                "manifest",
+            )
         if not os.path.isfile(source_manifest_path):
             raise SystemExit(f"Missing manifest for INTERNAL_CI_BREAK_AFTER: {source_manifest_path}")
         with open(source_manifest_path, "r", encoding="utf-8") as manifest_file:
@@ -325,8 +380,8 @@ def _update_stage0_tree(mountpoint,
             lines.append(f"{_RESUME_NEXT_PACKAGE_VAR}={next_step}\n")
 
     config_path = os.path.join(dest_steps, "bootstrap.cfg")
-    if build_guix_also:
-        lines.append("BUILD_GUIX_ALSO=True\n")
+    if extra_builds:
+        lines.append("EXTRA_BUILDS=" + ",".join(extra_builds) + "\n")
     if mirrors:
         lines.append(f'MIRRORS="{" ".join(mirrors)}"\n')
         lines.append(f"MIRRORS_LEN={len(mirrors)}\n")
@@ -337,9 +392,11 @@ def _update_stage0_tree(mountpoint,
 
     _patch_resume_init_scripts(mountpoint)
 
-    if build_guix_also:
-        dest_steps_guix = os.path.join(mountpoint, "steps-guix")
-        _copytree_replace(steps_guix_dir, dest_steps_guix)
+    for extra_build in extra_builds:
+        extra_scope = _scope_for_extra_build(extra_build)
+        source_steps_extra = os.path.join(os.path.dirname(steps_dir), extra_scope)
+        dest_steps_extra = os.path.join(mountpoint, extra_scope)
+        _copytree_replace(source_steps_extra, dest_steps_extra)
 
     if break_output_lines is not None and break_manifest_relpath is not None:
         manifest_path = os.path.join(mountpoint, break_manifest_relpath)
@@ -353,21 +410,19 @@ def _stage0_update_cli(argv):
     """
     Internal entrypoint executed as root for mutating mounted stage0 trees.
     """
-    if len(argv) < 7:
-        raise SystemExit("stage0 update cli expects at least 7 arguments")
+    if len(argv) < 6:
+        raise SystemExit("stage0 update cli expects at least 6 arguments")
     mountpoint = argv[0]
     steps_dir = argv[1]
-    steps_guix_dir = argv[2]
-    build_guix_also = (argv[3] == "True")
-    internal_ci = argv[4]
-    break_scope = argv[5]
-    break_step = argv[6]
-    mirrors = argv[7:]
+    extra_builds = parse_extra_builds(argv[2])
+    internal_ci = argv[3]
+    break_scope = argv[4]
+    break_step = argv[5]
+    mirrors = argv[6:]
     _update_stage0_tree(
         mountpoint,
         steps_dir,
-        steps_guix_dir,
-        build_guix_also,
+        extra_builds,
         mirrors,
         internal_ci,
         break_scope,
@@ -400,14 +455,16 @@ def apply_internal_ci_break_to_tree(tree_root, break_scope, break_step, internal
         manifest_file.writelines(output_lines)
 
 def update_stage0_image(image_path,
-                        build_guix_also=False,
+                        extra_builds=None,
                         mirrors=None,
                         internal_ci=False,
                         internal_ci_break_after=None):
     """
     Update an existing stage0 image by refreshing step sources from the working
-    tree and patching bootstrap config / optional guix handoff bits.
+    tree and patching bootstrap config / optional extra build handoff bits.
     """
+    if extra_builds is None:
+        extra_builds = []
     if mirrors is None:
         mirrors = []
 
@@ -416,12 +473,14 @@ def update_stage0_image(image_path,
     if not os.path.isdir(steps_dir) or not os.path.isfile(steps_manifest):
         raise ValueError("steps/manifest does not exist.")
 
-    steps_guix_dir = ""
-    if build_guix_also:
-        steps_guix_dir = os.path.abspath("steps-guix")
-        manifest = os.path.join(steps_guix_dir, "manifest")
-        if not os.path.isdir(steps_guix_dir) or not os.path.isfile(manifest):
-            raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
+    for extra_build in extra_builds:
+        extra_scope = _scope_for_extra_build(extra_build)
+        extra_steps_dir = os.path.abspath(extra_scope)
+        manifest = os.path.join(extra_steps_dir, "manifest")
+        if not os.path.isdir(extra_steps_dir) or not os.path.isfile(manifest):
+            raise ValueError(
+                f"{extra_scope}/manifest does not exist while --extra-builds includes {extra_build}."
+            )
     break_scope, break_step = parse_internal_ci_break_after(internal_ci_break_after)
 
     mountpoint = tempfile.mkdtemp(prefix="lb-stage0-", dir="/tmp")
@@ -449,8 +508,7 @@ def update_stage0_image(image_path,
             os.path.abspath(__file__),
             mountpoint,
             steps_dir,
-            steps_guix_dir,
-            "True" if build_guix_also else "False",
+            ",".join(extra_builds),
             str(internal_ci) if internal_ci else "False",
             break_scope or "",
             break_step or "",
@@ -463,7 +521,7 @@ def update_stage0_image(image_path,
 
 def prepare_stage0_work_image(base_image,
                               output_dir,
-                              build_guix_also,
+                              extra_builds,
                               mirrors=None,
                               internal_ci=False,
                               internal_ci_break_after=None):
@@ -473,7 +531,7 @@ def prepare_stage0_work_image(base_image,
     work_image = os.path.join(output_dir, "stage0-work.img")
     shutil.copy2(base_image, work_image)
     update_stage0_image(work_image,
-                        build_guix_also=build_guix_also,
+                        extra_builds=extra_builds,
                         mirrors=mirrors,
                         internal_ci=internal_ci,
                         internal_ci_break_after=internal_ci_break_after)
@@ -501,7 +559,8 @@ def create_configuration_file(args):
         config.write(f"PAYLOAD_REQUIRED={payload_required}\n")
         config.write(f"QEMU={args.qemu}\n")
         config.write(f"BARE_METAL={args.bare_metal or (args.qemu and args.interactive)}\n")
-        config.write(f"BUILD_GUIX_ALSO={args.build_guix_also}\n")
+        if args.extra_builds:
+            config.write("EXTRA_BUILDS=" + ",".join(args.extra_builds) + "\n")
         if kernel_bootstrap:
             config.write("DISK=sdb1\n" if args.repo else "DISK=sda\n")
             config.write("KERNEL_BOOTSTRAP=True\n")
@@ -551,8 +610,11 @@ def main():
     parser.add_argument("--build-kernels",
                         help="Also build kernels in chroot and bwrap builds",
                         action="store_true")
+    parser.add_argument("--extra-builds",
+                        help="Comma-separated extra build namespaces to run after main steps "
+                             "(e.g. guix or guix,gentoo,azl3).")
     parser.add_argument("--build-guix-also",
-                        help="After main steps finish, switch to steps-guix and run its manifest",
+                        help=argparse.SUPPRESS,
                         action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
@@ -573,7 +635,7 @@ def main():
     parser.add_argument("--internal-ci", help="INTERNAL for github CI")
     parser.add_argument("--internal-ci-break-after",
                         help="Insert a temporary jump: break after a build step using "
-                             "'steps:<name>' or 'steps-guix:<name>' "
+                             "'steps:<name>' or 'steps-<extra>:<name>' "
                              "for --stage0-image resume runs and fresh --qemu kernel-bootstrap runs.")
     parser.add_argument("-s", "--swap", help="Swap space to allocate in Linux",
                         default=0)
@@ -595,6 +657,9 @@ def main():
                         action="store_true")
 
     args = parser.parse_args()
+    args.extra_builds = parse_extra_builds(args.extra_builds)
+    if args.build_guix_also and "guix" not in args.extra_builds:
+        args.extra_builds.append("guix")
 
     # Mode validation
     def check_types():
@@ -651,8 +716,13 @@ def main():
         if not args.internal_ci:
             raise ValueError("--internal-ci-break-after requires --internal-ci (e.g. pass2).")
         break_scope, _ = parse_internal_ci_break_after(args.internal_ci_break_after)
-        if break_scope == "steps-guix" and not args.build_guix_also:
-            raise ValueError("--internal-ci-break-after steps-guix:* requires --build-guix-also.")
+        if break_scope != "steps":
+            extra_build = break_scope[len("steps-"):]
+            if extra_build not in args.extra_builds:
+                raise ValueError(
+                    f"--internal-ci-break-after {break_scope}:* requires --extra-builds include "
+                    f"{extra_build}."
+                )
         if not args.qemu:
             raise ValueError("--internal-ci-break-after currently requires --qemu.")
         if args.kernel:
@@ -716,7 +786,7 @@ def main():
                               repo_path=args.repo,
                               early_preseed=args.early_preseed,
                               mirrors=args.mirrors,
-                              build_guix_also=args.build_guix_also)
+                              build_guix_also=("guix" in args.extra_builds))
 
     bootstrap(args, generator, target, args.target_size, cleanup)
     cleanup()
@@ -796,7 +866,7 @@ def _qemu_arg_list_for_stage0_image(args, target):
     work_image = prepare_stage0_work_image(
         args.stage0_image,
         target.path,
-        args.build_guix_also,
+        args.extra_builds,
         mirrors=args.mirrors,
         internal_ci=args.internal_ci,
         internal_ci_break_after=args.internal_ci_break_after,
