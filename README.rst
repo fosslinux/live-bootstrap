@@ -73,7 +73,9 @@ Without using Python:
         * Header magic: ``LBPAYLD1`` (8 bytes).
         * Then: little-endian ``u64`` file count.
         * Repeated for each file: little-endian ``u64`` name length,
-          little-endian ``u64`` file size, raw file name bytes, raw file bytes.
+          little-endian ``u64`` file size, UTF-8 encoded file name bytes
+          (no terminator), raw file bytes.
+        * ``name length`` is the number of UTF-8 bytes (not Unicode code points).
 
       * With ``--repo``, the second disk remains an ext3 distfiles/repo disk.
       * Without ``--external-sources`` and without ``--repo``, no second disk is
@@ -117,7 +119,8 @@ with ``--external-sources`` (and no ``--repo``).
       while read -r name path; do
           [ -n "${name}" ] || continue
           size="$(wc -c < "${path}" | tr -d ' ')"
-          write_u64le "${#name}" >> "${out}"
+          name_len="$(printf '%s' "${name}" | wc -c | tr -d ' ')"
+          write_u64le "${name_len}" >> "${out}"
           write_u64le "${size}" >> "${out}"
           printf '%s' "${name}" >> "${out}"
           cat "${path}" >> "${out}"

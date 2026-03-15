@@ -47,8 +47,10 @@ The flow is:
 - Repeated entries:
   - little-endian `u64` name length
   - little-endian `u64` file size
-  - file name bytes (no terminator)
+  - file name string, encoded as UTF-8 bytes (no terminator)
   - file bytes
+
+`name length` is the number of bytes in the UTF-8 encoded file name (not the number of Unicode code points).
 
 The importer probes detected block devices and selects the one with magic `LBPAYLD1`.
 
@@ -82,7 +84,8 @@ write_u64le "${count}" >> "${out}"
 while read -r name path; do
   [ -n "${name}" ] || continue
   size="$(wc -c < "${path}" | tr -d ' ')"
-  write_u64le "${#name}" >> "${out}"
+  name_len="$(printf '%s' "${name}" | wc -c | tr -d ' ')"
+  write_u64le "${name_len}" >> "${out}"
   write_u64le "${size}" >> "${out}"
   printf '%s' "${name}" >> "${out}"
   cat "${path}" >> "${out}"
