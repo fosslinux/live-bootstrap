@@ -153,18 +153,20 @@ class Generator():
         ordered_names = sorted(files_by_name.keys())
         with open(container_path, "wb") as container:
             container.write(self.raw_container_magic)
-            container.write(struct.pack("<I", len(ordered_names)))
+            if len(ordered_names) > 0xFFFFFFFFFFFFFFFF:
+                raise ValueError("Too many files for raw container format.")
+            container.write(struct.pack("<Q", len(ordered_names)))
             for file_name in ordered_names:
                 file_name_bytes = file_name.encode("utf_8")
-                if len(file_name_bytes) > 0xFFFFFFFF:
+                if len(file_name_bytes) > 0xFFFFFFFFFFFFFFFF:
                     raise ValueError(f"Container file name too long: {file_name}")
 
                 src_path = os.path.join(self.distfiles_dir, file_name)
                 file_size = os.path.getsize(src_path)
-                if file_size > 0xFFFFFFFF:
+                if file_size > 0xFFFFFFFFFFFFFFFF:
                     raise ValueError(f"Container file too large for raw container format: {file_name}")
 
-                container.write(struct.pack("<II", len(file_name_bytes), file_size))
+                container.write(struct.pack("<QQ", len(file_name_bytes), file_size))
                 container.write(file_name_bytes)
 
                 with open(src_path, "rb") as src_file:

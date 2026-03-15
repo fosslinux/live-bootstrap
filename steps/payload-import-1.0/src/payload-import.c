@@ -14,17 +14,21 @@
 #define COPY_BUFSZ 65536
 #define SYS_MOUNT 21
 
-static unsigned int read_u32le(const unsigned char *buf)
+static unsigned long long read_u64le(const unsigned char *buf)
 {
-	return (unsigned int)buf[0]
-		| ((unsigned int)buf[1] << 8)
-		| ((unsigned int)buf[2] << 16)
-		| ((unsigned int)buf[3] << 24);
+	return (unsigned long long)buf[0]
+		| ((unsigned long long)buf[1] << 8)
+		| ((unsigned long long)buf[2] << 16)
+		| ((unsigned long long)buf[3] << 24)
+		| ((unsigned long long)buf[4] << 32)
+		| ((unsigned long long)buf[5] << 40)
+		| ((unsigned long long)buf[6] << 48)
+		| ((unsigned long long)buf[7] << 56);
 }
 
-static int read_exact(FILE *in, void *buf, unsigned int len)
+static int read_exact(FILE *in, void *buf, size_t len)
 {
-	unsigned int got = 0;
+	size_t got = 0;
 	unsigned char *out = (unsigned char *)buf;
 
 	while (got < len) {
@@ -32,16 +36,16 @@ static int read_exact(FILE *in, void *buf, unsigned int len)
 		if (n == 0) {
 			return -1;
 		}
-		got += (unsigned int)n;
+		got += n;
 	}
 	return 0;
 }
 
-static int copy_exact(FILE *in, FILE *out, unsigned int len,
+static int copy_exact(FILE *in, FILE *out, unsigned long long len,
 	const char *device, const char *name, const char *out_path)
 {
 	unsigned char *buf;
-	unsigned int remaining = len;
+	unsigned long long remaining = len;
 
 	buf = (unsigned char *)malloc(COPY_BUFSZ);
 	if (buf == NULL) {
@@ -50,24 +54,27 @@ static int copy_exact(FILE *in, FILE *out, unsigned int len,
 	}
 
 	while (remaining > 0) {
-		unsigned int chunk = remaining;
-		unsigned int copied = len - remaining;
+		size_t chunk = (size_t)COPY_BUFSZ;
+		unsigned long long copied = len - remaining;
 		size_t nread;
 		size_t written;
-		if (chunk > COPY_BUFSZ) {
-			chunk = COPY_BUFSZ;
+		if (remaining < (unsigned long long)COPY_BUFSZ) {
+			chunk = (size_t)remaining;
 		}
 		nread = fread(buf, 1, chunk, in);
 		if (nread != chunk) {
 			if (feof(in)) {
 				fprintf(stderr,
 					"payload-import: truncated payload while reading %s from %s "
-					"(offset=%u wanted=%u got=%u)\n",
-					name, device, copied, chunk, (unsigned int)nread);
+					"(offset=%llu wanted=%llu got=%llu)\n",
+					name, device,
+					copied,
+					(unsigned long long)chunk,
+					(unsigned long long)nread);
 			} else {
 				fprintf(stderr,
 					"payload-import: read error while reading %s from %s "
-					"(offset=%u): %s\n",
+					"(offset=%llu): %s\n",
 					name, device, copied, strerror(errno));
 			}
 			free(buf);
@@ -77,12 +84,16 @@ static int copy_exact(FILE *in, FILE *out, unsigned int len,
 		if (written != chunk) {
 			fprintf(stderr,
 				"payload-import: write error while writing %s to %s "
-				"(offset=%u wanted=%u wrote=%u): %s\n",
-				name, out_path, copied, chunk, (unsigned int)written, strerror(errno));
+				"(offset=%llu wanted=%llu wrote=%llu): %s\n",
+				name, out_path,
+				copied,
+				(unsigned long long)chunk,
+				(unsigned long long)written,
+				strerror(errno));
 			free(buf);
 			return 1;
 		}
-		remaining -= chunk;
+		remaining -= (unsigned long long)chunk;
 	}
 
 	free(buf);
@@ -133,7 +144,7 @@ static int sys_mount(const char *source, const char *target,
 	const char *fstype, unsigned int flags, const void *data)
 {
 	int ret;
-	// Only for x86 fiwix/linux
+	/* Only for x86 fiwix/linux */
 	__asm__ __volatile__(
 		"int $0x80"
 		: "=a"(ret)
@@ -178,9 +189,9 @@ static int extract_payload(const char *device, const char *dest_dir)
 {
 	FILE *in;
 	char magic[MAGIC_LEN];
-	unsigned char u32buf[4];
-	unsigned int file_count;
-	unsigned int i;
+	unsigned char u64buf[8];
+	unsigned long long file_count;
+	unsigned long long i;
 
 	in = fopen(device, "rb");
 	if (in == NULL) {
@@ -194,15 +205,15 @@ static int extract_payload(const char *device, const char *dest_dir)
 		return 1;
 	}
 
-	if (read_exact(in, u32buf, 4) != 0) {
+	if (read_exact(in, u64buf, 8) != 0) {
 		fclose(in);
 		fputs("payload-import: malformed payload header\n", stderr);
 		return 1;
 	}
-	file_count = read_u32le(u32buf);
-	if (file_count > 200000U) {
+	file_count = read_u64le(u64buf);
+	if (file_count > 200000ULL) {
 		fclose(in);
-		fprintf(stderr, "payload-import: unreasonable file count: %u\n", file_count);
+		fprintf(stderr, "payload-import: unreasonable file count: %llu\n", file_count);
 		return 1;
 	}
 
@@ -212,47 +223,47 @@ static int extract_payload(const char *device, const char *dest_dir)
 		return 1;
 	}
 
-	printf("payload-import: reading %u files from %s\n", file_count, device);
+	printf("payload-import: reading %llu files from %s\n", file_count, device);
 	for (i = 0; i < file_count; ++i) {
-		unsigned int name_len;
-		unsigned int data_len;
+		unsigned long long name_len;
+		unsigned long long data_len;
 		char *name;
 		char out_path[4096];
 		FILE *out;
 
-		if (read_exact(in, u32buf, 4) != 0) {
+		if (read_exact(in, u64buf, 8) != 0) {
 			fclose(in);
 			fputs("payload-import: truncated entry header\n", stderr);
 			return 1;
 		}
-		name_len = read_u32le(u32buf);
-		if (read_exact(in, u32buf, 4) != 0) {
+		name_len = read_u64le(u64buf);
+		if (read_exact(in, u64buf, 8) != 0) {
 			fclose(in);
 			fputs("payload-import: truncated entry size\n", stderr);
 			return 1;
 		}
-		data_len = read_u32le(u32buf);
+		data_len = read_u64le(u64buf);
 
-		if (name_len == 0 || name_len > MAX_NAME_LEN) {
+		if (name_len == 0ULL || name_len > (unsigned long long)MAX_NAME_LEN) {
 			fclose(in);
-			fprintf(stderr, "payload-import: invalid name length %u\n", name_len);
+			fprintf(stderr, "payload-import: invalid name length %llu\n", name_len);
 			return 1;
 		}
 
-		name = (char *)malloc(name_len + 1);
+		name = (char *)malloc((size_t)name_len + 1U);
 		if (name == NULL) {
 			fclose(in);
 			fputs("payload-import: out of memory\n", stderr);
 			return 1;
 		}
 
-		if (read_exact(in, name, name_len) != 0) {
+		if (read_exact(in, name, (size_t)name_len) != 0) {
 			free(name);
 			fclose(in);
 			fputs("payload-import: truncated file name\n", stderr);
 			return 1;
 		}
-		name[name_len] = 0;
+		name[(size_t)name_len] = 0;
 
 		if (!is_valid_name(name)) {
 			fclose(in);

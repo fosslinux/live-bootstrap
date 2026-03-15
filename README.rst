@@ -71,9 +71,9 @@ Without using Python:
         reach the importer; the rest of the distfiles live in ``external.img``.
 
         * Header magic: ``LBPAYLD1`` (8 bytes).
-        * Then: little-endian ``u32`` file count.
-        * Repeated for each file: little-endian ``u32`` name length,
-          little-endian ``u32`` file size, raw file name bytes, raw file bytes.
+        * Then: little-endian ``u64`` file count.
+        * Repeated for each file: little-endian ``u64`` name length,
+          little-endian ``u64`` file size, raw file name bytes, raw file bytes.
 
       * With ``--repo``, the second disk remains an ext3 distfiles/repo disk.
       * Without ``--external-sources`` and without ``--repo``, no second disk is
@@ -104,21 +104,21 @@ with ``--external-sources`` (and no ``--repo``).
       out="${1:-external.img}"
       list="${2:-external.list}"
 
-      write_u32le() {
+      write_u64le() {
           v="$1"
-          printf '%08x' "$v" | sed -E 's/(..)(..)(..)(..)/\4\3\2\1/' | xxd -r -p
+          printf '%016x' "$v" | sed -E 's/(..)(..)(..)(..)(..)(..)(..)(..)/\8\7\6\5\4\3\2\1/' | xxd -r -p
       }
 
       count="$(wc -l < "${list}" | tr -d ' ')"
       : > "${out}"
       printf 'LBPAYLD1' >> "${out}"
-      write_u32le "${count}" >> "${out}"
+      write_u64le "${count}" >> "${out}"
 
       while read -r name path; do
           [ -n "${name}" ] || continue
           size="$(wc -c < "${path}" | tr -d ' ')"
-          write_u32le "${#name}" >> "${out}"
-          write_u32le "${size}" >> "${out}"
+          write_u64le "${#name}" >> "${out}"
+          write_u64le "${size}" >> "${out}"
           printf '%s' "${name}" >> "${out}"
           cat "${path}" >> "${out}"
       done < "${list}"
