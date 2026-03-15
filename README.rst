@@ -135,7 +135,7 @@ with ``--external-sources`` (and no ``--repo``).
 Notes:
 
 * ``external.img`` raw container mode is used with ``--external-sources`` (and
-  no ``--repo``). With ``--build-guix-also``, the container content is larger
+  no ``--repo``). With ``--extra-builds=guix``, the container content is larger
   because it also includes post-early sources from ``steps-guix``.
 * Without ``--external-sources`` and without ``--repo``, there is no second
   image. The initial image only includes distfiles needed before

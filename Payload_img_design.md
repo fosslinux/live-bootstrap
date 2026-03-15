@@ -104,5 +104,5 @@ Attach `external.img` as an extra raw disk in QEMU, or as the second disk on bar
 - Without `--external-sources` and without `--repo`, there is no second disk:
   the initial image only includes distfiles needed before `improve: get_network`,
   and later distfiles are downloaded from mirrors.
-- `--build-guix-also` increases container contents (includes post-early `steps-guix`
+- `--extra-builds=guix` increases container contents (includes post-early `steps-guix`
   sources), but does not change the mechanism.

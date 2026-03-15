@@ -18,10 +18,6 @@ if [ -d /steps/after ]; then
 fi
 
 extra_builds="${EXTRA_BUILDS:-}"
-# Backward compatibility for older bootstrap.cfg.
-if [ -z "${extra_builds}" ] && [ "${BUILD_GUIX_ALSO}" = True ]; then
-    extra_builds="guix"
-fi
 
 if [ -n "${extra_builds}" ]; then
     old_ifs="${IFS}"

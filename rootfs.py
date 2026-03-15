@@ -314,8 +314,7 @@ def _update_stage0_tree(mountpoint,
     with open(old_config_path, "r", encoding="utf-8") as cfg:
         lines = [
             line for line in cfg
-            if not line.startswith("BUILD_GUIX_ALSO=")
-            and not line.startswith("EXTRA_BUILDS=")
+            if not line.startswith("EXTRA_BUILDS=")
             and not line.startswith("INTERNAL_CI=")
             and not line.startswith(_RESUME_NEXT_SCOPE_VAR + "=")
             and not line.startswith(_RESUME_NEXT_PACKAGE_VAR + "=")
@@ -613,9 +612,6 @@ def main():
     parser.add_argument("--extra-builds",
                         help="Comma-separated extra build namespaces to run after main steps "
                              "(e.g. guix or guix,gentoo,azl3).")
-    parser.add_argument("--build-guix-also",
-                        help=argparse.SUPPRESS,
-                        action="store_true")
     parser.add_argument("--no-create-config",
                         help="Do not automatically create config file",
                         action="store_true")
@@ -658,8 +654,6 @@ def main():
 
     args = parser.parse_args()
     args.extra_builds = parse_extra_builds(args.extra_builds)
-    if args.build_guix_also and "guix" not in args.extra_builds:
-        args.extra_builds.append("guix")
 
     # Mode validation
     def check_types():
@@ -786,7 +780,7 @@ def main():
                               repo_path=args.repo,
                               early_preseed=args.early_preseed,
                               mirrors=args.mirrors,
-                              build_guix_also=("guix" in args.extra_builds))
+                              extra_builds=args.extra_builds)
 
     bootstrap(args, generator, target, args.target_size, cleanup)
     cleanup()

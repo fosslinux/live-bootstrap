@@ -30,24 +30,24 @@ class Generator():
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors,
-                 build_guix_also=False):
+                 extra_builds=None):
         self.arch = arch
         self.early_preseed = early_preseed
         self.external_sources = external_sources
         self.repo_path = repo_path
         self.mirrors = mirrors
-        self.build_guix_also = build_guix_also
+        self.extra_builds = list(extra_builds or [])
         self.pre_network_source_manifest = self.get_source_manifest(
             stop_before_improve="get_network",
-            build_guix_also=False,
+            extra_builds=[],
         )
         self.pre_import_source_manifest = self.get_source_manifest(
             stop_before_improve="import_payload",
-            build_guix_also=False,
+            extra_builds=[],
         )
         # Only raw-external mode needs full upfront availability for container generation.
         if self.external_sources and not self.repo_path:
-            self.source_manifest = self.get_source_manifest(build_guix_also=self.build_guix_also)
+            self.source_manifest = self.get_source_manifest(extra_builds=self.extra_builds)
         else:
             self.source_manifest = self.pre_network_source_manifest
         self.bootstrap_source_manifest = self.source_manifest
@@ -98,7 +98,7 @@ class Generator():
         # carrier for the remaining distfiles.
         self.bootstrap_source_manifest = self.pre_import_source_manifest
 
-        full_manifest = self.get_source_manifest(build_guix_also=self.build_guix_also)
+        full_manifest = self.get_source_manifest(extra_builds=self.extra_builds)
         if self.bootstrap_source_manifest == full_manifest:
             raise ValueError("steps/manifest must include `improve: import_payload` in kernel-bootstrap mode.")
         bootstrap_set = set(self.bootstrap_source_manifest)
@@ -255,13 +255,18 @@ class Generator():
         self.get_packages()
 
         shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.target_dir, 'steps'))
-        if self.build_guix_also:
-            steps_guix_dir = os.path.join(self.git_dir, 'steps-guix')
-            if not os.path.isdir(steps_guix_dir):
-                raise ValueError("steps-guix directory does not exist while --build-guix-also is set.")
-            if not os.path.isfile(os.path.join(steps_guix_dir, 'manifest')):
-                raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
-            shutil.copytree(steps_guix_dir, os.path.join(self.target_dir, 'steps-guix'))
+        for extra_build in self.extra_builds:
+            steps_extra = f"steps-{extra_build}"
+            steps_extra_dir = os.path.join(self.git_dir, steps_extra)
+            if not os.path.isdir(steps_extra_dir):
+                raise ValueError(
+                    f"{steps_extra} directory does not exist while --extra-builds includes {extra_build}."
+                )
+            if not os.path.isfile(os.path.join(steps_extra_dir, 'manifest')):
+                raise ValueError(
+                    f"{steps_extra}/manifest does not exist while --extra-builds includes {extra_build}."
+                )
+            shutil.copytree(steps_extra_dir, os.path.join(self.target_dir, steps_extra))
 
     def stage0_posix(self, kernel_bootstrap=False):
         """Copy in all of the stage0-posix"""
@@ -488,25 +493,27 @@ this script the next time")
             self.check_file(path, line[0])
 
     @classmethod
-    def get_source_manifest(cls, stop_before_improve=None, build_guix_also=False):
+    def get_source_manifest(cls, stop_before_improve=None, extra_builds=None):
         """
         Generate a source manifest for the system.
         """
         entries = []
         directory = os.path.relpath(cls.distfiles_dir, cls.git_dir)
+        extra_builds = list(extra_builds or [])
 
         manifests = [os.path.join(cls.git_dir, 'steps')]
-        if build_guix_also:
-            steps_guix_dir = os.path.join(cls.git_dir, 'steps-guix')
-            if not os.path.isdir(steps_guix_dir):
-                raise ValueError("steps-guix directory does not exist while --build-guix-also is set.")
-            manifests.append(steps_guix_dir)
+        for extra_build in extra_builds:
+            steps_extra = f"steps-{extra_build}"
+            steps_extra_dir = os.path.join(cls.git_dir, steps_extra)
+            if not os.path.isdir(steps_extra_dir):
+                raise ValueError(
+                    f"{steps_extra} directory does not exist while --extra-builds includes {extra_build}."
+                )
+            manifests.append(steps_extra_dir)
 
         for steps_dir in manifests:
             manifest_path = os.path.join(steps_dir, 'manifest')
             if not os.path.isfile(manifest_path):
-                if steps_dir.endswith('steps-guix'):
-                    raise ValueError("steps-guix/manifest does not exist while --build-guix-also is set.")
                 raise ValueError(f"Missing manifest: {manifest_path}")
 
             with open(manifest_path, 'r', encoding="utf_8") as file:

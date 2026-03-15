@@ -122,10 +122,6 @@ EOF
 cat >> /init <<- 'EOF'
 run_extra_builds_if_requested() {
     extra_builds="${EXTRA_BUILDS:-}"
-    # Backward compatibility for older bootstrap.cfg.
-    if [ -z "${extra_builds}" ] && [ "${BUILD_GUIX_ALSO}" = True ]; then
-        extra_builds="guix"
-    fi
     if [ -z "${extra_builds}" ]; then
         return 0
     fi

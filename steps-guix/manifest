@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Guix extension manifest. Runs after main /steps manifest when BUILD_GUIX_ALSO=True.
+# Guix extension manifest. Runs after main /steps manifest when EXTRA_BUILDS includes guix.
 
 # We need a 64-bit kernel to enable Guix to run 64-bit programs.
 # Build 64-bit kernel
