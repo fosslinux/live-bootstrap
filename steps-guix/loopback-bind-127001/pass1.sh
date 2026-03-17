@@ -1,5 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+src_get() { :; }
+src_unpack() {
+    mkdir -p loopback-bind-127001
+}
+
 src_prepare() {
     default
 }
