@@ -282,9 +282,9 @@ ensure_network_ready() {
         return
     fi
 
-    # Resumed QEMU boots (e.g. from stage0-work.img) can lose configured links.
+    # Non-chroot boots can lose configured links (e.g. resumed QEMU stage images).
     # Bring the interface up deterministically before any source download.
-    if [ "${QEMU}" = "True" ] && [ "${CHROOT}" != "True" ]; then
+    if [ "${CHROOT}" != "True" ]; then
         dhcpcd --waitip=4
     fi
 
