@@ -12,6 +12,7 @@ build: musl-obstack-1.2.3
 build: elfutils-0.194
 build: linux-6.12.74
 jump: linux64
+improve: open_console ( INTERACTIVE == True && CHROOT == False )
 improve: finalize_fhs
 improve: get_network
 # Build Guix Dependencies
