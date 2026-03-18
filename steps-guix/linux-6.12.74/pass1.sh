@@ -28,7 +28,7 @@ src_prepare() {
 }
 
 src_configure() {
-    kernel_make defconfig
+    cp config.txt .config
 }
 
 src_compile() {
