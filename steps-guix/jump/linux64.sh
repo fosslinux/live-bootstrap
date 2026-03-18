@@ -21,10 +21,10 @@ sync
 mkdir -p /etc
 if [ "${BARE_METAL}" = True ]; then
     kexec -l "${current_kernel}" \
-        --append="root=/dev/sda1 init=/init rw rootwait"
+        --append="root=/dev/sda1 init=/init rw rootwait consoleblank=0"
 else
     kexec -l "${current_kernel}" --console-serial \
-        --append="console=ttyS0 root=/dev/sda1 init=/init rw rootwait"
+        --append="console=ttyS0 root=/dev/sda1 init=/init rw rootwait consoleblank=0"
 fi
 sync
 echo u > /proc/sysrq-trigger || true
