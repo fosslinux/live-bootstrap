@@ -12,7 +12,7 @@
  #include <unistd.h>  /* for _exit */
  
  #include "libguile/_scm.h"
-@@ -48,7 +51,10 @@
+@@ -48,7 +51,11 @@
  	    "indicating whether the command processor is available.")
  #define FUNC_NAME s_scm_system
  {
@@ -20,17 +20,20 @@
 +  int rv, eno, child_errno = 0;
 +  int status;
 +  int errpipe[2];
++  ssize_t nread;
 +  pid_t pid;
    char *c_cmd;
    
    if (SCM_UNBNDP (cmd))
-@@ -59,11 +65,67 @@
+@@ -59,11 +66,78 @@
    SCM_VALIDATE_STRING (1, cmd);
    errno = 0;
    c_cmd = scm_to_locale_string (cmd);
 -  rv = system (c_cmd);
 -  eno = errno; free (c_cmd); errno = eno;
 -  if (rv == -1 || (rv == 127 && errno != 0))
+-    SCM_SYSERROR;
+-  return scm_from_int (rv);
 +
 +  if (pipe (errpipe) < 0)
 +    {
@@ -70,21 +73,31 @@
 +    }
 +
 +  close (errpipe[1]);
-+  while ((rv = waitpid (pid, &status, 0)) == -1 && errno == EINTR)
-+    ;
-+
-+  while (read (errpipe[0], &child_errno, sizeof (child_errno)) == -1
++  while ((nread = read (errpipe[0], &child_errno, sizeof (child_errno))) == -1
 +         && errno == EINTR)
 +    ;
 +  close (errpipe[0]);
++  if (nread == -1)
++    {
++      eno = errno;
++      free (c_cmd);
++      errno = eno;
++      SCM_SYSERROR;
++    }
++  if (nread != sizeof (child_errno))
++    child_errno = 0;
 +
-+  eno = errno;
-+  free (c_cmd);
-+  errno = eno;
-+
++  while ((rv = waitpid (pid, &status, 0)) == -1 && errno == EINTR)
++    ;
 +  if (rv == -1)
-     SCM_SYSERROR;
--  return scm_from_int (rv);
++    {
++      eno = errno;
++      free (c_cmd);
++      errno = eno;
++      SCM_SYSERROR;
++    }
++
++  free (c_cmd);
 +
 +  if (child_errno != 0)
 +    {
