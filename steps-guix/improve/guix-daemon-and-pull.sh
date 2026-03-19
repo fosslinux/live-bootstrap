@@ -161,11 +161,8 @@ prepare_local_channel_checkout() {
 
     (
         cd "${channel_repo}"
-        patch --dry-run -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
         patch -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
-        patch --dry-run -p1 < "${rendered_patch}"
         patch -p1 < "${rendered_patch}"
-        patch --dry-run -p1 < "${rendered_mes_patch}"
         patch -p1 < "${rendered_mes_patch}"
         git init -q
         git add -A
