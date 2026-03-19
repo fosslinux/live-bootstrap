@@ -10,6 +10,26 @@
 # Set constant umask
 umask 022
 
+resume_network_init() {
+    local cfg_root
+    cfg_root="${1:-/steps}"
+
+    if [ -f "${cfg_root}/bootstrap.cfg" ]; then
+        # shellcheck source=/dev/null
+        . "${cfg_root}/bootstrap.cfg"
+    fi
+    if [ -f "${cfg_root}/env" ]; then
+        # shellcheck source=/dev/null
+        . "${cfg_root}/env"
+    fi
+
+    mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)
+    mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)
+    if [ "${CHROOT}" = False ] && [ "${NETWORK_READY}" = True ] && command -v dhcpcd >/dev/null 2>&1; then
+        dhcpcd --waitip=4 || true
+    fi
+}
+
 # Get a list of files
 get_files() {
     echo "."

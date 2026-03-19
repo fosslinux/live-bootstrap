@@ -529,10 +529,15 @@ void output_call_script(FILE *out, char *type, char *name, int bash_build, int s
 }
 
 void output_resume_network_init(FILE *out) {
-	fputs("mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)\n", out);
-	fputs("mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)\n", out);
-	fputs("if [ \"${CHROOT}\" = False ] && [ \"${NETWORK_READY}\" = True ] && command -v dhcpcd >/dev/null 2>&1; then\n", out);
-	fputs("dhcpcd --waitip=4 || true\n", out);
+	fputs("if [ -f ", out);
+	write_steps_prefix(out);
+	fputs("helpers.sh ]; then\n", out);
+	fputs(". ", out);
+	write_steps_prefix(out);
+	fputs("helpers.sh\n", out);
+	fputs("resume_network_init \"", out);
+	fputs(config_root, out);
+	fputs("\"\n", out);
 	fputs("fi\n", out);
 }
 

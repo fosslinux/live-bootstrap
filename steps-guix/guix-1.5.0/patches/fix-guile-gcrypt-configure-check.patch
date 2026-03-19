@@ -12,17 +12,3 @@
       if test "$retval" = 0; then
         guix_cv_have_recent_guile_gcrypt="yes"
       else
---- guix-1.5.0/configure
-+++ guix-1.5.0/configure
-@@ -8377,8 +8377,9 @@
- else
- 
-   $GUILE -c "(use-modules (gcrypt hash))
--       (equal? (hash-algorithm sha256)
--               (lookup-hash-algorithm 'sha256))" > /dev/null 2>&1
-+       (let ((algorithm (lookup-hash-algorithm 'sha256)))
-+         (and algorithm
-+              (= 32 (hash-size algorithm))))" > /dev/null 2>&1
-   retval=$?
- 
-      if test "$retval" = 0; then
