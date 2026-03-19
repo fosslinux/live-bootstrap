@@ -8,10 +8,6 @@ src_prepare() {
 
     default
 
-    # Merge improve:guix-1.5.0 into build:guix-1.5.0 so manifest order cannot
-    # accidentally influence pass number selection.
-    "${SRCDIR}/improve/guix-1.5.0.sh"
-
     if [ ! -f /tmp/guix-bootstrap-seeds.env ]; then
         echo "Missing /tmp/guix-bootstrap-seeds.env" >&2
         false
