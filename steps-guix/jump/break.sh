@@ -4,11 +4,8 @@
 
 set -e
 
-# Optional in some preseed/testing contexts.
-if [ -f /steps/bootstrap.cfg ]; then
-    # shellcheck disable=SC1091
-    . /steps/bootstrap.cfg
-fi
+# shellcheck disable=SC1091
+. /steps/bootstrap.cfg
 
 # For VM/metal runs, stop immediately so the current disk state can be reused.
 if [ "${CHROOT}" = False ]; then
