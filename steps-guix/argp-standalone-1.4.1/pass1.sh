@@ -33,8 +33,6 @@ src_install() {
     mkdir -p "${DESTDIR}${KERNEL_SYSROOT}/lib"
 
     # noinst_HEADERS/noinst_LIBRARIES: install artifacts explicitly.
-    test -f ../argp.h
-    test -f libargp.a
     install -m644 ../argp.h "${DESTDIR}${KERNEL_SYSROOT}/include/argp.h"
     install -m644 libargp.a "${DESTDIR}${KERNEL_SYSROOT}/lib/libargp.a"
 }
