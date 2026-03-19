@@ -24,6 +24,4 @@ src_compile() {
 src_install() {
     # Keep seed output for bootstrap artifact generation.
     install -D -m 0755 bash "${DESTDIR}${SEED_PREFIX}/bin/bash"
-    # Also provide runtime shell in system prefix for script chaining.
-    install -D -m 0755 bash "${DESTDIR}/usr/bin/bash"
 }
