@@ -462,9 +462,7 @@ FILE *start_script(int id, int bash_build) {
 				fputs("set -eEo pipefail\ntrap 'env PS1=\"[TRAP] \\w # \" bash -i' ERR\n", out);
 			} else {
 				/* FIXME early bash has buggy ERR trap handling */
-				fputs("set -e\ntrap 'bash -c '\"'\"'while true; do printf \""
-				"[TRAP - use Ctrl+D] $(pwd) # \"; eval \"$(cat)\"; done'\"'\"'' EXIT\n",
-				out);
+				fputs("set -e\ntrap 'status=$?; if [ \"${status}\" -ne 0 ]; then env PS1=\"[TRAP] \\w # \" bash -i; fi' EXIT\n", out);
 			}
 		} else {
 			fputs("set -e\n", out);
@@ -531,12 +529,6 @@ void output_call_script(FILE *out, char *type, char *name, int bash_build, int s
 }
 
 void output_resume_network_init(FILE *out) {
-	fputs("if [ -f /steps/bootstrap.cfg ]; then\n", out);
-	fputs(". /steps/bootstrap.cfg\n", out);
-	fputs("fi\n", out);
-	fputs("if [ -f /steps/env ]; then\n", out);
-	fputs(". /steps/env\n", out);
-	fputs("fi\n", out);
 	fputs("mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)\n", out);
 	fputs("mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)\n", out);
 	fputs("if [ \"${CHROOT}\" = False ] && [ \"${NETWORK_READY}\" = True ] && command -v dhcpcd >/dev/null 2>&1; then\n", out);
@@ -544,34 +536,8 @@ void output_resume_network_init(FILE *out) {
 	fputs("fi\n", out);
 }
 
-void output_init_failure_shell(FILE *out) {
-	fputs("status=$?\n", out);
-	fputs("echo \"bootstrap script failed with status ${status}; dropping to rescue shell\" >&2\n", out);
-	fputs("PATH=/bin:/usr/bin:/sbin:/usr/sbin:${PREFIX}/bin:${PATH}\n", out);
-	fputs("while true; do\n", out);
-	fputs("if command -v bash >/dev/null 2>&1; then\n", out);
-	fputs("env PS1=\"[FAIL ${status}] \\\\w # \" bash -i\n", out);
-	fputs("elif command -v sh >/dev/null 2>&1; then\n", out);
-	fputs("env PS1=\"[FAIL ${status}] \\\\w # \" sh -i\n", out);
-	fputs("else\n", out);
-	fputs("echo \"No interactive shell available; sleeping.\" >&2\n", out);
-	fputs("sleep 60\n", out);
-	fputs("fi\n", out);
-	fputs("done\n", out);
-}
-
 void output_init_call_script(FILE *out, char *name, int bash_build) {
-	if (bash_build) {
-		fputs("if ! bash ", out);
-		write_steps_prefix(out);
-		fputs(name, out);
-		fputs(".sh\n", out);
-		fputs("then\n", out);
-		output_init_failure_shell(out);
-		fputs("fi\n", out);
-	} else {
-		output_call_script(out, "", name, bash_build, 0);
-	}
+	output_call_script(out, "", name, bash_build, 0);
 }
 
 void output_build(FILE *out, Directive *directive, int pass_no, int bash_build) {
