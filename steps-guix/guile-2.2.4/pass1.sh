@@ -12,8 +12,6 @@ src_prepare() {
         -e 's|^guile_LDFLAGS =.*$|guile_LDFLAGS = -all-static|' \
         libguile/Makefile.in
 
-    grep -q '^guile_LDADD = libguile-@GUILE_EFFECTIVE_VERSION@.la -ldl$' libguile/Makefile.in
-    grep -q '^guile_LDFLAGS = -all-static$' libguile/Makefile.in
 }
 
 src_configure() {
