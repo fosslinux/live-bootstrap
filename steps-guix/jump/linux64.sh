@@ -7,6 +7,16 @@ new_kernel="/boot/vmlinuz-linux64"
 current_kernel="/boot/vmlinuz"
 backup_kernel="/boot/vmlinuz-32bit.backup"
 
+quiesce_filesystem_for_kexec() {
+    if command -v dhcpcd >/dev/null 2>&1; then
+        dhcpcd -x >/dev/null 2>&1 || true
+    fi
+    sync
+    echo s > /proc/sysrq-trigger || true
+    echo u > /proc/sysrq-trigger || true
+    mount -o remount,ro / || true
+}
+
 if [ ! -f "${new_kernel}" ]; then
     echo "Missing new kernel image: ${new_kernel}" >&2
     exit 1
@@ -26,7 +36,5 @@ else
     kexec -l "${current_kernel}" --console-serial \
         --append="console=ttyS0 root=/dev/sda1 init=/init rw rootwait consoleblank=0"
 fi
-sync
-echo u > /proc/sysrq-trigger || true
-mount -o remount,ro / || true
+quiesce_filesystem_for_kexec
 kexec -e
