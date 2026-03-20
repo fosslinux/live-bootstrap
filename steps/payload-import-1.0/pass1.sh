@@ -1,17 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 #
 # SPDX-FileCopyrightText: 2026 live-bootstrap contributors
 # SPDX-License-Identifier: MIT
 
-set -ex
+src_get() {
+    :
+}
 
-cd src
-gcc -m32 -march=i386 -std=c89 -static -o ${BINDIR}/payload-import payload-import.c
-cd ..
+src_unpack() {
+    dirname=.
+    cp -r ../src .
+}
 
-if match x${UPDATE_CHECKSUMS} xTrue; then
-    sha256sum -o ${pkg}.checksums \
-        /usr/bin/payload-import
+src_compile() {
+    gcc -m32 -march=i386 -std=c89 -static -o payload-import src/payload-import.c
+}
 
-    cp ${pkg}.checksums ${SRCDIR}
-fi
+src_install() {
+    install -D payload-import "${DESTDIR}${BINDIR}/payload-import"
+}
