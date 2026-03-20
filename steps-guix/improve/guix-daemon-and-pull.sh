@@ -194,17 +194,7 @@ if ! have_group guixbuild; then
     groupadd --system guixbuild
 fi
 
-nologin_bin="$(command -v nologin || true)"
-if [ -z "${nologin_bin}" ]; then
-    if [ -x /usr/sbin/nologin ]; then
-        nologin_bin=/usr/sbin/nologin
-    elif [ -x /sbin/nologin ]; then
-        nologin_bin=/sbin/nologin
-    else
-        echo "Could not find nologin binary." >&2
-        exit 1
-    fi
-fi
+nologin_bin="$(command -v nologin)"
 
 i=1
 while [ "${i}" -le 10 ]; do
