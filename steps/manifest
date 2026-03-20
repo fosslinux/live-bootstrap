@@ -40,6 +40,7 @@ define: BUILD_FIWIX = ( KERNEL_BOOTSTRAP == True || BUILD_KERNELS == True )
 build: fiwix-1.5.0-lb1 ( BUILD_FIWIX == True )
 build: lwext4-1.0.0-lb1 ( BUILD_FIWIX == True )
 build: kexec-fiwix-1.0 ( BUILD_FIWIX == True )
+build: payload-import-1.0 ( KERNEL_BOOTSTRAP == True )
 jump: fiwix ( KERNEL_BOOTSTRAP == True )
 improve: reconfigure ( CONFIGURATOR != True )
 define: JOBS = 1 ( KERNEL_BOOTSTRAP == True )
@@ -132,6 +133,7 @@ jump: break ( INTERNAL_CI == pass1 )
 improve: populate_device_nodes
 jump: linux ( CHROOT == False )
 jump: move_disk ( KERNEL_BOOTSTRAP == True )
+improve: import_payload ( KERNEL_BOOTSTRAP == True )
 improve: finalize_job_count
 improve: finalize_fhs
 improve: open_console ( CONSOLES == True )
