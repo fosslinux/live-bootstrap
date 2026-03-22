@@ -6,6 +6,7 @@ src_prepare() {
 
 src_configure() {
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
+    CFLAGS="${CFLAGS:-} -std=gnu89" \
     ./configure \
         --prefix="${PREFIX}" \
         --libdir="${LIBDIR}" \
