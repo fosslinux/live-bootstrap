@@ -5,7 +5,7 @@
                         ;; Dump the environment variables as a shell script,
                         ;; for handy debugging.
 -                       (system "export > $NIX_BUILD_TOP/environment-variables")))
-+                       )))
++                       ))
  
                     (format #t "starting phase `~a'~%" name)
                     (with-throw-handler #t
