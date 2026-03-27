@@ -51,6 +51,7 @@ build: guile-semver-0.2.0
 build: coreutils-8.30
 build: gawk-4.2.1
 build: grep-3.1
+build: sed-4.5
 build: tar-1.30
 build: xz-5.2.4
 build: gzip-1.9

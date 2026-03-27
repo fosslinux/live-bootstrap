@@ -20,6 +20,7 @@ src_compile() {
     cp -a /bootstrap-seeds/grep-3.1/bin/grep "${stage}/bin/"
     cp -a /bootstrap-seeds/grep-3.1/bin/egrep "${stage}/bin/"
     cp -a /bootstrap-seeds/grep-3.1/bin/fgrep "${stage}/bin/"
+    cp -a /bootstrap-seeds/sed-4.5/bin/sed "${stage}/bin/"
     cp -a /bootstrap-seeds/tar-1.30/bin/tar "${stage}/bin/"
     cp -a /bootstrap-seeds/xz-5.2.4/bin/xz "${stage}/bin/"
     cp -a /bootstrap-seeds/gzip-1.9/bin/gzip "${stage}/bin/"
