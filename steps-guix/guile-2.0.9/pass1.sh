@@ -5,6 +5,8 @@ SEED_PREFIX="/bootstrap-seeds/guile-2.0.9"
 src_prepare() {
     default
 
+    AUTOPOINT=true autoreconf -fi
+
     # Match Guix's static bootstrap Guile approach: force the final `guile`
     # executable to be linked through libtool with -all-static.
     sed -i \
