@@ -1,6 +1,6 @@
---- guile-2.2.4/libguile/posix.c
-+++ guile-2.2.4/libguile/posix.c
-@@ -2356,6 +2356,8 @@
+--- guile-2.0.9/libguile/posix.c
++++ guile-2.0.9/libguile/posix.c
+@@ -2254,6 +2254,8 @@
  #endif
  #ifdef WAIT_ANY
    scm_c_define ("WAIT_ANY", scm_from_int (WAIT_ANY));
@@ -9,7 +9,7 @@
  #endif
  #ifdef WAIT_MYPGRP
    scm_c_define ("WAIT_MYPGRP", scm_from_int (WAIT_MYPGRP));
-@@ -2390,21 +2392,33 @@
+@@ -2288,21 +2290,33 @@
  #endif
  #ifdef LC_PAPER
    scm_c_define ("LC_PAPER", scm_from_int (LC_PAPER));

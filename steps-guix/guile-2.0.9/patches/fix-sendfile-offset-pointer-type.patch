@@ -1,7 +1,7 @@
-diff -ru guile-2.2.4/libguile/filesys.c guile-2.2.4/libguile/filesys.c
---- guile-2.2.4/libguile/filesys.c
-+++ guile-2.2.4/libguile/filesys.c
-@@ -1135,7 +1135,7 @@
+diff -ru guile-2.0.9/libguile/filesys.c guile-2.0.9/libguile/filesys.c
+--- guile-2.0.9/libguile/filesys.c
++++ guile-2.0.9/libguile/filesys.c
+@@ -1130,7 +1130,7 @@
  
    ssize_t result SCM_UNUSED;
    size_t c_count, total = 0;

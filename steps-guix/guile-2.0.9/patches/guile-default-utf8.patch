@@ -1,0 +1,122 @@
+This hack makes Guile default to UTF-8.  This avoids calls to
+`iconv_open'; `iconv_open' tries to open shared objects that aren't
+available during bootstrap, so using UTF-8 avoids that (and UTF-8 has
+built-in conversions in glibc, too.)
+
+diff --git a/libguile/bytevectors.c b/libguile/bytevectors.c
+index cf41f2f..facfb91 100644
+--- guile-2.0.9/libguile/bytevectors.c
++++ guile-2.0.9/libguile/bytevectors.c
+@@ -1887,7 +1887,7 @@ utf_encoding_name (char *name, size_t utf_width, SCM endianness)
+   if (scm_i_is_narrow_string (str))                                     \
+     {                                                                   \
+       err = mem_iconveh (scm_i_string_chars (str), c_strlen,            \
+-                         "ISO-8859-1", c_utf_name,                      \
++                         "UTF-8", c_utf_name,                      \
+                          iconveh_question_mark, NULL,                   \
+                          &c_utf, &c_utf_len);                           \
+       if (SCM_UNLIKELY (err))                                           \
+diff --git a/libguile/ports.c b/libguile/ports.c
+index 301bc44..b0ea2e6 100644
+--- guile-2.0.9/libguile/ports.c
++++ guile-2.0.9/libguile/ports.c
+@@ -1750,7 +1750,7 @@ scm_ungetc (scm_t_wchar c, SCM port)
+   if (pt->encoding != NULL)
+     encoding = pt->encoding;
+   else
+-    encoding = "ISO-8859-1";
++    encoding = "UTF-8";
+ 
+   len = sizeof (result_buf);
+   result = u32_conv_to_encoding (encoding,
+@@ -2212,7 +2212,7 @@ scm_i_set_port_encoding_x (SCM port, const char *encoding)
+   pt = SCM_PTAB_ENTRY (port);
+ 
+   if (encoding == NULL)
+-    encoding = "ISO-8859-1";
++    encoding = "UTF-8";
+ 
+   if (pt->encoding != encoding)
+     pt->encoding = scm_gc_strdup (encoding, "port");
+diff --git a/libguile/posix.c b/libguile/posix.c
+index 4f8b8ac..fea7f74 100644
+--- guile-2.0.9/libguile/posix.c
++++ guile-2.0.9/libguile/posix.c
+@@ -1740,7 +1740,7 @@ SCM_DEFINE (scm_setlocale, "setlocale", 1, 1, 0,
+       SCM_SYSERROR;
+     }
+ 
+-  enc = locale_charset ();
++  enc = "UTF-8";
+ 
+   /* Set the default encoding for new ports.  */
+   scm_i_set_default_port_encoding (enc);
+diff --git a/libguile/script.c b/libguile/script.c
+index 83daf8a..083891e 100644
+--- guile-2.0.9/libguile/script.c
++++ guile-2.0.9/libguile/script.c
+@@ -387,7 +387,7 @@ locale_arguments_to_string_list (int argc, char **const argv)
+   SCM lst;
+   const char *encoding;
+ 
+-  encoding = environ_locale_charset ();
++  encoding = "UTF-8";
+   for (i = argc - 1, lst = SCM_EOL;
+        i >= 0;
+        i--)
+diff --git a/libguile/strings.c b/libguile/strings.c
+index 5d0db23..8266247 100644
+--- guile-2.0.9/libguile/strings.c
++++ guile-2.0.9/libguile/strings.c
+@@ -1576,7 +1576,7 @@ scm_from_locale_string (const char *str)
+ SCM
+ scm_from_locale_stringn (const char *str, size_t len)
+ {
+-  return scm_from_stringn (str, len, locale_charset (),
++  return scm_from_stringn (str, len, "UTF-8",
+                            scm_i_default_port_conversion_handler ());
+ }
+ 
+@@ -1803,7 +1803,7 @@ char *
+ scm_to_locale_stringn (SCM str, size_t *lenp)
+ {
+   return scm_to_stringn (str, lenp,
+-                         locale_charset (),
++                         "UTF-8",
+                          scm_i_default_port_conversion_handler ());
+ }
+ 
+@@ -2054,7 +2054,7 @@ scm_to_stringn (SCM str, size_t *lenp, const char *encoding,
+                         "string contains #\\nul character: ~S",
+                         scm_list_1 (str));
+ 
+-  if (scm_i_is_narrow_string (str) && (encoding == NULL))
++  if (scm_i_is_narrow_string (str))
+     {
+       /* If using native Latin-1 encoding, just copy the string
+          contents.  */
+@@ -2079,11 +2079,11 @@ scm_to_stringn (SCM str, size_t *lenp, const char *encoding,
+   len = 0;
+   enc = encoding;
+   if (enc == NULL)
+-    enc = "ISO-8859-1";
++    enc = "UTF-8";
+   if (scm_i_is_narrow_string (str))
+     {
+       ret = mem_iconveh (scm_i_string_chars (str), ilen,
+-                         "ISO-8859-1", enc,
++                         "UTF-8", enc,
+                          (enum iconv_ilseq_handler) handler, NULL,
+                          &buf, &len);
+ 
+--- guile-2.0.9/libguile/ports.c	2013-08-21 11:08:50.000000000 +0200
++++ guile-2.0.9/libguile/ports.c	2013-08-21 11:09:47.000000000 +0200
+@@ -2512,7 +2512,7 @@ scm_i_port_iconv_descriptors (SCM port,
+       const char *precise_encoding;
+ 
+       if (!pt->encoding)
+-        pt->encoding = "ISO-8859-1";
++        pt->encoding = "UTF-8";
+ 
+       /* If the specified encoding is UTF-16 or UTF-32, then make
+          that more precise by deciding what byte order to use. */

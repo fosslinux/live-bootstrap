@@ -41,7 +41,7 @@
                      "/20210725/guile-3.0.2.tar.xz")
                     (_
 -                    "/20131110/guile-2.0.9.tar.xz"))))
-+                    "/guile-static-stripped-2.2.4-i686-linux.tar.xz"))))
++                    "/guile-static-stripped-2.0.9-i686-linux.tar.xz"))))
  
  (define (bootstrap-guile-hash system)
    "Return the SHA256 hash of the Guile bootstrap tarball for SYSTEM."
@@ -55,31 +55,9 @@
      ("mips64el-linux"
       (base32 "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr"))
      ("armhf-linux"
-@@ -458,8 +455,8 @@
-               (lambda (p)
-                 (format p "\
- #!~a
--export GUILE_SYSTEM_PATH=~a/share/guile/2.0
--export GUILE_SYSTEM_COMPILED_PATH=~a/lib/guile/2.0/ccache
-+export GUILE_SYSTEM_PATH=~a/share/guile/2.2
-+export GUILE_SYSTEM_COMPILED_PATH=~a/lib/guile/2.2/ccache
- exec -a \"~a0\" ~a \"~a@\"\n"
-                         bash out out dollar guile-real dollar)))
-             (chmod guile   #o555)
-@@ -480,8 +477,8 @@
- ~a -dc < $GUILE_TARBALL | ~a xv
- 
- # Use the bootstrap guile to create its own wrapper to set the load path.
--GUILE_SYSTEM_PATH=$out/share/guile/2.0 \
--GUILE_SYSTEM_COMPILED_PATH=$out/lib/guile/2.0/ccache \
-+GUILE_SYSTEM_PATH=$out/share/guile/2.2 \
-+GUILE_SYSTEM_COMPILED_PATH=$out/lib/guile/2.2/ccache \
- $out/bin/guile -c ~s $out ~a
- 
- # Sanity check.
 @@ -625,16 +622,16 @@
-                                             ("riscv64-linux"
-                                              "/20210725/static-binaries.tar.xz")
+                                            ("riscv64-linux"
+                                             "/20210725/static-binaries.tar.xz")
                                              (_
 -                                             "/20131110/static-binaries.tar.xz")))
 +                                             "/static-binaries-0-i686-linux.tar.xz")))

@@ -59,11 +59,11 @@ build: bzip2-1.0.6
 build: patch-2.7.6
 build: bash-5.3-1
 build: static-binaries-0-i686-linux
-# Build guile-static-stripped-2.2.4-i686-linux.tar.xz
+# Build guile-static-stripped-2.0.9-i686-linux.tar.xz
 build: libunistring-1.4.1-guix
 build: gc-8.2.12-guix
 build: libffi-3.5.2-guix
-build: guile-2.2.4
+build: guile-2.0.9
 # Build mes-minimal-stripped-0.19-i686-linux.tar.xz
 build: mes-minimal-stripped-0.19-i686-linux
 # Build mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz

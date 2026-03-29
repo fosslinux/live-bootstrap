@@ -1,18 +1,18 @@
---- guile-2.2.4/libguile/simpos.c
-+++ guile-2.2.4/libguile/simpos.c
-@@ -24,7 +24,10 @@
+--- guile-2.0.9/libguile/simpos.c
++++ guile-2.0.9/libguile/simpos.c
+@@ -24,9 +24,11 @@
  #endif
  
  #include <errno.h>
--#include <stdlib.h>  /* for getenv, system, exit, free */
 +#include <fcntl.h>
-+#include <stdlib.h>  /* for getenv, exit, free */
+ #include <signal.h>  /* for SIG constants */
+ #include <stdlib.h>  /* for getenv */
+ #include <stdio.h>
 +#include <sys/types.h>
-+#include <sys/wait.h>
- #include <unistd.h>  /* for _exit */
  
  #include "libguile/_scm.h"
-@@ -48,7 +51,11 @@
+ 
+@@ -66,7 +68,11 @@
  	    "indicating whether the command processor is available.")
  #define FUNC_NAME s_scm_system
  {
@@ -25,7 +25,7 @@
    char *c_cmd;
    
    if (SCM_UNBNDP (cmd))
-@@ -59,11 +66,78 @@
+@@ -77,11 +83,79 @@
    SCM_VALIDATE_STRING (1, cmd);
    errno = 0;
    c_cmd = scm_to_locale_string (cmd);
@@ -34,10 +34,11 @@
 -  if (rv == -1 || (rv == 127 && errno != 0))
 -    SCM_SYSERROR;
 -  return scm_from_int (rv);
-+
 +  if (pipe (errpipe) < 0)
 +    {
-+      eno = errno; free (c_cmd); errno = eno;
++      eno = errno;
++      free (c_cmd);
++      errno = eno;
 +      SCM_SYSERROR;
 +    }
 +
