@@ -139,6 +139,8 @@ src_configure() {
     probe_guile_module zlib
     probe_guile_module lzlib
     probe_guile_module semver
+    
+    export GC_RETRY_SIGNALS=0
 
     PATH="${PREFIX}/bin:/usr/bin:/bin" \
     PKG_CONFIG="/usr/bin/pkg-config" \
