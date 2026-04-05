@@ -11,7 +11,6 @@ src_prepare() {
 }
 
 src_configure() {
-    CFLAGS="${CFLAGS:-} -std=gnu89" \
     ./configure \
         --prefix="${SEED_PREFIX}" \
         --disable-shared \
