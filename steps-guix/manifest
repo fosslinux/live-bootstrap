@@ -59,6 +59,9 @@ build: bzip2-1.0.6
 build: patch-2.7.6
 build: bash-5.3-1
 build: static-binaries-0-i686-linux
+# Build legacy xz seed, then export bootstrap-exec-xz-i686-linux
+build: xz-5.0.6
+improve: bootstrap-exec-xz-i686-linux
 # Build guile-static-stripped-2.0.9-i686-linux.tar.xz
 build: libunistring-1.4.1-guix
 build: gc-8.2.12-guix
