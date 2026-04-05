@@ -33,9 +33,6 @@ src_compile() {
 
     seed_make_repro_tar_xz "${stage}" "${dist}/static-binaries-0-i686-linux.tar.xz"
 
-    seed_install_exec "${stage}/bin/bash" "${dist}/bootstrap-exec-bash-i686-linux"
-    seed_install_exec "${stage}/bin/mkdir" "${dist}/bootstrap-exec-mkdir-i686-linux"
-    seed_install_exec "${stage}/bin/tar" "${dist}/bootstrap-exec-tar-i686-linux"
 }
 
 src_install() {
