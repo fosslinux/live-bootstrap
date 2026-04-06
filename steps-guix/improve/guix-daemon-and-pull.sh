@@ -123,6 +123,7 @@ prepare_local_channel_checkout() {
     rendered_patch="/tmp/guix-bootstrap-local-seeds.patch"
     rendered_mes_patch="/tmp/guix-bootstrap-local-mes-extra.patch"
     static_patch=""
+    channel_patch_link=""
 
     if [ ! -x "${guix_seed_helper}" ]; then
         echo "Missing Guix seed helper: ${guix_seed_helper}" >&2
@@ -161,12 +162,17 @@ prepare_local_channel_checkout() {
     fi
 
     (
-        cd "${src_dir}"
+        channel_patch_link="$(dirname "${channel_repo}")/guix-1.5.0"
+        trap 'rm -f "${channel_patch_link}"' EXIT HUP INT TERM
+
+        ln -s "$(basename "${channel_repo}")" "${channel_patch_link}"
+        cd "${channel_repo}"
         for static_patch in "${guix_patch_dir}"/*.patch; do
             patch -d.. -Np0 < "${static_patch}"
         done
         patch -p1 < "${rendered_patch}"
         patch -p1 < "${rendered_mes_patch}"
+        rm -f "${channel_patch_link}"
         git init -q
         git add -A
         git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel snapshot'
@@ -266,9 +272,9 @@ if [ -z "${src_dir}" ]; then
     exit 1
 fi
 
-prepare_local_channel_checkout
-
 mv "${src_dir}" "${channel_repo}"
+
+prepare_local_channel_checkout
 
 channel_commit="$(git -C "${channel_repo}" rev-parse HEAD)"
 channel_branch="$(git -C "${channel_repo}" symbolic-ref --quiet --short HEAD)"
