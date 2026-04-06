@@ -221,6 +221,7 @@ done
 if [ ! -S "${daemon_socket}" ]; then
     guix-daemon \
         --build-users-group=guixbuild \
+        --no-substitutes \
         --listen="${daemon_socket}" \
         >/tmp/guix-daemon.log 2>&1 &
 fi
