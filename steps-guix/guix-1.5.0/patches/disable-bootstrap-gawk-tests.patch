@@ -1,0 +1,13 @@
+--- guix-1.5.0/gnu/packages/commencement.scm
++++ guix-1.5.0/gnu/packages/commencement.scm
+@@ -3571,6 +3571,10 @@
+                    ("patch" ,patch/pinned)
+                    ("findutils" ,findutils)
+                    ("gawk" ,(package/inherit gawk
++                              (arguments
++                               (substitute-keyword-arguments
++                                   (package-arguments gawk)
++                                 ((#:tests? _ #f) #f)))
+                               (native-inputs
+                                (list (if (target-hurd?)
+                                          glibc-utf8-locales-final/hurd
