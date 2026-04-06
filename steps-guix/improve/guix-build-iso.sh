@@ -22,6 +22,7 @@ mkdir -p "${out_dir}"
 iso_store_path="$(guix system image \
     --system=x86_64-linux \
     -t iso9660 \
+    -c "${JOBS}" \
     -e '(@@ (gnu system install) installation-os)' \
     --no-substitutes \
     --disable-authentication)"
