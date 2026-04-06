@@ -122,6 +122,7 @@ verify_terminal_devices() {
 prepare_local_channel_checkout() {
     rendered_patch="/tmp/guix-bootstrap-local-seeds.patch"
     rendered_mes_patch="/tmp/guix-bootstrap-local-mes-extra.patch"
+    static_patch=""
 
     if [ ! -x "${guix_seed_helper}" ]; then
         echo "Missing Guix seed helper: ${guix_seed_helper}" >&2
@@ -160,8 +161,10 @@ prepare_local_channel_checkout() {
     fi
 
     (
-        cd "${channel_repo}"
-        patch -p1 < "${guix_patch_dir}/enforce-local-bootstrap-binaries-except-linux-headers.patch"
+        cd "${src_dir}"
+        for static_patch in "${guix_patch_dir}"/*.patch; do
+            patch -d.. -Np0 < "${static_patch}"
+        done
         patch -p1 < "${rendered_patch}"
         patch -p1 < "${rendered_mes_patch}"
         git init -q
@@ -263,9 +266,9 @@ if [ -z "${src_dir}" ]; then
     exit 1
 fi
 
-mv "${src_dir}" "${channel_repo}"
-
 prepare_local_channel_checkout
+
+mv "${src_dir}" "${channel_repo}"
 
 channel_commit="$(git -C "${channel_repo}" rev-parse HEAD)"
 channel_branch="$(git -C "${channel_repo}" symbolic-ref --quiet --short HEAD)"
