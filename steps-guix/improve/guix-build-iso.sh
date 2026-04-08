@@ -5,11 +5,14 @@ set -e
 
 . /steps/bootstrap.cfg
 . /steps/env
+. /steps-guix/improve/local-distfiles-http.sh
 
 guix_localstate_dir="/var/guix"
 daemon_socket="${guix_localstate_dir}/daemon-socket/socket"
 out_dir="/external/guix-images"
 export GUIX_DAEMON_SOCKET="${daemon_socket}"
+
+trap stop_distfiles_http_server EXIT INT TERM HUP
 
 if [ ! -S "${daemon_socket}" ]; then
     echo "guix-daemon socket is missing: ${daemon_socket}" >&2
@@ -24,6 +27,7 @@ test -d /usr/share/guile/site/3.0/gnu/installer/aux-files || \
     cp -r /var/lib/guix/local-channels/guix/gnu/installer/aux-files \
         /usr/share/guile/site/3.0/gnu/installer/
 
+start_distfiles_http_server
 guix system image \
     --system=x86_64-linux \
     -t iso9660 \
