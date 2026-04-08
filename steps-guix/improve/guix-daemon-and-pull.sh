@@ -320,4 +320,4 @@ if ! guile -c '(use-modules (gnutls)) (if (module-variable (resolve-module (quot
 fi
 
 start_distfiles_http_server
-guix pull --bootstrap -c "${JOBS}" --no-substitutes --channels="${channels_file}" --disable-authentication
+guix pull --system=x86_64-linux --bootstrap -c "${JOBS}" --no-substitutes --channels="${channels_file}" --disable-authentication

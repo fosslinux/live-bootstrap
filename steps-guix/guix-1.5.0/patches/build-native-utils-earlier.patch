@@ -16,7 +16,7 @@ index 852fa2d..2dfb6a3 100644
 +    (name name)
 +    (source (bootstrap-origin (package-source pkg)))
 +    (native-inputs (inputs))
-+    (supported-systems '("i686-linux"))
++    (supported-systems '("i686-linux" "x86_64-linux"))
 +    (inputs '())
 +    (propagated-inputs '())
      (arguments

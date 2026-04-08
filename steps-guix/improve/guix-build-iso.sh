@@ -20,6 +20,9 @@ fi
 mkdir -p "${out_dir}"
 
 cp /var/guix/profiles/per-user/root/current-guix/manifest /usr/manifest
+test -d /usr/share/guile/site/3.0/gnu/installer/aux-files || \
+    cp -r /var/lib/guix/local-channels/guix/gnu/installer/aux-files \
+        /usr/share/guile/site/3.0/gnu/installer/
 
 guix system image \
     --system=x86_64-linux \
