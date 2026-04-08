@@ -173,6 +173,24 @@ prepare_local_channel_checkout() {
         patch -p1 < "${rendered_patch}"
         patch -p1 < "${rendered_mes_patch}"
         rm -f "${channel_patch_link}"
+        # TODO: Expand this cleanup to cover the full pregenerated-file set
+        # before snapshotting the local channel checkout.
+        rm -f doc/os-config*
+        rm -f doc/*.??*.*
+        rm -f doc/version*.texi
+        rm -f doc/stamp*
+        rm -f doc/*.1
+        rm -f doc/*.info
+        rm -f doc/guix.info*
+        rm -f \
+            doc/images/*.eps \
+            doc/images/*.pdf \
+            doc/images/bootstrap-*.png \
+            doc/images/coreutils-bag-graph.png \
+            doc/images/coreutils-graph.png \
+            doc/images/gcc-core-mesboot0-graph.png \
+            doc/images/service-graph.png \
+            doc/images/shepherd-graph.png
         git init -q
         git add -A
         git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel snapshot'
