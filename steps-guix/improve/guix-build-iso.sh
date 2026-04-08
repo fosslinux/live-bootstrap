@@ -19,6 +19,8 @@ fi
 
 mkdir -p "${out_dir}"
 
+cp /var/guix/profiles/per-user/root/current-guix/manifest /usr/manifest
+
 iso_store_path="$(guix system image \
     --system=x86_64-linux \
     -t iso9660 \
