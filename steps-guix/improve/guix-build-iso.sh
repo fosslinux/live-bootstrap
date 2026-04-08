@@ -26,8 +26,7 @@ iso_store_path="$(guix system image \
     -t iso9660 \
     -c "${JOBS}" \
     -e '(@@ (gnu system install) installation-os)' \
-    --no-substitutes \
-    --disable-authentication)"
+    --no-substitutes)"
 
 if [ ! -e "${iso_store_path}" ]; then
     echo "guix system image did not return a valid path: ${iso_store_path}" >&2
