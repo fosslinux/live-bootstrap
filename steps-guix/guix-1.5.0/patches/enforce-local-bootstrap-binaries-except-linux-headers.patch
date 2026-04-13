@@ -23,7 +23,18 @@
  (define (bootstrap-guile-url-path system)
    "Return the URI for FILE."
    (string-append "/" system
-@@ -684,7 +689,7 @@
+@@ -387,6 +392,10 @@
+                     "/20210106/guile-static-stripped-2.0.14-powerpc64le-linux-gnu.tar.xz")
+                    ("riscv64-linux"
+                     "/20210725/guile-3.0.2.tar.xz")
++                   ("x86_64-linux"
++                    "/guile-static-stripped-2.0.9-x86_64-linux.tar.xz")
++                   ("i686-linux"
++                    "/guile-static-stripped-2.0.9-i686-linux.tar.xz")
+                    (_
+                     "/20131110/guile-2.0.9.tar.xz"))))
+ 
+@@ -684,7 +693,7 @@
         (uri (map (cute string-append <>
                         "/i686-linux/20190815/"
                         "linux-libre-headers-stripped-4.14.67-i686-linux.tar.xz")
