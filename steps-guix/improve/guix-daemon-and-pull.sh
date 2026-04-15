@@ -34,6 +34,41 @@ export GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}"
 
 trap stop_distfiles_http_server EXIT INT TERM HUP
 
+hash_git_checkout_as_guix() {
+    repo="$1"
+    commit="$2"
+    tmp_checkout="$(mktemp -d /tmp/guix-source-hash.XXXXXX)"
+    hash=""
+
+    if ! git -C "${tmp_checkout}" init --initial-branch=main >/dev/null 2>&1; then
+        rm -rf "${tmp_checkout}"
+        return 1
+    fi
+    if ! git -C "${tmp_checkout}" remote add origin "${repo}"; then
+        rm -rf "${tmp_checkout}"
+        return 1
+    fi
+    if ! git -C "${tmp_checkout}" fetch --depth 1 -- origin "${commit}" >/dev/null 2>&1; then
+        if ! git -C "${tmp_checkout}" fetch -- origin "${commit}" >/dev/null 2>&1; then
+            rm -rf "${tmp_checkout}"
+            return 1
+        fi
+    fi
+    if ! git -C "${tmp_checkout}" checkout --quiet FETCH_HEAD; then
+        rm -rf "${tmp_checkout}"
+        return 1
+    fi
+
+    rm -rf "${tmp_checkout}/.git"
+    if ! hash="$(/usr/bin/guix-hash-compat -r "${tmp_checkout}")"; then
+        rm -rf "${tmp_checkout}"
+        return 1
+    fi
+
+    rm -rf "${tmp_checkout}"
+    printf '%s\n' "${hash}"
+}
+
 have_group() {
     if command -v getent >/dev/null 2>&1; then
         getent group "$1" >/dev/null 2>&1
@@ -70,8 +105,13 @@ verify_terminal_devices() {
 prepare_local_channel_checkout() {
     rendered_patch="/tmp/guix-bootstrap-local-seeds.patch"
     rendered_mes_patch="/tmp/guix-bootstrap-local-mes-extra.patch"
+    self_source_patch_template="${guix_patch_dir}/use-local-self-source.patch.in"
+    rendered_self_source_patch="/tmp/guix-use-local-self-source.patch"
     static_patch=""
     channel_patch_link=""
+    base_commit=""
+    base_hash=""
+    channel_url=""
 
     if [ ! -x "${guix_seed_helper}" ]; then
         echo "Missing Guix seed helper: ${guix_seed_helper}" >&2
@@ -79,6 +119,10 @@ prepare_local_channel_checkout() {
     fi
     if [ ! -d "${guix_patch_dir}" ]; then
         echo "Missing Guix patch directory: ${guix_patch_dir}" >&2
+        exit 1
+    fi
+    if [ ! -f "${self_source_patch_template}" ]; then
+        echo "Missing Guix self-source patch template: ${self_source_patch_template}" >&2
         exit 1
     fi
 
@@ -141,6 +185,28 @@ prepare_local_channel_checkout() {
             doc/images/service-graph.png \
             doc/images/shepherd-graph.png
         git init -q
+        git add -A
+        # Commit the bootstrap-patched tree first, then hash that exact checkout
+        # as Guix would fetch it.  The follow-up self-source patch points the
+        # final channel snapshot back to this base commit to avoid a hash cycle.
+        git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel base snapshot'
+
+        base_commit="$(git rev-parse HEAD)"
+        channel_url="file://${channel_repo}"
+        base_hash="$(hash_git_checkout_as_guix "${channel_repo}" "${base_commit}")"
+
+        sed \
+            -e "s|@LOCAL_GUIX_CHECKOUT_URL@|${channel_url}|g" \
+            -e "s|@LOCAL_GUIX_CHECKOUT_COMMIT@|${base_commit}|g" \
+            -e "s|@LOCAL_GUIX_CHECKOUT_HASH@|${base_hash}|g" \
+            "${self_source_patch_template}" > "${rendered_self_source_patch}"
+
+        if grep -Eq '@[A-Z0-9_]+@' "${rendered_self_source_patch}"; then
+            echo "Unexpanded placeholder found while rendering Guix self-source patch." >&2
+            exit 1
+        fi
+
+        patch -p1 < "${rendered_self_source_patch}"
         git add -A
         git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel snapshot'
     )
