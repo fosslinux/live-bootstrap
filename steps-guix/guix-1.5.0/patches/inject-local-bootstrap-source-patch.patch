@@ -1,0 +1,135 @@
+diff --git guix-1.5.0/gnu/packages/package-management.scm guix-1.5.0/gnu/packages/package-management.scm
+index 21a9217..d1c8a62 100644
+--- guix-1.5.0/gnu/packages/package-management.scm
++++ guix-1.5.0/gnu/packages/package-management.scm
+@@ -155,6 +155,7 @@
+   #:autoload   (guix channels) (channel?
+                                 guix-channel?
+                                 repository->guix-channel)
++  #:autoload   (guix base32) (bytevector->nix-base32-string)
+   #:use-module ((guix licenses) #:prefix license:)
+   #:use-module (guix packages)
+   #:use-module (guix utils)
+@@ -177,6 +178,112 @@
+          (string-append "http://alpha.gnu.org/gnu/guix/bootstrap/"
+                         arch "-linux"
+                         "/20131110/guile-2.0.9.tar.xz"))))
++
++(define %local-bootstrap-base-url
++  "http://127.0.0.1:38445")
++
++(define (origin-base32-string origin)
++  (bytevector->nix-base32-string
++   (content-hash-value (origin-hash origin))))
++
++(define (origin-uri-string origin)
++  (match (origin-uri origin)
++    ((head . _) head)
++    (uri uri)))
++
++(define (local-bootstrap-uri-path origin)
++  (let* ((uri (origin-uri-string origin))
++         (base-length (string-length %local-bootstrap-base-url)))
++    (if (and (<= base-length (string-length uri))
++             (string=? %local-bootstrap-base-url
++                       (substring uri 0 base-length)))
++        (substring uri base-length)
++        uri)))
++
++(define %guix-local-bootstrap-source-patch
++  (plain-file
++   "guix-local-bootstrap-source.patch"
++   (format #f "\
++diff --git a/gnu/packages/bootstrap.scm b/gnu/packages/bootstrap.scm
++--- a/gnu/packages/bootstrap.scm
+++++ b/gnu/packages/bootstrap.scm
++@@ -164,15 +164,12 @@
++ (define %bootstrap-executable-base-urls
++   ;; This is where the bootstrap executables come from.
++-  '(\"https://ftpmirror.gnu.org/guix/bootstrap/\"
++-    \"https://git.savannah.gnu.org/cgit/guix.git/plain/gnu/packages/bootstrap/\"
++-    \"https://alpha.gnu.org/gnu/guix/bootstrap/\"
++-    \"http://flashner.co.il/guix/bootstrap/\"
++-    \"http://lilypond.org/janneke/guix/\"))
+++  '(\"~a/\"))
++ 
++ (define (bootstrap-executable-file-name system program)
++   \"Return the FILE-NAME part of url where PROGRAM can be found for SYSTEM.\"
++   (match system
+++    (\"i686-linux\" (string-append \"i686-linux/bootstrap-exec-\" program \"-i686-linux\"))
++     (\"powerpc64le-linux\" (string-append system \"/20210106/\" program))
++     (\"i586-gnu\" (string-append system \"/20200326/\" program))
++     (\"x86_64-gnu\" (string-append system \"/20241122/\" program))
++@@ -357,8 +354,9 @@
++-(define %bootstrap-base-urls
++-  ;; This is where the initial binaries come from.
+++(define %bootstrap-linux-headers-base-urls
+++  ;; Keep linux headers as an explicit exception: text headers can still come
+++  ;; from the historical bootstrap mirrors.
++   '(\"https://ftpmirror.gnu.org/guix/bootstrap/\"
++     \"https://ftp.gnu.org/gnu/guix/bootstrap\"
++     \"https://alpha.gnu.org/gnu/guix/bootstrap\"
++@@ -369,6 +367,10 @@
++     \"http://flashner.co.il/guix/bootstrap\"
++     \"http://lilypond.org/janneke/guix/\"))
++ 
+++(define %bootstrap-base-urls
+++  ;; All bootstrap binaries must come from the local bootstrap mirror.
+++  '(\"~a\"))
+++
++ (define (bootstrap-guile-url-path system)
++   \"Return the URI for FILE.\"
++   (string-append \"/\" system
++@@ -387,6 +389,10 @@
++                    \"/20210106/guile-static-stripped-2.0.14-powerpc64le-linux-gnu.tar.xz\")
++                    (\"riscv64-linux\"
++                     \"/20210725/guile-3.0.2.tar.xz\")
+++                   (\"x86_64-linux\"
+++                    \"~a\")
+++                   (\"i686-linux\"
+++                    \"~a\")
++                    (_
++                     \"/20131110/guile-2.0.9.tar.xz\"))))
++ 
++@@ -395,9 +401,9 @@
++   (match system
++     (\"x86_64-linux\"
++-     (base32 \"1w2p5zyrglzzniqgvyn1b55vprfzhgk8vzbzkkbdgl5248si0yq3\"))
+++     (base32 \"~a\"))
++     (\"i686-linux\"
++-     (base32 \"0im800m30abgh7msh331pcbjvb4n02smz5cfzf1srv0kpx3csmxp\"))
+++     (base32 \"~a\"))
++     (\"mips64el-linux\"
++      (base32 \"0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr\"))
++     (\"armhf-linux\"
++@@ -684,7 +690,7 @@
++        (uri (map (cute string-append <>
++                        \"/i686-linux/20190815/\"
++                        \"linux-libre-headers-stripped-4.14.67-i686-linux.tar.xz\")
++-                 %bootstrap-base-urls))
+++                 %bootstrap-linux-headers-base-urls))
++        (sha256
++         (base32
++          \"0sm2z9x4wk45bh6qfs94p0w1d6hsy6dqx9sw38qsqbvxwa1qzk8s\"))))
++"
++           %local-bootstrap-base-url
++           %local-bootstrap-base-url
++           (local-bootstrap-uri-path
++            (bootstrap-guile-origin "x86_64-linux"))
++           (local-bootstrap-uri-path
++            (bootstrap-guile-origin "i686-linux"))
++           (origin-base32-string (bootstrap-guile-origin "x86_64-linux"))
++           (origin-base32-string (bootstrap-guile-origin "i686-linux")))))
+ 
+ ;; NOTE: The commit IDs used here form a linked list threaded through the git
+ ;; history. In a phenomenon known as boot-stripping, not only the head of this
+@@ -214,7 +282,8 @@
+                 (sha256
+                  (base32
+                   "0z1ixlkzsaj978nh57179871xkzbf8zsf10xkcfs2647iznkx7az"))
+-                (file-name (string-append "guix-" version "-checkout"))))
++                (file-name (string-append "guix-" version "-checkout"))
++                (patches (list %guix-local-bootstrap-source-patch))))
+       (build-system gnu-build-system)
+       (arguments
+        `(;; For reproducibility, see <https://issues.guix.gnu.org/74204>.
