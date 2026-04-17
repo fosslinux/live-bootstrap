@@ -111,7 +111,7 @@ prepare_local_channel_checkout() {
     channel_patch_link=""
     base_commit=""
     base_hash=""
-    channel_url=""
+    checkout_path=""
 
     if [ ! -x "${guix_seed_helper}" ]; then
         echo "Missing Guix seed helper: ${guix_seed_helper}" >&2
@@ -192,11 +192,13 @@ prepare_local_channel_checkout() {
         git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel base snapshot'
 
         base_commit="$(git rev-parse HEAD)"
-        channel_url="file://${channel_repo}"
+        # 'git-fetch' accepts a local repository path here, but rejects
+        # 'file://' URLs through 'guix perform-download'.
+        checkout_path="${channel_repo}"
         base_hash="$(hash_git_checkout_as_guix "${channel_repo}" "${base_commit}")"
 
         sed \
-            -e "s|@LOCAL_GUIX_CHECKOUT_URL@|${channel_url}|g" \
+            -e "s|@LOCAL_GUIX_CHECKOUT_PATH@|${checkout_path}|g" \
             -e "s|@LOCAL_GUIX_CHECKOUT_COMMIT@|${base_commit}|g" \
             -e "s|@LOCAL_GUIX_CHECKOUT_HASH@|${base_hash}|g" \
             "${self_source_patch_template}" > "${rendered_self_source_patch}"

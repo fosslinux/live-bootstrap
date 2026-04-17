@@ -6,7 +6,7 @@
                  (uri (git-reference
 -                      (url "https://git.guix.gnu.org/guix.git")
 -                      (commit commit)))
-+                      (url "@LOCAL_GUIX_CHECKOUT_URL@")
++                      (url "@LOCAL_GUIX_CHECKOUT_PATH@")
 +                      (commit "@LOCAL_GUIX_CHECKOUT_COMMIT@")))
                  (sha256
                   (base32
