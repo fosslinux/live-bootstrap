@@ -11,6 +11,7 @@ guix_localstate_dir="/var/guix"
 daemon_socket="${guix_localstate_dir}/daemon-socket/socket"
 channel_root="/var/lib/guix/local-channels"
 channel_repo="${channel_root}/guix"
+base_snapshot_dir="${channel_root}/guix-base-snapshot"
 channel_work="/tmp/guix-local-channel-work"
 channels_file="/root/.config/guix/channels.scm"
 guix_seed_helper="/steps-guix/improve/guix-1.5.0.sh"
@@ -33,41 +34,6 @@ export GUILE_EXTENSIONS_PATH="${guile_ext_path}"
 export GNUTLS_GUILE_EXTENSION_DIR="${guile_ext_path}"
 
 trap stop_distfiles_http_server EXIT INT TERM HUP
-
-hash_git_checkout_as_guix() {
-    repo="$1"
-    commit="$2"
-    tmp_checkout="$(mktemp -d /tmp/guix-source-hash.XXXXXX)"
-    hash=""
-
-    if ! git -C "${tmp_checkout}" init --initial-branch=main >/dev/null 2>&1; then
-        rm -rf "${tmp_checkout}"
-        return 1
-    fi
-    if ! git -C "${tmp_checkout}" remote add origin "${repo}"; then
-        rm -rf "${tmp_checkout}"
-        return 1
-    fi
-    if ! git -C "${tmp_checkout}" fetch --depth 1 -- origin "${commit}" >/dev/null 2>&1; then
-        if ! git -C "${tmp_checkout}" fetch -- origin "${commit}" >/dev/null 2>&1; then
-            rm -rf "${tmp_checkout}"
-            return 1
-        fi
-    fi
-    if ! git -C "${tmp_checkout}" checkout --quiet FETCH_HEAD; then
-        rm -rf "${tmp_checkout}"
-        return 1
-    fi
-
-    rm -rf "${tmp_checkout}/.git"
-    if ! hash="$(/usr/bin/guix-hash-compat -r "${tmp_checkout}")"; then
-        rm -rf "${tmp_checkout}"
-        return 1
-    fi
-
-    rm -rf "${tmp_checkout}"
-    printf '%s\n' "${hash}"
-}
 
 have_group() {
     if command -v getent >/dev/null 2>&1; then
@@ -109,8 +75,6 @@ prepare_local_channel_checkout() {
     rendered_self_source_patch="/tmp/guix-use-local-self-source.patch"
     static_patch=""
     channel_patch_link=""
-    base_commit=""
-    base_hash=""
     checkout_path=""
 
     if [ ! -x "${guix_seed_helper}" ]; then
@@ -186,29 +150,40 @@ prepare_local_channel_checkout() {
             doc/images/shepherd-graph.png
         git init -q
         git add -A
-        # Commit the bootstrap-patched tree first, then hash that exact checkout
-        # as Guix would fetch it.  The follow-up self-source patch points the
-        # final channel snapshot back to this base commit to avoid a hash cycle.
+        # Commit the bootstrap-patched tree first, then export that exact tree
+        # to a separate directory.  The follow-up self-source patch points the
+        # final channel snapshot at that exported base snapshot to avoid a
+        # self-reference cycle.
         git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel base snapshot'
 
-        base_commit="$(git rev-parse HEAD)"
-        # 'git-fetch' accepts a local repository path here, but rejects
-        # 'file://' URLs through 'guix perform-download'.
-        checkout_path="${channel_repo}"
-        base_hash="$(hash_git_checkout_as_guix "${channel_repo}" "${base_commit}")"
+        rm -rf "${base_snapshot_dir}"
+        mkdir -p "${base_snapshot_dir}"
+        cp -a "${channel_repo}/." "${base_snapshot_dir}/"
+        rm -rf "${base_snapshot_dir}/.git"
+        checkout_path="${base_snapshot_dir}"
 
         sed \
             -e "s|@LOCAL_GUIX_CHECKOUT_PATH@|${checkout_path}|g" \
-            -e "s|@LOCAL_GUIX_CHECKOUT_COMMIT@|${base_commit}|g" \
-            -e "s|@LOCAL_GUIX_CHECKOUT_HASH@|${base_hash}|g" \
             "${self_source_patch_template}" > "${rendered_self_source_patch}"
 
         if grep -Eq '@[A-Z0-9_]+@' "${rendered_self_source_patch}"; then
             echo "Unexpanded placeholder found while rendering Guix self-source patch." >&2
             exit 1
         fi
+        if grep -F 'file://' "${rendered_self_source_patch}" >/dev/null 2>&1; then
+            echo "Rendered Guix self-source patch still contains a file:// URL." >&2
+            exit 1
+        fi
+        if ! grep -F "local-file \"${checkout_path}\"" "${rendered_self_source_patch}" >/dev/null 2>&1; then
+            echo "Rendered Guix self-source patch does not point at the expected local snapshot path." >&2
+            exit 1
+        fi
 
         patch -p1 < "${rendered_self_source_patch}"
+        if ! grep -F "local-file \"${checkout_path}\"" gnu/packages/package-management.scm >/dev/null 2>&1; then
+            echo "Applied Guix self-source patch did not update package-management.scm to the expected local snapshot path." >&2
+            exit 1
+        fi
         git add -A
         git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel snapshot'
     )
@@ -288,7 +263,7 @@ if [ -z "${src_tar}" ]; then
     exit 1
 fi
 
-rm -rf "${channel_work}" "${channel_repo}"
+rm -rf "${channel_work}" "${channel_repo}" "${base_snapshot_dir}"
 mkdir -p "${channel_work}" "${channel_root}"
 
 case "${src_tar}" in
