@@ -1,6 +1,6 @@
 --- a/gnu/packages/package-management.scm
 +++ b/gnu/packages/package-management.scm
-@@ -211,11 +211,8 @@
+@@ -211,11 +211,4 @@
 -      (source (origin
 -                (method git-fetch)
 -                (uri (git-reference
