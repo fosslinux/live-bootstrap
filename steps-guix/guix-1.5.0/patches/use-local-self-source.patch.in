@@ -1,6 +1,6 @@
 --- a/gnu/packages/package-management.scm
 +++ b/gnu/packages/package-management.scm
-@@ -211,11 +211,4 @@
+@@ -211,11 +211,8 @@
 -      (source (origin
 -                (method git-fetch)
 -                (uri (git-reference
@@ -10,7 +10,11 @@
 -                 (base32
 -                  "0z1ixlkzsaj978nh57179871xkzbf8zsf10xkcfs2647iznkx7az"))
 -                (file-name (string-append "guix-" version "-checkout"))))
-+      (source (local-file "@LOCAL_GUIX_CHECKOUT_PATH@"
-+                          #:recursive? #t))
++      (source (origin
++                (method url-fetch)
++                (uri "@LOCAL_GUIX_SOURCE_URL@")
++                (sha256
++                 (base32
++                  "@LOCAL_GUIX_SOURCE_HASH@"))))
        (build-system gnu-build-system)
        (arguments

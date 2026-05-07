@@ -13,6 +13,7 @@ channel_root="/var/lib/guix/local-channels"
 channel_repo="${channel_root}/guix"
 base_snapshot_dir="${channel_root}/guix-base-snapshot"
 channel_work="/tmp/guix-local-channel-work"
+local_guix_source_tarball="guix-1.5.0-local-source.tar.xz"
 channels_file="/root/.config/guix/channels.scm"
 guix_seed_helper="/steps-guix/improve/guix-1.5.0.sh"
 guix_patch_dir="/steps-guix/guix-1.5.0/patches"
@@ -68,14 +69,40 @@ verify_terminal_devices() {
     have_tty_device
 }
 
+reset_tree_timestamps() {
+    find "$1" -print0 | xargs -0 touch -h -t 197001010000.00
+}
+
+make_repro_source_tar_xz() {
+    src_dir="$1"
+    out_file="$2"
+    tmp_tar="$(mktemp /tmp/guix-source-tarball.XXXXXX.tar)"
+
+    mkdir -p "$(dirname "${out_file}")"
+
+    reset_tree_timestamps "${src_dir}"
+    (
+        cd "$(dirname "${src_dir}")"
+        tar --sort=name --hard-dereference \
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw \
+            -cf "${tmp_tar}" "$(basename "${src_dir}")"
+    )
+    touch -t 197001010000.00 "${tmp_tar}"
+    xz -T1 -c "${tmp_tar}" > "${out_file}"
+    touch -t 197001010000.00 "${out_file}"
+    rm -f "${tmp_tar}"
+}
+
 prepare_local_channel_checkout() {
     rendered_patch="/tmp/guix-bootstrap-local-seeds.patch"
     rendered_mes_patch="/tmp/guix-bootstrap-local-mes-extra.patch"
     self_source_patch_template="${guix_patch_dir}/use-local-self-source.patch.in"
     rendered_self_source_patch="/tmp/guix-use-local-self-source.patch"
+    local_guix_source_path="${distfiles}/${local_guix_source_tarball}"
+    local_guix_source_url="${distfiles_http_base_url}/${local_guix_source_tarball}"
+    local_guix_source_hash=""
     static_patch=""
     channel_patch_link=""
-    checkout_path=""
 
     if [ ! -x "${guix_seed_helper}" ]; then
         echo "Missing Guix seed helper: ${guix_seed_helper}" >&2
@@ -150,38 +177,41 @@ prepare_local_channel_checkout() {
             doc/images/shepherd-graph.png
         git init -q
         git add -A
-        # Commit the bootstrap-patched tree first, then export that exact tree
-        # to a separate directory.  The follow-up self-source patch points the
-        # final channel snapshot at that exported base snapshot to avoid a
-        # self-reference cycle.
+        # Commit the bootstrap-patched tree first, then package that exact tree.
+        # The follow-up self-source patch points the final channel snapshot at
+        # this source tarball to avoid a self-reference cycle.
         git -c user.name='guix-local' -c user.email='guix-local@example.invalid' commit -q -m 'local guix channel base snapshot'
 
         rm -rf "${base_snapshot_dir}"
         mkdir -p "${base_snapshot_dir}"
         cp -a "${channel_repo}/." "${base_snapshot_dir}/"
         rm -rf "${base_snapshot_dir}/.git"
-        checkout_path="${base_snapshot_dir}"
+        make_repro_source_tar_xz "${base_snapshot_dir}" "${local_guix_source_path}"
+        local_guix_source_hash="$(/usr/bin/guix-hash-compat "${local_guix_source_path}")"
 
         sed \
-            -e "s|@LOCAL_GUIX_CHECKOUT_PATH@|${checkout_path}|g" \
+            -e "s|@LOCAL_GUIX_SOURCE_URL@|${local_guix_source_url}|g" \
+            -e "s|@LOCAL_GUIX_SOURCE_HASH@|${local_guix_source_hash}|g" \
             "${self_source_patch_template}" > "${rendered_self_source_patch}"
 
         if grep -Eq '@[A-Z0-9_]+@' "${rendered_self_source_patch}"; then
             echo "Unexpanded placeholder found while rendering Guix self-source patch." >&2
             exit 1
         fi
-        if grep -F 'file://' "${rendered_self_source_patch}" >/dev/null 2>&1; then
-            echo "Rendered Guix self-source patch still contains a file:// URL." >&2
+        if ! grep -F "${local_guix_source_url}" "${rendered_self_source_patch}" >/dev/null 2>&1; then
+            echo "Rendered Guix self-source patch does not point at the expected local source URL." >&2
             exit 1
         fi
-        if ! grep -F "local-file \"${checkout_path}\"" "${rendered_self_source_patch}" >/dev/null 2>&1; then
-            echo "Rendered Guix self-source patch does not point at the expected local snapshot path." >&2
+        if ! grep -F "base32" "${rendered_self_source_patch}" >/dev/null 2>&1 ||
+           ! grep -F "${local_guix_source_hash}" "${rendered_self_source_patch}" >/dev/null 2>&1; then
+            echo "Rendered Guix self-source patch does not include the expected local source hash." >&2
             exit 1
         fi
 
         patch -p1 < "${rendered_self_source_patch}"
-        if ! grep -F "local-file \"${checkout_path}\"" gnu/packages/package-management.scm >/dev/null 2>&1; then
-            echo "Applied Guix self-source patch did not update package-management.scm to the expected local snapshot path." >&2
+        if ! grep -F "uri \"${local_guix_source_url}\"" gnu/packages/package-management.scm >/dev/null 2>&1 ||
+           ! grep -F "${local_guix_source_hash}" gnu/packages/package-management.scm >/dev/null 2>&1; then
+            echo "Applied Guix self-source patch did not update package-management.scm to the expected local source." >&2
             exit 1
         fi
         git add -A
