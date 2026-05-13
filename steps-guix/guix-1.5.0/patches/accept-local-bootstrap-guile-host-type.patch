@@ -5,14 +5,14 @@
      x86_64)
  	# On x86_64, we should be able to create a 32-bit environment.
 +	# This bootstrap uses the locally built muslx32 Guile seed for the
-+	# i686-linux bootstrap input, so %host-type reports the seed's actual
++	# i686-linux and x86_64-linux bootstrap input, so %host-type reports the seed's actual
 +	# ABI instead of upstream Guix's historical i686 bootstrap triplet.
  	guix environment --bootstrap --ad-hoc guile-bootstrap --pure	\
  	     -- guile -c '(exit (string-prefix? "x86_64" %host-type))'
  	guix environment --bootstrap --ad-hoc guile-bootstrap --pure	\
  	     -s i686-linux						\
 -	     -- guile -c '(exit (string-prefix? "i686" %host-type))'
-+	     -- guile -c '(exit (string=? "x86_64-pc-linux-muslx32" %host-type))'
++	     -- guile -c '(exit (string-prefix? "x86_64" %host-type))'
  	;;
      *)
  	echo "nothing to do" >&2
