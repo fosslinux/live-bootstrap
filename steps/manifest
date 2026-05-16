@@ -216,7 +216,7 @@ build: libunistring-1.4.1
 build: gc-8.2.12
 build: guile-3.0.11
 build: which-2.23
-build: grep-3.7
+build: grep-3.12
 build: sed-4.8
 build: autogen-5.18.16
 jump: break ( INTERNAL_CI == pass1 ) # scripts are generated in pass1

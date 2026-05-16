@@ -1381,8 +1381,8 @@ which 2.21
 bash built-in ``command -v`` but some scripts call ``which`` instead.
 In particular, ``autogen`` scripts use it.
 
-grep 3.7
-========
+grep 3.12
+=========
 
 Newer ``grep`` will be needed to bootstrap ``autogen``.
 
