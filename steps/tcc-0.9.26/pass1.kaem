@@ -15,7 +15,7 @@ MES_SOURCE=${MES_PREFIX}
 MES=${BINDIR}/mes-m2
 
 TCC_TAR=tcc-0.9.26
-TCC_PKG=tcc-0.9.26-1147-gee75a10c
+TCC_PKG=tcc-0.9.26-1157-gdd46e018
 
 # Check tarball checksums
 checksum-transcriber sources
