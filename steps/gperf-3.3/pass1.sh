@@ -8,7 +8,7 @@ src_prepare() {
     rm doc/gperf.{1,dvi,info,pdf,ps} doc/*.html
     touch doc/gperf.info doc/gperf.pdf
 
-    # Useless tests things
+    # Useless test things
     rm tests/*.exp tests/{languages,charsets}.gperf tests/lang-ucs2.in
 
     # Remove date from manpage

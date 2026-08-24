@@ -6,7 +6,7 @@ Revert "diagnostics: translate bison's own tokens"
 
 This reverts commit 2cc361387c9790b387d205f5d862f493c148e424.
 
-This format is not suppported by Bison 3.4.
+This format is not supported by Bison 3.4.
 ---
  src/parse-gram.y | 71 ++++++++++++++++++++++++++----------------------
  1 file changed, 39 insertions(+), 32 deletions(-)

@@ -5,7 +5,7 @@ SPDX-FileCopyrightText: 2021 Samuel Tyler <samuel@samuelt.me>
 SPDX-License-Identifier: BSD-2-Clause
 
 yyin has an odd redefinition error in scan.l, so we ensure that we don't
-acidentally re-declare it.
+accidentally re-declare it.
 
 diff --git flexdef.h flexdef.h
 index 3eb710a..94ef024 100644

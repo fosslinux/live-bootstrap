@@ -2,7 +2,7 @@ SPDX-FileCopyrightText: 2021 Samuel Tyler <samuel@samuelt.me>
 
 SPDX-License-Identifier: LGPL-2.0-or-later
 
-static linking is the only typing of linking mes libc supports, so default to
+static linking is the only type of linking mes libc supports, so default to
 it.
 
 --- tcc-0.9.27/libtcc.c	2021-01-14 08:25:30.774995301 +1100

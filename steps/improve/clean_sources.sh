@@ -29,7 +29,7 @@ for source in "${DISTFILES}/"*; do
     source_name="$(basename "${source}")"
     for keep_source in ${keep_sources}; do
         if [ "${keep_source}" = "${source_name}" ]; then
-            # Countinue the outer loop to skip deletion
+            # Continue the outer loop to skip deletion
             continue 2
         fi
     done

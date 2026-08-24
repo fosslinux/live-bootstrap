@@ -35,7 +35,7 @@ src_install() {
     mkdir -p "${DESTDIR}${PREFIX}/bin"
     ln -s ../lib/ld-musl-i386.so.1 "${DESTDIR}${PREFIX}/bin/ldd"
 
-    # Add library search path configurtion
+    # Add library search path configuration
     mkdir -p "${DESTDIR}/etc"
     cp ld-musl-i386.path "${DESTDIR}/etc"
 }
