@@ -145,7 +145,7 @@ src_prepare() {
     done
     # Because GCC is stupid, copy depcomp back in
     cp "${PREFIX}/share/automake-1.15/depcomp" .
-    # A odd script
+    # An odd script
     pushd gcc/m2/gm2-libs
     autoconf-2.69 -f config-host.in > config-host
     popd

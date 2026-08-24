@@ -13,7 +13,7 @@ src_unpack() {
 }
 
 generate_autoconf_h() {
-    # generate include/linux/autoconf.h -- we do not have gperf rn to do it the normal way
+    # generate include/linux/autoconf.h -- we do not have gperf yet to do it the normal way
     mkdir -p include/generated
     # Transform each of the CONFIG_* options that are =y into header
     grep -E '=y$' .config | sed 's/=y$/ 1/' | sed 's/^/#define /' >> include/generated/autoconf.h
