@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 src_get() {
-    # Before the last pass the tar file is moved before
-    # the linux build removes all distfiles to save space.
+    # Before the last pass, the tar file is moved into ${DISTFILES};
+    # this must happen because the linux build removes all distfiles
+    # to save space.
     if [ -e "../${pkg}.tar.gz" ]; then
         mkdir "${DISTFILES}"
         mv "../${pkg}.tar.gz" "${DISTFILES}"
