@@ -494,7 +494,7 @@ void generate_preseed_jump(int id) {
 
 void generate(Directive *directives) {
 	/*
-	 * We are separating the stages given in the mainfest into a bunch of
+	 * We are separating the stages given in the manifest into a bunch of
 	 * smaller scripts. The following conditions call for the creation of
 	 * a new script:
 	 * - a jump

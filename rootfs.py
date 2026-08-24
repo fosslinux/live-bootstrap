@@ -3,7 +3,7 @@
 A helper application used to start bootstrapping process.
 It has a few modes of operation, you can create initramfs with
 binary seeds and sources that you can boot into or alternatively
-you can run bootstap inside chroot.
+you can run bootstrap inside chroot.
 """
 
 # SPDX-License-Identifier: GPL-3.0-or-later
