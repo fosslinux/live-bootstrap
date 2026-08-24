@@ -38,7 +38,7 @@ src_compile() {
     cp -ar build/autogen-5.18.16 build/tarball
     cd build/tarball
 
-    # These files does not respect MAN_PAGE_DATE
+    # These files do not respect MAN_PAGE_DATE
     sed -i "s/+%Y/+1970/; s/%m/01/; s/%d'/01'/; s/%Y/2018/" autoopts/aoconf.tpl
     sed -i 's/%Y/2018/' autoopts/options_h.tpl
 

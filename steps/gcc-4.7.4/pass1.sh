@@ -216,7 +216,7 @@ src_install() {
     ln -s gcc "${DESTDIR}${PREFIX}/bin/cc"
     cp gcc/gsyslimits.h "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.7.4/include/syslimits.h"
 
-    # Very strange mis-versoning error
+    # Very strange mis-versioning error
     mkdir -p "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.7.4/include/"
     mv "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/include/"* "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.7.4/include/"
     rmdir "${DESTDIR}${LIBDIR}/gcc/${TARGET}/4.0.4/include"
