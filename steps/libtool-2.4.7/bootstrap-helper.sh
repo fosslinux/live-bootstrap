@@ -6,7 +6,7 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-EXIT_FALURE=1
+EXIT_FAILURE=1
 
 #######################################
 #  Extracted from the output of:      #

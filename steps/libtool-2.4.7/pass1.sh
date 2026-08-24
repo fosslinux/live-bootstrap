@@ -43,7 +43,7 @@ src_install() {
     make install MAKEINFO=true DESTDIR="${DESTDIR}"
 
     sed -i -e "s/{EGREP=.*/{EGREP='egrep'}/" \
-        -e "s/{FGREP=.*/{FREGP='fgrep'}/" \
+        -e "s/{FGREP=.*/{FGREP='fgrep'}/" \
         -e "s/{GREP=.*/{GREP='grep'}/" \
         -e "s/{SED=.*/{SED='sed'}/" \
         "${DESTDIR}/usr/bin/libtool"
