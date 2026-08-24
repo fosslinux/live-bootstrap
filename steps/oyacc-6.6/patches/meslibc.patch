@@ -5,7 +5,7 @@ SPDX-License-Identifier: BSD-3-Clause
 * paths.h does not exist, hardcode /tmp
 * mkstemp does not exist, replace with mktemp
 * getopt.h needs explicit inclusion
-* sig_atomic_t is undefineed
+* sig_atomic_t is undefined
 
 --- oyacc-6.6/main.c	2025-02-05 14:14:48.552829130 +1100
 +++ oyacc-6.6/main.c	2025-02-05 14:20:05.025828293 +1100
