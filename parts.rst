@@ -69,7 +69,7 @@ This is the last program that has to be written in ``hex0`` language. ``hex1`` i
     :a #:loop_options
         39D3            ; cmp_ebx,edx                 # Check if we are done
         0F84 %b         ; je %loop_options_done       # We are done
-        83EB 02         ; sub_rbx, !2                 # --options
+        83EB 02         ; sub_ebx, !2                 # --options
 
 hex2
 ====
@@ -150,7 +150,7 @@ mescc-tools-extra
 =================
 
 ``mescc-tools-extra`` contains some additional programs, namely filesystem
-utilities ``cp`` and ``chown``. This allows us to have one unified
+utilities ``cp`` and ``chmod``. This allows us to have one unified
 directory for our binaries. Furthermore, we also build ``sha256sum``, a
 checksumming tool, that we use to ensure reproducibility and authenticity
 of generated binaries. We also build initial ``untar``, ``ungz``, ``unxz``
@@ -354,9 +354,8 @@ setup_repo
 ==========
 
 This is a simple script that sets up the ``/external/repo`` directory to hold
-binary tarballs of artifacts built in each step. It also creates ``base.tar.bz2``,
-a tarball containing every artifact built before ``setup_repo``, which have no
-individual repository tarballs corresponding to them.
+binary tarballs of artifacts built in each step. Artifacts built before
+``setup_repo`` have no individual repository tarballs corresponding to them.
 
 From this point on, every package is built and installed into a temporary
 directory, packaged from there into a repository tarball, and then installed
@@ -410,7 +409,8 @@ We also get rid of a few functions from ``musl``, as they rely on pregenerated
 files we are unable to generate at this stage.
 
 We do not use any of ``/usr/lib/mes`` or ``/usr/include/mes`` any longer, rather
-using ``/usr/lib`` and ``/usr/include`` like normal.
+using ``/usr/include`` and the target-specific
+``/usr/lib/i686-unknown-linux-musl``.
 
 tcc 0.9.27 (musl)
 =================
@@ -518,8 +518,8 @@ coreutils 5.0
 =============
 
 ``coreutils`` is rebuilt against musl. Additional utilities are built
-including ``comm``, ``expr``, ``dd``, ``sort``, ``sync``, ``uname`` and
-``uniq``. This fixes a variety of issues with existing ``coreutils``.
+including ``chroot``, ``comm``, ``dd``, ``env``, ``stat``, ``sync`` and
+``uname``. This fixes a variety of issues with existing ``coreutils``.
 
 coreutils 6.10
 ==============
@@ -772,6 +772,14 @@ util-linux 2.19.1
 This gives us access to a much less crippled version of ``mount`` and ``mknod``.
 The latest version is not used because of autotools/GCC incompatibilities.
 
+e2fsprogs 1.45.7
+================
+
+``e2fsprogs`` contains utilities for creating and maintaining ext2/3/4
+filesystems, most notably ``mkfs.ext4`` and ``e2fsck``. In the kernel
+bootstrap path, ``mkfs.ext4`` is used to create an ext4 filesystem on the
+target disk when the bootstrap moves itself onto a real disk partition.
+
 dhcpcd 10.0.1
 =============
 
@@ -806,7 +814,8 @@ to rebuild some Linux kernel headers.
 kexec-linux
 ===========
 
-If the kernel bootstrap option is enabled then a C program ``kexec-linux`` is compiled.
+If a Linux kernel is going to be built (in any non-chroot mode, or when
+``--build-kernels`` is used) then a C program ``kexec-linux`` is compiled.
 This can be used to launch a Linux kernel from Fiwix (when not using ``--kernel``).
 
 kexec-tools 2.0.22
@@ -814,9 +823,10 @@ kexec-tools 2.0.22
 
 ``kexec`` is a utility for the Linux kernel that allows the re-execution of the
 Linux kernel without a manual restart from within a running system. It is a
-kind of soft-restart. It is only built for non-chroot mode, as we only use it
-in non-chroot mode. It is used to boot the Linux kernel that will be built next
-from the current Linux kernel (when using ``--kernel``).
+kind of soft-restart. It is only built when the Linux kernel is built, i.e.
+in non-chroot mode or when ``--build-kernels`` is given. It is used to boot the
+Linux kernel that will be built next from the current Linux kernel (when using
+``--kernel``).
 
 clean_sources
 =============
@@ -924,8 +934,8 @@ open_console
 ============
 
 Now that we have a proper interactive shell available, open another interactive
-console (only in interactive mode), this time accessible using Ctrl+Shift+F3, since
-Ctrl+Shift+F2 is already occupied by our previous console, running the old Bash.
+console (only in interactive mode), this time accessible using Ctrl+Alt+F3, since
+Ctrl+Alt+F2 is already occupied by our previous console, running the old Bash.
 
 xz 5.4.1
 ========
@@ -1013,7 +1023,7 @@ bison 2.3
 
 This is an older version of bison required for the bison files in older perls.
 We backwards-bootstrap this from 3.4.1, using 3.4.1 to compile the bison files
-in 2.3. This parser works sufficiently well for perl 5.10.1.
+in 2.3. This parser works sufficiently well for perls 5.12.5 through 5.30.3.
 
 zlib 1.3.1
 ==========
@@ -1101,7 +1111,7 @@ so we postponed it until a sufficient version of perl was built.
 bison 3.6.4
 ===========
 
-With autoconf 2.71, we can build a newer version of Bison that is also less
+We can now build a newer version of Bison that is also less
 buggy than the bootstrapped version. This is the newest version that can
 (without very complicated patching) be built by Bison 3.4.
 
@@ -1250,6 +1260,13 @@ GNU Gettext is an internationalization and localization system used for writing
 multilingual programs. Now that we have Python 2.3 and gperf, we can regenerate
 all the pregenerated files in Gettext and so build it.
 
+perl-Text-CSV 2.06
+==================
+
+Text::CSV is a Perl module for reading and writing CSV files. The texinfo
+build uses it to regenerate the list of document languages from ISO
+language and country code data, so it must be installed first.
+
 texinfo 7.2
 ===========
 
@@ -1257,7 +1274,7 @@ Texinfo is a typesetting syntax used for generating documentation. We can now us
 ``makeinfo`` script to convert ``.texi`` files into ``.info`` documentation format.
 
 libffi 3.5.2
-===========
+============
 
 The libffi library provides a portable, high level programming interface to various
 calling conventions.
@@ -1374,7 +1391,7 @@ We use ``guile-psyntax-bootstrapping`` project on Guile 3.0.7 to bootstrap
 Guile's ``psyntax.pp`` without relying on pre-expanded code. This is then
 transplanted into Guile 3.0.11.
 
-which 2.21
+which 2.23
 ==========
 
 ``which`` shows the full path of (shell) commands. It mostly duplicates
@@ -1446,6 +1463,22 @@ to ensure the compiler is suitable for downstream consumption;
   really be handled by the libc, which is what most distributions do.
 * LTO now fully functions correctly, despite both the linker and the compiler
   being static binaries.
+
+grub 2.06
+=========
+
+GRUB is the bootloader used by most GNU/Linux systems. It is built whenever
+the Linux kernel is, and provides ``grub-install`` and ``grub-probe``, which
+are used in the next step to make the resulting disk bootable on its own.
+
+make_bootable
+=============
+
+In non-chroot mode, installs GRUB into the boot record of the bootstrap
+disk and writes a GRUB configuration that boots the freshly built Linux
+kernel. An ``/init`` script is also created, so that after the bootstrap
+the disk remains a self-contained bootable system with an interactive
+shell.
 
 libmd 1.1.0
 ===========
