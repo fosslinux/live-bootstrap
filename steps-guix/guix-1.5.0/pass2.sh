@@ -8,6 +8,10 @@ src_prepare() {
 
     default
 
+    # gzip rejects an epoch-zero input timestamp; keep the source tree
+    # reproducible while using the first representable Unix timestamp.
+    find . -print0 | xargs -0 touch -h -t 197001010000.01
+
     if [ ! -f /tmp/guix-bootstrap-seeds.env ]; then
         echo "Missing /tmp/guix-bootstrap-seeds.env" >&2
         false
