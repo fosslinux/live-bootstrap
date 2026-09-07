@@ -12,7 +12,7 @@ class SimpleMirror(socketserver.TCPServer):
     """Simple HTTP mirror from a directory"""
     def __init__(self, directory: str):
         self.directory = directory
-        super().__init__(("localhost", 0), self._handler)
+        super().__init__(("0.0.0.0", 0), self._handler)
 
     @property
     def port(self):

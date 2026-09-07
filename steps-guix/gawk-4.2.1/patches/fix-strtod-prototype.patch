@@ -1,0 +1,14 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Drop obsolete K&R-style strtod declaration in node.c.
+
+--- gawk-4.2.1/node.c
++++ gawk-4.2.1/node.c
+@@ -62,7 +62,6 @@ r_force_number(NODE *n)
+ 	char *cpend;
+ 	char save;
+ 	char *ptr;
+-	extern double strtod();
+ 
+ 	if ((n->flags & NUMCUR) != 0)
+ 		return n;

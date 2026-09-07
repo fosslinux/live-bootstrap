@@ -19,6 +19,7 @@ export SOURCE_DATE_EPOCH=0
 export KBUILD_BUILD_TIMESTAMP='@0'
 export SHELL=/usr/bin/bash
 DESTDIR=/tmp/destdir
+NETWORK_READY=False
 EOF
 
 # The following values are set up in the kaem environment.

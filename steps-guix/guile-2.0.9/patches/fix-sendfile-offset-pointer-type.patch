@@ -1,0 +1,12 @@
+diff -ru guile-2.0.9/libguile/filesys.c guile-2.0.9/libguile/filesys.c
+--- guile-2.0.9/libguile/filesys.c
++++ guile-2.0.9/libguile/filesys.c
+@@ -1130,7 +1130,7 @@
+ 
+   ssize_t result SCM_UNUSED;
+   size_t c_count, total = 0;
+-  scm_t_off c_offset;
++  off_t c_offset;
+   int in_fd, out_fd;
+ 
+   VALIDATE_FD_OR_PORT (out_fd, out, 1);

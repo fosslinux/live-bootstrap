@@ -186,7 +186,8 @@ do_file() {
     esac            
 }
 
-for src in steps/*/sources; do
+for src in steps/*/sources steps-*/*/sources; do
+    [ -f "${src}" ] || continue
     while read -r line; do
         # shellcheck disable=SC2086
         do_file ${line}

@@ -1,0 +1,15 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Use execvp("sh", ...) in xexec so tar works when /bin/sh is absent.
+
+--- tar-1.30/src/system.c
++++ tar-1.30/src/system.c
+@@ -34,7 +34,7 @@
+   argv[2] = (char *) cmd;
+   argv[3] = NULL;
+ 
+-  execv ("/bin/sh", argv);
++  execvp ("sh", argv);
+   exec_fatal (cmd);
+ }
+ 

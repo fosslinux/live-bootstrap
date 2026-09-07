@@ -1,0 +1,32 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Avoid requiring scm_gc_register_allocation to be exported from the
+main Guile executable. Static Guile builds in this bootstrap do not
+provide that symbol to dynamic-func, so fall back to a no-op.
+
+--- guile-lzlib/lzlib.scm
++++ guile-lzlib/lzlib.scm
+@@ -56,10 +56,15 @@
+ (define %liblz-handle
+   (delay (dynamic-link %liblz)))
+ 
+-(define register-allocation
+-  ;; Let the GC know that an unmanaged heap allocation took place.
+-  (pointer->procedure void
+-                      (dynamic-func "scm_gc_register_allocation"
+-                                    (dynamic-link))
+-                      (list size_t)))
++(define register-allocation
++  ;; Let the GC know that an unmanaged heap allocation took place.
++  ;; Static Guile builds may not export this symbol from the main program.
++  (match (false-if-exception
++          (dynamic-func "scm_gc_register_allocation"
++                        (dynamic-link)))
++    ((? pointer? proc)
++     (pointer->procedure void proc (list size_t)))
++    (#f
++     (lambda (_size)
++       #t))))
+ 
+ (define (lzlib-procedure ret name parameters)
+   "Return a procedure corresponding to C function NAME in liblz, or #f if

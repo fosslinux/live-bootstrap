@@ -1,0 +1,24 @@
+--- guix-1.5.0/tests/channels.scm
++++ guix-1.5.0/tests/channels.scm
+@@ -499,6 +499,9 @@
+                     (list commit1)))))))
+ 
++;; This bootstrap disables channel authentication by default, so the missing
++;; introduction no longer raises the error this upstream test expects.
++(test-skip 1)
+ (test-assert "latest-channel-instances, missing introduction for 'guix'"
+   (with-temporary-git-repository directory
+       '((add "a.txt" "A")
+         (commit "first commit")
+--- guix-1.5.0/tests/graph.scm
++++ guix-1.5.0/tests/graph.scm
+@@ -186,6 +186,9 @@
+                           implicit)))))))
+ 
++;; This bootstrap replaces Guix's historical bootstrap binaries with local
++;; seed packages, so the upstream %bootstrap-inputs graph assumption is false.
++(test-skip 1)
+ (test-assert "bag DAG"                            ;a big town in Iraq
+   (let-values (((backend nodes+edges) (make-recording-backend)))
+     (let ((p (dummy-package "p")))
+       (run-with-store %store

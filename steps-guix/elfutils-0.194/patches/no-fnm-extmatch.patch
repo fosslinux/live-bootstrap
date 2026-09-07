@@ -1,0 +1,39 @@
+--- elfutils-0.194/src/strip.c
++++ elfutils-0.194/src/strip.c
+@@ -26,6 +26,10 @@
+ #include <endian.h>
+ #include <fcntl.h>
+ #include <fnmatch.h>
++#ifndef FNM_EXTMATCH
++#define FNM_EXTMATCH 0
++#endif
++
+ #include <gelf.h>
+ #include <libelf.h>
+ #include <locale.h>
+--- elfutils-0.194/src/elfcompress.c
++++ elfutils-0.194/src/elfcompress.c
+@@ -26,6 +26,10 @@
+ #include <locale.h>
+ #include <fcntl.h>
+ #include <fnmatch.h>
++#ifndef FNM_EXTMATCH
++#define FNM_EXTMATCH 0
++#endif
++
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
+--- elfutils-0.194/debuginfod/debuginfod-client.c
++++ elfutils-0.194/debuginfod/debuginfod-client.c
+@@ -106,6 +106,10 @@
+ #include <stdio.h>
+ #include <dwarf.h>
+ #include <fnmatch.h>
++#ifndef FNM_EXTMATCH
++#define FNM_EXTMATCH 0
++#endif
++
+ #include <json-c/json.h>
+ #include <stdlib.h>
+ #include <unistd.h>

@@ -1,0 +1,22 @@
+diff --git guix-1.5.0/guix/channels.scm guix-1.5.0/guix/channels.scm
+index 0d7bc541ccc..879dde1c00e 100644
+--- guix-1.5.0/guix/channels.scm
++++ guix-1.5.0/guix/channels.scm
+@@ -511,7 +511,7 @@ information."
+ (define* (latest-channel-instances store channels
+                                    #:key
+                                    (current-channels '())
+-                                   (authenticate? #t)
++                                   (authenticate? #f)
+                                    (validate-pull
+                                     ensure-forward-channel-update)
+                                    (verify-certificate? #t))
+@@ -570,7 +570,7 @@ depending on the policy it implements."
+                       (instance
+                        (latest-channel-instance store channel
+                                                 #:authenticate?
+-                                                authenticate?
++                                                #f ; authenticate?
+                                                 #:validate-pull
+                                                 validate-pull
+                                                 #:starting-commit
