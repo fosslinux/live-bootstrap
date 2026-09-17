@@ -10,7 +10,7 @@ src_prepare() {
     rm docs/libcurl/libcurl-symbols.md
     rm -r packages/vms/curlmsg.{h,sdl}
 
-    # Regnerate src/tool_cb_prg.c
+    # Regenerate src/tool_cb_prg.c
     sed '/sinus/q' src/tool_cb_prg.c > src/tool_cb_prg.c.new
     perl sinus.pl | sed "s/, $//" >> src/tool_cb_prg.c.new
     sed '1,/^[0-9, ]*[0-9]$/d' src/tool_cb_prg.c >> src/tool_cb_prg.c.new

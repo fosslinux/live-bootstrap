@@ -114,7 +114,7 @@ src_configure() {
         # BUILDFIXED=1 is specifically for zlib, to avoid needing to
         # regenerate inffixed.h. Instead, it generates the information from
         # it at runtime.
-        # Similarly, DYANMIC_CRC_TABLE=1 for crc32.h.
+        # Similarly, DYNAMIC_CRC_TABLE=1 for crc32.h.
         LD="true" AR="tcc -ar" CC="tcc" \
             CFLAGS="-DBUILDFIXED=1 -DDYNAMIC_CRC_TABLE=1" \
             ./configure \

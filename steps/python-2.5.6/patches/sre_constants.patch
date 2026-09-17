@@ -5,7 +5,7 @@ SPDX-License-Identifier: PSF-2.0
 Again, Python 2.5 added the key= argument for sorting functions,
 which is not available when we are building Python 2.5.
 
-Sorting is absolutely unnessecary when generating defines for a
+Sorting is absolutely unnecessary when generating defines for a
 header file so we can just remove it.
 
 --- Python-2.5.6/Lib/sre_constants.py	2004-08-25 12:22:30.000000000 +1000

@@ -2,7 +2,7 @@ SPDX-FileCopyrightText: 2022 Samuel Tyler <samuel@samuelt.me>
 
 SPDX-License-Identifier: Python-2.0.1
 
-unicodetype_db.h is a file that needs to be regened, but it not
+unicodetype_db.h is a file that needs to be regened, but it is not
 particularly trivial to regen. For the first build of Python,
 strip out any kind of unicode support that requires
 unicodetype_db.h indiscriminately.

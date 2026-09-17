@@ -90,19 +90,18 @@ libraries that are compiled and installed.
 The format of the sources file for a HTTP source file is:
 
 ```
-<url> <checksum> [filename]
+f <url> <checksum> [filename]
 ```
 
 For a Git repository snapshot:
 
 ```
-<git url> <URL to HTTP snapshot> <checksum> [filename]
+g <git url>~<reference> <URL to HTTP snapshot> <checksum> [filename]
 ```
 
-The format of a git url must always be `git://<path to repository>~<reference>`.
-`reference` is, for instance, a commit, tag or branch. Always use
-Git protocol path, except for GitHub, in which `git://` is automagically
-changed to `https://`.
+The git url has the form `<url to repository>~<reference>` (for instance,
+a `git://` or `https://` URL). `reference` is, for instance, a commit, tag
+or branch.
 
 The URL to HTTP snapshot may be `_` (a single underscore) if no HTTP snapshot
 exists. In this case, the filename is compulsory. The checksum is of the Git
