@@ -1,0 +1,19 @@
+--- git-2.53.0/configure
++++ git-2.53.0/configure
+@@ -5582,7 +5582,7 @@
+   printf %s "(cached) " >&6
+ else case e in #(
+   e) ac_check_lib_save_LIBS=$LIBS
+-LIBS="-lcurl  $LIBS"
++LIBS="-lcurl -lssl -lcrypto -lz -pthread $LIBS"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -5695,6 +5695,7 @@
+     fi
+ 
+     CURL_LDFLAGS=$($CURL_CONFIG $CURL_CONFIG_OPTS)
++    CURL_LDFLAGS="$CURL_LDFLAGS -lssl -lcrypto -lz -pthread"
+     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Setting CURL_LDFLAGS to '$CURL_LDFLAGS'" >&5
+ printf "%s\n" "$as_me: Setting CURL_LDFLAGS to '$CURL_LDFLAGS'" >&6;}
+ 

@@ -1,0 +1,84 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Guix extension manifest. Runs after main /steps manifest when EXTRA_BUILDS includes guix.
+
+# We need a 64-bit kernel to enable Guix to run 64-bit programs.
+# Build 64-bit kernel
+build: binutils-2.41-guix
+build: gcc-15.2.0-guix
+build: argp-standalone-1.4.1
+build: musl-fts-1.2.7
+build: musl-obstack-1.2.3
+build: elfutils-0.194
+build: linux-6.12.74
+jump: linux64
+improve: open_console ( INTERACTIVE == True && CHROOT == False )
+improve: finalize_fhs
+improve: get_network
+# Build Guix Dependencies
+build: libgpg-error-1.59
+build: libgcrypt-1.12.1
+build: guile-gcrypt-0.5.0
+build: git-2.53.0
+# CMake for libgit2 and DBus
+build: cmake-4.2.3
+build: libgit2-1.9.2
+build: nettle-3.10.2
+build: libtasn1-v4.21.0
+build: gnutls-3.8.12
+build: guile-gnutls-v5.0.1
+build: unzip-6.0
+build: sqlite-3510200
+build: zlib-1.3.1-guix
+build: guile-sqlite3-0.1.3
+build: guile-zlib-0.2.2
+build: lzlib-1.9
+build: guile-lzlib-0.3.0
+build: scheme-bytestructures-2.0.2
+build: libevent-2.1.12
+build: expat-2.7.4
+build: dbus-1.16.2
+build: gdbm-1.8.3
+build: libdaemon-0.14
+build: avahi-0.8
+build: guile-avahi-0.4.1
+build: guile-git-0.10.0
+build: guile-json-4.7.3
+build: guile-semver-0.2.0
+# End of Guix Dependencies
+# Build Guix Bootstrap seeds (All flowing must be static)
+# Build static-binaries-0-i686-linux.tar.xz
+build: coreutils-8.30
+build: gawk-4.2.1
+build: grep-3.1
+build: sed-4.5
+build: tar-1.30
+build: xz-5.2.4
+build: gzip-1.9
+build: bzip2-1.0.6
+build: patch-2.7.6
+build: bash-5.3-1
+build: static-binaries-0-i686-linux
+# Build legacy xz seed
+build: xz-5.0.6
+# Build guile-static-stripped-2.0.9-i686-linux.tar.xz
+build: libunistring-1.4.1-guix
+build: gc-8.2.12-guix
+build: libffi-3.5.2-guix
+build: guile-2.0.9
+# Build mes-minimal-stripped-0.19-i686-linux.tar.xz
+build: mes-minimal-stripped-0.19-i686-linux
+# Build mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz
+build: mescc-tools-static-stripped-0.5.2-i686-linux
+improve: bootstrap-artifacts-i686-linux
+# End of Guix Bootstrap seeds
+build: guix-hash-compat-1.5.0
+improve: guix-1.5.0
+build: guix-1.5.0
+build: loopback-bind-127001
+improve: services
+build: boost-unordered-patch
+improve: guix-daemon-and-pull
+improve: guix-build-iso
+
+improve: after

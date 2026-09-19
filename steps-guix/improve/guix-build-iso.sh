@@ -1,0 +1,43 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+set -e
+
+. /steps/bootstrap.cfg
+. /steps/env
+. /steps-guix/improve/local-distfiles-http.sh
+
+guix_localstate_dir="/var/guix"
+daemon_socket="${guix_localstate_dir}/daemon-socket/socket"
+out_dir="/external/guix-images"
+export GUIX_DAEMON_SOCKET="${daemon_socket}"
+
+trap stop_distfiles_http_server EXIT INT TERM HUP
+
+if [ ! -S "${daemon_socket}" ]; then
+    echo "guix-daemon socket is missing: ${daemon_socket}" >&2
+    echo "Run improve/guix-daemon-and-pull.sh first." >&2
+    exit 1
+fi
+
+mkdir -p "${out_dir}"
+
+cp /var/guix/profiles/per-user/root/current-guix/manifest /usr/manifest
+test -d /usr/share/guile/site/3.0/gnu/installer/aux-files || \
+    cp -r /var/lib/guix/local-channels/guix/gnu/installer/aux-files \
+        /usr/share/guile/site/3.0/gnu/installer/
+
+start_distfiles_http_server
+guix system image \
+    --system=x86_64-linux \
+    -t iso9660 \
+    -c "${JOBS}" \
+    -e '(@@ (gnu system install) installation-os)' \
+    --no-substitutes
+
+# if [ ! -e "${iso_store_path}" ]; then
+#     echo "guix system image did not return a valid path: ${iso_store_path}" >&2
+#     exit 1
+# fi
+
+# ln -sfn "${iso_store_path}" "${out_dir}/guix-system-install-x86_64.iso"

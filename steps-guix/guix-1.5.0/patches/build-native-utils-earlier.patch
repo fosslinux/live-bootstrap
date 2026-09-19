@@ -1,0 +1,270 @@
+diff --git guix-1.5.0/gnu/packages/commencement.scm guix-1.5.0/gnu/packages/commencement.scm
+index 852fa2d..2dfb6a3 100644
+--- guix-1.5.0/gnu/packages/commencement.scm
++++ guix-1.5.0/gnu/packages/commencement.scm
+@@ -1225,21 +1225,43 @@ ac_cv_c_float_format='IEEE (little-endian)'
+     ("libc" ,glibc-mesboot0)
+     ,@(alist-delete "gcc" (%boot-mesboot-core-inputs))))
+ 
+-(define binutils-mesboot1
++(define (mesboot0-package name inputs pkg)
+   (package
+-    (inherit binutils-mesboot0)
+-    (name "binutils-mesboot1")
+-    (native-inputs (%boot-mesboot0-inputs))
++    (inherit pkg)
++    (name name)
++    (source (bootstrap-origin (package-source pkg)))
++    (native-inputs (inputs))
++    (supported-systems '("i686-linux" "x86_64-linux"))
++    (inputs '())
++    (propagated-inputs '())
+     (arguments
+-     (substitute-keyword-arguments (package-arguments binutils-mesboot0)
+-       ((#:configure-flags configure-flags)
+-        #~(let ((out (assoc-ref %outputs "out")))
+-            `("--disable-nls" "--disable-shared"
+-              "--disable-werror"
+-              "--build=i686-unknown-linux-gnu"
+-              "--host=i686-unknown-linux-gnu"
+-              "--with-sysroot=/"
+-              ,(string-append "--prefix=" out))))))))
++     (ensure-keyword-arguments (package-arguments pkg)
++                               `(#:implicit-inputs? #f
++                                 #:guile ,%bootstrap-guile
++                                 #:tests? #f)))))
++
++;; Build native versions of critical utilities earlier, for performance reasons
++;; It would be great to build xz here, but it requres a newer gcc...
++
++;; Bash provides built-in "test", avoiding guile startup overhead
++(define bash-mesboot0
++  (let ((pkg (mesboot0-package
++   "bash-mesboot0"
++   %boot-mesboot0-inputs
++   static-bash)))
++   (package
++     (inherit pkg)
++     (arguments (substitute-keyword-arguments (package-arguments pkg)
++                   ((#:configure-flags flags)
++                    #~(cons* "CFLAGS=-g -O2" "LIBS=-lc -lnss_files -lnss_dns -lresolv"
++                       (delete
++                        "CFLAGS=-g -O2 -Wno-error=implicit-function-declaration"
++                        #$flags))))))))
++
++(define (%boot-mesboot0-native0-inputs)
++  `(("bash" ,bash-mesboot0)
++    ,@(fold alist-delete (%boot-mesboot0-inputs)
++            '("bash"))))
+ 
+ (define gnu-make-mesboot
+   (package
+@@ -1253,7 +1275,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
+               (sha256
+                (base32
+                 "1rs2f9hmvy3q6zkl15jnlmnpgffm0bhw5ax0h5c7q604wqrip69x"))))
+-    (native-inputs (%boot-mesboot0-inputs))
++    (native-inputs (%boot-mesboot0-native0-inputs))
+     (supported-systems '("i686-linux" "x86_64-linux"))
+     (inputs '())
+     (propagated-inputs '())
+@@ -1273,11 +1295,31 @@ ac_cv_c_float_format='IEEE (little-endian)'
+                     (bin (string-append out "/bin")))
+                (install-file "make" bin)))))))))
+ 
++(define (%boot-mesboot0-native-inputs)
++  `(("make" ,gnu-make-mesboot)
++    ,@(fold alist-delete (%boot-mesboot0-native0-inputs)
++            '("make"))))
++
++(define binutils-mesboot1
++  (package
++    (inherit binutils-mesboot0)
++    (name "binutils-mesboot1")
++    (native-inputs (%boot-mesboot0-native-inputs))
++    (arguments
++     (substitute-keyword-arguments (package-arguments binutils-mesboot0)
++       ((#:configure-flags configure-flags)
++        #~(let ((out (assoc-ref %outputs "out")))
++            `("--disable-nls" "--disable-shared"
++              "--disable-werror"
++              "--build=i686-unknown-linux-gnu"
++              "--host=i686-unknown-linux-gnu"
++              "--with-sysroot=/"
++              ,(string-append "--prefix=" out))))))))
++
+ (define (%boot-mesboot1-inputs)
+   `(("binutils" ,binutils-mesboot1)
+-    ("make" ,gnu-make-mesboot)
+-    ,@(fold alist-delete (%boot-mesboot0-inputs)
+-            '("binutils" "make"))))
++    ,@(fold alist-delete (%boot-mesboot0-native-inputs)
++            '("binutils"))))
+ 
+ (define gmp-boot
+   (let ((version "4.3.2"))
+@@ -1467,7 +1509,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
+                 ;; libstdc++ is being compiled.
+                 (setenv "CPLUS_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))))))))))
+ 
+-(define (%boot-mesboot2-inputs)
++(define (%boot-mesboot2-bootar-inputs)
+   `(("gcc" ,gcc-mesboot1)
+     ,@(alist-delete "gcc" (%boot-mesboot1-inputs))))
+ 
+@@ -1490,7 +1532,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
+     (supported-systems '("i686-linux" "x86_64-linux"))
+     (inputs '())
+     (propagated-inputs '())
+-    (native-inputs (%boot-mesboot2-inputs))
++    (native-inputs (%boot-mesboot2-bootar-inputs))
+     (arguments
+      `(#:implicit-inputs? #f
+        #:guile ,%bootstrap-guile
+@@ -1504,6 +1546,119 @@ ac_cv_c_float_format='IEEE (little-endian)'
+            (lambda _
+              (invoke "./hello"))))))))
+ 
++;; Now, that we have GCC 4.6, we can finally build xz.
++(define xz-mesboot0
++  (let ((pkg (mesboot0-package "xz-mesboot0" %boot-mesboot2-bootar-inputs xz)))
++    (package
++      (inherit pkg)
++      (arguments
++       (ensure-keyword-arguments (package-arguments pkg)
++                                 ;; XXX: This fails even though the
++                                 ;; actual runpaths seem fine.
++                                 `(#:validate-runpath? #f
++                                 ;; XXX: The build gets stuck
++                                 ;; when parallel build is enabled.
++                                   #:parallel-build? #f
++                                   #:configure-flags (list
++                                                      ;; static build
++                                                      "--enable-static"
++                                                      "--disable-shared"
++                                                      ;; missing pthread.h
++                                                      "--enable-threads=no"
++                                                      ;; extern inlines broken
++                                                      "CFLAGS=-g -O2 -fgnu89-inline")))))))
++
++;; Tar doesn't build at this stage, so teach gash-utils tar to use xz using a wrapper
++(define gash-utils-tar-wrapper
++  ;; Wrapper around gash-utils tar that extracts xz files using xz-mesboot0
++  ;; before passing them on to tar.
++  (package
++    (inherit gash-utils-boot)
++    (name "gash-utils-tar-wrapper")
++    (source #f)
++    (inputs '())
++    (native-inputs `(("bash" ,bash-mesboot0)
++                     ("coreutils" ,gash-utils-boot)
++                     ("gzip" ,gzip-mesboot)
++                     ("xz" ,xz-mesboot0)))
++    (arguments
++     `(#:implicit-inputs? #f
++       #:guile ,%bootstrap-guile
++       #:phases
++       (modify-phases %standard-phases
++         (delete 'unpack)
++         (delete 'configure)
++         (delete 'install)
++         (replace 'build
++           (lambda* (#:key outputs #:allow-other-keys)
++             (let* ((out (assoc-ref outputs "out"))
++                    (bash (assoc-ref %build-inputs "bash"))
++                    (coreutils (assoc-ref %build-inputs "coreutils"))
++                    (xz (assoc-ref %build-inputs "xz"))
++                    (gzip (assoc-ref %build-inputs "gzip"))
++                    (bin (string-append out "/bin")))
++               (mkdir-p bin)
++               (for-each
++                (lambda (program)
++                  (let ((wrapper (string-append bin "/" program)))
++                    (with-output-to-file wrapper
++                      (lambda _
++                        (display (string-append "#!" bash "/bin/bash
++
++# Check if file is GZIP or XZ compressed
++if [[ \"$#\" -eq 2 && \"$1\" = xvf && \"$2\" = *.tar.xz ]]; then
++    # Decompress using xz to temporary file
++    if ! " xz "/bin/xz -dc -- \"$2\" > /tmp/tar_wrapper.tar; then
++        echo \"Error: failed to decompress $2\" >&2
++        rm -f /tmp/tar_wrapper.tar
++        exit 1
++    fi
++
++    # Extract using gash-utils tar
++    " coreutils "/bin/tar \"$1\" /tmp/tar_wrapper.tar
++    status=$?
++
++    # Clean up
++    rm -f /tmp/tar_wrapper.tar
++
++    exit $status
++elif [[ \"$#\" -eq 2 && \"$1\" = xvf && \"$2\" = *.tar.gz ]]; then
++    # Decompress using gzip to temporary file
++    if ! " gzip "/bin/gzip -dc \"$2\" > /tmp/tar_wrapper.tar; then
++        echo \"Error: failed to decompress $2\" >&2
++        rm -f /tmp/tar_wrapper.tar
++        exit 1
++    fi
++
++    # Extract using gash-utils tar
++    " coreutils "/bin/tar \"$1\" /tmp/tar_wrapper.tar
++    status=$?
++
++    # Clean up
++    rm -f /tmp/tar_wrapper.tar
++
++    exit $status
++else
++    # Fall back to direct gash-utils tar call
++    exec " coreutils "/bin/tar \"$@\"
++fi
++"))
++                        (chmod wrapper #o555)))))
++                '("tar")))))
++         (replace 'check
++           (lambda* (#:key outputs #:allow-other-keys)
++             (let* ((bash (assoc-ref %build-inputs "bash"))
++                    (bin (string-append bash "/bin"))
++                    (program (string-append bin "/bash")))
++               (invoke program "--help")))))))))
++
++(define (%boot-mesboot2-inputs)
++  `(("xz" ,xz-mesboot0)
++    ("tar" ,gash-utils-tar-wrapper)
++    ;; we can drop bootar here; gzip + xz + gash-utils tar is enough to proceed
++    ,@(fold alist-delete (%boot-mesboot2-bootar-inputs)
++            '("bootar"))))
++
+ (define binutils-mesboot
+   (package
+     (inherit binutils-mesboot1)
+@@ -1709,7 +1864,7 @@ SHELL := " shell "
+     (name "gcc-mesboot1-wrapper")
+     (source #f)
+     (inputs '())
+-    (native-inputs `(("bash" ,gash-boot)
++    (native-inputs `(("bash" ,bash-mesboot0)
+                      ("coreutils" ,gash-utils-boot)
+                      ("libc" ,glibc-mesboot)
+                      ("gcc" ,gcc-mesboot1)))
+@@ -1848,7 +2003,7 @@ exec " gcc "/bin/" program
+     (version (package-version gcc-mesboot))
+     (source #f)
+     (inputs '())
+-    (native-inputs `(("bash" ,gash-boot)
++    (native-inputs `(("bash" ,bash-mesboot0)
+                      ("coreutils" ,gash-utils-boot)
+                      ("libc" ,glibc-mesboot)
+                      ("gcc" ,gcc-mesboot)))))
+@@ -1966,7 +2121,7 @@ exec " gcc "/bin/" program
+     ("tar" ,tar-mesboot)
+     ("xz" ,xz-mesboot)
+     ,@(fold alist-delete (%boot-mesboot5-inputs)
+-            '("bash" "coreutils" "bootar" "kernel-headers"))))
++            '("bash" "coreutils" "tar" "kernel-headers"))))
+ 
+ (define (%bootstrap-inputs+toolchain)
+   ;; The traditional bootstrap-inputs.  For the i686-linux, x86_64-linux

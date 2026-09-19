@@ -1,0 +1,67 @@
+--- guile-2.0.9/libguile/load.c
++++ guile-2.0.9/libguile/load.c
+@@ -26,6 +26,7 @@
+ 
+ #include <string.h>
+ #include <stdio.h>
++#include <libgen.h>
+ 
+ #include "libguile/_scm.h"
+ #include "libguile/private-gc.h" /* scm_getenv_int */
+@@ -297,6 +298,32 @@
+   SCM cpath = SCM_EOL;
+ 
+ #ifdef SCM_LIBRARY_DIR
++  char *program, *bin_dir, *prefix, *module_dir, *ccache_dir;
++
++  /* Determine the source and compiled module directories at run-time,
++     relative to the executable's location.
++
++     Note: Use /proc/self/exe instead of argv[0] because the latter is
++     not necessarily an absolute, nor a valid file name.  */
++
++  program = scm_gc_malloc_pointerless (256, "string");
++  readlink ("/proc/self/exe", program, 256);
++
++  bin_dir = dirname (strdupa (program));
++
++  prefix = scm_gc_malloc_pointerless (strlen (bin_dir) + 4, "string");
++  strcpy (prefix, bin_dir);
++  strcat (prefix, "/..");
++  prefix = canonicalize_file_name (prefix);
++
++  module_dir = scm_gc_malloc_pointerless (strlen (prefix) + 50, "string");
++  strcpy (module_dir, prefix);
++  strcat (module_dir, "/share/guile/" SCM_EFFECTIVE_VERSION);
++
++  ccache_dir = scm_gc_malloc_pointerless (strlen (prefix) + 50, "string");
++  strcpy (ccache_dir, prefix);
++  strcat (ccache_dir, "/lib/guile/" SCM_EFFECTIVE_VERSION "/ccache");
++
+   env = getenv ("GUILE_SYSTEM_PATH");
+   if (env && strcmp (env, "") == 0)
+     /* special-case interpret system-path=="" as meaning no system path instead
+@@ -305,10 +332,7 @@
+   else if (env)
+     path = scm_parse_path (scm_from_locale_string (env), path);
+   else
+-    path = scm_list_4 (scm_from_locale_string (SCM_LIBRARY_DIR),
+-                       scm_from_locale_string (SCM_SITE_DIR),
+-                       scm_from_locale_string (SCM_GLOBAL_SITE_DIR),
+-                       scm_from_locale_string (SCM_PKGDATA_DIR));
++    path = scm_list_1 (scm_from_locale_string (module_dir));
+ 
+   env = getenv ("GUILE_SYSTEM_COMPILED_PATH");
+   if (env && strcmp (env, "") == 0)
+@@ -317,10 +341,7 @@
+   else if (env)
+     cpath = scm_parse_path (scm_from_locale_string (env), cpath);
+   else
+-    {
+-      cpath = scm_list_2 (scm_from_locale_string (SCM_CCACHE_DIR),
+-                          scm_from_locale_string (SCM_SITE_CCACHE_DIR));
+-    }
++    cpath = scm_list_1 (scm_from_locale_string (ccache_dir));
+ 
+ #endif /* SCM_LIBRARY_DIR */
+ 

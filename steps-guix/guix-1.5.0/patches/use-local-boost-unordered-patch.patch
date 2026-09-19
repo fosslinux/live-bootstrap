@@ -1,0 +1,19 @@
+--- guix-1.5.0/gnu/packages/boost.scm
++++ guix-1.5.0/gnu/packages/boost.scm
+@@ -247,9 +247,13 @@ across a broad spectrum of applications.")
+                                   version "/source/boost_"
+                                   (version-with-underscores version) ".tar.bz2"))
+               (patches
+-                 (list (boost-patch
+-                        "0001-unordered-fix-copy-assign.patch" version
+-                        "09j61m5xh7099k5na9i43x5rra51znf7vm2nyh89yqpizcll9q66")))
++                 (list (origin
++                         (method url-fetch)
++                         (uri "http://127.0.0.1:38445/0001-unordered-fix-copy-assign.patch")
++                         (file-name "boost-0001-unordered-fix-copy-assign.patch")
++                         (sha256
++                          (base32
++                           "09j61m5xh7099k5na9i43x5rra51znf7vm2nyh89yqpizcll9q66")))))
+               (patch-flags '("-p2"))
+               (sha256
+                (base32

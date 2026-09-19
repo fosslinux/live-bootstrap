@@ -1,0 +1,57 @@
+--- a/gnu/packages/bootstrap.scm
++++ b/gnu/packages/bootstrap.scm
+@@ -676,7 +676,45 @@
+                              (substitute* '("bin/egrep" "bin/fgrep")
+                                (("^exec grep") (string-append (getcwd) "/bin/grep"))))
+                            (chmod "bin" #o555))))
++
++
++(define (bootstrap-mes-minimal-origin system)
++  (origin
++    (method url-fetch)
++    (uri (map (cut string-append <>
++                   "/mes-minimal-stripped-0.19-i686-linux.tar.xz")
++              %bootstrap-base-urls))
++    (sha256
++     (match system
++       ((or "i686-linux" "x86_64-linux")
++        (base32 "@MES_MINIMAL_SEED_HASH@"))
++       (_
++        (base32 "@MES_MINIMAL_SEED_HASH@"))))))
++
++(define %bootstrap-mes-minimal
++  (package-from-tarball "mes-minimal-bootstrap"
++                        bootstrap-mes-minimal-origin
++                        "mes"
++                        "Bootstrap Mes minimal binary seed"))
++
++(define (bootstrap-mescc-tools-origin system)
++  (origin
++    (method url-fetch)
++    (uri (map (cut string-append <>
++                   "/mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz")
++              %bootstrap-base-urls))
++    (sha256
++     (match system
++       ((or "i686-linux" "x86_64-linux")
++        (base32 "@MESCC_TOOLS_SEED_HASH@"))
++       (_
++        (base32 "@MESCC_TOOLS_SEED_HASH@"))))))
+ 
++(define %bootstrap-mescc-tools
++  (package-from-tarball "mescc-tools-bootstrap"
++                        bootstrap-mescc-tools-origin
++                        "M2-Planet"
++                        "Bootstrap MesCC tools binary seed"))
+ (define-public %bootstrap-linux-libre-headers
+   (package-from-tarball
+    "linux-libre-headers-bootstrap"
+@@ -1012,6 +1050,8 @@
+     ("gcc" ,%bootstrap-gcc)
+     ("binutils" ,%bootstrap-binutils)
+     ("coreutils&co" ,%bootstrap-coreutils&co)
++    ("mes-minimal" ,%bootstrap-mes-minimal)
++    ("mescc-tools" ,%bootstrap-mescc-tools)
+     ("bash" ,%bootstrap-coreutils&co)))
+ 
+ ;;; bootstrap.scm ends here

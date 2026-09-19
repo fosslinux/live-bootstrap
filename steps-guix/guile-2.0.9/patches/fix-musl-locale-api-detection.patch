@@ -1,0 +1,41 @@
+diff --git a/configure.ac b/configure.ac
+index 27f1463..9b16da7 100644
+--- guile-2.0.9/configure.ac
++++ guile-2.0.9/configure.ac
+@@ -741,7 +741,9 @@ AC_CHECK_HEADERS([assert.h crt_externs.h])
+ #   truncate - not in mingw
+ #   isblank - available as a GNU extension or in C99
+ #   _NSGetEnviron - Darwin specific
+-#   strcoll_l, newlocale - GNU extensions (glibc), also available on Darwin
++#   strcoll_l, strtol_l, strtod_l, nl_langinfo_l, toupper_l, tolower_l,
++#       newlocale - GNU/POSIX locale APIs used together by libguile/i18n.c;
++#       if some are missing, Guile must fall back to the compatibility path
+ #   fork - unavailable on Windows
+ #   utimensat - posix.1-2008
+ #   sched_getaffinity, sched_setaffinity - GNU extensions (glibc)
+@@ -756,7 +758,8 @@ AC_CHECK_FUNCS([DINFINITY DQNAN cexp chsize clog clog10 ctermid		\
+   strptime symlink sync sysconf tcgetpgrp tcsetpgrp uname waitpid	\
+   strdup system usleep atexit on_exit chown link fcntl ttyname getpwent	\
+   getgrent kill getppid getpgrp fork setitimer getitimer strchr strcmp	\
+-  index bcopy memcpy rindex truncate unsetenv isblank _NSGetEnviron	\
++  index bcopy memcpy rindex truncate unsetenv isblank _NSGetEnviron      \
++  nl_langinfo_l strtod_l strtol_l tolower_l toupper_l			\
+   strcoll strcoll_l newlocale utimensat sched_getaffinity		\
+   sched_setaffinity sendfile])
+
+diff --git a/libguile/i18n.c b/libguile/i18n.c
+index 09524e6..8b9534a 100644
+--- guile-2.0.9/libguile/i18n.c
++++ guile-2.0.9/libguile/i18n.c
+@@ -40,7 +40,10 @@
+ #include <unicase.h>
+ #include <unistr.h>
+ 
+-#if (defined HAVE_NEWLOCALE) && (defined HAVE_STRCOLL_L)
++#if defined HAVE_NEWLOCALE && defined HAVE_NL_LANGINFO_L            \
++  && defined HAVE_STRCOLL_L && defined HAVE_STRTOD_L               \
++  && defined HAVE_STRTOL_L && defined HAVE_TOLOWER_L               \
++  && defined HAVE_TOUPPER_L
+ /* The GNU thread-aware locale API is documented in ``Thread-Aware Locale
+    Model, a Proposal'', by Ulrich Drepper:
+ 

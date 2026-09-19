@@ -1,0 +1,704 @@
+#!/bin/bash -e
+
+# SPDX-FileCopyrightText: 2021 Andrius Štikonas <andrius@stikonas.eu>
+# SPDX-FileCopyrightText: 2021-22 Samuel Tyler <samuel@samuelt.me>
+# SPDX-FileCopyrightText: 2021 Paul Dersey <pdersey@gmail.com>
+# SPDX-FileCopyrightText: 2021 Melg Eight <public.melg8@gmail.com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Set constant umask
+umask 022
+
+resume_network_init() {
+    local cfg_root
+    cfg_root="${1:-/steps}"
+
+    if [ -f "${cfg_root}/bootstrap.cfg" ]; then
+        # shellcheck source=/dev/null
+        . "${cfg_root}/bootstrap.cfg"
+    fi
+    if [ -f "${cfg_root}/env" ]; then
+        # shellcheck source=/dev/null
+        . "${cfg_root}/env"
+    fi
+
+    mount | grep ' on /dev ' >/dev/null 2>&1 || (mkdir -p /dev; mount -t devtmpfs devtmpfs /dev)
+    mount | grep ' on /proc ' >/dev/null 2>&1 || (mkdir -p /proc; mount -t proc proc /proc)
+    if [ "${CHROOT}" = False ] && [ "${NETWORK_READY}" = True ] && command -v dhcpcd >/dev/null 2>&1; then
+        dhcpcd --waitip=4 || true
+    fi
+}
+
+# Get a list of files
+get_files() {
+    echo "."
+    _get_files "${1}"
+}
+
+_get_files() {
+    local prefix
+    prefix="${1}"
+    fs=
+    if [ -n "$(ls 2>/dev/null)" ]; then
+        fs=$(echo *)
+    fi
+    if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
+        fs="${fs} $(echo .[0-z]*)"
+    fi
+    for f in ${fs}; do
+        # Archive symlinks to directories as symlinks
+        echo "${prefix}/${f}"
+        if [ -d "./${f}" ] && ! [ -h "./${f}" ]; then
+            cd "./${f}"
+            _get_files "${prefix}/${f}"
+            cd ..
+        fi
+    done
+}
+
+# Reset all timestamps to unix time 0
+reset_timestamp() {
+    if command -v find >/dev/null 2>&1; then
+        # find does not error out on exec error
+        find . -print0 | xargs -0 touch -h -t 197001010000.00
+    else
+        # A rudimentary find implementation that does the trick
+        fs=
+        if [ -n "$(ls 2>/dev/null)" ]; then
+            fs=$(echo ./*)
+        fi
+        if [ -n "$(ls .[0-z]* 2>/dev/null)" ]; then
+            fs="${fs} $(echo .[0-z]*)"
+        fi
+        for f in ${fs}; do
+            touch -h -t 197001010000.00 "./${f}"
+            if [ -d "./${f}" ]; then
+                cd "./${f}"
+                reset_timestamp
+                cd ..
+            fi
+        done
+    fi
+}
+
+# Fake grep
+_grep() {
+    local text="${1}"
+    local fname="${2}"
+    if command -v grep >/dev/null 2>&1; then
+        grep "${text}" "${fname}"
+    else
+        # shellcheck disable=SC2162
+        while read line; do
+            case "${line}" in *"${text}"*)
+                echo "${line}" ;;
+            esac
+        done < "${fname}"
+    fi
+}
+
+# Useful for perl extensions
+get_perl_version() {
+    perl -v | sed -n -re 's/.*[ (]v([0-9\.]*)[ )].*/\1/p'
+}
+
+get_revision() {
+    local pkg=$1
+    local oldpwd="${PWD}"
+    cd "/external/repo"
+    # Get revision (n time this package has been built)
+    revision=$( (ls -1 "${pkg}"* 2>/dev/null || true) | wc -l | sed 's/ *//g')
+    cd "${oldpwd}"
+}
+
+# Installs binary packages from an earlier run
+# This is useful to speed up development cycle
+bin_preseed() {
+    if [ -d "/external/repo-preseeded" ]; then
+        get_revision "${pkg}"
+        cd "/external/repo-preseeded"
+        test -e "${pkg}_${revision}.tar.bz2" || return 1
+        if [ "${UPDATE_CHECKSUMS}" = "True" ] || src_checksum "${pkg}" $((revision)); then
+            echo "${pkg}: installing prebuilt package."
+            mv "${pkg}_${revision}.tar.bz2" /external/repo || return 1
+            cd "/external/repo"
+            rm -f /tmp/filelist.txt
+            src_apply "${pkg}" $((revision))
+            cd "${SRCDIR}"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# Removes either an existing package or file
+uninstall() {
+    local in_fs in_pkg symlinks
+    while [ $# -gt 0 ]; do
+        removing="$1"
+        case "${removing}" in
+            /*)
+                # Removing a file
+                echo "removing file: ${removing}."
+                rm -f "${removing}"
+                ;;
+            *)
+                echo "${removing}: uninstalling."
+                local oldpwd="${PWD}"
+                mkdir -p "/tmp/removing"
+                cd "/tmp/removing"
+                get_revision "${removing}"
+                local filename="/external/repo/${removing}_$((revision-1)).tar.bz2"
+                # Initial bzip2 built against meslibc has broken pipes
+                bzip2 -dc "${filename}" | tar -xf -
+                # reverse to have files before directories
+                if command -v find >/dev/null 2>&1; then
+                    find . | sort -r > ../filelist
+                else
+                    get_files . | tac > ../filelist
+                fi
+                # shellcheck disable=SC2162
+                while read file; do
+                    if [ -d "${file}" ]; then
+                        if [ -z "$(ls -A "/${file}")" ]; then
+                            rmdir "/${file}"
+                        fi
+                    elif [ -h "${file}" ]; then
+                        symlinks="${symlinks} ${file}"
+                    else
+                        # in some cases we might be uninstalling a file that has already been overwritten
+                        # in this case we don't want to remove it
+                        in_fs="$(sha256sum "${file}" 2>/dev/null | cut -d' ' -f1)"
+                        in_pkg="$(sha256sum "/${file}" 2>/dev/null | cut -d' ' -f1)"
+                        if [ "${in_fs}" = "${in_pkg}" ]; then
+                            rm -f "/${file}"
+                        fi
+                    fi
+                done < ../filelist
+                rm -f ../filelist
+                for link in ${symlinks}; do
+                    if [ ! -e "/${link}" ]; then
+                        rm -f "/${link}"
+                    fi
+                done
+                cd "${oldpwd}"
+                rm -rf "/tmp/removing"
+                ;;
+        esac
+        shift
+    done
+}
+
+# Common build steps
+# Build function provides a few common stages with default implementation
+# that can be overridden on per package basis in the build script.
+# build takes two arguments:
+# 1) name-version of the package
+# 2) optionally specify build script. Default is pass$((revision+1)).sh
+# 3) optionally specify directory to cd into
+build() {
+    pkg=$1
+    get_revision "${pkg}"
+    script_name=${2:-pass$((revision+1)).sh}
+    dirname=${3:-${pkg}}
+
+    # shellcheck disable=SC2015
+    bin_preseed && return || true # Normal build if preseed fails
+
+    cd "${SRCDIR}/${pkg}" || (echo "Cannot cd into ${pkg}!"; kill $$)
+    echo "${pkg}: beginning build using script ${script_name}"
+    base_dir="${PWD}"
+    if [ -e "${base_dir}/patches-$(basename "${script_name}" .sh)" ]; then
+        patch_dir="${base_dir}/patches-$(basename "${script_name}" .sh)"
+    else
+        patch_dir="${base_dir}/patches"
+    fi
+    mk_dir="${base_dir}/mk"
+    files_dir="${base_dir}/files"
+
+    rm -rf "build"
+    mkdir "build"
+    cd "build"
+
+    build_script="${base_dir}/${script_name}"
+    if test -e "${build_script}"; then
+        # shellcheck source=/dev/null
+        . "${build_script}"
+    fi
+
+    echo "${pkg}: getting sources."
+    build_stage=src_get
+    call $build_stage
+
+    echo "${pkg}: unpacking source."
+    build_stage=src_unpack
+    call $build_stage
+    unset EXTRA_DISTFILES
+
+    cd "${dirname}" || (echo "Cannot cd into build/${dirname}!"; kill $$)
+
+    echo "${pkg}: preparing source."
+    build_stage=src_prepare
+    call $build_stage
+
+    echo "${pkg}: configuring source."
+    build_stage=src_configure
+    call $build_stage
+
+    echo "${pkg}: compiling source."
+    build_stage=src_compile
+    call $build_stage
+
+    echo "${pkg}: install to fakeroot."
+    mkdir -p "${DESTDIR}"
+    build_stage=src_install
+    call $build_stage
+
+    echo "${pkg}: postprocess binaries."
+    build_stage=src_postprocess
+    call $build_stage
+
+    echo "${pkg}: creating package."
+    cd "${DESTDIR}"
+    src_pkg
+
+    src_checksum "${pkg}" "${revision}"
+
+    echo "${pkg}: cleaning up."
+    rm -rf "${SRCDIR}/${pkg}/build"
+    rm -rf "${DESTDIR}"
+
+    echo "${pkg}: installing package."
+    src_apply "${pkg}" "${revision}"
+
+    echo "${pkg}: build successful"
+
+    cd "${SRCDIR}"
+
+    unset -f src_get src_unpack src_prepare src_configure src_compile src_install src_postprocess
+    unset extract
+}
+
+# An inventive way to randomise with what we know we always have
+randomize() {
+    if command -v shuf >/dev/null 2>&1; then
+        # shellcheck disable=SC2086
+        shuf -e ${1} | tr '\n' ' '
+    else
+        mkdir -p /tmp/random
+        for item in ${1}; do
+            touch --date=@${RANDOM} /tmp/random/"${item//\//~*~*}"
+        done
+        # cannot rely on find existing
+        # shellcheck disable=SC2012
+        ls -1 -t /tmp/random | sed 's:~\*~\*:/:g' | tr '\n' ' '
+        rm -r /tmp/random
+    fi
+}
+
+ensure_network_ready() {
+    if [ "${NETWORK_READY}" = "True" ]; then
+        return
+    fi
+
+    # Resumed QEMU boots (e.g. from stage0-work.img) can lose configured links.
+    # Bring the interface up deterministically before any source download.
+    if [ "${QEMU}" = "True" ] && [ "${CHROOT}" != "True" ]; then
+        dhcpcd --waitip=4
+    fi
+
+    NETWORK_READY=True
+}
+
+download_source_line() {
+    upstream_url="${1}"
+    checksum="${2}"
+    fname="${3}"
+    if ! [ -e "${fname}" ]; then
+        for mirror in $(randomize "${MIRRORS}"); do
+            # In qemu SimpleMirror is not running on the guest os, use qemu IP
+            case "${QEMU}-${mirror}" in 'True-http://127.0.0.1'*)
+                mirror="http://10.0.2.2${mirror#'http://127.0.0.1'}"
+            esac
+            mirror_url="${mirror}/${fname}"
+            echo "${mirror_url}"
+            curl --fail --retry 3 --location "${mirror_url}" --output "${fname}" || true && break
+        done
+        if ! [ -e "${fname}" ] && [ "${upstream_url}" != "_" ]; then
+            curl --fail --retry 3 --location "${upstream_url}" --output "${fname}" || true
+        fi
+    fi
+}
+
+check_source_line() {
+    url="${1}"
+    checksum="${2}"
+    fname="${3}"
+    if ! [ -e "${fname}" ]; then
+        echo "${fname} does not exist!"
+        false
+    fi
+    echo "${checksum}  ${fname}" > "${fname}.sum"
+    sha256sum -c "${fname}.sum"
+    rm "${fname}.sum"
+}
+
+source_line_action() {
+    action="$1"
+    shift
+    type="$1"
+    shift
+    case $type in
+        "g" | "git")
+            shift
+            ;;
+    esac
+    url="${1}"
+    checksum="${2}"
+    fname="${3}"
+    # Default to basename of url if not given
+    fname="${fname:-$(basename "${url}")}"
+    $action "$url" "$checksum" "$fname"
+}
+
+# Default get function that downloads source tarballs.
+default_src_get() {
+    ensure_network_ready
+    # shellcheck disable=SC2153
+    cd "${DISTFILES}"
+    # shellcheck disable=SC2162
+    while read line; do
+        # This is intentional - we want to split out ${line} into separate arguments.
+        # shellcheck disable=SC2086
+        source_line_action download_source_line ${line}
+    done < "${base_dir}/sources"
+    # shellcheck disable=SC2162
+    while read line; do
+        # This is intentional - we want to split out ${line} into separate arguments.
+        # shellcheck disable=SC2086
+        source_line_action check_source_line ${line}
+    done < "${base_dir}/sources"
+    cd -
+}
+
+# Intelligently extracts a file based upon its filetype.
+extract_file() {
+    f="${3:-$(basename "${1}")}"
+    # shellcheck disable=SC2154
+    case "${noextract}" in
+        *${f}*)
+            cp "${DISTFILES}/${f}" .
+            ;;
+        *)
+            case "${f}" in
+                *.tar* | *.tgz)
+                    # shellcheck disable=SC2153
+                    if test -e "${PREFIX}/libexec/rmt"; then
+                        # Again, we want to split out into words.
+                        # shellcheck disable=SC2086
+                        tar --no-same-owner -xf "${DISTFILES}/${f}" ${extract}
+                    else
+                        # shellcheck disable=SC2086
+                        case "${f}" in
+                        *.tar.gz) tar -xzf "${DISTFILES}/${f}" ${extract} ;;
+                        *.tar.bz2)
+                            # Initial bzip2 built against meslibc has broken pipes
+                            bzip2 -dc "${DISTFILES}/${f}" | tar -xf - ${extract} ;;
+                        *.tar.xz | *.tar.lzma)
+                            if test -e "${PREFIX}/bin/xz"; then
+                                tar -xf "${DISTFILES}/${f}" --use-compress-program=xz ${extract}
+                            else
+                                unxz --file "${DISTFILES}/${f}" | tar -xf - ${extract}
+                            fi
+                            ;;
+                        esac
+                    fi
+                    ;;
+                *)
+                    cp "${DISTFILES}/${f}" .
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+# Default unpacking function that unpacks all sources.
+default_src_unpack() {
+    # Handle the first one differently
+    first_line=$(head -n 1 ../sources)
+    # Again, we want to split out into words.
+    # shellcheck disable=SC2086
+    source_line_action extract_file ${first_line}
+    # This assumes there is only one directory in the tarball
+    # Get the dirname "smartly"
+    if ! [ -e "${dirname}" ]; then
+        for i in *; do
+            if [ -d "${i}" ]; then
+                dirname="${i}"
+                break
+            fi
+        done
+    fi
+    if ! [ -e "${dirname}" ]; then
+        # there are no directories extracted
+        dirname=.
+    fi
+    # shellcheck disable=SC2162
+    tail -n +2 ../sources | while read line; do
+        # shellcheck disable=SC2086
+        source_line_action extract_file ${line}
+    done
+}
+
+# Default function to prepare source code.
+# It applies all patches from patch_dir (at the moment only -p0 patches are supported).
+# Patches are applied from the parent directory.
+# Then it copies our custom makefile and any other custom files from files directory.
+default_src_prepare() {
+    if test -d "${patch_dir}"; then
+        if ls "${patch_dir}"/*.patch >/dev/null 2>&1; then
+            for p in "${patch_dir}"/*.patch; do
+                echo "Applying patch: ${p}"
+                patch -d.. -Np0 < "${p}"
+            done
+        fi
+    fi
+
+    makefile="${mk_dir}/main.mk"
+    if test -e "${makefile}"; then
+        cp "${makefile}" Makefile
+    fi
+
+    if test -d "${files_dir}"; then
+        cp --no-preserve=mode "${files_dir}"/* "${PWD}/"
+    fi
+}
+
+# Default function for configuring source.
+default_src_configure() {
+    :
+}
+
+# Default function for compiling source. It simply runs make without any parameters.
+default_src_compile() {
+    make "${MAKEJOBS}" -f Makefile PREFIX="${PREFIX}"
+}
+
+# Default installing function. PREFIX should be set by run.sh script.
+# Note that upstream makefiles might ignore PREFIX and have to be configured in configure stage.
+default_src_install() {
+    make -f Makefile install PREFIX="${PREFIX}" DESTDIR="${DESTDIR}"
+}
+
+# Helper function for permissions
+_do_strip() {
+    # shellcheck disable=SC2124
+    local f="${@: -1}"
+    if ! [ -w "${f}" ]; then
+        local perms
+        perms="$(stat -c %a "${f}")"
+        chmod u+w "${f}"
+    fi
+    strip "$@"
+    if [ -n "${perms}" ]; then
+        chmod "${perms}" "${f}"
+    fi
+}
+
+# Default function for postprocessing binaries.
+default_src_postprocess() {
+    if (command -v find && command -v file && command -v strip) >/dev/null 2>&1; then
+        # Logic largely taken from void linux 06-strip-and-debug-pkgs.sh
+        # shellcheck disable=SC2162
+        find "${DESTDIR}" -type f | while read f; do
+            case "$(file -bi "${f}")" in
+                application/x-executable*) _do_strip "${f}" ;;
+                application/x-sharedlib*|application/x-pie-executable*)
+                    machine_set="$(file -b "${f}")"
+                    case "${machine_set}" in
+                        *no\ machine*) ;; # don't strip ELF container-only
+                        *) _do_strip --strip-unneeded "${f}" ;;
+                    esac
+                    ;;
+                application/x-archive*) _do_strip --strip-debug "${f}" ;;
+            esac
+        done
+    fi
+}
+
+src_pkg() {
+    touch -t 197001010000.00 .
+    reset_timestamp
+
+    local tar_basename="${pkg}_${revision}.tar"
+    local dest_tar="/external/repo/${tar_basename}"
+    local filelist=/tmp/filelist.txt
+
+    cd /external/repo
+    # If grep is unavailable, then tar --sort is unavailable.
+    # So this does not need a command -v grep.
+    if tar --help | grep ' \-\-sort' >/dev/null 2>&1; then
+        tar -C "${DESTDIR}" --sort=name --hard-dereference \
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw -cf "${dest_tar}" .
+    else
+        local olddir
+        olddir=$PWD
+        cd "${DESTDIR}"
+        local null
+        if command -v find >/dev/null 2>&1 && command -v sort >/dev/null 2>&1; then
+            find . -print0 | LC_ALL=C sort -z > "${filelist}"
+            null="--null"
+        elif command -v sort >/dev/null 2>&1; then
+            get_files .  | LC_ALL=C sort > "${filelist}"
+        else
+            get_files . > ${filelist}
+        fi
+        tar --no-recursion ${null} --files-from "${filelist}" \
+                --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw -cf "${dest_tar}"
+        rm -f "$filelist"
+        cd "$olddir"
+    fi
+    touch -t 197001010000.00 "${tar_basename}"
+    bzip2 --best "${tar_basename}"
+}
+
+src_checksum() {
+    local pkg=$1 revision=$2
+    local rval=0
+    if ! [ "$UPDATE_CHECKSUMS" = True ] ; then
+        # We avoid using pipes as that is not supported by initial sha256sum from mescc-tools-extra
+        local checksum_file=/tmp/checksum
+        _grep "${pkg}_${revision}.tar.bz2" "${SRCDIR}/SHA256SUMS.pkgs" > "${checksum_file}" || true
+        # Check there is something in checksum_file
+        if ! [ -s "${checksum_file}" ]; then
+            echo "${pkg}: no checksum stored!"
+            false
+        fi
+        echo "${pkg}: checksumming created package."
+        sha256sum -c "${checksum_file}" || rval=$?
+        rm "${checksum_file}"
+    fi
+    return "${rval}"
+}
+
+src_apply() {
+    local pkg="${1}" revision="${2}"
+    local TAR_PREFIX BZIP2_PREFIX
+
+    # Make sure we have at least one copy of tar
+    if [[ "${pkg}" == tar-* ]]; then
+        mkdir -p /tmp
+        cp "${PREFIX}/bin/tar" "/tmp/tar"
+        TAR_PREFIX="/tmp/"
+    fi
+
+    # Bash does not like to be overwritten
+    if [[ "${pkg}" == bash-* ]]; then
+        rm "${PREFIX}/bin/bash"
+    fi
+
+    # Overwriting files is mega busted, so do it manually
+    # shellcheck disable=SC2162
+    if [ -e /tmp/filelist.txt ]; then
+        while IFS= read -d $'\0' file; do
+            rm -f "/${file}" >/dev/null 2>&1 || true
+        done < /tmp/filelist.txt
+    fi
+
+    # Bzip2 does not like to be overwritten
+    if [[ "${pkg}" == bzip2-* ]]; then
+        mkdir -p /tmp
+        mv "${PREFIX}/bin/bzip2" "/tmp/bzip2"
+        BZIP2_PREFIX="/tmp/"
+    fi
+    "${BZIP2_PREFIX}bzip2" -dc "/external/repo/${pkg}_${revision}.tar.bz2" | \
+        "${TAR_PREFIX}tar" -C / -xpf -
+    if [[ "${pkg}" == bzip2-* ]]; then
+        if ! "${PREFIX}/bin/bzip2" --help >/dev/null 2>&1; then
+            echo "${pkg}: installed ${PREFIX}/bin/bzip2 is not runnable." >&2
+            mv -f "/tmp/bzip2" "${PREFIX}/bin/bzip2" || true
+            false
+        fi
+    fi
+    rm -f "/tmp/bzip2" "/tmp/tar"
+}
+
+# Check if bash function exists
+fn_exists() {
+    test "$(type -t "$1")" == 'function'
+}
+
+# Call package specific function or default implementation.
+call() {
+    if fn_exists "$1"; then
+        $1
+    else
+        default_"${1}"
+    fi
+}
+
+# Call default build stage function
+default() {
+    "default_${build_stage}"
+}
+
+# Reusable helpers for sysroot-oriented stages (e.g. kernel toolchain/kernel build).
+sysroot_stage_init() {
+    : "${KERNEL_SYSROOT:=/kernel-toolchain}"
+}
+
+sysroot_src_install_default() {
+    # Generic install helper for packages that should install into a dedicated sysroot.
+    # Package-specific post-install actions stay in each package script.
+    sysroot_stage_init
+    make "${MAKEJOBS}" install \
+        DESTDIR="${DESTDIR}" \
+        prefix="${KERNEL_SYSROOT}" \
+        libdir="${KERNEL_SYSROOT}/lib"
+}
+
+seed_require_file() {
+    local path="$1"
+    if [ ! -e "${path}" ]; then
+        echo "Missing required seed input: ${path}" >&2
+        false
+    fi
+}
+
+seed_make_repro_tar_xz() {
+    local src_dir="$1"
+    local out_file="$2"
+    local tmp_dir
+    local tmp_tar
+
+    seed_require_file "${src_dir}"
+    mkdir -p "$(dirname "${out_file}")"
+
+    tmp_dir="$(mktemp -d /tmp/seed-tar.XXXXXX)"
+    tmp_tar="$(mktemp /tmp/seed-tarball.XXXXXX.tar)"
+
+    cp -a "${src_dir}/." "${tmp_dir}/"
+    (
+        cd "${tmp_dir}"
+        reset_timestamp
+        tar --sort=name --hard-dereference \
+            --numeric-owner --owner=0 --group=0 --mode=go=rX,u+rw \
+            -cf "${tmp_tar}" .
+    )
+    touch -t 197001010000.00 "${tmp_tar}"
+    xz -T1 -c "${tmp_tar}" > "${out_file}"
+    touch -t 197001010000.00 "${out_file}"
+
+    rm -rf "${tmp_dir}"
+    rm -f "${tmp_tar}"
+}
+
+seed_install_exec() {
+    local src="$1"
+    local dst="$2"
+
+    seed_require_file "${src}"
+    mkdir -p "$(dirname "${dst}")"
+    install -m 0755 "${src}" "${dst}"
+}

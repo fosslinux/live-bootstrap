@@ -1,0 +1,45 @@
+--- guile-2.0.9/libguile/posix.c
++++ guile-2.0.9/libguile/posix.c
+@@ -2254,6 +2254,8 @@
+ #endif
+ #ifdef WAIT_ANY
+   scm_c_define ("WAIT_ANY", scm_from_int (WAIT_ANY));
++#else
++  scm_c_define ("WAIT_ANY", scm_from_int (-1));
+ #endif
+ #ifdef WAIT_MYPGRP
+   scm_c_define ("WAIT_MYPGRP", scm_from_int (WAIT_MYPGRP));
+@@ -2288,21 +2290,33 @@
+ #endif
+ #ifdef LC_PAPER
+   scm_c_define ("LC_PAPER", scm_from_int (LC_PAPER));
++#else
++  scm_c_define ("LC_PAPER", scm_from_int (7));
+ #endif
+ #ifdef LC_NAME
+   scm_c_define ("LC_NAME", scm_from_int (LC_NAME));
++#else
++  scm_c_define ("LC_NAME", scm_from_int (8));
+ #endif
+ #ifdef LC_ADDRESS
+   scm_c_define ("LC_ADDRESS", scm_from_int (LC_ADDRESS));
++#else
++  scm_c_define ("LC_ADDRESS", scm_from_int (9));
+ #endif
+ #ifdef LC_TELEPHONE
+   scm_c_define ("LC_TELEPHONE", scm_from_int (LC_TELEPHONE));
++#else
++  scm_c_define ("LC_TELEPHONE", scm_from_int (10));
+ #endif
+ #ifdef LC_MEASUREMENT
+   scm_c_define ("LC_MEASUREMENT", scm_from_int (LC_MEASUREMENT));
++#else
++  scm_c_define ("LC_MEASUREMENT", scm_from_int (11));
+ #endif
+ #ifdef LC_IDENTIFICATION
+   scm_c_define ("LC_IDENTIFICATION", scm_from_int (LC_IDENTIFICATION));
++#else
++  scm_c_define ("LC_IDENTIFICATION", scm_from_int (12));
+ #endif
+ #ifdef PIPE_BUF
+   scm_c_define ("PIPE_BUF", scm_from_long (PIPE_BUF));

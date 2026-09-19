@@ -1,0 +1,53 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Fix read_func prototype to use a modern typed function pointer.
+
+--- gawk-4.2.1/gawkapi.h
++++ gawk-4.2.1/gawkapi.h
+@@ -190,7 +190,7 @@
+ 	 * No argument prototype on read_func to allow for older systems
+ 	 * whose headers are not up to date.
+ 	 */
+-	ssize_t (*read_func)();
++	ssize_t (*read_func)(int, void *, size_t);
+ 
+ 	/*
+ 	 * The close_func is called to allow the parser to free private data.
+--- gawk-4.2.1/io.c
++++ gawk-4.2.1/io.c
+@@ -310,7 +310,7 @@
+ 
+ static NODE *in_PROCINFO(const char *pidx1, const char *pidx2, NODE **full_idx);
+ static long get_read_timeout(IOBUF *iop);
+-static ssize_t read_with_timeout(int fd, char *buf, size_t size);
++static ssize_t read_with_timeout(int fd, void *buf, size_t size);
+ 
+ static bool read_can_timeout = false;
+ static long read_timeout;
+@@ -3340,7 +3340,7 @@
+ 
+ 	iop->public.fd = fd;
+ 	iop->public.name = name;
+-	iop->public.read_func = ( ssize_t(*)() ) read;
++	iop->public.read_func = (ssize_t (*)(int, void *, size_t)) read;
+ 	iop->valid = false;
+ 	iop->errcode = errno_val;
+ 
+@@ -4318,7 +4318,7 @@
+ 		tmout = read_default_timeout;	/* initialized from env. variable in init_io() */
+ 
+ 	/* overwrite read routine only if an extension has not done so */
+-	if ((iop->public.read_func == ( ssize_t(*)() ) read) && tmout > 0)
++	if ((iop->public.read_func == (ssize_t (*)(int, void *, size_t)) read) && tmout > 0)
+ 		iop->public.read_func = read_with_timeout;
+ 
+ 	return tmout;
+@@ -4330,7 +4330,7 @@
+  */
+ 
+ static ssize_t
+-read_with_timeout(int fd, char *buf, size_t size)
++read_with_timeout(int fd, void *buf, size_t size)
+ {
+ #if ! defined(VMS)
+ 	fd_set readfds;

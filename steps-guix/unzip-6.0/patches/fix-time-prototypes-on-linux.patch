@@ -1,0 +1,12 @@
+--- unzip60/unix/unxcfg.h	2009-01-18 18:09:08
++++ unzip60/unix/unxcfg.h	2026-02-27 20:56:00
+@@ -117,7 +117,9 @@
+ #  endif
+ #else
+ #  include <time.h>
++#  if !defined(__linux__)
+    struct tm *gmtime(), *localtime();
++#  endif
+ #endif
+ 
+ #if (defined(BSD4_4) || (defined(SYSV) && defined(MODERN)))

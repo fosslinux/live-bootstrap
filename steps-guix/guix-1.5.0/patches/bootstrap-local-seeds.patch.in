@@ -1,0 +1,101 @@
+--- a/gnu/packages/bootstrap.scm
++++ b/gnu/packages/bootstrap.scm
+@@ -109,13 +109,13 @@
+       ,(base32 "1cqqavghjfr0iwxqf61lrssv27wfigysgq2rs4rm1gkmn04yn1k3")))
+     ("i686-linux"
+      ("bash"
+-      ,(base32 "0rjaxyzjdllfkf1abczvgaf3cdcc7mmahyvdbkjmjzhgz92pv23g"))
++      ,(base32 "@EXEC_BASH_HASH@"))
+      ("mkdir"
+-      ,(base32 "133ybmfpkmsnysrzbngwvbysqnsmfi8is8zifs7i7n6n600h4s1w"))
++      ,(base32 "@EXEC_MKDIR_HASH@"))
+      ("tar"
+-      ,(base32 "07830bx29ad5i0l1ykj0g0b1jayjdblf01sr3ww9wbnwdbzinqms"))
++      ,(base32 "@EXEC_TAR_HASH@"))
+      ("xz"
+-      ,(base32 "0i9kxdi17bm5gxfi2xzm0y73p3ii0cqxli1sbljm6rh2fjgyn90k")))
++      ,(base32 "@EXEC_XZ_HASH@")))
+     ("i586-gnu"
+      ("bash"
+       ,(base32 "1as8649aqaibahhhrvkj10ci8shpi4hq5n7gnik8rhhy0dc1jarg"))
+@@ -164,15 +164,12 @@
+ 
+ (define %bootstrap-executable-base-urls
+   ;; This is where the bootstrap executables come from.
+-  '("https://ftpmirror.gnu.org/guix/bootstrap/"
+-    "https://git.savannah.gnu.org/cgit/guix.git/plain/gnu/packages/bootstrap/"
+-    "https://alpha.gnu.org/gnu/guix/bootstrap/"
+-    "http://flashner.co.il/guix/bootstrap/"
+-    "http://lilypond.org/janneke/guix/"))
++  '("http://127.0.0.1:38445/"))
+ 
+ (define (bootstrap-executable-file-name system program)
+   "Return the FILE-NAME part of url where PROGRAM can be found for SYSTEM."
+   (match system
++    ("i686-linux" (string-append "i686-linux/bootstrap-exec-" program "-i686-linux"))
+     ("powerpc64le-linux" (string-append system "/20210106/" program))
+     ("i586-gnu" (string-append system "/20200326/" program))
+     ("x86_64-gnu" (string-append system "/20241122/" program))
+@@ -403,9 +400,9 @@
+   "Return the SHA256 hash of the Guile bootstrap tarball for SYSTEM."
+   (match system
+     ("x86_64-linux"
+-     (base32 "1w2p5zyrglzzniqgvyn1b55vprfzhgk8vzbzkkbdgl5248si0yq3"))
++     (base32 "@GUILE_X86_64_SEED_HASH@"))
+     ("i686-linux"
+-     (base32 "0im800m30abgh7msh331pcbjvb4n02smz5cfzf1srv0kpx3csmxp"))
++     (base32 "@GUILE_I686_SEED_HASH@"))
+     ("mips64el-linux"
+      (base32 "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr"))
+     ("armhf-linux"
+@@ -634,16 +631,16 @@
+                                             ("riscv64-linux"
+                                              "/20210725/static-binaries.tar.xz")
+                                             (_
+-                                             "/20131110/static-binaries.tar.xz")))
++                                             "/static-binaries-0-i686-linux.tar.xz")))
+                                      %bootstrap-base-urls))
+                            (sha256
+                             (match system
+                               ("x86_64-linux"
+                                (base32
+-                                "0c533p9dhczzcsa1117gmfq3pc8w362g4mx84ik36srpr7cx2bg4"))
++                                "@STATIC_BINARIES_SEED_HASH@"))
+                               ("i686-linux"
+                                (base32
+-                                "0s5b3jb315n13m1k8095l0a5hfrsz8g0fv1b6riyc5hnxqyphlak"))
++                                "@STATIC_BINARIES_SEED_HASH@"))
+                               ("armhf-linux"
+                                (base32
+                                 "0gf0fn2kbpxkjixkmx5f4z6hv6qpmgixl69zgg74dbsfdfj8jdv5"))
+@@ -998,12 +995,16 @@
+   ;; own packages.
+   (match (%current-system)
+     ((or "i686-linux" "x86_64-linux")
+-     `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)))
++     `(("linux-libre-headers" ,%bootstrap-linux-libre-headers)
++       ("mes-minimal" ,%bootstrap-mes-minimal)
++       ("mescc-tools" ,%bootstrap-mescc-tools)))
+     (_
+      `(("libc" ,%bootstrap-glibc)
+        ("gcc" ,%bootstrap-gcc)
+        ("binutils" ,%bootstrap-binutils)
+        ("coreutils&co" ,%bootstrap-coreutils&co)
++       ("mes-minimal" ,%bootstrap-mes-minimal)
++       ("mescc-tools" ,%bootstrap-mescc-tools)
+        ;; In gnu-build-system.scm, we rely on the availability of Bash.
+        ("bash" ,%bootstrap-coreutils&co)))))
+ 
+--- a/guix/channels.scm
++++ b/guix/channels.scm
+@@ -194,8 +194,8 @@
+    (introduction %guix-channel-introduction)))
+ 
+ (define %default-channels
+-  ;; Default list of channels.
+-  (list %default-guix-channel))
++  ;; Offline bootstrap environment: require explicit channels.
++  '())
+ 
+ (define (guix-channel? channel)
+   "Return true if CHANNEL is the 'guix' channel."
