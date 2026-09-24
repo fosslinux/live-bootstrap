@@ -16,5 +16,5 @@ make_fiwix_initrd -s 1381376 /boot/fiwix.ext2
 if match x${BARE_METAL} xTrue; then
     kexec-fiwix /boot/fiwix -i /boot/fiwix.ext2 -m /e820 -c "fiwix console=/dev/tty1 root=/dev/ram0 initrd=fiwix.ext2 kexec_proto=linux kexec_size=199680 kexec_cmdline=\"init=/init consoleblank=0\""
 else
-    kexec-fiwix /boot/fiwix -i /boot/fiwix.ext2 -m /e820 -c "fiwix console=/dev/ttyS0 root=/dev/ram0 initrd=fiwix.ext2 kexec_proto=linux kexec_size=199680 kexec_cmdline=\"init=/init console=ttyS0\""
+    kexec-fiwix /boot/fiwix -i /boot/fiwix.ext2 -m /e820 -c "fiwix console=/dev/ttyS0 root=/dev/ram0 initrd=fiwix.ext2 kexec_proto=linux kexec_size=199680 kexec_cmdline=\"init=/init console=ttyS0,115200\""
 fi

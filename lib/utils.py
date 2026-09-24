@@ -19,6 +19,9 @@ def run(*args, cleanup=None, **kwargs):
     if kwargs.pop('verbose', False):
         print(arguments)
 
+    sys.stdout.flush()
+    sys.stderr.flush()
+
     try:
         return subprocess.run(arguments, check=True, **kwargs)
     except subprocess.CalledProcessError:
