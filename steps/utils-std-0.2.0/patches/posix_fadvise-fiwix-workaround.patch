@@ -1,0 +1,327 @@
+From 33c49ee8a3664dd1fe6ad671ecb9b1e6b1985321 Mon Sep 17 00:00:00 2001
+From: "Haelwenn (lanodan) Monnier" <contact@hacktivis.me>
+Date: Thu, 23 Apr 2026 23:44:11 +0200
+Subject: [PATCH] Turn posix_fadvise conftest into proper HAS_* #ifdef macro
+
+Signed-off-by: Haelwenn (lanodan) Monnier <contact@hacktivis.me>
+X-Contrib-Policy: CONTRIBUTING.md 2026-03-12
+---
+ cmd/cat.c       |  2 ++
+ cmd/cksum.c     |  7 ++++---
+ cmd/cmp.c       |  4 ++++
+ cmd/head.c      |  2 ++
+ cmd/install.c   |  2 ++
+ cmd/mv.c        |  2 ++
+ cmd/sha1sum.c   | 14 ++++++++------
+ cmd/sha256sum.c | 14 ++++++++------
+ cmd/sha512sum.c | 14 ++++++++------
+ cmd/split.c     |  4 ++++
+ cmd/wc.c        |  4 ++++
+ configure       |  2 +-
+ 12 files changed, 49 insertions(+), 22 deletions(-)
+
+diff --git utils-std-0.2.0/cmd/cat.c utils-std-0.2.0/cmd/cat.c
+index 54f3fe2..964b910 100644
+--- utils-std-0.2.0/cmd/cat.c
++++ utils-std-0.2.0/cmd/cat.c
+@@ -84,8 +84,10 @@ main(int argc, char *argv[])
+ 					return 1;
+ 				}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 				posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+ 				errno = 0;
++#endif
+ 
+ 				if(auto_fd_copy(fd, STDOUT_FILENO, SSIZE_MAX) < 0)
+ 				{
+diff --git utils-std-0.2.0/cmd/cksum.c utils-std-0.2.0/cmd/cksum.c
+index bd7516f..fb19999 100644
+--- utils-std-0.2.0/cmd/cksum.c
++++ utils-std-0.2.0/cmd/cksum.c
+@@ -148,13 +148,14 @@ main(int argc, char *argv[])
+ 				return 1;
+ 			}
+ 
+-			int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+-			if(ret != 0)
++#ifdef HAS_POSIX_FADVISE
++			if((errno = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 				fprintf(stderr,
+ 				        "%s: warning: posix_fadvise failed on file '%s': %s\n",
+ 				        argv0,
+ 				        filename,
+-				        strerror(ret));
++				        strerror(errno));
++#endif
+ 		}
+ 
+ 		int err = 0;
+diff --git utils-std-0.2.0/cmd/cmp.c utils-std-0.2.0/cmd/cmp.c
+index 2f39693..e2b1fd3 100644
+--- utils-std-0.2.0/cmd/cmp.c
++++ utils-std-0.2.0/cmd/cmp.c
+@@ -254,7 +254,9 @@ main(int argc, char *argv[])
+ 			return 2;
+ 		}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 		posix_fadvise(fd1, 0, 0, POSIX_FADV_SEQUENTIAL);
++#endif
+ 	}
+ 
+ 	if(fd2 != STDIN_FILENO)
+@@ -271,7 +273,9 @@ main(int argc, char *argv[])
+ 			return 2;
+ 		}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 		posix_fadvise(fd2, 0, 0, POSIX_FADV_SEQUENTIAL);
++#endif
+ 	}
+ 
+ 	int ret = do_cmp(file1, argv[0], file2, argv[1]);
+diff --git utils-std-0.2.0/cmd/head.c utils-std-0.2.0/cmd/head.c
+index c34675f..d75c267 100644
+--- utils-std-0.2.0/cmd/head.c
++++ utils-std-0.2.0/cmd/head.c
+@@ -51,7 +51,9 @@ copy_bytes(const char *filename)
+ 			return 1;
+ 		}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 		posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
++#endif
+ 	}
+ 
+ 	int err = 0;
+diff --git utils-std-0.2.0/cmd/install.c utils-std-0.2.0/cmd/install.c
+index 16922b2..36d6979 100644
+--- utils-std-0.2.0/cmd/install.c
++++ utils-std-0.2.0/cmd/install.c
+@@ -137,9 +137,11 @@ do_install(char *src, char *dest, bool is_dir)
+ 
+ 	if(opt_v) fprintf(stderr, "%s: Made file: %s\n", argv0, dest);
+ 
++#ifdef HAS_POSIX_FADVISE
+ 	posix_fadvise(src_fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+ 	posix_fadvise(dest_fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+ 	errno = 0;
++#endif
+ 
+ 	if(auto_file_copy(src_fd, dest_fd, src_stat.st_size, 0) < 0)
+ 	{
+diff --git utils-std-0.2.0/cmd/mv.c utils-std-0.2.0/cmd/mv.c
+index 545697a..51d2830 100644
+--- utils-std-0.2.0/cmd/mv.c
++++ utils-std-0.2.0/cmd/mv.c
+@@ -116,9 +116,11 @@ copy_file_unlink(struct named_fd srcdir,
+ 		errno = 0;
+ 	}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 	posix_fadvise(in, 0, 0, POSIX_FADV_SEQUENTIAL);
+ 	posix_fadvise(out, 0, 0, POSIX_FADV_SEQUENTIAL);
+ 	errno = 0;
++#endif
+ 
+ 	if(auto_file_copy(in, out, src_status.st_size, 0) < 0) return -1;
+ 
+diff --git utils-std-0.2.0/cmd/sha1sum.c utils-std-0.2.0/cmd/sha1sum.c
+index 5b23e63..9eed061 100644
+--- utils-std-0.2.0/cmd/sha1sum.c
++++ utils-std-0.2.0/cmd/sha1sum.c
+@@ -135,13 +135,14 @@ check(FILE *file, const char *filename)
+ 			return -1;
+ 		}
+ 
+-		int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+-		if(ret != 0)
++#ifdef HAS_POSIX_FADVISE
++		if((errno = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 			fprintf(stderr,
+ 			        "%s: warning: posix_fadvise failed on file '%s': %s\n",
+ 			        argv0,
+ 			        target,
+-			        strerror(ret));
++			        strerror(errno));
++#endif
+ 
+ 		char got[SHA1SUM_LEN] = "";
+ 		if(sha1sum(fd, target, got) < 0) err = 1;
+@@ -285,13 +286,14 @@ main(int argc, char *argv[])
+ 				return 1;
+ 			}
+ 
+-			int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+-			if(ret != 0)
++#ifdef HAS_POSIX_FADVISE
++			if((errno = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 				fprintf(stderr,
+ 				        "%s: warning: posix_fadvise failed on file '%s': %s\n",
+ 				        argv0,
+ 				        filename,
+-				        strerror(ret));
++				        strerror(errno));
++#endif
+ 		}
+ 
+ 		int err = 0;
+diff --git utils-std-0.2.0/cmd/sha256sum.c utils-std-0.2.0/cmd/sha256sum.c
+index c34612c..9fd45cf 100644
+--- utils-std-0.2.0/cmd/sha256sum.c
++++ utils-std-0.2.0/cmd/sha256sum.c
+@@ -135,13 +135,14 @@ check(FILE *file, const char *filename)
+ 			return -1;
+ 		}
+ 
+-		int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+-		if(ret != 0)
++#ifdef HAS_POSIX_FADVISE
++		if((errno = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 			fprintf(stderr,
+ 			        "%s: warning: posix_fadvise failed on file '%s': %s\n",
+ 			        argv0,
+ 			        target,
+-			        strerror(ret));
++			        strerror(errno));
++#endif
+ 
+ 		char got[SHA256SUM_LEN] = "";
+ 		if(sha256sum(fd, target, got) < 0) err = 1;
+@@ -285,13 +286,14 @@ main(int argc, char *argv[])
+ 				return 1;
+ 			}
+ 
+-			int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+-			if(ret != 0)
++#ifdef HAS_POSIX_FADVISE
++			if((errno = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 				fprintf(stderr,
+ 				        "%s: warning: posix_fadvise failed on file '%s': %s\n",
+ 				        argv0,
+ 				        filename,
+-				        strerror(ret));
++				        strerror(errno));
++#endif
+ 		}
+ 
+ 		int err = 0;
+diff --git utils-std-0.2.0/cmd/sha512sum.c utils-std-0.2.0/cmd/sha512sum.c
+index ac1e706..559b102 100644
+--- utils-std-0.2.0/cmd/sha512sum.c
++++ utils-std-0.2.0/cmd/sha512sum.c
+@@ -135,13 +135,14 @@ check(FILE *file, const char *filename)
+ 			return -1;
+ 		}
+ 
+-		int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+-		if(ret != 0)
++#ifdef HAS_POSIX_FADVISE
++		if((errno = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 			fprintf(stderr,
+ 			        "%s: warning: posix_fadvise failed on file '%s': %s\n",
+ 			        argv0,
+ 			        target,
+-			        strerror(ret));
++			        strerror(errno));
++#endif
+ 
+ 		char got[SHA512SUM_LEN] = "";
+ 		if(sha512sum(fd, target, got) < 0) err = 1;
+@@ -285,13 +286,14 @@ main(int argc, char *argv[])
+ 				return 1;
+ 			}
+ 
+-			int ret = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+-			if(ret != 0)
++#ifdef HAS_POSIX_FADVISE
++			if((errno = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 				fprintf(stderr,
+ 				        "%s: warning: posix_fadvise failed on file '%s': %s\n",
+ 				        argv0,
+ 				        filename,
+-				        strerror(ret));
++				        strerror(errno));
++#endif
+ 		}
+ 
+ 		int err = 0;
+diff --git utils-std-0.2.0/cmd/split.c utils-std-0.2.0/cmd/split.c
+index b29c536..2aae19b 100644
+--- utils-std-0.2.0/cmd/split.c
++++ utils-std-0.2.0/cmd/split.c
+@@ -81,8 +81,10 @@ split_bytes(void)
+ 		return 1;
+ 	}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 	posix_fadvise(fd_in, 0, 0, POSIX_FADV_SEQUENTIAL);
+ 	errno = 0;
++#endif
+ 
+ 	int err = 0;
+ 	off_t wrote = 0;
+@@ -101,8 +103,10 @@ split_bytes(void)
+ 			break;
+ 		}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 		posix_fadvise(fd_out, 0, 0, POSIX_FADV_SEQUENTIAL);
+ 		errno = 0;
++#endif
+ 
+ 		int ret = auto_file_copy(fd_in, fd_out, bytes, 0);
+ 		if(ret < 0)
+diff --git utils-std-0.2.0/cmd/wc.c utils-std-0.2.0/cmd/wc.c
+index 9a3c5ea..e00d517 100644
+--- utils-std-0.2.0/cmd/wc.c
++++ utils-std-0.2.0/cmd/wc.c
+@@ -289,6 +289,7 @@ main(int argc, char *argv[])
+ 	argc -= optind;
+ 	argv += optind;
+ 
++#ifdef HAS_POSIX_FADVISE
+ 	if((errno = posix_fadvise(STDIN_FILENO, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 	{
+ 		if(errno != ESPIPE)
+@@ -300,6 +301,7 @@ main(int argc, char *argv[])
+ 		}
+ 		errno = 0;
+ 	}
++#endif
+ 
+ 	if(argc < 1)
+ 	{
+@@ -331,6 +333,7 @@ main(int argc, char *argv[])
+ 			return 1;
+ 		}
+ 
++#ifdef HAS_POSIX_FADVISE
+ 		if((errno = posix_fadvise(arg_fd, 0, 0, POSIX_FADV_SEQUENTIAL)) != 0)
+ 		{
+ 			fprintf(stderr,
+@@ -340,6 +343,7 @@ main(int argc, char *argv[])
+ 			        strerror(errno));
+ 			errno = 0;
+ 		}
++#endif
+ 
+ 		if(wc_file(arg_fd, path) < 0) return 1;
+ 
+diff --git utils-std-0.2.0/configure utils-std-0.2.0/configure
+index 2600211..2324472 100755
+--- utils-std-0.2.0/configure
++++ utils-std-0.2.0/configure
+@@ -278,7 +278,7 @@ add_commands() {
+ check_conftest configure.d/o_path.c && add_commands ln
+ 
+ # OpenBSD lacks posix_fadvise
+-check_conftest configure.d/posix_fadvise.c || cpp_define 'posix_fadvise(fd, off, len, adv) 0'
++check_conftest configure.d/posix_fadvise.c && cpp_define HAS_POSIX_FADVISE
+ 
+ rm -f configure.d/*.bin
+ 
+-- 
+2.52.0
+

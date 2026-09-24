@@ -52,7 +52,7 @@ Without using Python:
 
       * Generate ``builder-hex0-x86-stage1.img`` from hex0 source:
 
-        ``sed 's/[;#].*$//g' builder-hex0/builder-hex0-x86-stage1-hex0 | xxd -r -p``
+        ``sed 's/[;#].*$//g' builder-hex0/builder-hex0-x86-stage1.hex0 | xxd -r -p``
       * On the first image, write ``builder-hex0-x86-stage1.img`` to it, followed
         by ``kernel-bootstrap/builder-hex0-x86-stage2.hex0``, followed by zeros
         padding the disk to the next sector.
