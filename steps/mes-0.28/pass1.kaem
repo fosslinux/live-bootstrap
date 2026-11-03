@@ -10,7 +10,6 @@ set -ex
 # Variables
 MES_ARENA=20000000
 MES_MAX_ARENA=20000000
-MES_STACK=6000000
 MES=${BINDIR}/mes-m2
 LIBDIR=${MES_PREFIX}/lib
 
@@ -44,10 +43,6 @@ replace --file ${mes_run} --output ${mes_run} --match-on 0x1000000 --replace-wit
 rm ${NYACC_PKG}.tar ${MES_PKG}.tar
 
 cp ../files/config.h ${MES_PREFIX}/include/mes
-
-# This patch was upstreamed after mes 0.27.1
-simple-patch ${MES_PREFIX}/lib/linux/wait4.c \
-    ../simple-patches/wait4.before ../simple-patches/wait4.after
 
 cd ${MES_PREFIX}
 mkdir include/arch
@@ -347,7 +342,6 @@ cp include/linux/syscall.h ${INCDIR}/linux/syscall.h
 cp include/linux/${MES_ARCH}/syscall.h ${INCDIR}/linux/${MES_ARCH}/syscall.h
 
 cp include/mes/builtins.h ${INCDIR}/mes/builtins.h
-cp include/mes/cc.h ${INCDIR}/mes/cc.h
 catm ${INCDIR}/mes/config.h
 cp include/mes/constants.h ${INCDIR}/mes/constants.h
 cp include/mes/lib.h ${INCDIR}/mes/lib.h
