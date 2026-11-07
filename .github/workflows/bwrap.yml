@@ -4,6 +4,12 @@
 
 name: Run under bubblewrap
 
+# Use the GitHub mirror for mescc-tools without changing its pinned commit.
+env:
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: url.https://github.com/oriansj/mescc-tools.git.insteadOf
+  GIT_CONFIG_VALUE_0: https://git.savannah.nongnu.org/git/mescc-tools.git
+
 on:
   workflow_dispatch:
   pull_request:
@@ -49,7 +55,7 @@ jobs:
             mirror-state
           key: cache-${{ hashFiles('steps/*/sources') }}
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 4 --internal-ci pass1 --mirror file://${PWD}/mirror
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 4 --internal-ci pass1 --mirror "file://${PWD}/mirror"
       - name: Archive created packages
         if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v4
@@ -96,9 +102,9 @@ jobs:
           key: cache-${{ hashFiles('steps/*/sources') }}
           fail-on-cache-miss: true
       - name: Copy distfiles
-        run: ./download-distfiles.sh file:///${PWD}/mirror
+        run: ./download-distfiles.sh "file:///${PWD}/mirror"
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 4 --internal-ci pass2 --mirror file://${PWD}/mirror
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 4 --internal-ci pass2 --mirror "file://${PWD}/mirror"
       - name: Archive created packages
         if: failure() # archive failed builds progress
         uses: actions/upload-artifact@v4
@@ -145,9 +151,9 @@ jobs:
           key: cache-${{ hashFiles('steps/*/sources') }}
           fail-on-cache-miss: true
       - name: Copy distfiles
-        run: ./download-distfiles.sh file:///${PWD}/mirror
+        run: ./download-distfiles.sh "file:///${PWD}/mirror"
       - name: Run bootstrap
-        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 4 --internal-ci pass3 --mirror file://${PWD}/mirror
+        run: ./rootfs.py --bwrap --external-sources --build-kernels --cores 4 --internal-ci pass3 --mirror "file://${PWD}/mirror"
       - name: Archive created packages
         if: always() # archive both failed and successful builds
         uses: actions/upload-artifact@v4
