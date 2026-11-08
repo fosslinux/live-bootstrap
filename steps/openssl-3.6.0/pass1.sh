@@ -35,7 +35,7 @@ src_prepare() {
         external/perl/Text-Template-1.56/t/author-pod-syntax.t
     rm fuzz/oids.txt
 
-    # Test pregenerated files
+    # Remove test pregenerated files
     # This may be more than necessary, but it is easy to delete tests
     find test \( -name "*.pem" \
         -o -name "*.tlssct" \

@@ -15,7 +15,7 @@ src_prepare() {
     # Remove bison parser generated
     rm intl/plural.c
 
-    # Setup for regeneratation of lib/ext2fs/utf8data.h
+    # Setup for regeneration of lib/ext2fs/utf8data.h
     rm lib/ext2fs/utf8data.h
 
     # Fix compile_et
