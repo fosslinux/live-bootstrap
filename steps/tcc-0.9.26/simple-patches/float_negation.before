@@ -1,0 +1,8 @@
+#if HAVE_FLOAT
+	    if (t == VT_FLOAT)
+	        vtop->c.f = -1.0 * 0.0;
+	    else if (t == VT_DOUBLE)
+	        vtop->c.d = -1.0 * 0.0;
+	    else
+	        vtop->c.ld = -1.0 * 0.0;
+#endif
