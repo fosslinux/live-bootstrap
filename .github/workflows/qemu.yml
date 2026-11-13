@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: 2023 fosslinux <fosslinux@aussies.space>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: Run under QEMU
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Run under bubblewrap
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install qemu
+        run: sudo apt-get install qemu-system-x86
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # There is a strange bug(?) in nongnu, when you clone a git repository
+          # against a commit != HEAD with depth=1, it errors out.
+          fetch-depth: 0
+      - name: Query cache for sources
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            mirror
+            mirror-state
+          key: cache-${{ hashFiles('steps/*/sources') }}
+          restore-keys: |
+            cache-
+      - name: Get sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: mkdir -p mirror mirror-state && ./mirror.sh mirror mirror-state
+      - name: Cache sources
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            mirror
+            mirror-state
+          key: cache-${{ hashFiles('steps/*/sources') }}
+      - name: Run bootstrap
+        run: sudo ./rootfs.py --qemu --update-checksums --external-sources --cores 2 --mirror file://${PWD}/mirror
+      - name: Remount package disk
+        if: always()
+        run: >
+          DEV=$(sudo losetup -f --show target/external.img) &&
+          sudo partprobe ${DEV} &&
+          mkdir -p mnt &&
+          sudo mount ${DEV}p1 mnt
+      - name: Archive created packages
+        if: always() # archive both failed and successful builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: mnt/repo/**
