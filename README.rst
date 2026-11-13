@@ -63,16 +63,84 @@ Without using Python:
 
         * *Only* copy distfiles listed in ``sources`` files for ``build:`` steps
           manifested before ``improve: get_network`` into this disk.
-      * Optionally (if you don't do this, distfiles will be network downloaded):
+      * In kernel-bootstrap mode with ``--external-sources`` (and no ``--repo``),
+        use the second image as ``external.img``.
+        ``external.img`` is a raw container (not a filesystem) used to carry the
+        distfiles that are not needed before ``improve: import_payload``.
+        In other words, the first image only carries the minimal set needed to
+        reach the importer; the rest of the distfiles live in ``external.img``.
 
-        * On the second image, create an MSDOS partition table and one ext3
-          partition.
-        * Copy ``distfiles/`` into this disk.
-      * Run QEMU, with 4+G RAM, optionally SMP (multicore), both drives (in the
-        order introduced above), a NIC with model E1000
+        * Header magic: ``LBPAYLD1`` (8 bytes).
+        * Then: little-endian ``u64`` file count.
+        * Repeated for each file: little-endian ``u64`` name length,
+          little-endian ``u64`` file size, UTF-8 encoded file name bytes
+          (no terminator), raw file bytes.
+        * ``name length`` is the number of UTF-8 bytes (not Unicode code points).
+
+      * With ``--repo``, the second disk remains an ext3 distfiles/repo disk.
+      * Without ``--external-sources`` and without ``--repo``, no second disk is
+        used: the initial image includes only pre-network distfiles, and later
+        distfiles are downloaded from configured mirrors after networking starts.
+      * Run QEMU, with 4+G RAM, optionally SMP (multicore), both drives (main
+        builder image plus external image, when a second image is used), a NIC with model E1000
         (``-nic user,model=e1000``), and ``-machine kernel-irqchip=split``.
    c. **Bare metal:** Follow the same steps as QEMU, but the disks need to be
       two different *physical* disks, and boot from the first disk.
+
+Manual raw ``external.img`` preparation
+---------------------------------------
+
+The following script creates a raw ``external.img`` from a manually prepared
+file list. This is equivalent to what ``rootfs.py`` does for kernel-bootstrap
+with ``--external-sources`` (and no ``--repo``).
+
+1. Prepare an ``external.list`` with one file per line, formatted as:
+   ``<archive-name> <absolute-path-to-archive>``.
+2. Run:
+
+   ::
+
+      cat > make-payload.sh <<'EOF'
+      #!/bin/sh
+      set -e
+      out="${1:-external.img}"
+      list="${2:-external.list}"
+
+      write_u64le() {
+          v="$1"
+          printf '%016x' "$v" | sed -E 's/(..)(..)(..)(..)(..)(..)(..)(..)/\8\7\6\5\4\3\2\1/' | xxd -r -p
+      }
+
+      count="$(wc -l < "${list}" | tr -d ' ')"
+      : > "${out}"
+      printf 'LBPAYLD1' >> "${out}"
+      write_u64le "${count}" >> "${out}"
+
+      while read -r name path; do
+          [ -n "${name}" ] || continue
+          size="$(wc -c < "${path}" | tr -d ' ')"
+          name_len="$(printf '%s' "${name}" | wc -c | tr -d ' ')"
+          write_u64le "${name_len}" >> "${out}"
+          write_u64le "${size}" >> "${out}"
+          printf '%s' "${name}" >> "${out}"
+          cat "${path}" >> "${out}"
+      done < "${list}"
+      EOF
+      chmod +x make-payload.sh
+      ./make-payload.sh external.img external.list
+
+3. Attach ``external.img`` as an additional raw disk when booting in QEMU, or
+   as the second physical disk on bare metal.
+
+Notes:
+
+* ``external.img`` raw container mode is used with ``--external-sources`` (and
+  no ``--repo``).
+* Without ``--external-sources`` and without ``--repo``, there is no second
+  image. The initial image only includes distfiles needed before
+  ``improve: get_network``; later distfiles are downloaded from mirrors.
+* The runtime importer identifies the correct disk by checking the magic
+  ``LBPAYLD1`` on each detected block device, not by assuming a device name.
 
 Mirrors
 -------
