@@ -1,0 +1,112 @@
+--- guile-2.0.9/libguile/simpos.c
++++ guile-2.0.9/libguile/simpos.c
+@@ -24,9 +24,11 @@
+ #endif
+ 
+ #include <errno.h>
++#include <fcntl.h>
+ #include <signal.h>  /* for SIG constants */
+ #include <stdlib.h>  /* for getenv */
+ #include <stdio.h>
++#include <sys/types.h>
+ 
+ #include "libguile/_scm.h"
+ 
+@@ -66,7 +68,11 @@
+ 	    "indicating whether the command processor is available.")
+ #define FUNC_NAME s_scm_system
+ {
+-  int rv, eno;
++  int rv, eno, child_errno = 0;
++  int status;
++  int errpipe[2];
++  ssize_t nread;
++  pid_t pid;
+   char *c_cmd;
+   
+   if (SCM_UNBNDP (cmd))
+@@ -77,11 +83,79 @@
+   SCM_VALIDATE_STRING (1, cmd);
+   errno = 0;
+   c_cmd = scm_to_locale_string (cmd);
+-  rv = system (c_cmd);
+-  eno = errno; free (c_cmd); errno = eno;
+-  if (rv == -1 || (rv == 127 && errno != 0))
+-    SCM_SYSERROR;
+-  return scm_from_int (rv);
++  if (pipe (errpipe) < 0)
++    {
++      eno = errno;
++      free (c_cmd);
++      errno = eno;
++      SCM_SYSERROR;
++    }
++
++  if (fcntl (errpipe[1], F_SETFD, FD_CLOEXEC) == -1)
++    {
++      eno = errno;
++      close (errpipe[0]);
++      close (errpipe[1]);
++      free (c_cmd);
++      errno = eno;
++      SCM_SYSERROR;
++    }
++
++  pid = fork ();
++  if (pid == 0)
++    {
++      char *argv[] = { (char *) "sh", (char *) "-c", c_cmd, NULL };
++      close (errpipe[0]);
++      execvp ("sh", argv);
++      child_errno = errno;
++      if (write (errpipe[1], &child_errno, sizeof (child_errno)) < 0)
++        ;
++      _exit (127);
++    }
++  else if (pid < 0)
++    {
++      eno = errno;
++      close (errpipe[0]);
++      close (errpipe[1]);
++      free (c_cmd);
++      errno = eno;
++      SCM_SYSERROR;
++    }
++
++  close (errpipe[1]);
++  while ((nread = read (errpipe[0], &child_errno, sizeof (child_errno))) == -1
++         && errno == EINTR)
++    ;
++  close (errpipe[0]);
++  if (nread == -1)
++    {
++      eno = errno;
++      free (c_cmd);
++      errno = eno;
++      SCM_SYSERROR;
++    }
++  if (nread != sizeof (child_errno))
++    child_errno = 0;
++
++  while ((rv = waitpid (pid, &status, 0)) == -1 && errno == EINTR)
++    ;
++  if (rv == -1)
++    {
++      eno = errno;
++      free (c_cmd);
++      errno = eno;
++      SCM_SYSERROR;
++    }
++
++  free (c_cmd);
++
++  if (child_errno != 0)
++    {
++      errno = child_errno;
++      SCM_SYSERROR;
++    }
++
++  return scm_from_int (status);
+ }
+ #undef FUNC_NAME
+ #endif /* HAVE_SYSTEM */

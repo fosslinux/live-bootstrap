@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-dhcpcd --waitip=4
+ensure_network_ready
 # Ensure network accessible
 timeout=120
 while ! curl example.com >/dev/null 2>&1; do
@@ -16,3 +16,6 @@ while ! curl example.com >/dev/null 2>&1; do
         false
     fi
 done
+
+sed -i '/^NETWORK_READY=/d' /steps/env
+echo 'NETWORK_READY=True' >> /steps/env

@@ -59,3 +59,7 @@ class Target:
     def get_disk(self, name):
         """Get the path to a device of a disk"""
         return self._disks.get(name)
+
+    def add_existing_disk(self, name, path):
+        """Register an existing disk image path."""
+        self._disks[name] = os.path.abspath(path)

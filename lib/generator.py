@@ -12,6 +12,7 @@ import hashlib
 import os
 import random
 import shutil
+import struct
 import tarfile
 import traceback
 
@@ -25,16 +26,34 @@ class Generator():
 
     git_dir = os.path.join(os.path.dirname(os.path.join(__file__)), '..')
     distfiles_dir = os.path.join(git_dir, 'distfiles')
+    raw_container_magic = b'LBPAYLD1'
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
-    def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors):
+    def __init__(self, arch, external_sources, early_preseed, repo_path, mirrors,
+                 extra_builds=None):
         self.arch = arch
         self.early_preseed = early_preseed
         self.external_sources = external_sources
         self.repo_path = repo_path
         self.mirrors = mirrors
-        self.source_manifest = self.get_source_manifest(not self.external_sources)
-        self.early_source_manifest = self.get_source_manifest(True)
+        self.extra_builds = list(extra_builds or [])
+        self.pre_network_source_manifest = self.get_source_manifest(
+            stop_before_improve="get_network",
+            extra_builds=[],
+        )
+        self.pre_import_source_manifest = self.get_source_manifest(
+            stop_before_improve="import_payload",
+            extra_builds=[],
+        )
+        # Only raw-external mode needs full upfront availability for container generation.
+        if self.external_sources and not self.repo_path:
+            self.source_manifest = self.get_source_manifest(extra_builds=self.extra_builds)
+        else:
+            self.source_manifest = self.pre_network_source_manifest
+        self.bootstrap_source_manifest = self.source_manifest
+        self.external_source_manifest = []
+        self.external_image = None
+        self.kernel_bootstrap_mode = None
         self.target_dir = None
         self.external_dir = None
 
@@ -46,6 +65,115 @@ class Generator():
         self.external_dir = os.path.join(self.target_dir, 'external')
         self.distfiles()
 
+    def _select_kernel_bootstrap_mode(self):
+        """
+        Select how kernel-bootstrap should transport distfiles.
+        """
+        if self.repo_path:
+            # Keep second-disk staging outside init image for ext3 repo mode.
+            self.external_dir = os.path.join(os.path.dirname(self.target_dir), 'external')
+            self.kernel_bootstrap_mode = "repo"
+            self.external_source_manifest = []
+            return
+
+        if self.external_sources:
+            # Raw external container mode keeps early distfiles inside init image.
+            self.external_dir = os.path.join(self.target_dir, 'external')
+            self.kernel_bootstrap_mode = "raw_external"
+            self._prepare_kernel_bootstrap_external_manifests()
+            return
+
+        # Network-only mode keeps pre-network distfiles inside init image.
+        self.external_dir = os.path.join(self.target_dir, 'external')
+        self.kernel_bootstrap_mode = "network_only"
+        self.bootstrap_source_manifest = self.pre_network_source_manifest
+        self.external_source_manifest = []
+
+    def _prepare_kernel_bootstrap_external_manifests(self):
+        """
+        Split distfiles between init image and external raw container.
+        """
+        # Keep the early builder image small: include only sources needed
+        # before improve: import_payload runs, so external.img is the primary
+        # carrier for the remaining distfiles.
+        self.bootstrap_source_manifest = self.pre_import_source_manifest
+
+        full_manifest = self.get_source_manifest(extra_builds=self.extra_builds)
+        if self.bootstrap_source_manifest == full_manifest:
+            raise ValueError("steps/manifest must include `improve: import_payload` in kernel-bootstrap mode.")
+        bootstrap_set = set(self.bootstrap_source_manifest)
+        self.external_source_manifest = [entry for entry in full_manifest if entry not in bootstrap_set]
+
+    def _kernel_bootstrap_init_manifest(self):
+        """
+        Return the exact manifest that is allowed inside init image.
+        """
+        mode_to_manifest = {
+            "network_only": self.pre_network_source_manifest,  # up to get_network
+            "raw_external": self.bootstrap_source_manifest,  # up to import_payload
+            "repo": self.pre_network_source_manifest,        # up to get_network
+        }
+        manifest = mode_to_manifest.get(self.kernel_bootstrap_mode)
+        if manifest is None:
+            raise ValueError(f"Unexpected kernel bootstrap mode: {self.kernel_bootstrap_mode}")
+        return manifest
+
+    def _copy_manifest_distfiles(self, out_dir, manifest):
+        os.makedirs(out_dir, exist_ok=True)
+        for entry in manifest:
+            file_name = entry[3].strip()
+            shutil.copy2(os.path.join(self.distfiles_dir, file_name),
+                         os.path.join(out_dir, file_name))
+
+    def _ensure_manifest_distfiles(self, manifest):
+        for entry in manifest:
+            checksum, directory, url, file_name = entry
+            distfile_path = os.path.join(directory, file_name)
+            if not os.path.isfile(distfile_path):
+                self.download_file(url, directory, file_name)
+            self.check_file(distfile_path, checksum)
+
+    def _create_raw_container_image(self, target_path, manifest, image_name="external.img"):
+        if manifest is None:
+            manifest = []
+
+        if manifest:
+            # Guarantee all payload distfiles exist and match checksums.
+            self._ensure_manifest_distfiles(manifest)
+
+        files_by_name = {}
+        for checksum, _, _, file_name in manifest:
+            if file_name in files_by_name and files_by_name[file_name] != checksum:
+                raise ValueError(
+                    f"Conflicting container file with same name but different hash: {file_name}"
+                )
+            files_by_name[file_name] = checksum
+
+        container_path = os.path.join(target_path, image_name)
+        ordered_names = sorted(files_by_name.keys())
+        with open(container_path, "wb") as container:
+            container.write(self.raw_container_magic)
+            if len(ordered_names) > 0xFFFFFFFFFFFFFFFF:
+                raise ValueError("Too many files for raw container format.")
+            container.write(struct.pack("<Q", len(ordered_names)))
+            for file_name in ordered_names:
+                file_name_bytes = file_name.encode("utf_8")
+                if len(file_name_bytes) > 0xFFFFFFFFFFFFFFFF:
+                    raise ValueError(f"Container file name too long: {file_name}")
+
+                src_path = os.path.join(self.distfiles_dir, file_name)
+                file_size = os.path.getsize(src_path)
+                if file_size > 0xFFFFFFFFFFFFFFFF:
+                    raise ValueError(f"Container file too large for raw container format: {file_name}")
+
+                container.write(struct.pack("<QQ", len(file_name_bytes), file_size))
+                container.write(file_name_bytes)
+
+                with open(src_path, "rb") as src_file:
+                    shutil.copyfileobj(src_file, container, 1024 * 1024)
+
+        return container_path
+
     def prepare(self, target, using_kernel=False, kernel_bootstrap=False, target_size=0):
         """
         Prepare basic media of live-bootstrap.
@@ -55,6 +183,10 @@ class Generator():
         """
         self.target_dir = target.path
         self.external_dir = os.path.join(self.target_dir, 'external')
+        self.external_image = None
+        self.external_source_manifest = []
+        self.bootstrap_source_manifest = self.source_manifest
+        self.kernel_bootstrap_mode = None
 
         # We use ext3 here; ext4 actually has a variety of extensions that
         # have been added with varying levels of recency
@@ -67,9 +199,7 @@ class Generator():
         if kernel_bootstrap:
             self.target_dir = os.path.join(self.target_dir, 'init')
             os.mkdir(self.target_dir)
-
-            if not self.repo_path and not self.external_sources:
-                self.external_dir = os.path.join(self.target_dir, 'external')
+            self._select_kernel_bootstrap_mode()
         elif using_kernel:
             self.target_dir = os.path.join(self.target_dir, 'disk')
             self.external_dir = os.path.join(self.target_dir, 'external')
@@ -101,9 +231,17 @@ class Generator():
         if kernel_bootstrap:
             self.create_builder_hex0_disk_image(self.target_dir + '.img', target_size)
 
-            if self.repo_path or self.external_sources:
+            if self.kernel_bootstrap_mode == "repo":
                 mkfs_args = ['-d', os.path.join(target.path, 'external')]
                 target.add_disk("external", filesystem="ext3", mkfs_args=mkfs_args)
+            elif self.kernel_bootstrap_mode == "raw_external":
+                # external.img is a raw container, imported at improve: import_payload.
+                self.external_image = self._create_raw_container_image(
+                    target.path,
+                    self.external_source_manifest,
+                    image_name="external.img",
+                )
+                target.add_existing_disk("external", self.external_image)
         elif using_kernel:
             mkfs_args = ['-F', '-d', os.path.join(target.path, 'disk')]
             target.add_disk("disk",
@@ -117,6 +255,18 @@ class Generator():
         self.get_packages()
 
         shutil.copytree(os.path.join(self.git_dir, 'steps'), os.path.join(self.target_dir, 'steps'))
+        for extra_build in self.extra_builds:
+            steps_extra = f"steps-{extra_build}"
+            steps_extra_dir = os.path.join(self.git_dir, steps_extra)
+            if not os.path.isdir(steps_extra_dir):
+                raise ValueError(
+                    f"{steps_extra} directory does not exist while --extra-builds includes {extra_build}."
+                )
+            if not os.path.isfile(os.path.join(steps_extra_dir, 'manifest')):
+                raise ValueError(
+                    f"{steps_extra}/manifest does not exist while --extra-builds includes {extra_build}."
+                )
+            shutil.copytree(steps_extra_dir, os.path.join(self.target_dir, steps_extra))
 
     def stage0_posix(self, kernel_bootstrap=False):
         """Copy in all of the stage0-posix"""
@@ -147,26 +297,25 @@ class Generator():
 
     def distfiles(self):
         """Copy in distfiles"""
-        def copy_no_network_distfiles(out, early):
-            # Note that "no disk" implies "no network" for kernel bootstrap mode
-            manifest = self.early_source_manifest if early else self.source_manifest
-            for file in manifest:
-                file = file[3].strip()
-                shutil.copy2(os.path.join(self.distfiles_dir, file),
-                             os.path.join(out, file))
+        distfile_dir = os.path.join(self.external_dir, 'distfiles')
 
-        early_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
-        main_distfile_dir = os.path.join(self.external_dir, 'distfiles')
+        if self.kernel_bootstrap_mode is not None:
+            # Kernel bootstrap always copies a bounded manifest, never full distfiles tree.
+            init_manifest = self._kernel_bootstrap_init_manifest()
+            init_distfile_dir = os.path.join(self.target_dir, 'external', 'distfiles')
+            self._copy_manifest_distfiles(init_distfile_dir, init_manifest)
 
-        if early_distfile_dir != main_distfile_dir:
-            os.makedirs(early_distfile_dir, exist_ok=True)
-            copy_no_network_distfiles(early_distfile_dir, True)
+            if self.kernel_bootstrap_mode == "repo":
+                # Repo mode also stages the same bounded set for the second ext3 disk.
+                staged_distfile_dir = distfile_dir
+                if staged_distfile_dir != init_distfile_dir:
+                    self._copy_manifest_distfiles(staged_distfile_dir, init_manifest)
+            return
 
         if self.external_sources:
-            shutil.copytree(self.distfiles_dir, main_distfile_dir, dirs_exist_ok=True)
+            shutil.copytree(self.distfiles_dir, distfile_dir, dirs_exist_ok=True)
         else:
-            os.mkdir(main_distfile_dir)
-            copy_no_network_distfiles(main_distfile_dir, False)
+            self._copy_manifest_distfiles(distfile_dir, self.bootstrap_source_manifest)
 
     @staticmethod
     def output_dir(srcfs_file, dirpath):
@@ -344,43 +493,60 @@ this script the next time")
             self.check_file(path, line[0])
 
     @classmethod
-    def get_source_manifest(cls, pre_network=False):
+    def get_source_manifest(cls, stop_before_improve=None, extra_builds=None):
         """
         Generate a source manifest for the system.
         """
         entries = []
         directory = os.path.relpath(cls.distfiles_dir, cls.git_dir)
+        extra_builds = list(extra_builds or [])
 
-        # Find all source files
-        steps_dir = os.path.join(cls.git_dir, 'steps')
-        with open(os.path.join(steps_dir, 'manifest'), 'r', encoding="utf_8") as file:
-            for line in file:
-                if pre_network and line.strip().startswith("improve: ") and "network" in line:
-                    break
+        manifests = [os.path.join(cls.git_dir, 'steps')]
+        for extra_build in extra_builds:
+            steps_extra = f"steps-{extra_build}"
+            steps_extra_dir = os.path.join(cls.git_dir, steps_extra)
+            if not os.path.isdir(steps_extra_dir):
+                raise ValueError(
+                    f"{steps_extra} directory does not exist while --extra-builds includes {extra_build}."
+                )
+            manifests.append(steps_extra_dir)
 
-                if not line.strip().startswith("build: "):
-                    continue
+        for steps_dir in manifests:
+            manifest_path = os.path.join(steps_dir, 'manifest')
+            if not os.path.isfile(manifest_path):
+                raise ValueError(f"Missing manifest: {manifest_path}")
 
-                step = line.split(" ")[1].split("#")[0].strip()
-                sourcef = os.path.join(steps_dir, step, "sources")
-                if os.path.exists(sourcef):
-                    # Read sources from the source file
-                    with open(sourcef, "r", encoding="utf_8") as sources:
-                        for source in sources.readlines():
-                            source = source.strip().split(" ")
+            with open(manifest_path, 'r', encoding="utf_8") as file:
+                for line in file:
+                    stripped = line.strip()
+                    if stop_before_improve and stripped.startswith("improve: "):
+                        improve_step = stripped.split(" ")[1].split("#")[0].strip()
+                        if improve_step == stop_before_improve:
+                            break
 
-                            if source[0] == "g" or source[0] == "git":
-                                source[1:] = source[2:]
+                    if not stripped.startswith("build: "):
+                        continue
 
-                            if len(source) > 3:
-                                file_name = source[3]
-                            else:
-                                # Automatically determine file name based on URL.
-                                file_name = os.path.basename(source[1])
+                    step = line.split(" ")[1].split("#")[0].strip()
+                    sourcef = os.path.join(steps_dir, step, "sources")
+                    if os.path.exists(sourcef):
+                        # Read sources from the source file
+                        with open(sourcef, "r", encoding="utf_8") as sources:
+                            for source in sources.readlines():
+                                source = source.strip().split(" ")
 
-                            entry = (source[2], directory, source[1], file_name)
-                            if entry not in entries:
-                                entries.append(entry)
+                                if source[0] == "g" or source[0] == "git":
+                                    source[1:] = source[2:]
+
+                                if len(source) > 3:
+                                    file_name = source[3]
+                                else:
+                                    # Automatically determine file name based on URL.
+                                    file_name = os.path.basename(source[1])
+
+                                entry = (source[2], directory, source[1], file_name)
+                                if entry not in entries:
+                                    entries.append(entry)
 
         return entries
 

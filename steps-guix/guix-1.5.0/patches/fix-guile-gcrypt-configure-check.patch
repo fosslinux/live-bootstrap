@@ -1,0 +1,14 @@
+--- guix-1.5.0/m4/guix.m4
++++ guix-1.5.0/m4/guix.m4
+@@ -207,8 +207,9 @@
+     [guix_cv_have_recent_guile_gcrypt],
+     [GUILE_CHECK([retval],
+       [(use-modules (gcrypt hash))
+-       (equal? (hash-algorithm sha256)
+-               (lookup-hash-algorithm 'sha256))])
++       (let ((algorithm (lookup-hash-algorithm 'sha256)))
++         (and algorithm
++              (= 32 (hash-size algorithm))))])
+      if test "$retval" = 0; then
+        guix_cv_have_recent_guile_gcrypt="yes"
+      else

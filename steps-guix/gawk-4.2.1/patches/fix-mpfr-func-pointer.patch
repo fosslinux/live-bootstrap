@@ -1,0 +1,15 @@
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Fix MPFR callback pointer prototype for modern compilers.
+
+--- gawk-4.2.1/mpfr.c
++++ gawk-4.2.1/mpfr.c
+@@ -689,7 +689,7 @@
+ 
+ static inline NODE *
+ do_mpfr_func(const char *name,
+-		int (*mpfr_func)(),	/* putting argument types just gets the compiler confused */
++		int (*mpfr_func)(mpfr_ptr, mpfr_srcptr, mpfr_rnd_t),
+ 		int nargs)
+ {
+ 	NODE *t1, *res;

@@ -1,0 +1,1 @@
+f https://cdn.jsdelivr.net/npm/@openziti/ziti-sdk-nodejs@0.14.2/vcpkg/ports/boost-unordered/0001-unordered-fix-copy-assign.patch c6e04429fbf1629f10f456d47d9cfda1a89c4b1f242665cb4c091cd84b0d4626

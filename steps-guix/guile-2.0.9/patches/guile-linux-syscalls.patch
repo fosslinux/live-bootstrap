@@ -1,0 +1,377 @@
+This patch adds bindings to Linux syscalls for which glibc has symbols.
+
+Using the FFI would have been nice, but that's not an option when using
+a statically-linked Guile in an initrd that doesn't have libc.so around.
+
+diff --git a/libguile/posix.c b/libguile/posix.c
+index b0fcad5fd..1343186e3 100644
+--- guile-2.0.9/libguile/posix.c
++++ guile-2.0.9/libguile/posix.c
+@@ -2341,6 +2341,367 @@ scm_init_popen (void)
+ }
+ #endif /* HAVE_START_CHILD */
+ 
++
++/* Linux! */
++#ifdef __linux__
++
++#include <sys/mount.h>
++#include <sys/syscall.h>
++
++#include "libguile/foreign.h"
++#include "libguile/bytevectors.h"
++
++SCM_DEFINE (scm_mount, "mount", 3, 2, 0,
++	    (SCM source, SCM target, SCM type, SCM flags, SCM data),
++	    "Mount file system of @var{type} specified by @var{source} "
++	    "on @var{target}.")
++#define FUNC_NAME s_scm_mount
++{
++  int err;
++  char *c_source, *c_target, *c_type, *c_data;
++  unsigned long c_flags;
++
++  c_source = scm_to_locale_string (source);
++  c_target = scm_to_locale_string (target);
++  c_type = scm_to_locale_string (type);
++  c_flags = SCM_UNBNDP (flags) ? 0 : scm_to_ulong (flags);
++
++  if (SCM_UNBNDP (data) || scm_is_false (data))
++    c_data = NULL;
++  else
++    c_data = scm_to_locale_string (data);
++
++  err = mount (c_source, c_target, c_type, c_flags, c_data);
++  if (err != 0)
++    err = errno;
++
++  free (c_source);
++  free (c_target);
++  free (c_type);
++
++  if (c_data != NULL)
++    free (c_data);
++
++  if (err != 0)
++    {
++      errno = err;
++      SCM_SYSERROR;
++    }
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++SCM_DEFINE (scm_umount, "umount", 1, 0, 0,
++	    (SCM target),
++	    "Unmount the file system on @var{target}.")
++#define FUNC_NAME s_scm_umount
++{
++  int err;
++  char *c_target;
++
++  c_target = scm_to_locale_string (target);
++
++  err = umount (c_target);
++  if (err != 0)
++    err = errno;
++
++  free (c_target);
++
++  if (err != 0)
++    {
++      errno = err;
++      SCM_SYSERROR;
++    }
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++/* Linux's module installation syscall.  See `kernel/module.c' in Linux;
++   the function itself is part of the GNU libc.
++
++   Load the LEN bytes at MODULE as a kernel module, with arguments from
++   ARGS, a space-separated list of options.  */
++extern long init_module (void *module, unsigned long len, const char *args);
++
++/* Load a kernel module from FD.  FLAGS must be a bitwise or of
++   MODULE_INIT_* constants.  The GNU libc doesn't provide a wrapper for
++   this one so we use 'syscall'.  */
++static int
++finit_module (int fd, const char *args, int flags)
++{
++  return syscall (SYS_finit_module, fd, args, flags);
++}
++
++
++SCM_DEFINE (scm_load_linux_module, "load-linux-module", 1, 1, 0,
++	    (SCM data, SCM options),
++	    "Load the Linux kernel module whose contents are in bytevector "
++	    "DATA (the contents of a @code{.ko} file), with the arguments "
++	    "from the OPTIONS string.")
++#define FUNC_NAME s_scm_load_linux_module
++{
++  long err;
++  void *c_data;
++  unsigned long c_len;
++  char *c_options;
++
++  SCM_VALIDATE_BYTEVECTOR (SCM_ARG1, data);
++
++  c_data = SCM_BYTEVECTOR_CONTENTS (data);
++  c_len = SCM_BYTEVECTOR_LENGTH (data);
++  c_options =
++    scm_to_locale_string (SCM_UNBNDP (options) ? scm_nullstr : options);
++
++  err = init_module (c_data, c_len, c_options);
++
++  free (c_options);
++
++  if (err != 0)
++    SCM_SYSERROR;
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++SCM_DEFINE (scm_load_linux_module_fd, "load-linux-module/fd", 1, 2, 0,
++	    (SCM fd, SCM options, SCM flags),
++	    "Load the Linux kernel module from the file at FD, "
++	    "with the arguments from the OPTIONS string, and "
++            "optionally the given FLAGS.")
++#define FUNC_NAME s_scm_load_linux_module_fd
++{
++  long err;
++  int c_fd, c_flags;
++  char *c_options;
++
++  c_fd = scm_to_int (fd);
++  c_options =
++    scm_to_locale_string (SCM_UNBNDP (options) ? scm_nullstr : options);
++  c_flags = SCM_UNBNDP (flags) ? 0 : scm_to_int (flags);
++
++  err = finit_module (c_fd, c_options, c_flags);
++
++  free (c_options);
++
++  if (err != 0)
++    SCM_SYSERROR;
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++
++/* Rebooting, halting, and all that.  */
++
++#include <sys/reboot.h>
++
++SCM_VARIABLE_INIT (flag_RB_AUTOBOOT, "RB_AUTOBOOT",
++		   scm_from_int (RB_AUTOBOOT));
++SCM_VARIABLE_INIT (flag_RB_HALT_SYSTEM, "RB_HALT_SYSTEM",
++		   scm_from_int (RB_HALT_SYSTEM));
++SCM_VARIABLE_INIT (flag_RB_ENABLE_CAD, "RB_ENABLE_CAD",
++		   scm_from_int (RB_ENABLE_CAD));
++SCM_VARIABLE_INIT (flag_RB_DISABLE_CAD, "RB_DISABLE_CAD",
++		   scm_from_int (RB_DISABLE_CAD));
++SCM_VARIABLE_INIT (flag_RB_POWER_OFF, "RB_POWER_OFF",
++		   scm_from_int (RB_POWER_OFF));
++SCM_VARIABLE_INIT (flag_RB_SW_SUSPEND, "RB_SW_SUSPEND",
++		   scm_from_int (RB_SW_SUSPEND));
++SCM_VARIABLE_INIT (flag_RB_KEXEC, "RB_KEXEC",
++		   scm_from_int (RB_KEXEC));
++
++SCM_DEFINE (scm_reboot, "reboot", 0, 1, 0,
++	    (SCM command),
++	    "Reboot the system.  @var{command} must be one of the @code{RB_} "
++	    "constants; if omitted, @var{RB_AUTOBOOT} is used, thus "
++	    "performing a hard reset.")
++#define FUNC_NAME s_scm_reboot
++{
++  int c_command;
++
++  if (SCM_UNBNDP (command))
++    c_command = RB_AUTOBOOT;
++  else
++    c_command = scm_to_int (command);
++
++  reboot (c_command);
++
++  return SCM_UNSPECIFIED;			  /* likely unreached */
++}
++#undef FUNC_NAME
++
++/* Linux network interfaces.  See <linux/if.h>.  */
++
++#include <linux/if.h>
++#include <linux/sockios.h>
++#include "libguile/socket.h"
++
++SCM_VARIABLE_INIT (flag_IFF_UP, "IFF_UP",
++		   scm_from_int (IFF_UP));
++SCM_VARIABLE_INIT (flag_IFF_BROADCAST, "IFF_BROADCAST",
++		   scm_from_int (IFF_BROADCAST));
++SCM_VARIABLE_INIT (flag_IFF_DEBUG, "IFF_DEBUG",
++		   scm_from_int (IFF_DEBUG));
++SCM_VARIABLE_INIT (flag_IFF_LOOPBACK, "IFF_LOOPBACK",
++		   scm_from_int (IFF_LOOPBACK));
++SCM_VARIABLE_INIT (flag_IFF_POINTOPOINT, "IFF_POINTOPOINT",
++		   scm_from_int (IFF_POINTOPOINT));
++SCM_VARIABLE_INIT (flag_IFF_NOTRAILERS, "IFF_NOTRAILERS",
++		   scm_from_int (IFF_NOTRAILERS));
++SCM_VARIABLE_INIT (flag_IFF_RUNNING, "IFF_RUNNING",
++		   scm_from_int (IFF_RUNNING));
++SCM_VARIABLE_INIT (flag_IFF_NOARP, "IFF_NOARP",
++		   scm_from_int (IFF_NOARP));
++SCM_VARIABLE_INIT (flag_IFF_PROMISC, "IFF_PROMISC",
++		   scm_from_int (IFF_PROMISC));
++SCM_VARIABLE_INIT (flag_IFF_ALLMULTI, "IFF_ALLMULTI",
++		   scm_from_int (IFF_ALLMULTI));
++
++SCM_DEFINE (scm_set_network_interface_address, "set-network-interface-address",
++	    3, 0, 0,
++	    (SCM socket, SCM name, SCM address),
++	    "Configure network interface @var{name}.")
++#define FUNC_NAME s_scm_set_network_interface_address
++{
++  char *c_name;
++  struct ifreq ifr;
++  struct sockaddr *c_address;
++  size_t sa_len;
++  int fd, err;
++
++  socket = SCM_COERCE_OUTPORT (socket);
++  SCM_VALIDATE_OPFPORT (1, socket);
++  fd = SCM_FPORT_FDES (socket);
++
++  memset (&ifr, 0, sizeof ifr);
++  c_name = scm_to_locale_string (name);
++  c_address = scm_to_sockaddr (address, &sa_len);
++
++  strncpy (ifr.ifr_name, c_name, sizeof ifr.ifr_name - 1);
++  memcpy (&ifr.ifr_addr, c_address, sa_len);
++
++  err = ioctl (fd, SIOCSIFADDR, &ifr);
++  if (err != 0)
++    err = errno;
++
++  free (c_name);
++  free (c_address);
++
++  if (err != 0)
++    {
++      errno = err;
++      SCM_SYSERROR;
++    }
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++SCM_DEFINE (scm_set_network_interface_flags, "set-network-interface-flags",
++	    3, 0, 0,
++	    (SCM socket, SCM name, SCM flags),
++	    "Change the flags of network interface @var{name} to "
++	    "@var{flags}.")
++#define FUNC_NAME s_scm_set_network_interface_flags
++{
++  struct ifreq ifr;
++  char *c_name;
++  int fd, err;
++
++  socket = SCM_COERCE_OUTPORT (socket);
++  SCM_VALIDATE_OPFPORT (1, socket);
++  fd = SCM_FPORT_FDES (socket);
++
++  memset (&ifr, 0, sizeof ifr);
++  c_name = scm_to_locale_string (name);
++  strncpy (ifr.ifr_name, c_name, sizeof ifr.ifr_name - 1);
++  ifr.ifr_flags = scm_to_short (flags);
++
++  err = ioctl (fd, SIOCSIFFLAGS, &ifr);
++  if (err != 0)
++    err = errno;
++
++  free (c_name);
++
++  if (err != 0)
++    {
++      errno = err;
++      SCM_SYSERROR;
++    }
++
++  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++SCM_DEFINE (scm_network_interface_flags, "network-interface-flags",
++	    2, 0, 0,
++	    (SCM socket, SCM name),
++	    "Return the flags of network interface @var{name}.")
++#define FUNC_NAME s_scm_network_interface_flags
++{
++  struct ifreq ifr;
++  char *c_name;
++  int fd, err;
++
++  socket = SCM_COERCE_OUTPORT (socket);
++  SCM_VALIDATE_OPFPORT (1, socket);
++  fd = SCM_FPORT_FDES (socket);
++
++  memset (&ifr, 0, sizeof ifr);
++  c_name = scm_to_locale_string (name);
++  strncpy (ifr.ifr_name, c_name, sizeof ifr.ifr_name - 1);
++
++  err = ioctl (fd, SIOCGIFFLAGS, &ifr);
++  if (err != 0)
++    err = errno;
++
++  free (c_name);
++
++  if (err != 0)
++    {
++      errno = err;
++      SCM_SYSERROR;
++    }
++
++  return scm_from_short (ifr.ifr_flags);
++}
++#undef FUNC_NAME
++#endif
++
++#include <sys/statfs.h>
++
++SCM_DEFINE (scm_statfs_raw, "statfs-raw", 1, 0, 0,
++        (SCM filesystem),
++        "Return a bytevector describing @var{filesystem}")
++#define FUNC_NAME s_scm_statfs_raw
++{
++  int err;
++  char *c_filesystem;
++  SCM bv;
++
++  c_filesystem = scm_to_locale_string (filesystem);
++
++  bv = scm_c_make_bytevector (sizeof (struct statfs));
++  struct statfs *bv_pointer = scm_to_pointer (scm_bytevector_to_pointer (bv, scm_from_int (0)));
++
++  err = statfs (c_filesystem, bv_pointer);
++  if (err != 0)
++    err = errno;
++
++  free (c_filesystem);
++
++  if (err != 0)
++    {
++      errno = err;
++      SCM_SYSERROR;
++    }
++
++  return bv;
++}
++#undef FUNC_NAME
++
+ void
+ scm_init_posix ()
+ {
