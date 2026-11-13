@@ -45,7 +45,7 @@ def create_disk(image, disk_type, fs_type, size, bootable=False, mkfs_args=None)
         offset = str(1024 * 1024 * (1024 if bootable else 1))
         run('parted', '--script', image, 'mklabel', disk_type, 'mkpart',
             'primary', fs_type, offset + 'B', '100%')
-        run('mkfs.' + fs_type, image, '-E', 'offset=' + offset, *mkfs_args)
+        run('mkfs.' + fs_type, '-E', 'offset=' + offset, *mkfs_args, image)
 
 def mount(source, target, fs_type, options='', **kwargs):
     """Mount filesystem"""

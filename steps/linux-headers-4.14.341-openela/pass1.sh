@@ -27,7 +27,7 @@ src_install() {
     # We "compile" the headers here because it is easier
     for d in include/uapi arch/x86/include/uapi; do
         cd "${d}"
-        find . -type d -exec mkdir "${DESTDIR}${PREFIX}/include/{}" -p \;
+        find . -type d -exec mkdir -p "${DESTDIR}${PREFIX}/include/{}" \;
         headers="$(find . -type f -name "*.h")"
         cd "${base_dir}"
         for h in ${headers}; do

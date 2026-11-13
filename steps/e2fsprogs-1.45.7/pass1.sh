@@ -37,7 +37,8 @@ src_prepare() {
 
 src_configure() {
     # defrag fails to build with musl 1.2.4
-    ./configure --prefix="${PREFIX}" \
+    INSTALL='/usr/bin/install -c -D' \
+        ./configure --prefix="${PREFIX}" \
         --sbindir="${PREFIX}/bin" \
         --disable-tls \
         --disable-defrag \
