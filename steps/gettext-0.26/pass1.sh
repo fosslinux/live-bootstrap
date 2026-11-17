@@ -131,7 +131,7 @@ src_prepare() {
         touch -r plural.y .
         popd
     done
-    tar -cf "$archive" gettext-*
+    tar --sort=name -cf "$archive" gettext-*
     popd
     rm -rf "$temp"
 }
